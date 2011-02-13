@@ -7,7 +7,7 @@ has @!members;
 has $!num_tests;
 
 our method add_test($test) {
-    @!members.push($test);
+    @!members := @!members.push($test);
     $!num_tests := $!num_tests + $test.num_tests;
     self;
 }
@@ -33,9 +33,9 @@ our method _init_obj(*@pos, *%named) {
 }
 
 our method run($result = self.default_result) {
-    $result.plan_tests(self.num_tests);
+    $result.plan_tests($!num_tests);
 
-    for self.members {
+    for @!members {
         unless $result.should_stop {
             $_.run($result);
         }
@@ -49,7 +49,7 @@ sub sort_cmp($a, $b) {
 }
 
 our method sort() {
-    self.members.sort(UnitTest::Suite::sort_cmp);
+    @!members.sort(UnitTest::Suite::sort_cmp);
     self;
 }
 

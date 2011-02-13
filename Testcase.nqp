@@ -1,8 +1,29 @@
 # Copyright (C) 2009-2010, Austin Hastings. See accompanying LICENSE file, or
 # http://www.opensource.org/licenses/artistic-license-2.0.php for license.
 
-class Exception::UnitTestFailure is Exception {
-    method severity() { Exception::Severity.ERROR; }
+class Exception::UnitTestFailure {
+    has $!exception;
+
+    our method message(*@value) {
+        my $msg := pir::join(" ", @value);
+        if !pir::defined__IP($!exception) {
+            $!exception := Q:PIR { %r = new ["Exception"] };
+        }
+        my $ex := $!exception;
+        Q:PIR {
+            $P0 = find_lex "$ex"
+            $P1 = find_lex "$msg"
+            setattribute $P0, "message", $P1
+        }
+    }
+
+    our method throw() {
+        my $ex := $!exception;
+        Q:PIR {
+            $P0 = find_lex "$ex"
+            throw $P0
+        }
+    }
 }
 
 class UnitTest::Testcase is UnitTest::Standalone;
@@ -21,17 +42,9 @@ my method default_result() {
 }
 
 our sub fail($why) {
-    Exception::UnitTestFailure.new(:message($why)).throw;
-}
-
-# DEPRECATED
-our sub fail_if($condition, $why) {
-    fail($why) if $condition;
-}
-
-# DEPRECATED
-our sub fail_unless($condition, $why) {
-    fail($why) unless $condition;
+    my $ex := Exception::UnitTestFailure.new();
+    $ex.message($why);
+    $ex.throw();
 }
 
 our method num_tests() {
@@ -40,7 +53,6 @@ our method num_tests() {
 
 # NOTE: Don't call this directly!! Call .suite.run instead.
 our method run($result = self.default_result) {
-
     $result.start_test(self);
     my $exception;
 
@@ -50,7 +62,7 @@ our method run($result = self.default_result) {
 
         CATCH {
             $exception := $!;
-            $!.handled(1);
+            #$!.handled(1);
         }
     };
 
@@ -58,21 +70,20 @@ our method run($result = self.default_result) {
         self.tear_down();
 
         CATCH {
-            $!.handled(1);
-
-            unless pir::defined__iP($exception) {
-                $exception := $!;
-            }
+            pir::say("Caught exception while tearing down test " ~ pir::typeof__SP(self));
+            pir::say($!);
+            # TODO: We should set a "suite-related error" message on the Result
         }
     };
 
     if pir::defined__iP($exception) {
-        if pir::typeof__PP($exception) == Exception::UnitTestFailure.type {
-            $result.add_failure(self, $exception);
-        }
-        else {
-            $result.add_error(self, $exception);
-        }
+        # TODO: Error reporting
+        Q:PIR {
+            $P0 = find_lex '$exception'
+            $S0 = $P0["message"]
+            say $S0
+        };
+        $result.add_failure(self, $exception);
     }
     else {
         $result.end_test(self);
@@ -82,7 +93,22 @@ our method run($result = self.default_result) {
 }
 
 our method run_test() {
-    Parrot::call_method(self, self.name);
+    my $method_name := self.name;
+    my $object := self;
+    Q:PIR {
+        .local pmc object, meth
+        object = find_lex '$object'
+        meth = find_lex '$method_name'
+
+        $I0 = isa meth, 'Sub'
+        unless $I0 goto call_string
+
+        object.meth()
+
+      call_string:
+        $S0 = meth
+        object.$S0()
+    };
 }
 
 our method set_up() { }

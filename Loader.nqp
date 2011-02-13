@@ -16,7 +16,9 @@ our method configure_suite(@tests, :$suite = self.default_suite, *%named) {
     my $protoobject := pir::getattribute__pps($metaclass, 'protoobject');
 
     for @tests -> $test {
-        $suite.add_test: $protoobject.new(:name($test));
+        my $test_obj := $protoobject.new();
+        $test_obj.name($test);
+        $suite.add_test: $test_obj
     }
 
     $suite;
@@ -24,6 +26,33 @@ our method configure_suite(@tests, :$suite = self.default_suite, *%named) {
 
 our method default_suite() {
     UnitTest::Suite.new();
+}
+
+sub hash_contains(%hash, $key) {
+    return Q:PIR {
+        $P0 = find_lex '%hash'
+        $P1 = find_lex '$key'
+        $I0 = exists $P0[$P1]
+        %r = box $I0
+    };
+}
+
+sub array_unsort(@array) {
+    my $bound := pir::elements(@array) - 1;
+    my $swap;
+    my $temp;
+    return @array;
+
+    #while $bound > 0 {
+    #    $swap := pir::rand__iiii(0, $bound);
+    #    $swap-- if $swap > $bound;      # Rare but possible
+    #    $temp := @array[$bound];
+    #    @array[$bound] := @array[$swap];
+    #    @array[$swap] := $temp;
+    #    $bound--;
+    #}
+
+    #@array;
 }
 
 our method get_test_methods() {
@@ -36,8 +65,7 @@ our method get_test_methods() {
         for %methods {
             my $name := ~ $_;
 
-            if self.is_test_method($name)
-                && ! %!seen_methods.contains($name) {
+            if self.is_test_method($name) && !hash_contains(%!seen_methods, $name) {
                 %!seen_methods{$name} := 1;
                 @test_methods.push($name);
             }
@@ -57,7 +85,7 @@ our method _init_obj(*@pos, *%named) {
 our method is_test_method($name) {
     my $result := 0;
 
-    if $name.length > 4 && $name.substr(0, 4) eq 'test' {
+    if pir::length($name) > 4 && pir::substr($name, 0, 4) eq 'test' {
 
         my $ch4 := $name[4];
 
@@ -81,7 +109,7 @@ our method load_tests_from_testcase($class, *%named) {
 }
 
 our method order_tests(@tests) {
-    @tests.unsort;
+    array_unsort(@tests);
 }
 
 our method test_prefix($value?) {

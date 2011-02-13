@@ -29,26 +29,39 @@ has $!should_stop;
 has $!num_tests;
 has $!planned_tests;
 
+our method should_stop($value?) {
+    if pir::defined($value) {
+        $!should_stop := $value;
+    }
+    $!should_stop;
+}
+
+our method num_tests($value?) {
+    if pir::defined($value) {
+        $!num_tests := $value;
+    }
+    $!num_tests;
+}
+
 our method add_error($test, $error) {
-    self.add_fault($test, $error, :notify('add_error'), :queue(self.errors));
+    self.add_fault($test, $error, :notify('add_error'), :queue(@!errors));
 }
 
 our method add_failure($test, $failure) {
-    self.add_fault($test, $failure, :notify('add_failure'), :queue(self.failures));
+    self.add_fault($test, $failure, :notify('add_failure'), :queue(@!failures));
 }
 
 my method add_fault($test, $exception, :$notify, :$queue) {
-    my $failure := UnitTest::Failure.new(
-        :fault($exception),
-        :test_case($test),
-    );
+    my $failure := UnitTest::Failure.new();
+    $failure.fault($exception);
+    $failure.test_case($test);
 
     $queue.push($failure);
     self.notify_listeners($notify, $failure);
 }
 
 our method add_listener($listener) {
-    self.listeners.push($listener);
+    @!listeners.push($listener);
     self;
 }
 
@@ -57,17 +70,32 @@ our method end_test($test) {
 }
 
 our method error_count() {
-    self.errors.elems;
+    pir::elements(@!errors);
 }
 
 our method failure_count() {
-    self.failures.elems;
+    pir::elements(@!failures);
 }
 
-my method notify_listeners($method, *@pos, *%named) {
-    for self.listeners {
-        # TODO: Either translate this out, or move it from Kakapo
-        Parrot::call_method_($_, $method, @pos, %named);
+my method notify_listeners($method, *@args, *%named) {
+    for @!listeners {
+        my $object := $_;
+        Q:PIR {
+            .local pmc object, meth, args, opts
+            object = find_lex '$object'
+            meth = find_lex '$method'
+            args = find_lex '@args'
+            opts = find_lex '%named'
+
+            $I0 = isa meth, 'Sub'
+            unless $I0 goto call_string
+
+            object.meth(args :flat, opts :named :flat)
+
+          call_string:
+            $S0 = meth
+            object.$S0(args :flat, opts :named :flat)
+        };
     }
 
     self;
@@ -75,8 +103,8 @@ my method notify_listeners($method, *@pos, *%named) {
 
 our method plan_tests($num_tests) {
     # Ignore repeats in hierarchy of suites.
-    unless self.planned_tests {
-        self.planned_tests: $num_tests;
+    unless $!planned_tests {
+        $!planned_tests := $num_tests;
         self.notify_listeners: 'plan_tests', $num_tests;
     }
 }
