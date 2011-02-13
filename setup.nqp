@@ -40,23 +40,33 @@ sub MAIN(@argv) {
         #:release_dir_format(	'released/%s'),
     );
 
-    my @xunit_files := <Assertions Listeners Loader Standalone Suite Testcase Result>;
-    my @xunit_pbcs := < >;
+    my @common_files := <Assertions Listener Listener/TAP UnitTestFailure>;
+    my @common_pbcs := setup_lib(%parrot_test, "common", @common_files);
+    %parrot_test<pbc_pbc><parrot_test_common.pbc> := @common_pbcs;
 
-    for @xunit_files {
-        my $path := 'xunit/' ~ $_;
-        my $nqp_file := $path ~ '.nqp';
-        my $pir_file := $path ~ '.pir';
-        my $pbc_file := $path ~ '.pbc';
-        %parrot_test<pir_nqp-rx>{$pir_file} := $nqp_file;
-        %parrot_test<pbc_pir>{$pbc_file} := $pir_file;
-        @xunit_pbcs.push($pbc_file);
-    }
+    my @xunit_files := <Setup Loader Standalone Suite Testcase Result>;
+    my @xunit_pbcs := setup_lib(%parrot_test, "xunit", @xunit_files);
     %parrot_test<pbc_pbc><parrot_test_xunit.pbc> := @xunit_pbcs;
 
-    %parrot_test<inst_lib> := <parrot_test_xunit.pbc>;
+    %parrot_test<inst_lib> := <
+        parrot_test_common.pbc
+        parrot_test_xunit.pbc
+    >;
 
     pir::shift(@argv);
     setup(@argv, %parrot_test);
 }
 
+sub setup_lib(%parrot_test, $folder, @files) {
+    my @pbcs := < >;
+    for @files {
+        my $path := "$folder/$_";
+        my $nqp_file := $path ~ '.nqp';
+        my $pir_file := $path ~ '.pir';
+        my $pbc_file := $path ~ '.pbc';
+        %parrot_test<pir_nqp-rx>{$pir_file} := $nqp_file;
+        %parrot_test<pbc_pir>{$pbc_file} := $pir_file;
+        @pbcs.push($pbc_file);
+    }
+    @pbcs;
+}

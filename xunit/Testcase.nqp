@@ -1,31 +1,6 @@
 # Copyright (C) 2009-2010, Austin Hastings. See accompanying LICENSE file, or
 # http://www.opensource.org/licenses/artistic-license-2.0.php for license.
 
-class Exception::UnitTestFailure {
-    has $!exception;
-
-    our method message(*@value) {
-        my $msg := pir::join(" ", @value);
-        if !pir::defined__IP($!exception) {
-            $!exception := Q:PIR { %r = new ["Exception"] };
-        }
-        my $ex := $!exception;
-        Q:PIR {
-            $P0 = find_lex "$ex"
-            $P1 = find_lex "$msg"
-            setattribute $P0, "message", $P1
-        }
-    }
-
-    our method throw() {
-        my $ex := $!exception;
-        Q:PIR {
-            $P0 = find_lex "$ex"
-            throw $P0
-        }
-    }
-}
-
 class UnitTest::Testcase is UnitTest::Standalone;
 
 has $!todo;
@@ -53,12 +28,6 @@ my method default_result() {
     my $result := UnitTest::Result.new;
     $result.add_listener: UnitTest::Listener::TAP.new;
     return $result;
-}
-
-our sub fail($why) {
-    my $ex := Exception::UnitTestFailure.new();
-    $ex.message($why);
-    $ex.throw();
 }
 
 our method num_tests() {
