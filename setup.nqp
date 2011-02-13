@@ -44,9 +44,10 @@ sub MAIN(@argv) {
     my @xunit_pbcs := < >;
 
     for @xunit_files {
-        my $nqp_file := $_ ~ '.nqp';
-        my $pir_file := $_ ~ '.pir';
-        my $pbc_file := $_ ~ '.pbc';
+        my $path := 'xunit/' ~ $_;
+        my $nqp_file := $path ~ '.nqp';
+        my $pir_file := $path ~ '.pir';
+        my $pbc_file := $path ~ '.pbc';
         %parrot_test<pir_nqp-rx>{$pir_file} := $nqp_file;
         %parrot_test<pbc_pir>{$pbc_file} := $pir_file;
         @xunit_pbcs.push($pbc_file);
