@@ -10,6 +10,8 @@ sub get_args() {
     $interp[2];
 }
 
+sub new_hash(*%args) { %args; }
+
 MAIN(get_args());
 
 sub MAIN(@argv) {
@@ -38,24 +40,20 @@ sub MAIN(@argv) {
         #:release_dir_format(	'released/%s'),
     );
 
-    %parrot_test<pir_nqp-rx><Assertions.pir> := 'Assertions.nqp';
-    %parrot_test<pir_nqp-rx><Listeners.pir> := 'Listeners.nqp';
-    %parrot_test<pir_nqp-rx><Loader.pir> := 'Loader.nqp';
-    %parrot_test<pir_nqp-rx><Standalone.pir> := 'Standalone.nqp';
-    %parrot_test<pir_nqp-rx><Suite.pir> := 'Suite.nqp';
-    %parrot_test<pir_nqp-rx><Testcase.pir> := 'Testcase.nqp';
-    %parrot_test<pir_nqp-rx><Result.pir> := 'Result.nqp';
+    my @xunit_files := <Assertions Listeners Loader Standalone Suite Testcase Result>;
+    my @xunit_pbcs := < >;
 
-    %parrot_test<pbc_pir><parrot_xunit_test.pbc> := <
-        Assertions.pir
-        Listeners.pir
-        Loader.pir
-        Standalone.pir
-        Suite.pir
-        Testcase.pir
-        Result.pir
-    >;
+    for @xunit_files {
+        my $nqp_file := $_ ~ '.nqp';
+        my $pir_file := $_ ~ '.pir';
+        my $pbc_file := $_ ~ '.pbc';
+        %parrot_test<pir_nqp-rx>{$pir_file} := $nqp_file;
+        %parrot_test<pbc_pir>{$pbc_file} := $pir_file;
+        @xunit_pbcs.push($pbc_file);
+    }
+    %parrot_test<pbc_pbc><parrot_test_xunit.pbc> := @xunit_pbcs;
+
     pir::shift(@argv);
-    setup_(@argv, %kakapo);
+    setup(@argv, %parrot_test);
 }
 

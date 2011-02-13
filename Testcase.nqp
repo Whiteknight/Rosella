@@ -103,11 +103,11 @@ our sub TEST_MAIN(:$namespace = Parrot::caller_namespace()) {
     # FIXME: This blind-calls obj.MAIN, which does not allow for a sub (not method)
     # named MAIN in the namespace. Not sure if there are any other interactions with
     # hidden methods change.
-    if ! pir::is_null__IP($proto_obj) && pir::isa__IP($proto_obj, 'P6protoobject') {
+    if ! pir::isnull__IP($proto_obj) && pir::isa__IP($proto_obj, 'P6protoobject') {
         $proto_obj.MAIN();
     }
     elsif $namespace.contains: 'MAIN' {
-        if ! pir::is_null__IP( $proto_obj ) {
+        if ! pir::isnull__IP( $proto_obj ) {
             $namespace<MAIN>($proto_obj);
         }
         else {
@@ -120,10 +120,10 @@ our sub TEST_MAIN(:$namespace = Parrot::caller_namespace()) {
     }
 }
 
-sub todo_test( *@text ) {
-    $!todo = @text.join;
+method todo_test( *@text ) {
+    $!todo := @text.join;
 }
 
-sub verify_that(*@text) {
-    $!verify = @text.join;
+method verify_that(*@text) {
+    $!verify := @text.join;
 }
