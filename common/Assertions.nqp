@@ -1,7 +1,7 @@
 # Copyright (C) 2009-2010, Austin Hastings. See accompanying LICENSE file, or
 # http://www.opensource.org/licenses/artistic-license-2.0.php for license.
 
-module UnitTest::Assertions;
+module Assert;
 
 our sub _initload() { }
 
@@ -11,63 +11,63 @@ our sub fail($why) {
     $ex.throw();
 }
 
-our sub assert_block($message, &block) {
+our sub block($message, &block) {
     fail($message) unless &block();
 }
 
-our sub assert_block_false($message, &block) {
+our sub block_false($message, &block) {
     fail($message) if &block();
 }
 
-our sub assert_can($obj, $method, $message) {
+our sub can($obj, $method, $message) {
     fail($message) unless pir::can($obj, $method);
 }
 
-our sub assert_can_not($obj, $method, $message) {
+our sub can_not($obj, $method, $message) {
     fail($message) if pir::can($obj, $method);
 }
 
-our sub assert_defined($obj, $message) {
+our sub defined($obj, $message) {
     fail($message) unless pir::defined($obj);
 }
 
-our sub assert_not_defined($obj, $message) {
+our sub not_defined($obj, $message) {
     fail($message) if pir::defined($obj);
 }
 
-our sub assert_does($obj, $role, $message) {
+our sub does($obj, $role, $message) {
     fail($message) unless pir::class__PP($obj).does($role);
 }
 
-our sub assert_does_not($obj, $role, $message) {
+our sub does_not($obj, $role, $message) {
     fail($message) if pir::class__PP($obj).does($role);
 }
 
-our sub assert_equal($o1, $o2, $message) {
+our sub equal($o1, $o2, $message) {
     fail($message) unless pir::iseq__IPP($o2, $o1);
 }
 
-our sub assert_not_equal($o1, $o2, $message) {
+our sub not_equal($o1, $o2, $message) {
     fail($message) if pir::iseq__IPP($o2, $o1);
 }
 
-our sub assert_instance_of($obj, $class, $message) {
+our sub instance_of($obj, $class, $message) {
     fail($message) unless pir::class__PP($obj) =:= P6metaclass.get_parrotclass($class);
 }
 
-our sub assert_not_instance_of($obj, $class, $message) {
+our sub not_instance_of($obj, $class, $message) {
     fail($message) if pir::class__PP($obj) =:= P6metaclass.get_parrotclass($class);
 }
 
-our sub assert_isa($obj, $class, $message) {
+our sub isa($obj, $class, $message) {
     fail($message) unless pir::isa__iPP($obj, P6metaclass.get_parrotclass($class));
 }
 
-our sub assert_not_isa($obj, $class, $message) {
+our sub not_isa($obj, $class, $message) {
     fail($message) if pir::isa__iPP($obj, P6metaclass.get_parrotclass($class));
 }
 
-our sub assert_match($obj, $matcher, $message) {
+our sub match($obj, $matcher, $message) {
     unless $matcher.matches($obj) {
         my $explain := $matcher.describe_self("\nExpected ")
             ~ $matcher.describe_failure("\nbut ", $obj);
@@ -75,29 +75,29 @@ our sub assert_match($obj, $matcher, $message) {
     }
 }
 
-our sub assert_not_match($obj, $matcher, $message) {
+our sub not_match($obj, $matcher, $message) {
     if $matcher.matches($obj) {
         fail($message);
     }
 }
 
-our sub assert_null($obj, $message) {
+our sub null($obj, $message) {
     fail($message) unless pir::isnull($obj);
 }
 
-our sub assert_not_null($obj, $message) {
+our sub not_null($obj, $message) {
     fail($message) if pir::isnull($obj);
 }
 
-our sub assert_same($o1, $o2, $message) {
+our sub same($o1, $o2, $message) {
     fail($message) unless $o1 =:= $o2;
 }
 
-our sub assert_not_same($o1, $o2, $message) {
+our sub not_same($o1, $o2, $message) {
     fail($message) if $o1 =:= $o2;
 }
 
-our sub assert_throws($e_class, $message, &block) {
+our sub throws($e_class, $message, &block) {
     my $ok := 0;
     my $exception;
 
@@ -112,7 +112,7 @@ our sub assert_throws($e_class, $message, &block) {
     }
 }
 
-our sub assert_throws_nothing($message, &block) {
+our sub throws_nothing($message, &block) {
     my $ok := 1;
 
     try {
@@ -123,27 +123,27 @@ our sub assert_throws_nothing($message, &block) {
     fail($message) unless $ok;
 }
 
-our sub assert_true($bool, $message) {
+our sub true($bool, $message) {
     fail($message) unless $bool;
 }
 
-our sub assert_false($bool, $message) {
+our sub false($bool, $message) {
     fail($message) if $bool;
 }
 
-our sub assert_within_delta($o1, $o2, $delta, $message) {
+our sub within_delta($o1, $o2, $delta, $message) {
     my $difference := $o1 - $o2;
     $difference := - $difference if $difference < 0;
     fail($message) unless $difference < $delta;
 }
 
-#~ assert_like(obj, regex, message)
-#~ assert_not_like
+#~ like(obj, regex, message)
+#~ not_like
 
 our sub want_fail($message, &block) {
-    assert_throws(Exception::UnitTestFailure, $message, &block);
+    throws(Exception::UnitTestFailure, $message, &block);
 }
 
 our sub want_pass($message, &block) {
-    assert_throws_nothing($message, &block);
+    throws_nothing($message, &block);
 }
