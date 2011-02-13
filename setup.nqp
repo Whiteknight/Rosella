@@ -54,6 +54,8 @@ sub MAIN(@argv) {
     }
     %parrot_test<pbc_pbc><parrot_test_xunit.pbc> := @xunit_pbcs;
 
+    %parrot_test<inst_lib> := <parrot_test_xunit.pbc>;
+
     pir::shift(@argv);
     setup(@argv, %parrot_test);
 }
