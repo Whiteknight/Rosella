@@ -3,7 +3,7 @@
 
 # Parent class of both Testcase and Suite, this class has a name, and a MAIN/main routine
 # to invoke when running as a standalone test program.
-class UnitTest::Standalone ;
+class UnitTest::Standalone;
 
 has $!name;
 
