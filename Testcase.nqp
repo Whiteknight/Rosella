@@ -35,6 +35,20 @@ my method default_loader() {
     UnitTest::Loader.new;
 }
 
+our method verify($value?) {
+    if pir::defined($value) {
+        $!verify := $value;
+    }
+    $!verify;
+}
+
+our method todo($value?) {
+    if pir::defined($value) {
+        $!todo := $value;
+    }
+    $!todo;
+}
+
 my method default_result() {
     my $result := UnitTest::Result.new;
     $result.add_listener: UnitTest::Listener::TAP.new;
@@ -77,12 +91,6 @@ our method run($result = self.default_result) {
     };
 
     if pir::defined__iP($exception) {
-        # TODO: Error reporting
-        Q:PIR {
-            $P0 = find_lex '$exception'
-            $S0 = $P0["message"]
-            say $S0
-        };
         $result.add_failure(self, $exception);
     }
     else {

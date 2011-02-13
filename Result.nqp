@@ -61,7 +61,7 @@ my method add_fault($test, $exception, :$notify, :$queue) {
 }
 
 our method add_listener($listener) {
-    @!listeners.push($listener);
+    @!listeners := @!listeners.push($listener);
     self;
 }
 
@@ -77,24 +77,23 @@ our method failure_count() {
     pir::elements(@!failures);
 }
 
-my method notify_listeners($method, *@args, *%named) {
+my method notify_listeners($method, $arg) {
     for @!listeners {
         my $object := $_;
         Q:PIR {
-            .local pmc object, meth, args, opts
+            .local pmc object, meth, arg
             object = find_lex '$object'
             meth = find_lex '$method'
-            args = find_lex '@args'
-            opts = find_lex '%named'
+            arg = find_lex '$arg'
 
             $I0 = isa meth, 'Sub'
             unless $I0 goto call_string
 
-            object.meth(args :flat, opts :named :flat)
+            object.meth(arg)
 
           call_string:
             $S0 = meth
-            object.$S0(args :flat, opts :named :flat)
+            object.$S0(arg)
         };
     }
 
