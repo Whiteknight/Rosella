@@ -97,8 +97,7 @@ our sub not_same($o1, $o2, $message) {
     fail($message) if $o1 =:= $o2;
 }
 
-our sub throws($e_class, $message, &block) {
-    my $ok := 0;
+our sub throws($message, &block) {
     my $exception;
 
     try {
@@ -107,7 +106,7 @@ our sub throws($e_class, $message, &block) {
         CATCH { $exception := $!; }
     };
 
-    unless $exception.defined && $exception.type == $e_class.type {
+    unless pir::defined($exception) {
         fail($message);
     }
 }
