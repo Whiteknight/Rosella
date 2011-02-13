@@ -1,3 +1,5 @@
 *.pbc
+common/*.pir
+common/*.pbc
 xunit/*.pir
 xunit/*.pbc
