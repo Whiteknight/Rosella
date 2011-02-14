@@ -91,7 +91,7 @@ my method add_entry__Path( $path, *%named ) {
 }
 
 our method chdir__ANY($path) {
-    pir::die( "Don't know how to chdir to a(n) ", pir::typeof__SP($path), ". Use a String or Path.");
+    pir::die( "Don't know how to chdir to a(n) " ~ pir::typeof__SP($path) ~ ". Use a String or Path.");
 }
 
 our method chdir__Path($path) {
@@ -129,7 +129,7 @@ our method exists__String($path) {
 }
 
 our method exists__ANY($path) {
-    pir::die( "Don't know how to check if ", pir::typeof__SP($path), " exists. Use a String or Path");
+    pir::die( "Don't know how to check if " ~ pir::typeof__SP($path) ~ " exists. Use a String or Path");
 }
 
 my method find_path($path) {
@@ -151,7 +151,7 @@ my method find_path($path) {
 }
 
 my method get_contents__ANY($path) {
-    pir::die( "Don't know how to get contents of ", pir::typeof__SP($path), ". Use a String or Path");
+    pir::die( "Don't know how to get contents of " ~ pir::typeof__SP($path) ~ ". Use a String or Path");
 }
 
 my method get_contents__Path($path) {
@@ -179,7 +179,7 @@ my method get_contents__String($path) {
 }
 
 my method has_type__ANY($path, $type) {
-    pir::die( "Don't know how to check if a(n) ", pir::typeof__SP($path), " is a $type. Use a String or Path");
+    pir::die( "Don't know how to check if a(n) " ~ pir::typeof__SP($path) ~ " is a $type. Use a String or Path");
 }
 
 my method has_type__Path($path, $type) {
@@ -204,7 +204,7 @@ my method _init_obj(*@pos, *%named) {
 }
 
 my method mkpath__ANY($path) {
-    pir::die( "Don't know how to mkpath a(n) ", pir::typeof__SP($path), ". Use a String or Path");
+    pir::die( "Don't know how to mkpath a(n) " ~ pir::typeof__SP($path) ~ ". Use a String or Path");
 }
 
 my method mkpath__Path($path, *%named) {

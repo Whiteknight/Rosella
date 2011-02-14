@@ -48,6 +48,10 @@ sub MAIN(@argv) {
     my @xunit_pbcs := setup_lib(%parrot_test, "xunit", @xunit_files);
     %parrot_test<pbc_pbc><parrot_test_xunit.pbc> := @xunit_pbcs;
 
+    my @mockobject_files := <Setup Antiphon Cuckoo Cuculus MockFS Ovum SigMatcher Verifier>;
+    my @mockobject_pbcs := setup_lib(%parrot_test, "mockobject", @mockobject_files);
+    %parrot_test<pbc_pbc><parrot_test_mockobject.pbc> := @mockobject_pbcs;
+
     %parrot_test<inst_lib> := <
         parrot_test_common.pbc
         parrot_test_xunit.pbc
