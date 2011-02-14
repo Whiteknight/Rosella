@@ -6,7 +6,7 @@ class ParrotTest::Harness::Loader {
         $!max_filename_length;
     }
 
-    method get_dir_contents($path) {
+    method get_dir_contents($path, $recurse) {
         if ! pir::defined($!os) {
             pir::loadlib("os");
             $!os := pir::new__PS('OS');
@@ -36,12 +36,12 @@ class ParrotTest::Harness::Loader {
         $contents;
     }
 
-    method get_tests_from_dirs(@dirs) {
+    method get_tests_from_dirs(@dirs, $recurse) {
         $!max_filename_length := 0;
         my @tests := < >;
         for @dirs {
             my $dir := $_;
-            my @rawfiles := self.get_dir_contents($dir);
+            my @rawfiles := self.get_dir_contents($dir, $recurse);
             for @rawfiles {
                 my $filename := $_;
                 # TODO: Break these out into a list of include and exclude

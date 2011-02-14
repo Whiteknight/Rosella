@@ -6,7 +6,9 @@ class ParrotTest::Harness {
     has %!results;
     has @!tests;
     has $!max_length;
-    has $!nqp_loader;
+    has %!loaders;
+
+    sub new_hash(*%hash) { %hash; }
 
     method initialize() {
         $!total_passed := 0;
@@ -19,16 +21,28 @@ class ParrotTest::Harness {
         %!results{"FAILED"} := [];
         %!results{"ABORTED"} := [];
         $!max_length := 0;
-        $!nqp_loader := ParrotTest::Harness::Loader::NQP.new;
+        %!loaders := new_hash();
+        %!loaders{"NQP"} := ParrotTest::Harness::Loader::NQP.new;
+        %!loaders{"PIR"} := ParrotTest::Harness::Loader::PIR.new;
     }
 
-    method add_nqp_test_dirs(*@dirs) {
-        my @tests := $!nqp_loader.get_tests_from_dirs(@dirs);
+    method add_nqp_test_dirs(*@dirs, $recurse := 0) {
+        my @tests := %!loaders{"NQP"}.get_tests_from_dirs(@dirs, $recurse);
         self.add_test_objects(@tests);
     }
 
     method add_nqp_test_files(*@files) {
-        my @tests := $!nqp_loader.get_tests_from_files(@files);
+        my @tests := %!loaders{"NQP"}.get_tests_from_files(@files);
+        self.add_test_objects(@tests);
+    }
+
+    method add_pir_test_dirs(*@dirs, $recurse := 0) {
+        my @tests := %!loaders{"PIR"}.get_tests_from_dirs(@dirs, $recurse);
+        self.add_test_objects(@tests);
+    }
+
+    method add_pir_test_files(*@files) {
+        my @tests := %!loaders{"PIR"}.get_tests_from_files(@files);
         self.add_test_objects(@tests);
     }
 
