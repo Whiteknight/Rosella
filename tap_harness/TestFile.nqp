@@ -31,12 +31,11 @@ class ParrotTest::Harness::TestFile {
         return @!failures;
     }
 
-    method set_filename($filename) {
-        $!filename := $filename;
-    }
-
-    method get_filename() {
-        return $!filename;
+    method filename($filename?) {
+        if pir::defined($filename) {
+            $!filename := $filename;
+        }
+        $!filename;
     }
 
     method print_result() {

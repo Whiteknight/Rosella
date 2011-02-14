@@ -1,47 +1,59 @@
 class ParrotTest::Harness::Loader {
     has $!os;
-    has $!max_filename_length;
+    has @!files;
 
     method max_filename_length() {
-        $!max_filename_length;
+        my $max := 0;
+        for @!files {
+            my $file := $_;
+            my $length := pir::length__iS($file);
+            if $length > $max {
+                $max := $length;
+            }
+        }
+        return $max;
     }
 
-    method get_dir_contents($path, $recurse) {
+    method prepare_new_run() {
+        @!files := [];
+    }
+
+    method get_dir_contents($path, $recurse, @contents) {
         if ! pir::defined($!os) {
             pir::loadlib("os");
             $!os := pir::new__PS('OS');
         }
 
-        my $contents;
+        my $STAT_ISREG := 0x8000;
+        my $STAT_ISDIR := 0x4000;
+        my @contents_raw := $!os.readdir: ~$path;
 
-        # TODO: Filter out files from directories
-        # TODO: Have a flag to optionally recurse directories
+        for @contents_raw {
+            my $entry := "$path/$_";
+            my @stat := $!os.stat($entry);
+            my $isdir := pir::band__III(@stat[2], $STAT_ISDIR);
+            my $isfile := pir::band__III(@stat[2], $STAT_ISREG);
+            next if $_[0] eq ".";
+            if $isfile == $STAT_ISREG {
+                @contents.push($entry);
+            }
+
+            if $recurse && $isdir == $STAT_ISDIR {
+                self.get_dir_contents($entry, $recurse, @contents);
+            }
+        }
+
         # TODO: Maybe read the shebang preamble to make sure we have the
         #       correct type of file.
 
-        #if self.is_file: $path {
-        #    %named<mode> := 'r';
-        #    my $fh := self.open($path, |%named);
-        #    $contents := $fh.readall;
-        #    $fh.close;
-        #}
-        #elsif self.is_directory: $path {
-            $contents := $!os.readdir: ~$path;
-        #}
-        #else {
-            # What to do?
-            #pir::die("Don't know how to get contents of non-file, non-directory: $path");
-        #}
-
-        $contents;
     }
 
     method get_tests_from_dirs(@dirs, $recurse) {
-        $!max_filename_length := 0;
         my @tests := < >;
         for @dirs {
             my $dir := $_;
-            my @rawfiles := self.get_dir_contents($dir, $recurse);
+            my @rawfiles := [];
+            self.get_dir_contents($dir, $recurse, @rawfiles);
             for @rawfiles {
                 my $filename := $_;
                 # TODO: Break these out into a list of include and exclude
@@ -49,34 +61,25 @@ class ParrotTest::Harness::Loader {
                 next if pir::index__ISS($filename, ".t") == -1;
                 next if pir::index__ISS($filename, ".OLD") != -1;
 
-                $filename := "$dir/$filename";
                 my $testobj := self.make_test_obj();
-                $testobj.set_filename($filename);
+                $testobj.filename: $filename;
                 @tests.push($testobj);
-                self.update_max_filename_length($filename);
+                @!files.push($filename);
             }
         }
         return @tests;
     }
 
     method get_tests_from_files(@filenames) {
-        my @tests := < >;
+        my @tests := [];
         for @filenames {
             my $filename := $_;
             my $testobj := self.make_test_obj();
-            $testobj.set_filename($filename);
+            $testobj.filename($filename);
             @tests.push($testobj);
-            self.update_max_filename_length($filename);
+            @!files.push($filename);
         }
         return @tests;
-    }
-
-    method update_max_filename_length($filename) {
-        my $length := pir::length__IS($filename);
-        if $length > $!max_filename_length {
-            $!max_filename_length := $length;
-        }
-        $!max_filename_length;
     }
 
 

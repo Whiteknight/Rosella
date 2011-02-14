@@ -16,6 +16,9 @@ class ParrotTest::Harness {
 
     method setup_next_run() {
         @!tests := [];
+        for %!loaders {
+            %!loaders{$_}.prepare_new_run();
+        }
     }
 
     method reset_counts() {
