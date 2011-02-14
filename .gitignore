@@ -1,7 +1,6 @@
 *.pbc
 common/*.pir
-common/*.pbc
 common/Listener/*.pir
-common/Listener/*.pbc
+mockobject/*.pir
 xunit/*.pir
-xunit/*.pbc
+
