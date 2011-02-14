@@ -66,9 +66,12 @@ class ParrotTest::Harness {
 
     sub new_hash(*%hash) { %hash; }
 
-    method run ($run_inline = 0) {
+    method run (:$run_inline = 0, :$length = 0) {
         $!total_files := $!total_files + +@!tests;
         my $max_length := self.find_max_file_length();
+        if $length > $max_length {
+            $max_length := $length;
+        }
         for @!tests {
             my $test := $_;
             $test.setup();
