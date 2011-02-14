@@ -2,44 +2,46 @@ class ParrotTest::Harness {
     has $!total_passed;
     has $!total_failed;
     has $!total_files;
-    has @!aborted_files;
     has %!results;
     has @!tests;
     has %!loaders;
 
     method initialize() {
+        %!loaders := new_hash();
+        %!loaders{"NQP"} := ParrotTest::Harness::Loader::NQP.new;
+        %!loaders{"PIR"} := ParrotTest::Harness::Loader::PIR.new;
+        self.reset_counts();
+        self.setup_next_run();
+    }
+
+    method setup_next_run() {
+        @!tests := [];
+    }
+
+    method reset_counts() {
         $!total_passed := 0;
         $!total_failed := 0;
-        @!aborted_files := [];
-        @!tests := [];
         $!total_files := 0;
+
+        # TODO: TODOPASSED, TODOFAILED, SKIPPED
         %!results := new_hash();
         %!results{"PASSED"} := [];
         %!results{"FAILED"} := [];
         %!results{"ABORTED"} := [];
-        %!loaders := new_hash();
-        %!loaders{"NQP"} := ParrotTest::Harness::Loader::NQP.new;
-        %!loaders{"PIR"} := ParrotTest::Harness::Loader::PIR.new;
     }
 
-    method add_nqp_test_dirs(*@dirs, :$recurse = 0) {
-        my @tests := %!loaders{"NQP"}.get_tests_from_dirs(@dirs, $recurse);
+    method add_test_dirs($loader, *@dirs, :$recurse = 0) {
+        my @tests := %!loaders{$loader}.get_tests_from_dirs(@dirs, $recurse);
         self.add_test_objects(@tests);
     }
 
-    method add_nqp_test_files(*@files) {
-        my @tests := %!loaders{"NQP"}.get_tests_from_files(@files);
+    method add_test_files($loader, *@files) {
+        my @tests := %!loaders{$loader}.get_tests_from_files(@files);
         self.add_test_objects(@tests);
     }
 
-    method add_pir_test_dirs(*@dirs, :$recurse = 0) {
-        my @tests := %!loaders{"PIR"}.get_tests_from_dirs(@dirs, $recurse);
-        self.add_test_objects(@tests);
-    }
-
-    method add_pir_test_files(*@files) {
-        my @tests := %!loaders{"PIR"}.get_tests_from_files(@files);
-        self.add_test_objects(@tests);
+    method add_test_loader($name, $loader) {
+        %!loaders{$name} := $loader;
     }
 
     method add_test_objects(@tests) {
@@ -62,7 +64,7 @@ class ParrotTest::Harness {
     sub new_hash(*%hash) { %hash; }
 
     method run ($run_inline = 0) {
-        $!total_files := +@!tests;
+        $!total_files := $!total_files + +@!tests;
         my $max_length := self.find_max_file_length();
         for @!tests {
             my $test := $_;
@@ -78,6 +80,7 @@ class ParrotTest::Harness {
             }
             self.reset_test_environment();
         }
+        self.setup_next_run();
     }
 
     method run_was_success() {
@@ -128,6 +131,7 @@ class ParrotTest::Harness {
                 }
             }
         }
+        self.reset_counts();
     }
 
     method print(*@lines) {
