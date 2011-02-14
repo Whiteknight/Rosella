@@ -6,35 +6,43 @@ class ParrotTest::Harness {
     has %!results;
     has @!files;
     has $!max_length;
-    has $!os;
+    has $!nqp_loader;
 
-# TAP grammar in ABNF
-# http://testanything.org/wiki/index.php/TAP_at_IETF:_Draft_Standard#Grammar
-# TODO:
-# verbose mode
     method initialize() {
         $!total_passed := 0;
         $!total_failed := 0;
         @!aborted_files := [];
+        @!tests := [];
         $!total_files := 0;
-        %!results := self.new_hash();
+        %!results := new_hash();
         %!results{"PASSED"} := [];
         %!results{"FAILED"} := [];
         %!results{"ABORTED"} := [];
-        $!os := pir::new__PS('OS');
+        $!max_length := 0;
+
+        $!nqp_loader := ParrotTest::Harness::Loader::NQP.new;
     }
 
-    method setup(*@dirs) {
-        @!files := [];
-        self.get_all_tests(@dirs);
-        $!total_files := $!total_files + +@!files;
+    method add_nqp_test_dirs(*@dirs) {
+        my @tests := $!nqp_loader.get_tests_from_dirs(@dirs);
+        self.add_test_objects(@tests);
     }
 
-    method new_hash(*%hash) {
-        return %hash;
+    method add_nqp_tests(*@files) {
+        my @tests := $!nqp_loader.get_tests_from_files(@files);
+        self.add_test_objects(@tests);
     }
+
+    method add_test_objects(@tests) {
+        for @tests {
+            @!tests.push($_);
+        }
+    }
+
+    sub new_hash(*%hash) { %hash; }
 
     method run () {
+        $!total_files := +@!tests;
         for @!files {
             my $test := $_;
             $test.setup();
@@ -51,7 +59,7 @@ class ParrotTest::Harness {
         }
     }
 
-    method success() {
+    method run_was_success() {
         my $aborted := +%!results{"ABORTED"};
         if $aborted || $!total_failed {
             return 0;
@@ -61,6 +69,8 @@ class ParrotTest::Harness {
         }
     }
 
+    # TODO: Refactor this out to a separate reporter class. Not everybody is
+    #       going to want such a verbose report
     method show_results() {
         my $aborted := +%!results{"ABORTED"};
         if $aborted || $!total_failed {
@@ -115,3 +125,7 @@ class ParrotTest::Harness {
         };
     }
 }
+
+# TAP grammar in ABNF
+# http://testanything.org/wiki/index.php/TAP_at_IETF:_Draft_Standard#Grammar
+

@@ -51,6 +51,7 @@ class ParrotTest::Harness::Test {
         return $!status;
     }
 
+    # TODO: Break this out into a separate reporting class
     method print_filename($max_length) {
         my $length := pir::length__IS($!filename);
         my $diff := ($max_length - $length) + 3;
@@ -105,11 +106,14 @@ class ParrotTest::Harness::Test {
     }
 
     method run() {
+        # TODO: take a flag that says whether we compile+execute in place or
+        #       spawn a subprocess to do it.
         self.compile_and_execute();
         if $!status ne "ABORTED" {
             self.get_plan();
             self.parse();
         } else {
+            # TODO: Break this out into a separate reporting class
             pir::say($!errdetails);
         }
     }

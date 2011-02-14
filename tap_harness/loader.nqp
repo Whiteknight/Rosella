@@ -1,16 +1,23 @@
 class ParrotTest::Harness::Loader {
-    my @!tests;
+    has $!os;
 
-    method setup(@*dirs) {
-        @!tests := get_all_tests(@dirs);
-    }
+    my $!max_filename_length;
 
-    method tests() {
-        @!tests;
+    method max_filename_length() {
+        $!max_filename_length;
     }
 
     method get_dir_contents($path) {
+        if ! pir::defined($!os) {
+            $!os := pir::new__PS('OS');
+        }
+
         my $contents;
+
+        # TODO: Filter out files from directories
+        # TODO: Have a flag to optionally recurse directories
+        # TODO: Maybe read the shebang preamble to make sure we have the
+        #       correct type of file.
 
         #if self.is_file: $path {
         #    %named<mode> := 'r';
@@ -29,31 +36,49 @@ class ParrotTest::Harness::Loader {
         $contents;
     }
 
-    method get_all_tests(@dirs) {
-        my $max_length := 0;
+    method get_tests_from_dirs(*@dirs) {
+        $!max_filename_length := 0;
+        my @tests := < >;
         for @dirs {
             my $dir := $_;
             my @rawfiles := self.get_dir_contents($dir);
             for @rawfiles {
                 my $filename := $_;
-                if pir::index__ISS($filename, ".t") == -1 {
-                    next;
-                }
-                if pir::index__ISS($filename, ".OLD") != -1 {
-                    next;
-                }
+                # TODO: Break these out into a list of include and exclude
+                #       patterns
+                next if pir::index__ISS($filename, ".t") == -1;
+                next if pir::index__ISS($filename, ".OLD") != -1;
 
                 $filename := "$dir/$filename";
                 my $testobj := self.make_test_obj();
                 $testobj.set_filename($filename);
-                @!files.push($testobj);
-                my $length := pir::length__IS($filename);
-                if $length > $!max_length {
-                    $!max_length := $length;
-                }
+                @tests.push($testobj);
+                self.update_max_filename_length($filename);
             }
         }
+        return @tests;
     }
+
+    method get_test_from_files(*@filenames) {
+        my @tests := < >;
+        for @filenames {
+            my $filename := $_;
+            my $testobj := self.make_test_obj();
+            $testobj.set_filename($filename);
+            @tests.push($testobj);
+            self.update_max_filename_length($filename);
+        }
+        return @tests;
+    }
+
+    method update_max_filename_length($filename) {
+        my $length := pir::length__IS($filename);
+        if $length > $!max_filename_length {
+            $!max_filename_length := $length;
+        }
+        $!max_filename_length;
+    }
+
 
     method make_test_obj() {
         pir::die("Must use a subclass");
@@ -72,6 +97,3 @@ class ParrotTest::Harness::Loader::PIR {
     }
 }
 
-
-
-}
