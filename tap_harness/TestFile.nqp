@@ -1,4 +1,4 @@
-class ParrotTest::Harness::Test {
+class ParrotTest::Harness::TestFile {
     has $!filename;
     has $!result;
     has $!errdetails;
@@ -87,17 +87,14 @@ class ParrotTest::Harness::Test {
     }
 
     method compile_and_execute() {
-        my $sub;
-        $sub := self.compile_test();
+        my $sub := self.compile_test();
         my $stdout := pir::new__PS("StringHandle");
         $stdout.open("blah", "rw");
         my %save_handles := swap_handles(:stdout($stdout), :stderr($stdout));
         try {
             $sub();
             CATCH {
-                $!result := "aborted prematurely";
-                $!errdetails := $!;
-                $!status := "ABORTED";
+                self.mark_test_abort($!);
             }
         }
         my $output := $stdout.readall();
@@ -109,10 +106,36 @@ class ParrotTest::Harness::Test {
         pir::die("Must use a subclass");
     }
 
-    method run() {
-        # TODO: take a flag that says whether we compile+execute in place or
-        #       spawn a subprocess to do it.
-        self.compile_and_execute();
+    method mark_test_abort($err) {
+        $!result := "aborted prematurely";
+        $!errdetails := $err;
+        $!status := "ABORTED";
+    }
+
+    method spawn_and_execute() {
+        my $pipe := pir::new__PS("FileHandle");
+        $pipe.encoding('utf8');
+        my $cmd := self.get_spawn_command();
+        $pipe.open($cmd, "rp");
+        my $output := $pipe.readall();
+        $pipe.close();
+        my $exit_status := $pipe.exit_status();
+        if $exit_status != 0 {
+            self.mark_test_abort("Test aborted with exit code $exit_status");
+        }
+        @!lines := pir::split__PSS("\n", $output);
+    }
+
+    method get_spawn_command() {
+        pir::die("Must use a subclass");
+    }
+
+    method run($run_inline = 0) {
+        if $run_inline {
+            self.compile_and_execute();
+        } else {
+            self.spawn_and_execute();
+        }
         if $!status ne "ABORTED" {
             self.get_plan();
             self.parse();
@@ -130,6 +153,7 @@ class ParrotTest::Harness::Test {
         @!lines.shift;
     }
 
+    # TODO: refactor this out into a TAP parser class
     method parse() {
         for @!lines {
             my $line := $_;
@@ -163,7 +187,7 @@ class ParrotTest::Harness::Test {
     }
 }
 
-class ParrotTest::Harness::Test::NQP is ParrotTest::Harness::Test {
+class ParrotTest::Harness::TestFile::NQP is ParrotTest::Harness::TestFile {
     method compile_test() {
         my $compiler := pir::compreg__PS('NQP-rx');
         my $handle := pir::new__PS("FileHandle");
@@ -175,9 +199,14 @@ class ParrotTest::Harness::Test::NQP is ParrotTest::Harness::Test {
         $code := $compiler.compile: $code;
         return $code[0];
     }
+
+    method get_spawn_command() {
+        # TODO: be more generic
+        return "parrot-nqp $!filename";
+    }
 }
 
-class ParrotTest::Harness::Test::PIR is ParrotTest::Harness::Test {
+class ParrotTest::Harness::TestFile::PIR is ParrotTest::Harness::TestFile {
     method compile_test() {
         my $sub;
         my $filename := $!filename;
@@ -193,5 +222,10 @@ class ParrotTest::Harness::Test::PIR is ParrotTest::Harness::Test {
             store_lex '$sub', $P4
         };
         return $sub;
+    }
+
+    method get_spawn_command() {
+        # TODO: be more generic
+        return "parrot $!filename";
     }
 }

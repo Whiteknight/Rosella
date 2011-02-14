@@ -87,13 +87,13 @@ class ParrotTest::Harness::Loader {
 
 class ParrotTest::Harness::Loader::NQP is ParrotTest::Harness::Loader {
     method make_test_obj() {
-        ParrotTest::Harness::Test::NQP.new();
+        ParrotTest::Harness::TestFile::NQP.new();
     }
 }
 
 class ParrotTest::Harness::Loader::PIR is ParrotTest::Harness::Loader {
     method make_test_obj() {
-        ParrotTest::Harness::Test::PIR.new();
+        ParrotTest::Harness::TestFile::PIR.new();
     }
 }
 

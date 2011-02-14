@@ -5,10 +5,7 @@ class ParrotTest::Harness {
     has @!aborted_files;
     has %!results;
     has @!tests;
-    has $!max_length;
     has %!loaders;
-
-    sub new_hash(*%hash) { %hash; }
 
     method initialize() {
         $!total_passed := 0;
@@ -20,13 +17,12 @@ class ParrotTest::Harness {
         %!results{"PASSED"} := [];
         %!results{"FAILED"} := [];
         %!results{"ABORTED"} := [];
-        $!max_length := 0;
         %!loaders := new_hash();
         %!loaders{"NQP"} := ParrotTest::Harness::Loader::NQP.new;
         %!loaders{"PIR"} := ParrotTest::Harness::Loader::PIR.new;
     }
 
-    method add_nqp_test_dirs(*@dirs, $recurse := 0) {
+    method add_nqp_test_dirs(*@dirs, :$recurse = 0) {
         my @tests := %!loaders{"NQP"}.get_tests_from_dirs(@dirs, $recurse);
         self.add_test_objects(@tests);
     }
@@ -36,7 +32,7 @@ class ParrotTest::Harness {
         self.add_test_objects(@tests);
     }
 
-    method add_pir_test_dirs(*@dirs, $recurse := 0) {
+    method add_pir_test_dirs(*@dirs, :$recurse = 0) {
         my @tests := %!loaders{"PIR"}.get_tests_from_dirs(@dirs, $recurse);
         self.add_test_objects(@tests);
     }
@@ -52,16 +48,27 @@ class ParrotTest::Harness {
         }
     }
 
+    method find_max_file_length() {
+        my $max := 0;
+        for %!loaders {
+            my $length := %!loaders{$_}.max_filename_length();
+            if $length > $max {
+                $max := $length;
+            }
+        }
+        return $max;
+    }
+
     sub new_hash(*%hash) { %hash; }
 
-    method run () {
+    method run ($run_inline = 0) {
         $!total_files := +@!tests;
-        $!max_length := $!nqp_loader.max_filename_length();
+        my $max_length := self.find_max_file_length();
         for @!tests {
             my $test := $_;
             $test.setup();
-            $test.print_filename($!max_length);
-            $test.run();
+            $test.print_filename($max_length);
+            $test.run($run_inline);
             $test.print_result();
             my $status := $test.status();
             %!results{$status}.push($test);
