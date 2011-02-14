@@ -34,7 +34,7 @@ class ParrotTest::Harness::Loader {
             my $isdir := pir::band__III(@stat[2], $STAT_ISDIR);
             my $isfile := pir::band__III(@stat[2], $STAT_ISREG);
             next if $_[0] eq ".";
-            if $isfile == $STAT_ISREG {
+            if $isfile == $STAT_ISREG && self.is_test($entry) {
                 @contents.push($entry);
             }
 
@@ -48,6 +48,14 @@ class ParrotTest::Harness::Loader {
 
     }
 
+    # Determine if the file is a valid test. Probably best to override this in
+    # a subclass if you need different behaviors.
+    method is_test($filename) {
+        if (pir::index__ISS($filename, ".t") == -1) { return 0; }
+        if (pir::index__ISS($filename, ".OLD") != -1) { return 0; }
+        return 1;
+    }
+
     method get_tests_from_dirs(@dirs, $recurse) {
         my @tests := < >;
         for @dirs {
@@ -56,11 +64,6 @@ class ParrotTest::Harness::Loader {
             self.get_dir_contents($dir, $recurse, @rawfiles);
             for @rawfiles {
                 my $filename := $_;
-                # TODO: Break these out into a list of include and exclude
-                #       patterns
-                next if pir::index__ISS($filename, ".t") == -1;
-                next if pir::index__ISS($filename, ".OLD") != -1;
-
                 my $testobj := self.make_test_obj();
                 $testobj.filename: $filename;
                 @tests.push($testobj);
