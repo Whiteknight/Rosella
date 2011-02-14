@@ -6,8 +6,8 @@ class Cuculus::MockFS;
 
 INIT {
     our %_Osname_class_map := Hash.new(
-        :DEFAULT(	Cuculus::MockFS::Unix),
-        :linux(	Cuculus::MockFS::Unix),
+        :DEFAULT(Cuculus::MockFS::Unix),
+        :linux(Cuculus::MockFS::Unix),
     );
 }
 
@@ -29,14 +29,11 @@ our method _init_obj(*@pos, *%named) {
 class Cuculus::MockFS::Unix is Cuculus::MockFS;
 
 has @!cwd_path;
-
 has $!user_id;
 has %!user_groups;
-
 has %!volumes; # Not used much, but makes paths easier.
 
 INIT {
-
 	my @multisubs := <
 		add_entry
 		chdir
@@ -66,7 +63,7 @@ my method add_entry__String( $path, *%named ) {
 }
 
 my method add_entry__Path( $path, *%named ) {
-    die("Cannot add entry $path - that path already exists" )
+    pir::die("Cannot add entry $path - that path already exists" )
         if pir::defined( self.find_path( $path ) );
 
     my %path_attrs := %named.clone;
@@ -80,7 +77,7 @@ my method add_entry__Path( $path, *%named ) {
     unless pir::defined( $entry ) {
         _dumper(self);
         _dumper($path);
-        die( "Failed to add entry $path" );
+        pir::die( "Failed to add entry $path" );
     }
 
     # Specify some default properties:
@@ -94,14 +91,14 @@ my method add_entry__Path( $path, *%named ) {
 }
 
 our method chdir__ANY($path) {
-    die( "Don't know how to chdir to a(n) ", pir::typeof__SP($path), ". Use a String or Path.");
+    pir::die( "Don't know how to chdir to a(n) ", pir::typeof__SP($path), ". Use a String or Path.");
 }
 
 our method chdir__Path($path) {
     my @new_wd := self.find_path: $path;
 
-    die("Can't cd to $path - does not exist in this fs")
-        unless @new_wd.defined;
+    pir::die("Can't cd to $path - does not exist in this fs")
+        unless pir::defined(@new_wd);
 
     self.cwd_path: @new_wd;
 }
@@ -117,14 +114,14 @@ our method cwd() {
 }
 
 my method cwd_path($value?)  {
-    $value.defined ?? (@!cwd_path := $value) !! @!cwd_path.clone;
+    pir::defined($value) ?? (@!cwd_path := $value) !! @!cwd_path.clone;
 }
 
 our method directory_separator() { '/' }
 
 our method exists__Path($path) {
     my $item := self.find_path: $path;
-    $item.defined;
+    pir::defined($item);
 }
 
 our method exists__String($path) {
@@ -132,7 +129,7 @@ our method exists__String($path) {
 }
 
 our method exists__ANY($path) {
-    die( "Don't know how to check if ", pir::typeof__SP($path), " exists. Use a String or Path");
+    pir::die( "Don't know how to check if ", pir::typeof__SP($path), " exists. Use a String or Path");
 }
 
 my method find_path($path) {
@@ -154,7 +151,7 @@ my method find_path($path) {
 }
 
 my method get_contents__ANY($path) {
-    die( "Don't know how to get contents of ", pir::typeof__SP($path), ". Use a String or Path");
+    pir::die( "Don't know how to get contents of ", pir::typeof__SP($path), ". Use a String or Path");
 }
 
 my method get_contents__Path($path) {
@@ -163,7 +160,7 @@ my method get_contents__Path($path) {
     my $type := $item<type>;
 
     if $type eq 'device' {
-        die("Cannot get contents of device: $path");
+        pir::die("Cannot get contents of device: $path");
     }
     elsif $type eq 'directory' {
         $item<contents>.keys;
@@ -173,7 +170,7 @@ my method get_contents__Path($path) {
     }
     else {
         # Should I follow? Need a use case, but probably.
-        die("Cannot get contents of link: $path");
+        pir::die("Cannot get contents of link: $path");
     }
 }
 
@@ -182,7 +179,7 @@ my method get_contents__String($path) {
 }
 
 my method has_type__ANY($path, $type) {
-    die( "Don't know how to check if a(n) ", pir::typeof__SP($path), " is a $type. Use a String or Path");
+    pir::die( "Don't know how to check if a(n) ", pir::typeof__SP($path), " is a $type. Use a String or Path");
 }
 
 my method has_type__Path($path, $type) {
@@ -207,7 +204,7 @@ my method _init_obj(*@pos, *%named) {
 }
 
 my method mkpath__ANY($path) {
-    die( "Don't know how to mkpath a(n) ", pir::typeof__SP($path), ". Use a String or Path");
+    pir::die( "Don't know how to mkpath a(n) ", pir::typeof__SP($path), ". Use a String or Path");
 }
 
 my method mkpath__Path($path, *%named) {
@@ -227,7 +224,7 @@ my method mkpath__Path($path, *%named) {
             @path.push: $cur := $cur<contents>{$next};
         }
         else {
-            die("Cannot mkpath $path - element {$cur<name>} is not a directory");
+            pir::die("Cannot mkpath $path - element {$cur<name>} is not a directory");
         }
     }
 

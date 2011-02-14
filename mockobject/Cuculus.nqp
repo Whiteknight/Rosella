@@ -22,7 +22,7 @@ our method call_log() { @!call_log; }
 
 our method class(*@value) {
     if @value {
-        die( 'Cannot reset $!class attribute: already points to ' ~ "'$!class'" )
+        pir::die( 'Cannot reset $!class attribute: already points to ' ~ "'$!class'" )
             if pir::defined(pir::getattribute__PPS(self, '$!class'));
         $!class := P6metaclass.get_parrotclass(@value.shift);
     }
@@ -33,7 +33,7 @@ our method class(*@value) {
 sub get_behavior($egg) {
     unless isa($egg, 'Cuculus::Canorus::Ovum') {
         _dumper($egg);
-        die( "Must be called with a Cuckoo's egg." );
+        pir::die( "Must be called with a Cuckoo's egg." );
     }
 
     pir::getattribute__PPS($egg, '&!CUCULUS_BEHAVIOR');
@@ -42,7 +42,7 @@ sub get_behavior($egg) {
 sub get_cuckoo($egg) {
     unless isa($egg, 'Cuculus::Canorus::Ovum') {
         _dumper($egg);
-        die( "Must be called with a Cuckoo's egg." );
+        pir::die( "Must be called with a Cuckoo's egg." );
     }
 
     pir::getattribute__PPS($egg, '$!CUCULUS_CANORUS');
@@ -97,7 +97,7 @@ sub get_rootclass_methods() {
 }
 
 our method init_egg( $egg, :$behavior = 'mock_execute' ) {
-    die( "Must be called with a Cuckoo's egg." )
+    pir::die( "Must be called with a Cuckoo's egg." )
         unless isa($egg, 'Cuculus::Canorus::Ovum');
 
     # This is null if we DIDN'T get called by an init :vtable. If we DID, then
@@ -247,12 +247,12 @@ our method new_egg( :$behavior = 'mock_execute' ) {
 }
 
 our method passthrough($value?) {
-    %!passthrough_antiphons := ($value.defined
+    %!passthrough_antiphons := (pir::defined($value)
             ?? $value
             !! %!passthrough_antiphons);
 }
 
-our method verifier($value?) { $value.defined ?? ($!verifier := $value) !! $!verifier; }
+our method verifier($value?) { pir::defined($value) ?? ($!verifier := $value) !! $!verifier; }
 
 our method verify_calls($callsig) {
     $!verifier.sig_matcher:

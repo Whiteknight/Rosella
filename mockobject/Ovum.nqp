@@ -36,6 +36,7 @@ our method VTABLE_find_method($name) {
         }
 
         my $behavior := pir::getattribute__PPS($self, '&!CUCULUS_BEHAVIOR');
+        # TODO: Expand this.
         Parrot::call_method($cuckoo, $behavior, $callsig);
         #&behavior($cuckoo, $callsig);
     };
@@ -49,7 +50,7 @@ our method pop_inits() {
     has &!CUCULUS_BEHAVIOR;
     has $!CUCULUS_CANORUS;
 
-    die("Trying to pop inits, but stack is empty")
+    pir::die("Trying to pop inits, but stack is empty")
         unless our @_Init_stack;
 
     &!CUCULUS_BEHAVIOR := @_Init_stack.pop;

@@ -8,7 +8,7 @@ has $!match_count;
 has %!conditions;
 
 our method conditions($value?) {
-    %!conditions := $value.defined ?? $value !! %!conditions;
+    %!conditions := pir::defined($value) ?? $value !! %!conditions;
 }
 
 our method verify($cuckoo) {
@@ -23,7 +23,7 @@ our method verify($cuckoo) {
 }
 
 our method sig_matcher($value?) {
-    $value.defined ?? ($!sig_matcher := $value) !! $!sig_matcher;
+    pir::defined($value) ?? ($!sig_matcher := $value) !! $!sig_matcher;
 }
 
 our method was_called(*%named) {
@@ -38,21 +38,20 @@ our method was_called(*%named) {
     my $count := $!match_count;
 
     if %match<never> {
-        assert_true( $count == 0,
-            'At least one call made to :never callsig.');
+        Assert::true( $count == 0, 'At least one call made to :never callsig.');
     }
     elsif %match.contains: <times> {
-        assert_true( $count == %match<times>,
+        Assert::true( $count == %match<times>,
             "Wrong number of calls ($count) to callsig. Want exactly " ~ %match<times>);
     }
     else {
         if %match.contains: <at_least> {
-            assert_false( $count < %match<at_least>,
+            Assert::false( $count < %match<at_least>,
                     'Too few calls ($count) made to callsig. Expected at least ' ~ %match<at_least> ~ '.' );
         }
 
         if %match.contains: <at_most> {
-            assert_false( $count > %match<at_most>,
+            Assert::false( $count > %match<at_most>,
                     'Too many calls ($count) made to callsig. Expected at most ' ~ %match<at_most> ~ '.' );
         }
     }

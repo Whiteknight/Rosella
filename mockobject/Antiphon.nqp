@@ -44,13 +44,13 @@ our method invoke($callsig) {
 }
 
 our method sig_matcher($value?) {
-    $value.defined ?? ($!sig_matcher := $value) !! $!sig_matcher;
+    pir::defined($value) ?? ($!sig_matcher := $value) !! $!sig_matcher;
 }
 
 our method will( :&do, :$return, :$throw ) {
-    self.will_do(&do) if &do.defined;
-    self.will_return($return) if $return.defined;
-    self.will_throw($throw) if $throw.defined;
+    self.will_do(&do) if pir::defined(&do);
+    self.will_return($return) if pir::defined($return);
+    self.will_throw($throw) if pir::defined($throw);
 
     self;
 }

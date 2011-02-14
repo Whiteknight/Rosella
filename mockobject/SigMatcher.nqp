@@ -8,9 +8,10 @@ our method object_matches($actual) {
     my $exp := $!expecting.object;
     my $act := $actual.object;
 
-    $exp =:=  $act
-    || $exp =:= ANY()
-    || isa($exp, Cuculus::Canorus::Ovum) && isa($act, Cuculus::Canorus::Ovum)
+    $exp =:= $act
+        || $exp =:= ANY()
+        || pir::isa($exp, Cuculus::Canorus::Ovum)
+        && pir::isa($act, Cuculus::Canorus::Ovum)
         && Opcode::getattribute($exp, '$!CUCULUS_CANORUS') =:= Opcode::getattribute($act, '$!CUCULUS_CANORUS');
 }
 
@@ -29,7 +30,8 @@ our method positionals_match($actual) {
         my $got := @got[$count];
 
         if $count == 0
-            && isa($want, Cuculus::Canorus::Ovum) && isa($got, Cuculus::Canorus::Ovum)
+            && pir::isa($want, Cuculus::Canorus::Ovum)
+            && pir::isa($got, Cuculus::Canorus::Ovum)
             && get_cuckoo($want) =:= get_cuckoo($got) {
             # okay, they match.
         }
