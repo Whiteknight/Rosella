@@ -4,7 +4,7 @@ class ParrotTest::Harness {
     has $!total_files;
     has @!aborted_files;
     has %!results;
-    has @!files;
+    has @!tests;
     has $!max_length;
     has $!nqp_loader;
 
@@ -19,7 +19,6 @@ class ParrotTest::Harness {
         %!results{"FAILED"} := [];
         %!results{"ABORTED"} := [];
         $!max_length := 0;
-
         $!nqp_loader := ParrotTest::Harness::Loader::NQP.new;
     }
 
@@ -28,7 +27,7 @@ class ParrotTest::Harness {
         self.add_test_objects(@tests);
     }
 
-    method add_nqp_tests(*@files) {
+    method add_nqp_test_files(*@files) {
         my @tests := $!nqp_loader.get_tests_from_files(@files);
         self.add_test_objects(@tests);
     }
@@ -43,7 +42,8 @@ class ParrotTest::Harness {
 
     method run () {
         $!total_files := +@!tests;
-        for @!files {
+        $!max_length := $!nqp_loader.max_filename_length();
+        for @!tests {
             my $test := $_;
             $test.setup();
             $test.print_filename($!max_length);

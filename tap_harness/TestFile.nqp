@@ -52,11 +52,15 @@ class ParrotTest::Harness::Test {
     }
 
     # TODO: Break this out into a separate reporting class
-    method print_filename($max_length) {
+    method print_filename($max_length?) {
         my $length := pir::length__IS($!filename);
+        if ! pir::defined($max_length) || $max_length < $length {
+            $max_length := $length;
+        }
         my $diff := ($max_length - $length) + 3;
         my $elipses := pir::repeat__SSI('.', $diff);
-        print($!filename ~ " " ~ $elipses ~ " ");
+        pir::print($!filename);
+        pir::print(" $elipses ");
     }
 
     # TODO: Move into a utils class
@@ -159,7 +163,7 @@ class ParrotTest::Harness::Test {
     }
 }
 
-class ParrotTest::Harness::Test::NQP {
+class ParrotTest::Harness::Test::NQP is ParrotTest::Harness::Test {
     method compile_test() {
         my $compiler := pir::compreg__PS('NQP-rx');
         my $handle := pir::new__PS("FileHandle");
@@ -173,7 +177,7 @@ class ParrotTest::Harness::Test::NQP {
     }
 }
 
-class ParrotTest::Harness::Test::PIR {
+class ParrotTest::Harness::Test::PIR is ParrotTest::Harness::Test {
     method compile_test() {
         my $sub;
         my $filename := $!filename;

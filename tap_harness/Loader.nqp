@@ -1,7 +1,6 @@
 class ParrotTest::Harness::Loader {
     has $!os;
-
-    my $!max_filename_length;
+    has $!max_filename_length;
 
     method max_filename_length() {
         $!max_filename_length;
@@ -9,6 +8,7 @@ class ParrotTest::Harness::Loader {
 
     method get_dir_contents($path) {
         if ! pir::defined($!os) {
+            pir::loadlib("os");
             $!os := pir::new__PS('OS');
         }
 
@@ -36,7 +36,7 @@ class ParrotTest::Harness::Loader {
         $contents;
     }
 
-    method get_tests_from_dirs(*@dirs) {
+    method get_tests_from_dirs(@dirs) {
         $!max_filename_length := 0;
         my @tests := < >;
         for @dirs {
@@ -59,7 +59,7 @@ class ParrotTest::Harness::Loader {
         return @tests;
     }
 
-    method get_test_from_files(*@filenames) {
+    method get_tests_from_files(@filenames) {
         my @tests := < >;
         for @filenames {
             my $filename := $_;
@@ -85,13 +85,13 @@ class ParrotTest::Harness::Loader {
     }
 }
 
-class ParrotTest::Harness::Loader::NQP {
+class ParrotTest::Harness::Loader::NQP is ParrotTest::Harness::Loader {
     method make_test_obj() {
         ParrotTest::Harness::Test::NQP.new();
     }
 }
 
-class ParrotTest::Harness::Loader::PIR {
+class ParrotTest::Harness::Loader::PIR is ParrotTest::Harness::Loader {
     method make_test_obj() {
         ParrotTest::Harness::Test::PIR.new();
     }
