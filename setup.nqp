@@ -52,7 +52,7 @@ sub MAIN(@argv) {
     my @mockobject_pbcs := setup_lib(%parrot_test, "mockobject", @mockobject_files);
     %parrot_test<pbc_pbc><parrot_test_mockobject.pbc> := @mockobject_pbcs;
 
-    my @tap_harness_files := <Harness Loader TestFile Line>;
+    my @tap_harness_files := <Harness Loader TestFile Line Output>;
     my @tap_harness_pbcs := setup_lib(%parrot_test, "tap_harness", @tap_harness_files);
     %parrot_test<pbc_pbc><parrot_test_tap_harness.pbc> := @tap_harness_pbcs;
 

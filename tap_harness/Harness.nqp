@@ -97,52 +97,12 @@ class ParrotTest::Harness {
         }
     }
 
-    # TODO: Refactor this out to a separate reporter class. Not everybody is
-    #       going to want such a verbose report
-    method show_results() {
-        my $aborted := +%!results{"ABORTED"};
-        if $aborted || $!total_failed {
-            self.print("Result: FAILED");
-        } else {
-            self.print(
-                "Result: PASSED",
-                "\tPassed $!total_passed tests in $!total_files files"
-            );
-        }
-        if $aborted {
-            self.print(
-                "\tFailed $aborted files due to premature exit",
-                "\tList of failed files:"
-            );
-            for %!results{"ABORTED"} {
-                my $abort := $_.get_filename();
-                self.print("\t\t$abort");
-            }
-        }
-        if $!total_failed {
-            self.print(
-                "\tFailed $!total_failed tests in " ~ +(%!results{"FAILED"}) ~ " files",
-                "\tPassed $!total_passed tests in $!total_files files",
-                "",
-                "\tList of failed tests:"
-            );
-            for %!results{"FAILED"} {
-                my $test := $_;
-                pir::say("\t\t" ~ $test.get_filename());
-                for $test.list_of_failures() {
-                    my $failure := $_;
-                    pir::say("\t\t\t$failure");
-                }
-            }
-        }
-        self.reset_counts();
-    }
-
-    method print(*@lines) {
-        for @lines {
-            pir::say($_);
-        }
-    }
+    method aborted_test_files() { %!results{"ABORTED"}; }
+    method failed_test_files() { %!results{"FAILED"}; }
+    method passed_test_files() { %!results{"PASSED"}; }
+    method num_failed_tests() { $!total_failed; }
+    method num_passed_tests() { $!total_passed; }
+    method num_test_files() { $!total_files; }
 
     method reset_test_environment() {
         # TODO: This is an evil hack. Test::Builder doesn't clean up it's environment

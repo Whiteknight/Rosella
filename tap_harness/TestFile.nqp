@@ -44,6 +44,10 @@ class ParrotTest::Harness::TestFile {
         } else {
             pir::say("ok");
         }
+        if $!errdetails {
+            # TODO: Break this out into a separate reporting class
+            pir::say("# " ~ $!errdetails);
+        }
     }
 
     method status() {
@@ -138,9 +142,6 @@ class ParrotTest::Harness::TestFile {
         if $!status ne "ABORTED" {
             self.get_plan();
             self.parse();
-        } else {
-            # TODO: Break this out into a separate reporting class
-            pir::say($!errdetails);
         }
     }
 
