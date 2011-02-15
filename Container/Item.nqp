@@ -9,6 +9,18 @@ class ParrotContainer::Container::Item
             @!method_initializers := [];
         }
     }
+
+    method resolve(*%options) {
+        my $item := self.resolve_instance();
+        #for @!method_initializers {
+        #    $_.execute($item);
+        #}
+        return $item;
+    }
+
+    method resolve_instance() {
+        pir::die("Must use a subclass");
+    }
 }
 
 class ParrotContainer::Container::Item::Instance
@@ -19,6 +31,10 @@ class ParrotContainer::Container::Item::Instance
     method BUILD($obj, @meth_inits) {
         $!instance := $obj;
         self.method_initializers(@meth_inits);
+    }
+
+    method resolve_instance() {
+        return $!instance;
     }
 }
 
@@ -32,6 +48,10 @@ class ParrotContainer::Container::Item::P6protoobject
         $!proto := $proto;
         self.method_initializers(@meth_inits);
     }
+
+    method resolve_instance() {
+        return $!proto.new();
+    }
 }
 
 # Instantiate an object from a ParrotClass
@@ -44,18 +64,33 @@ class ParrotContainer::Container::Item::ParrotClass
     method BUILD($class, $init_pmc, @meth_inits) {
         $!class := $class;
         $!init_pmc := $init_pmc;
+        pir::say("ParrotClass.BUILD: $class");
         self.method_initializers(@meth_inits);
+    }
+
+    method resolve_instance() {
+        pir::say($!init_pmc);
+        if pir::defined($!init_pmc) {
+            pir::say("Has init_pmc: $!init_pmc");
+            pir::say("Class: $!class " ~ pir::typeof__SP($!class));
+            return pir::new__PPP($!class, $!init_pmc);
+        }
+        return pir::new__PP($!class);
     }
 }
 
 # Instantiate an object from an object prototype
 class ParrotContainer::Container::Item::Prototype
-    is ParrotContainer::Container::Item::Instance
+    is ParrotContainer::Container::Item
 {
     has $!prototype;
 
     method BUILD($proto, @meth_inits) {
         $!prototype := $proto;
         self.method_initializers(@meth_inits);
+    }
+
+    method resolve_instance() {
+        return pir::clone($!prototype);
     }
 }

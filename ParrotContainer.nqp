@@ -22,7 +22,7 @@ class ParrotContainer {
     # Instantiate a Class or P6protoobject, and call the .BUILD method on it,
     # if one exists in the class. This acts like an implementation of a
     # constructor for types which need that
-    our sub build($proto, *@pos, *%named) {
+    our sub build($proto, @pos, %named) {
         my $obj;
         if pir::isa($proto, "P6protoobject") {
             $obj := $proto.new;

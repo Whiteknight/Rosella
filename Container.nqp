@@ -13,7 +13,7 @@ class ParrotContainer::Container {
     # @meth_inits is a list of MethodInitializers, invoked in order
     method register_type($type, :$init_pmc?, :@meth_inits?) {
         my $name := self.get_type_name($type);
-        my $item := self.get_generator_item($init_pmc, @meth_inits);
+        my $item := self.get_generator_item($type, $init_pmc, @meth_inits);
         %!library{$name} := $item;
     }
 
@@ -42,7 +42,7 @@ class ParrotContainer::Container {
         my $name := self.get_type_name($type);
         my $item := %!library{$name};
         if pir::defined($item) {
-            return $item.resolve(self, |%named_opts);
+            return $item.resolve(|%named_opts);
         }
         return self.resolve_create($type, |%named_opts);
     }
@@ -95,14 +95,17 @@ class ParrotContainer::Container {
     method get_generator_item($type, $init_pmc, @meth_inits) {
         my $item;
         # TODO: Arguments for BUILD?
+        pir::say(pir::typeof__SP($type));
         if pir::isa($type, "P6protoobject") {
             $item := create(ParrotContainer::Container::Item::P6protoobject,
                     $type, @meth_inits);
         } elsif pir::isa($type, "Class") {
+            pir::say("get_generator_item: $type");
             $item := create(ParrotContainer::Container::Item::ParrotClass,
                     $type, $init_pmc, @meth_inits);
         } else {
             my $class := self.get_type_class($type);
+            pir::say("Container: get_instance_item(): $type, $class");
             $item := create(ParrotContainer::Container::Item::ParrotClass,
                     $class, $init_pmc, @meth_inits);
         }
