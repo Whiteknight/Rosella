@@ -1,4 +1,4 @@
-class ParrotContainer::Container::InitializerArg {
+class ParrotContainer::InitializerArg {
     has $!name;
     has $!position;
 
@@ -32,7 +32,7 @@ class ParrotContainer::Container::InitializerArg {
         if $type eq "Named" {
             %named{$!name} := $value;
         } elsif $type eq "Positional" {
-            if $!positional >= 0 {
+            if $!position >= 0 {
                 @pos[$!position] := $value;
             } else {
                 pir::push(@pos, $value);
@@ -49,8 +49,8 @@ class ParrotContainer::Container::InitializerArg {
 }
 
 # A type to be resolved recursively by the container
-class ParrotContainer::Container::InitializerArg::Resolver
-    is ParrotContainer::Container::InitializerArg
+class ParrotContainer::InitializerArg::Resolver
+    is ParrotContainer::InitializerArg
 {
     has $!container;
     has $!type;
@@ -66,13 +66,19 @@ class ParrotContainer::Container::InitializerArg::Resolver
 }
 
 # An explicit item instance to be passed
-class ParrotContainer::Container::InitializerArg::Instance
-    is ParrotContainer::Container::InitializerArg
+class ParrotContainer::InitializerArg::Instance
+    is ParrotContainer::InitializerArg
 {
     has $!instance;
 
-    method BUILD($instance) {
+    method BUILD($instance, :$position?, :$name?) {
         $!instance := $instance;
+        if pir::defined($position) {
+            self.position($position);
+        }
+        if pir::defined($name) {
+            self.name($name);
+        }
     }
 
     method resolve_value() {

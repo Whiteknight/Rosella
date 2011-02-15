@@ -95,17 +95,14 @@ class ParrotContainer::Container {
     method get_generator_item($type, $init_pmc, @meth_inits) {
         my $item;
         # TODO: Arguments for BUILD?
-        pir::say(pir::typeof__SP($type));
         if pir::isa($type, "P6protoobject") {
             $item := create(ParrotContainer::Container::Item::P6protoobject,
                     $type, @meth_inits);
         } elsif pir::isa($type, "Class") {
-            pir::say("get_generator_item: $type");
             $item := create(ParrotContainer::Container::Item::ParrotClass,
                     $type, $init_pmc, @meth_inits);
         } else {
             my $class := self.get_type_class($type);
-            pir::say("Container: get_instance_item(): $type, $class");
             $item := create(ParrotContainer::Container::Item::ParrotClass,
                     $class, $init_pmc, @meth_inits);
         }
@@ -159,7 +156,7 @@ class ParrotContainer::Container {
     }
 
     sub create($proto, *@pos, *%named) {
-        return ParrotContainer::build($proto, @pos, %named);
+        return ParrotContainer::build($proto, |@pos, |%named);
     }
 }
 
