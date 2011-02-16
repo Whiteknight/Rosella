@@ -34,6 +34,12 @@ class ParrotContainer::Container {
         %!library{$name} := $item;
     }
 
+    method register_factory_method($type, &factory, :@meth_inits?, :@arg_inits?) {
+        my $name := ParrotContainer::get_type_name($type);
+        my $item := self.get_factory_method_item(&factory, @meth_inits, @arg_inits);
+        %!library{$name} := $item;
+    }
+
     # Resolve Methods
 
     # Full resolution. Look for a registered type to resolve. If not found,
@@ -108,6 +114,15 @@ class ParrotContainer::Container {
         }
         return $item;
     }
+
+    # Get a Container::Item that uses a factory method to create a new object
+    # instance.
+    method get_factory_method_item(&sub, @meth_inits, @arg_inits) {
+        my $item := create(ParrotContainer::Container::Item::FactoryMethod,
+                &sub, @meth_inits, @arg_inits);
+        return $item;
+    }
+
 
     # Helper Methods
 

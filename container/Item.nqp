@@ -90,3 +90,25 @@ class ParrotContainer::Container::Item::Prototype
         return pir::clone($!prototype);
     }
 }
+
+class ParrotContainer::Container::Item::FactoryMethod
+    is ParrotContainer::Container::Item
+{
+    has &!sub;
+    has @!arg_initializers;
+
+    method BUILD($sub, @meth_inits, @arg_inits) {
+        &!sub := $sub;
+        @!arg_initializers := @arg_inits;
+        self.method_initializers(@meth_inits);
+    }
+
+    method resolve_instance() {
+        my @pos := [];
+        my %named := {};
+        for @!arg_initializers {
+            $_.prepare_args(@pos, %named);
+        }
+        my $obj := &!sub(|@pos, |%named);
+    }
+}
