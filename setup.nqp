@@ -24,9 +24,9 @@ sub MAIN(@argv) {
     my @container_files := <
         ParrotContainer
         container/Container
-        container/Item
+        container/ItemBuilder
         container/InitializerArg
-        container/MethodInitializer
+        container/Initializer
     >;
     setup_lib(%pc, "parrot_container.pbc", @container_files);
 
