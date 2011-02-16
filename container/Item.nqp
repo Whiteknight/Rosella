@@ -1,4 +1,4 @@
-class ParrotContainer::Container::Item
+class ParrotContainer::ItemBuilder
 {
     has @!method_initializers;
 
@@ -23,8 +23,8 @@ class ParrotContainer::Container::Item
     }
 }
 
-class ParrotContainer::Container::Item::Instance
-    is ParrotContainer::Container::Item
+class ParrotContainer::ItemBuilder::Instance
+    is ParrotContainer::ItemBuilder
 {
     has $!instance;
 
@@ -39,8 +39,8 @@ class ParrotContainer::Container::Item::Instance
 }
 
 # Instantiate an object from a P6protoobject
-class ParrotContainer::Container::Item::P6protoobject
-    is ParrotContainer::Container::Item
+class ParrotContainer::ItemBuilder::P6protoobject
+    is ParrotContainer::ItemBuilder
 {
     has $!proto;
 
@@ -55,8 +55,8 @@ class ParrotContainer::Container::Item::P6protoobject
 }
 
 # Instantiate an object from a ParrotClass
-class ParrotContainer::Container::Item::ParrotClass
-    is ParrotContainer::Container::Item
+class ParrotContainer::ItemBuilder::ParrotClass
+    is ParrotContainer::ItemBuilder
 {
     has $!class;
     has $!init_pmc;
@@ -76,8 +76,8 @@ class ParrotContainer::Container::Item::ParrotClass
 }
 
 # Instantiate an object from an object prototype
-class ParrotContainer::Container::Item::Prototype
-    is ParrotContainer::Container::Item
+class ParrotContainer::ItemBuilder::Prototype
+    is ParrotContainer::ItemBuilder
 {
     has $!prototype;
 
@@ -91,8 +91,8 @@ class ParrotContainer::Container::Item::Prototype
     }
 }
 
-class ParrotContainer::Container::Item::FactoryMethod
-    is ParrotContainer::Container::Item
+class ParrotContainer::ItemBuilder::FactoryMethod
+    is ParrotContainer::ItemBuilder
 {
     has &!sub;
     has @!arg_initializers;

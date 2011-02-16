@@ -84,14 +84,14 @@ class ParrotContainer::Container {
 
     # Get a Container::Item that returns an existing instance
     method get_instance_item($instance, @meth_inits) {
-        my $item := create(ParrotContainer::Container::Item::Instance,
+        my $item := create(ParrotContainer::ItemBuilder::Instance,
                 $instance, @meth_inits);
         return $item;
     }
 
     # Get a Container::Item that returns a clone of an existing prototype
     method get_prototype_item($proto, @meth_inits) {
-        my $item := create(ParrotContainer::Container::Item::Prototype,
+        my $item := create(ParrotContainer::ItemBuilder::Prototype,
                 $proto, @meth_inits);
         return $item;
     }
@@ -102,14 +102,14 @@ class ParrotContainer::Container {
         my $item;
         # TODO: Arguments for BUILD?
         if pir::isa($type, "P6protoobject") {
-            $item := create(ParrotContainer::Container::Item::P6protoobject,
+            $item := create(ParrotContainer::ItemBuilder::P6protoobject,
                     $type, @meth_inits);
         } elsif pir::isa($type, "Class") {
-            $item := create(ParrotContainer::Container::Item::ParrotClass,
+            $item := create(ParrotContainer::ItemBuilder::ParrotClass,
                     $type, $init_pmc, @meth_inits);
         } else {
             my $class := ParrotContainer::get_type_class($type);
-            $item := create(ParrotContainer::Container::Item::ParrotClass,
+            $item := create(ParrotContainer::ItemBuilder::ParrotClass,
                     $class, $init_pmc, @meth_inits);
         }
         return $item;
@@ -118,7 +118,7 @@ class ParrotContainer::Container {
     # Get a Container::Item that uses a factory method to create a new object
     # instance.
     method get_factory_method_item(&sub, @meth_inits, @arg_inits) {
-        my $item := create(ParrotContainer::Container::Item::FactoryMethod,
+        my $item := create(ParrotContainer::ItemBuilder::FactoryMethod,
                 &sub, @meth_inits, @arg_inits);
         return $item;
     }
