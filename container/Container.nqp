@@ -12,13 +12,13 @@ class ParrotContainer::Container {
     # $init_pmc is passed to the init_pmc/instantiate vtable
     # @meth_inits is a list of MethodInitializers, invoked in order
     method register_type($type, :$init_pmc?, :@meth_inits?) {
-        my $name := self.get_type_name($type);
+        my $name := ParrotContainer::get_type_name($type);
         my $item := self.get_generator_item($type, $init_pmc, @meth_inits);
         %!library{$name} := $item;
     }
 
     method register_prototype($type, $proto, :@meth_inits?) {
-        my $name := self.get_type_name($type);
+        my $name := ParrotContainer::get_type_name($type);
         my $item := self.get_prototype_item($proto, @meth_inits);
         %!library{$name} := $item;
     }
@@ -29,7 +29,7 @@ class ParrotContainer::Container {
     }
 
     method register_instance($type, $instance, :@meth_inits?) {
-        my $name := self.get_type_name($type);
+        my $name := ParrotContainer::get_type_name($type);
         my $item := self.get_instance_item($instance, @meth_inits);
         %!library{$name} := $item;
     }
@@ -39,7 +39,7 @@ class ParrotContainer::Container {
     # Full resolution. Look for a registered type to resolve. If not found,
     # attempt to create a fresh item of the given type.
     method resolve($type, *%named_opts) {
-        my $name := self.get_type_name($type);
+        my $name := ParrotContainer::get_type_name($type);
         my $item := %!library{$name};
         if pir::defined($item) {
             return $item.resolve(|%named_opts);
@@ -54,7 +54,7 @@ class ParrotContainer::Container {
             return $type.new();
         }
         my $init := %named_opts{"init_pmc"};
-        my $class := self.get_type_class($type);
+        my $class := ParrotContainer::get_type_class($type);
         if pir::defined($init) {
             return pir::new__PPP($class, $init);
         }
@@ -64,7 +64,7 @@ class ParrotContainer::Container {
     # Resolve from the library only. Attempting to resolve a type that has
     # not previously been registered causes an error
     method resolve_nocreate($type, *%named_opts) {
-        my $name := self.get_type_name($type);
+        my $name := ParrotContainer::get_type_name($type);
         my $item := %!library{$name};
         if pir::defined($item) {
             return $item.resolve(self, |%named_opts);
@@ -102,7 +102,7 @@ class ParrotContainer::Container {
             $item := create(ParrotContainer::Container::Item::ParrotClass,
                     $type, $init_pmc, @meth_inits);
         } else {
-            my $class := self.get_type_class($type);
+            my $class := ParrotContainer::get_type_class($type);
             $item := create(ParrotContainer::Container::Item::ParrotClass,
                     $class, $init_pmc, @meth_inits);
         }
@@ -111,50 +111,7 @@ class ParrotContainer::Container {
 
     # Helper Methods
 
-    # Return a stringified type name for the object. $type could be a
-    # NameSpace, a Class, a P6metaclass, a P6protoobject, a Key, a
-    # *StringArray or a String.
-    method get_type_name($type) {
-        if pir::isa($type, "String") {
-            return $type;
-        }
-
-        # If we have these objects, try to get the Parrot NameSpace for
-        # easy stringification
-        if pir::isa($type, "P6protoobject") {
-            $type := $type.HOW().get_parrotclass().get_namespace();
-        } elsif pir::isa($type, "P6metaclass") {
-            $type := $type.get_parrotclass().get_namespace();
-        } elsif pir::isa($type, "Class") {
-            $type := $type.get_namespace();
-        } elsif pir::isa($type, "Key") {
-            $type := pir::get_namespace__PP($type);
-        }
-
-        if pir::isa($type, "NameSpace") {
-            return pir::join("::", $type.get_name());
-        }
-        if pir::does($type, "Array") {
-            return pir::join("::", $type);
-        }
-        return ~$type;
-    }
-
-    # Look up a Parrot Class PMC for the given type. $type can be any of
-    # the PMC types used in get_type_name above
-    method get_type_class($type) {
-        if pir::isa($type, "Class") {
-            return $type;
-        }
-        if pir::isa($type, "P6metaclass") {
-            return $type.get_parrotclass();
-        }
-        if pir::isa($type, "P6protoobject") {
-            return $type.HOW().get_parrotclass();
-        }
-        return pir::get_class__PP($type);
-    }
-
+    # Give this routine a shorter name, since it's so common and important
     sub create($proto, *@pos, *%named) {
         return ParrotContainer::build($proto, |@pos, |%named);
     }

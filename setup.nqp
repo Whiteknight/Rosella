@@ -23,14 +23,16 @@ sub MAIN(@argv) {
 
     my @container_files := <
         ParrotContainer
-        Container
-        Container/Item
-        Container/InitializerArg
-        Container/MethodInitializer
+        container/Container
+        container/Item
+        container/InitializerArg
+        container/MethodInitializer
     >;
     setup_lib(%pc, "parrot_container.pbc", @container_files);
 
-    my @proto_files := <ParrotContainer PrototypeManager>;
+    my @proto_files := <
+        ParrotContainer
+        prototype/PrototypeManager>;
     setup_lib(%pc, "parrot_container_prototype.pbc", @proto_files);
 
     pir::shift(@argv);
