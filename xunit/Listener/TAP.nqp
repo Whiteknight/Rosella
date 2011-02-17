@@ -1,4 +1,4 @@
-class UnitTest::Listener::TAP is UnitTest::Listener;
+class ParrotTest::Listener::TAP is ParrotTest::Listener;
 
 has $!test_builder;
 

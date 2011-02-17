@@ -1,4 +1,4 @@
-class Exception::UnitTestFailure {
+class Exception::ParrotTestFailure {
     has $!exception;
 
     our method message(*@value) {

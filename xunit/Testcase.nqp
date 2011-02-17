@@ -1,13 +1,13 @@
 # Copyright (C) 2009-2010, Austin Hastings. See accompanying LICENSE file, or
 # http://www.opensource.org/licenses/artistic-license-2.0.php for license.
 
-class UnitTest::Testcase {
+class ParrotTest::Testcase {
     has $!todo;
     has $!verify;
     has $!name;
 
     my method default_loader() {
-        UnitTest::Loader.new;
+        ParrotTest::Loader.new;
     }
 
     our method name($value?) { pir::defined__IP($value) ?? ($!name := $value) !! $!name; }
@@ -27,8 +27,8 @@ class UnitTest::Testcase {
     }
 
     my method default_result() {
-        my $result := UnitTest::Result.new;
-        $result.add_listener: UnitTest::Listener::TAP.new;
+        my $result := ParrotTest::Result.new;
+        $result.add_listener: ParrotTest::Listener::TAP.new;
         return $result;
     }
 

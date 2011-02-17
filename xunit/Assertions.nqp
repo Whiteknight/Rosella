@@ -6,7 +6,7 @@ module Assert;
 our sub _initload() { }
 
 our sub fail($why) {
-    my $ex := Exception::UnitTestFailure.new();
+    my $ex := Exception::ParrotTestFailure.new();
     $ex.message($why);
     $ex.throw();
 }
@@ -140,7 +140,7 @@ our sub within_delta($o1, $o2, $delta, $message) {
 #~ not_like
 
 our sub want_fail($message, &block) {
-    throws(Exception::UnitTestFailure, $message, &block);
+    throws(Exception::ParrotTestFailure, $message, &block);
 }
 
 our sub want_pass($message, &block) {
