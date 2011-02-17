@@ -31,6 +31,7 @@ class ParrotTest::Harness {
         %!results{"PASSED"} := [];
         %!results{"FAILED"} := [];
         %!results{"ABORTED"} := [];
+        %!results{"EMPTY"} := [];
     }
 
     method add_test_dirs($loader, *@dirs, :$recurse = 0) {

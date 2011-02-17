@@ -115,6 +115,11 @@ class ParrotTest::Harness::TestFile {
         $!status := "ABORTED";
     }
 
+    method mark_test_empty() {
+        $!result := "no TAP output";
+        $!status := "EMPTY";
+    }
+
     method spawn_and_execute() {
         my $pipe := pir::new__PS("FileHandle");
         $pipe.encoding('utf8');
@@ -139,9 +144,22 @@ class ParrotTest::Harness::TestFile {
         } else {
             self.spawn_and_execute();
         }
-        if $!status ne "ABORTED" {
+        if $!status eq "ABORTED" {
+            return;
+        }
+        if self.has_tap_output() {
             self.get_plan();
             self.parse();
+        }
+        else {
+            self.mark_test_empty();
+        }
+    }
+
+    # TODO: A more robust check
+    method has_tap_output() {
+        if +@!lines < 2 {
+            return 0;
         }
     }
 
