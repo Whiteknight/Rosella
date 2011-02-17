@@ -1,0 +1,14 @@
+INIT {
+    pir::load_bytecode("parrot_test_tap_harness.pbc");
+}
+
+my $harness := ParrotTest::Harness.new();
+$harness.initialize();
+$harness.add_test_dirs("NQP",
+    "t/action"
+
+);
+$harness.run();
+
+my $output := ParrotTest::Harness::Output::Console.new();
+$output.show_results_summary($harness);
