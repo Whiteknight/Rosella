@@ -2,7 +2,6 @@
 # http://www.opensource.org/licenses/artistic-license-2.0.php for license.
 
 class UnitTest::Loader {
-
     has $!class;
     has %!seen_methods;
     has $!test_prefix;
@@ -25,7 +24,9 @@ class UnitTest::Loader {
     }
 
     our method default_suite() {
-        UnitTest::Suite.new();
+        my $suite := UnitTest::Suite.new();
+        $suite.BUILD();
+        return $suite;
     }
 
     sub hash_contains(%hash, $key) {

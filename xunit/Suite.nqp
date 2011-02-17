@@ -4,6 +4,14 @@
 class UnitTest::Suite {
     has @!members;
     has $!num_tests;
+    has $!name;
+
+    our method name($value?) { pir::defined__IP($value) ?? ($!name := $value) !! $!name; }
+
+    our method BUILD() {
+        $!num_tests := 0;
+        @!members := [ ];
+    }
 
     our method add_test($test) {
         @!members := @!members.push($test);
@@ -11,24 +19,10 @@ class UnitTest::Suite {
         self;
     }
 
-    our method add_tests(*@tests) {
-        for @tests {
-            self.add_test($_);
-        }
-        self;
-    }
-
     my method default_result() {
         my $result := UnitTest::Result.new();
         $result.add_listener(UnitTest::Listener::TAP.new);
         $result;
-    }
-
-    our method _init_obj(*@pos, *%named) {
-        $!num_tests := 0;
-        @!members := [ ];
-
-        self._init_args(|@pos, |%named);
     }
 
     our method run($result = self.default_result) {

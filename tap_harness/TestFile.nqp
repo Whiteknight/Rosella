@@ -161,6 +161,7 @@ class ParrotTest::Harness::TestFile {
         if +@!lines < 2 {
             return 0;
         }
+        return 1;
     }
 
     method get_plan() {

@@ -4,10 +4,13 @@
 class UnitTest::Testcase {
     has $!todo;
     has $!verify;
+    has $!name;
 
     my method default_loader() {
         UnitTest::Loader.new;
     }
+
+    our method name($value?) { pir::defined__IP($value) ?? ($!name := $value) !! $!name; }
 
     our method verify($value?) {
         if pir::defined($value) {
