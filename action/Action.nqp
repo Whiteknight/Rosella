@@ -19,21 +19,9 @@ class ParrotContainer::Action {
         }
     }
 
-    method execute($obj, @pos_args?, %named_args?) {
-        my @pos;
-        if pir::defined(@pos_args) {
-            # TODO: We probably want a clone here. Don't reuse the same
-            #       array since we are modifying it
-            @pos := @pos_args;
-        } else {
-            @pos := [];
-        }
-        my %named;
-        if pir::defined(%named_args) {
-            %named := %named_args;
-        } else {
-            %named := {};
-        }
+    method execute($obj) {
+        my @pos := [];
+        my %named := {};
         self.prepare_args(@pos, %named);
         self.execute_initializer($obj, @pos, %named);
     }
