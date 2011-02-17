@@ -22,6 +22,7 @@ sub MAIN(@argv) {
     );
 
     my @action_files := <
+        ParrotContainer
         action/Action
         action/ActionArg
     >;

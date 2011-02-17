@@ -47,8 +47,14 @@ class ParrotContainer {
             my $class := get_type_class($proto);
             $obj := pir::new__PP($class);
         }
-        my $method := pir::find_method__PPS($obj, "BUILD");
-        if $method {
+        my $method;
+        try {
+            $method := pir::find_method__PPS($obj, "BUILD");
+            CATCH {
+                $method := pir::new__PS("Undef");
+            }
+        }
+        if pir::defined($method) {
             #call_parrot_method($obj, $method, @pos, %named);
             $obj.BUILD(|@pos, |%named);
         }
