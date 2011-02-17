@@ -1,6 +1,6 @@
 INIT { pir::load_bytecode("parrot_test_xunit.pbc"); }
 
-MyTest1.new().suite.run();
+MyTest1.suite.run();
 
 class MyTest1 is UnitTest::Testcase {
     method test_first() {

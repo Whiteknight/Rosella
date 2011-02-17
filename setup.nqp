@@ -40,36 +40,50 @@ sub MAIN(@argv) {
         #:release_dir_format(	'released/%s'),
     );
 
-    my @common_files := <Assertions Listener Listener/TAP UnitTestFailure>;
-    my @common_pbcs := setup_lib(%parrot_test, "common", @common_files);
-    %parrot_test<pbc_pbc><parrot_test_common.pbc> := @common_pbcs;
-
-    my @xunit_files := <Setup Loader Standalone Suite Testcase Result>;
-    my @xunit_pbcs := setup_lib(%parrot_test, "xunit", @xunit_files);
-    %parrot_test<pbc_pbc><parrot_test_xunit.pbc> := @xunit_pbcs;
-
-    my @mockobject_files := <Setup Antiphon Cuckoo Cuculus MockFS Ovum SigMatcher Verifier>;
-    my @mockobject_pbcs := setup_lib(%parrot_test, "mockobject", @mockobject_files);
-    %parrot_test<pbc_pbc><parrot_test_mockobject.pbc> := @mockobject_pbcs;
-
-    my @tap_harness_files := <Harness Loader TestFile Line Output>;
-    my @tap_harness_pbcs := setup_lib(%parrot_test, "tap_harness", @tap_harness_files);
-    %parrot_test<pbc_pbc><parrot_test_tap_harness.pbc> := @tap_harness_pbcs;
-
-    %parrot_test<inst_lib> := <
-        parrot_test_common.pbc
-        parrot_test_xunit.pbc
-        parrot_test_tap_harness.pbc
+    my @xunit_files := <
+        xunit/Assertions
+        xunit/Listener
+        xunit/Listener/TAP
+        xunit/Loader
+        xunit/Result
+        xunit/Suite
+        xunit/Testcase
+        xunit/UnitTestFailure
     >;
+    my @xunit_pbcs := setup_lib(%parrot_test, "parrot_test_xunit.pbc", @xunit_files);
+
+    my @mockobject_files := <
+        mockobject/Setup
+        mockobject/Antiphon
+        mockobject/Cuckoo
+        mockobject/Cuculus
+        mockobject/MockFS
+        mockobject/Ovum
+        mockobject/SigMatcher
+        mockobject/Verifier
+    >;
+    my @mockobject_pbcs := setup_lib(%parrot_test, "parrot_test_mockobject.pbc", @mockobject_files);
+
+    my @tap_harness_files := <
+        tap_harness/Harness
+        tap_harness/Line
+        tap_harness/Loader
+        tap_harness/Output
+        tap_harness/TestFile
+    >;
+    my @tap_harness_pbcs := setup_lib(%parrot_test, "parrot_test_tap_harness.pbc", @tap_harness_files);
+
+
+    %parrot_test<inst_lib> := < >;
 
     pir::shift(@argv);
     setup(@argv, %parrot_test);
 }
 
-sub setup_lib(%parrot_test, $folder, @files) {
+sub setup_lib(%parrot_test, $lib, @files) {
     my @pbcs := < >;
     for @files {
-        my $path := "$folder/$_";
+        my $path := $_;
         my $nqp_file := $path ~ '.nqp';
         my $pir_file := $path ~ '.pir';
         my $pbc_file := $path ~ '.pbc';
@@ -77,5 +91,5 @@ sub setup_lib(%parrot_test, $folder, @files) {
         %parrot_test<pbc_pir>{$pbc_file} := $pir_file;
         @pbcs.push($pbc_file);
     }
-    @pbcs;
+    %parrot_test<pbc_pbc>{$lib} := @pbcs;
 }

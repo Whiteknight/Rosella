@@ -100,31 +100,6 @@ class UnitTest::Testcase {
 
     our method tear_down() { }
 
-    our sub TEST_MAIN(:$namespace = Parrot::caller_namespace()) {
-        my $parent_nsp := $namespace.get_parent;
-        my $namespace_name := ~ $namespace;
-        my $proto_obj := $parent_nsp.get_sym: $namespace_name;
-
-        # FIXME: This blind-calls obj.MAIN, which does not allow for a sub (not method)
-        # named MAIN in the namespace. Not sure if there are any other interactions with
-        # hidden methods change.
-        if ! pir::isnull__IP($proto_obj) && pir::isa__IP($proto_obj, 'P6protoobject') {
-            $proto_obj.MAIN();
-        }
-        elsif $namespace.contains: 'MAIN' {
-            if ! pir::isnull__IP( $proto_obj ) {
-                $namespace<MAIN>($proto_obj);
-            }
-            else {
-                $namespace<MAIN>();
-            }
-        }
-        else {
-            my $ns_name := $namespace.string_name;
-            pir::die( "Could not locate proto-object for namespace $ns_name. Could not find 'MAIN()' in namespace. Nothing to do." );
-        }
-    }
-
     method todo_test( *@text ) {
         $!todo := @text.join;
     }

@@ -6,12 +6,12 @@ class UnitTest::Suite {
     has $!num_tests;
     has $!name;
 
-    our method name($value?) { pir::defined__IP($value) ?? ($!name := $value) !! $!name; }
-
     our method BUILD() {
         $!num_tests := 0;
         @!members := [ ];
     }
+
+    our method name($value?) { pir::defined__IP($value) ?? ($!name := $value) !! $!name; }
 
     our method add_test($test) {
         @!members := @!members.push($test);
