@@ -40,6 +40,8 @@ sub MAIN(@argv) {
         #:release_dir_format(	'released/%s'),
     );
 
+    %parrot_test<inst_lib> := < >;
+
     my @xunit_files := <
         xunit/Assertions
         xunit/Listener
@@ -72,9 +74,6 @@ sub MAIN(@argv) {
         tap_harness/TestFile
     >;
     my @tap_harness_pbcs := setup_lib(%parrot_test, "parrot_test_tap_harness.pbc", @tap_harness_files);
-
-
-    %parrot_test<inst_lib> := < >;
 
     pir::shift(@argv);
     setup(@argv, %parrot_test);

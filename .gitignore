@@ -4,4 +4,5 @@ common/Listener/*.pir
 mockobject/*.pir
 tap_harness/*.pir
 xunit/*.pir
+xunit/Listener/TAP.pir
 
