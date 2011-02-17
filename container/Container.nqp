@@ -1,4 +1,4 @@
-class ParrotContainer::Container {
+class Rosella::Container {
     has %!library;
     our $default_container;
 
@@ -18,7 +18,7 @@ class ParrotContainer::Container {
         if pir::defined($default_container) {
             return $default_container;
         }
-        $default_container := create(ParrotContainer::Container);
+        $default_container := create(Rosella::Container);
         return $default_container;
     }
 
@@ -27,13 +27,13 @@ class ParrotContainer::Container {
     # $init_pmc is passed to the init_pmc/instantiate vtable
     # @meth_inits is a list of MethodInitializers, invoked in order
     method register_type($type, :$init_pmc?, :@meth_inits?) {
-        my $name := ParrotContainer::get_type_name($type);
+        my $name := Rosella::get_type_name($type);
         my $item := self.get_generator_item($type, $init_pmc, @meth_inits);
         %!library{$name} := $item;
     }
 
     method register_prototype($type, $proto, :@meth_inits?) {
-        my $name := ParrotContainer::get_type_name($type);
+        my $name := Rosella::get_type_name($type);
         my $item := self.get_prototype_item($proto, @meth_inits);
         %!library{$name} := $item;
     }
@@ -44,13 +44,13 @@ class ParrotContainer::Container {
     }
 
     method register_instance($type, $instance, :@meth_inits?) {
-        my $name := ParrotContainer::get_type_name($type);
+        my $name := Rosella::get_type_name($type);
         my $item := self.get_instance_item($instance, @meth_inits);
         %!library{$name} := $item;
     }
 
     method register_factory_method($type, &factory, :@meth_inits?, :@arg_inits?) {
-        my $name := ParrotContainer::get_type_name($type);
+        my $name := Rosella::get_type_name($type);
         my $item := self.get_factory_method_item(&factory, @meth_inits, @arg_inits);
         %!library{$name} := $item;
     }
@@ -60,7 +60,7 @@ class ParrotContainer::Container {
     # Full resolution. Look for a registered type to resolve. If not found,
     # attempt to create a fresh item of the given type.
     method resolve($type, *%named_opts) {
-        my $name := ParrotContainer::get_type_name($type);
+        my $name := Rosella::get_type_name($type);
         my $item := %!library{$name};
         if pir::defined($item) {
             return $item.resolve(|%named_opts);
@@ -75,7 +75,7 @@ class ParrotContainer::Container {
             return $type.new();
         }
         my $init := %named_opts{"init_pmc"};
-        my $class := ParrotContainer::get_type_class($type);
+        my $class := Rosella::get_type_class($type);
         if pir::defined($init) {
             return pir::new__PPP($class, $init);
         }
@@ -85,7 +85,7 @@ class ParrotContainer::Container {
     # Resolve from the library only. Attempting to resolve a type that has
     # not previously been registered causes an error
     method resolve_nocreate($type, *%named_opts) {
-        my $name := ParrotContainer::get_type_name($type);
+        my $name := Rosella::get_type_name($type);
         my $item := %!library{$name};
         if pir::defined($item) {
             return $item.resolve(self, |%named_opts);
@@ -94,19 +94,19 @@ class ParrotContainer::Container {
     }
 
     # Get Item Methods
-    # Get a ParrotContainer::Container::Item object for storing information
+    # Get a Rosella::Container::Item object for storing information
     # about a type
 
     # Get a Container::Item that returns an existing instance
     method get_instance_item($instance, @meth_inits) {
-        my $item := create(ParrotContainer::ItemBuilder::Instance,
+        my $item := create(Rosella::ItemBuilder::Instance,
                 $instance, @meth_inits);
         return $item;
     }
 
     # Get a Container::Item that returns a clone of an existing prototype
     method get_prototype_item($proto, @meth_inits) {
-        my $item := create(ParrotContainer::ItemBuilder::Prototype,
+        my $item := create(Rosella::ItemBuilder::Prototype,
                 $proto, @meth_inits);
         return $item;
     }
@@ -117,14 +117,14 @@ class ParrotContainer::Container {
         my $item;
         # TODO: Arguments for BUILD?
         if pir::isa($type, "P6protoobject") {
-            $item := create(ParrotContainer::ItemBuilder::P6protoobject,
+            $item := create(Rosella::ItemBuilder::P6protoobject,
                     $type, @meth_inits);
         } elsif pir::isa($type, "Class") {
-            $item := create(ParrotContainer::ItemBuilder::ParrotClass,
+            $item := create(Rosella::ItemBuilder::ParrotClass,
                     $type, $init_pmc, @meth_inits);
         } else {
-            my $class := ParrotContainer::get_type_class($type);
-            $item := create(ParrotContainer::ItemBuilder::ParrotClass,
+            my $class := Rosella::get_type_class($type);
+            $item := create(Rosella::ItemBuilder::ParrotClass,
                     $class, $init_pmc, @meth_inits);
         }
         return $item;
@@ -133,7 +133,7 @@ class ParrotContainer::Container {
     # Get a Container::Item that uses a factory method to create a new object
     # instance.
     method get_factory_method_item(&sub, @meth_inits, @arg_inits) {
-        my $item := create(ParrotContainer::ItemBuilder::FactoryMethod,
+        my $item := create(Rosella::ItemBuilder::FactoryMethod,
                 &sub, @meth_inits, @arg_inits);
         return $item;
     }
@@ -143,7 +143,7 @@ class ParrotContainer::Container {
 
     # Give this routine a shorter name, since it's so common and important
     sub create($proto, *@pos, *%named) {
-        return ParrotContainer::build($proto, |@pos, |%named);
+        return Rosella::build($proto, |@pos, |%named);
     }
 }
 

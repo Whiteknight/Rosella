@@ -1,7 +1,7 @@
 # Copyright (C) 2010, Austin Hastings. See accompanying LICENSE file, or
 # http://www.opensource.org/licenses/artistic-license-2.0.php for license.
 
-class ParrotTest::Loader {
+class Rosella::Loader {
     has $!class;
     has %!seen_methods;
     has $!test_prefix;
@@ -24,7 +24,7 @@ class ParrotTest::Loader {
     }
 
     our method default_suite() {
-        my $suite := ParrotTest::Suite.new();
+        my $suite := Rosella::Suite.new();
         $suite.BUILD();
         return $suite;
     }

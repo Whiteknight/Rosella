@@ -1,23 +1,23 @@
 INIT {
-    pir::load_bytecode("parrot_test_xunit.pbc");
-    pir::load_bytecode("parrot_container_action.pbc");
-    pir::load_bytecode("parrot_container_event.pbc");
+    pir::load_bytecode("rosella/xunit.pbc");
+    pir::load_bytecode("rosella/action.pbc");
+    pir::load_bytecode("rosella/event.pbc");
 }
 
 EventManagerTest.suite.run();
 
-class EventManagerTest is ParrotTest::Testcase {
+class EventManagerTest is Rosella::Testcase {
     method test_BUILD() {
-        my $em := ParrotContainer::build(ParrotContainer::EventManager);
+        my $em := Rosella::build(Rosella::EventManager);
     }
 
     method test_register_event() {
-        my $em := ParrotContainer::build(ParrotContainer::EventManager);
+        my $em := Rosella::build(Rosella::EventManager);
         my $count := 0;
         $em.register_event("Test",
-            ParrotContainer::build(ParrotContainer::Event,
+            Rosella::build(Rosella::Event,
                 :first(
-                    ParrotContainer::build(ParrotContainer::Action::Sub,
+                    Rosella::build(Rosella::Action::Sub,
                         sub($event) {
                             $count := $count + 1;
                         }
@@ -33,26 +33,26 @@ class EventManagerTest is ParrotTest::Testcase {
     }
 
     method test_register_event_multi() {
-        my $em := ParrotContainer::build(ParrotContainer::EventManager);
+        my $em := Rosella::build(Rosella::EventManager);
         my $count := 0;
         $em.register_event("Test",
-            ParrotContainer::build(ParrotContainer::Event,
+            Rosella::build(Rosella::Event,
                 :first(
-                    ParrotContainer::build(ParrotContainer::Action::Sub,
+                    Rosella::build(Rosella::Action::Sub,
                         sub($event) {
                             $count := $count + 1;
                         }
                     )
                 ),
                 :second(
-                    ParrotContainer::build(ParrotContainer::Action::Sub,
+                    Rosella::build(Rosella::Action::Sub,
                         sub($event) {
                             $count := $count + 2;
                         }
                     )
                 ),
                 :third(
-                    ParrotContainer::build(ParrotContainer::Action::Sub,
+                    Rosella::build(Rosella::Action::Sub,
                         sub($event) {
                             $count := $count + 3;
                         }
@@ -66,12 +66,12 @@ class EventManagerTest is ParrotTest::Testcase {
     }
 
     method test_register_event_payload() {
-        my $em := ParrotContainer::build(ParrotContainer::EventManager);
+        my $em := Rosella::build(Rosella::EventManager);
         my $data := "Hello";
         $em.register_event("Test2",
-            ParrotContainer::build(ParrotContainer::Event,
+            Rosella::build(Rosella::Event,
                 :first(
-                    ParrotContainer::build(ParrotContainer::Action::Sub,
+                    Rosella::build(Rosella::Action::Sub,
                         sub($event) {
                             $data := $data ~ $event[0];
                         }
@@ -85,12 +85,12 @@ class EventManagerTest is ParrotTest::Testcase {
     }
 
     method test_register_event_namedpayload() {
-        my $em := ParrotContainer::build(ParrotContainer::EventManager);
+        my $em := Rosella::build(Rosella::EventManager);
         my $data := "Hello";
         $em.register_event("Test2",
-            ParrotContainer::build(ParrotContainer::Event,
+            Rosella::build(Rosella::Event,
                 :first(
-                    ParrotContainer::build(ParrotContainer::Action::Sub,
+                    Rosella::build(Rosella::Action::Sub,
                         sub($event) {
                             $data := $data ~ $event{"arg"};
                         }

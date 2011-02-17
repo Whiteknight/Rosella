@@ -1,4 +1,4 @@
-class ParrotTest::Listener::TAP is ParrotTest::Listener;
+class Rosella::Listener::TAP is Rosella::Listener;
 
 has $!test_builder;
 

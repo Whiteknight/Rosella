@@ -1,7 +1,7 @@
 # Copyright (C) 2010, Austin Hastings. See accompanying LICENSE file, or
 # http://www.opensource.org/licenses/artistic-license-2.0.php for license.
 
-class ParrotTest::Failure {
+class Rosella::Failure {
     has $!fault;
     has $!test_case;
 
@@ -20,7 +20,7 @@ class ParrotTest::Failure {
     }
 }
 
-class ParrotTest::Result;
+class Rosella::Result;
 
 has @!errors;
 has @!failures;
@@ -52,7 +52,7 @@ our method add_failure($test, $failure) {
 }
 
 my method add_fault($test, $exception, :$notify, :$queue) {
-    my $failure := ParrotTest::Failure.new();
+    my $failure := Rosella::Failure.new();
     $failure.fault($exception);
     $failure.test_case($test);
 

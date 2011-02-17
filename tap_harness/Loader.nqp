@@ -1,4 +1,4 @@
-class ParrotTest::Harness::Loader {
+class Rosella::Harness::Loader {
     has $!os;
     has @!files;
 
@@ -91,15 +91,15 @@ class ParrotTest::Harness::Loader {
     }
 }
 
-class ParrotTest::Harness::Loader::NQP is ParrotTest::Harness::Loader {
+class Rosella::Harness::Loader::NQP is Rosella::Harness::Loader {
     method make_test_obj() {
-        ParrotTest::Harness::TestFile::NQP.new();
+        Rosella::Harness::TestFile::NQP.new();
     }
 }
 
-class ParrotTest::Harness::Loader::PIR is ParrotTest::Harness::Loader {
+class Rosella::Harness::Loader::PIR is Rosella::Harness::Loader {
     method make_test_obj() {
-        ParrotTest::Harness::TestFile::PIR.new();
+        Rosella::Harness::TestFile::PIR.new();
     }
 }
 

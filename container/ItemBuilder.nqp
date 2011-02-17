@@ -1,4 +1,4 @@
-class ParrotContainer::ItemBuilder
+class Rosella::ItemBuilder
 {
     has @!method_initializers;
 
@@ -23,8 +23,8 @@ class ParrotContainer::ItemBuilder
     }
 }
 
-class ParrotContainer::ItemBuilder::Instance
-    is ParrotContainer::ItemBuilder
+class Rosella::ItemBuilder::Instance
+    is Rosella::ItemBuilder
 {
     has $!instance;
 
@@ -39,8 +39,8 @@ class ParrotContainer::ItemBuilder::Instance
 }
 
 # Instantiate an object from a P6protoobject
-class ParrotContainer::ItemBuilder::P6protoobject
-    is ParrotContainer::ItemBuilder
+class Rosella::ItemBuilder::P6protoobject
+    is Rosella::ItemBuilder
 {
     has $!proto;
 
@@ -55,8 +55,8 @@ class ParrotContainer::ItemBuilder::P6protoobject
 }
 
 # Instantiate an object from a ParrotClass
-class ParrotContainer::ItemBuilder::ParrotClass
-    is ParrotContainer::ItemBuilder
+class Rosella::ItemBuilder::ParrotClass
+    is Rosella::ItemBuilder
 {
     has $!class;
     has $!init_pmc;
@@ -76,8 +76,8 @@ class ParrotContainer::ItemBuilder::ParrotClass
 }
 
 # Instantiate an object from an object prototype
-class ParrotContainer::ItemBuilder::Prototype
-    is ParrotContainer::ItemBuilder
+class Rosella::ItemBuilder::Prototype
+    is Rosella::ItemBuilder
 {
     has $!prototype;
 
@@ -91,8 +91,8 @@ class ParrotContainer::ItemBuilder::Prototype
     }
 }
 
-class ParrotContainer::ItemBuilder::FactoryMethod
-    is ParrotContainer::ItemBuilder
+class Rosella::ItemBuilder::FactoryMethod
+    is Rosella::ItemBuilder
 {
     has &!sub;
     has @!arg_initializers;

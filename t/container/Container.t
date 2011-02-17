@@ -1,22 +1,22 @@
 INIT {
-    pir::load_bytecode("parrot_test_xunit.pbc");
-    pir::load_bytecode("parrot_container.pbc");
+    pir::load_bytecode("rosella/xunit.pbc");
+    pir::load_bytecode("rosella/container.pbc");
 }
 
 ContainerTest.suite.run();
 
-class ContainerTest is ParrotTest::Testcase {
+class ContainerTest is Rosella::Testcase {
     method test_BUILD() {
-        my $container := ParrotContainer::build(ParrotContainer::Container);
+        my $container := Rosella::build(Rosella::Container);
     }
 
     method test_default_container() {
-        my $c := ParrotContainer::Container::default_container();
-        Assert::instance_of($c, ParrotContainer::Container, "no default");
+        my $c := Rosella::Container::default_container();
+        Assert::instance_of($c, Rosella::Container, "no default");
     }
 
     method test_register_factory_method() {
-        my $c := ParrotContainer::build(ParrotContainer::Container);
+        my $c := Rosella::build(Rosella::Container);
         $c.register_factory_method("Foobar", sub () {
             return pir::box__PI(7);
         });
@@ -25,18 +25,18 @@ class ContainerTest is ParrotTest::Testcase {
     }
 
     method test_register_type_withactions() {
-        my $c := ParrotContainer::build(ParrotContainer::Container);
+        my $c := Rosella::build(Rosella::Container);
         $c.register_type("String",
             :meth_inits([
-                ParrotContainer::build(ParrotContainer::Action::Sub,
+                Rosella::build(Rosella::Action::Sub,
                     sub ($obj) {
                         pir::set__vPS($obj, "FooBarBaz");
                     }, []
                 ),
-                ParrotContainer::build(ParrotContainer::Action::Method,
+                Rosella::build(Rosella::Action::Method,
                     "replace", [
-                        ParrotContainer::build(ParrotContainer::ActionArg::Instance, "B", :position(0)),
-                        ParrotContainer::build(ParrotContainer::ActionArg::Instance, "C", :position(1))
+                        Rosella::build(Rosella::ActionArg::Instance, "B", :position(0)),
+                        Rosella::build(Rosella::ActionArg::Instance, "C", :position(1))
                     ]
                 )
             ]

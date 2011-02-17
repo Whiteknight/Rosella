@@ -1,4 +1,4 @@
-class ParrotContainer::Event {
+class Rosella::Event {
     has %!actions;
     has $!current_action_name;
     has @!current_pos_payload;

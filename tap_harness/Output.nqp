@@ -1,10 +1,10 @@
-class ParrotTest::Harness::Output {
+class Rosella::Harness::Output {
     method debug($line) { pir::die("Must use a subclass"); }
     method show_results_summary($harness) { pir::die("Must use a subclass"); }
     method show_results_detail($harness) { pir::die("Must use a subclass"); }
 }
 
-class ParrotTest::Harness::Output::Console {
+class Rosella::Harness::Output::Console {
     method debug($line) { pir::say("# $line"); }
 
     method show_results_summary($harness) {

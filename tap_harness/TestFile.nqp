@@ -1,4 +1,4 @@
-class ParrotTest::Harness::TestFile {
+class Rosella::Harness::TestFile {
     has $!filename;
     has $!result;
     has $!errdetails;
@@ -177,7 +177,7 @@ class ParrotTest::Harness::TestFile {
         for @!lines {
             my $line := $_;
             if $line {
-                my $lineobj := ParrotTest::Harness::Line.new();
+                my $lineobj := Rosella::Harness::Line.new();
                 $lineobj.set_line($line);
                 if $lineobj.ignore() {
                     continue;
@@ -206,7 +206,7 @@ class ParrotTest::Harness::TestFile {
     }
 }
 
-class ParrotTest::Harness::TestFile::NQP is ParrotTest::Harness::TestFile {
+class Rosella::Harness::TestFile::NQP is Rosella::Harness::TestFile {
     method compile_test() {
         my $compiler := pir::compreg__PS('NQP-rx');
         my $handle := pir::new__PS("FileHandle");
@@ -225,7 +225,7 @@ class ParrotTest::Harness::TestFile::NQP is ParrotTest::Harness::TestFile {
     }
 }
 
-class ParrotTest::Harness::TestFile::PIR is ParrotTest::Harness::TestFile {
+class Rosella::Harness::TestFile::PIR is Rosella::Harness::TestFile {
     method compile_test() {
         my $sub;
         my $filename := $!filename;

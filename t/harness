@@ -1,8 +1,8 @@
 INIT {
-    pir::load_bytecode("parrot_test_tap_harness.pbc");
+    pir::load_bytecode("rosella/tap_harness.pbc");
 }
 
-my $harness := ParrotTest::Harness.new();
+my $harness := Rosella::Harness.new();
 $harness.initialize();
 $harness.add_test_dirs("NQP",
     "t/action",
@@ -12,5 +12,5 @@ $harness.add_test_dirs("NQP",
 );
 $harness.run();
 
-my $output := ParrotTest::Harness::Output::Console.new();
+my $output := Rosella::Harness::Output::Console.new();
 $output.show_results_summary($harness);

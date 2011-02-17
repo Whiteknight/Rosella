@@ -1,6 +1,6 @@
 # A method initializer calls a method on the new object, using a
 # series of predefined arguments.
-class ParrotContainer::Action {
+class Rosella::Action {
     has $!method;
     has @!args;   # a list of ActionArgs
 
@@ -27,13 +27,13 @@ class ParrotContainer::Action {
     }
 }
 
-class ParrotContainer::Action::Method is ParrotContainer::Action {
+class Rosella::Action::Method is Rosella::Action {
     method execute_initializer($obj, @pos, %named) {
-        ParrotContainer::call_parrot_method($obj, $!method, @pos, %named);
+        Rosella::call_parrot_method($obj, $!method, @pos, %named);
     }
 }
 
-class ParrotContainer::Action::Sub is ParrotContainer::Action {
+class Rosella::Action::Sub is Rosella::Action {
     method execute_initializer($obj, @pos, %named) {
         $!method($obj, |@pos, |%named);
     }

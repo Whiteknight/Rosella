@@ -1,4 +1,4 @@
-class ParrotTest::Harness::Line {
+class Rosella::Harness::Line {
     has $!result;
     has $!number;
     has $!name;

@@ -1,12 +1,12 @@
 INIT {
-    pir::load_bytecode("parrot_test_xunit.pbc");
-    pir::load_bytecode("parrot_container_action.pbc");
+    pir::load_bytecode("rosella/xunit.pbc");
+    pir::load_bytecode("rosella/action.pbc");
 }
 
 ActionArgTest.suite.run();
 
-class ActionArgTest is ParrotTest::Testcase {
+class ActionArgTest is Rosella::Testcase {
     method test_BUILD() {
-        my $arg := ParrotContainer::build(ParrotContainer::ActionArg);
+        my $arg := Rosella::build(Rosella::ActionArg);
     }
 }

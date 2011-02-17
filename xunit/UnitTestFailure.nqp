@@ -1,4 +1,4 @@
-class Exception::ParrotTestFailure {
+class Exception::RosellaFailure {
     has $!exception;
 
     our method message(*@value) {

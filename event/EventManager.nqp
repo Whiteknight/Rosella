@@ -1,4 +1,4 @@
-class ParrotContainer::EventManager {
+class Rosella::EventManager {
     has %!events;
 
     method BUILD() {

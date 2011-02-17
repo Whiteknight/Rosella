@@ -1,4 +1,4 @@
-class ParrotContainer::ActionArg {
+class Rosella::ActionArg {
     has $!name;
     has $!position;
 
@@ -49,8 +49,8 @@ class ParrotContainer::ActionArg {
 }
 
 # A type to be resolved recursively by the container
-class ParrotContainer::ActionArg::ContainerResolver
-    is ParrotContainer::ActionArg
+class Rosella::ActionArg::ContainerResolver
+    is Rosella::ActionArg
 {
     has $!container;
     has $!type;
@@ -66,8 +66,8 @@ class ParrotContainer::ActionArg::ContainerResolver
 }
 
 # An explicit item instance to be passed
-class ParrotContainer::ActionArg::Instance
-    is ParrotContainer::ActionArg
+class Rosella::ActionArg::Instance
+    is Rosella::ActionArg
 {
     has $!instance;
 

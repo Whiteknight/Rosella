@@ -1,4 +1,4 @@
-class ParrotTest::Harness {
+class Rosella::Harness {
     has $!total_passed;
     has $!total_failed;
     has $!total_files;
@@ -8,8 +8,8 @@ class ParrotTest::Harness {
 
     method initialize() {
         %!loaders := new_hash();
-        %!loaders{"NQP"} := ParrotTest::Harness::Loader::NQP.new;
-        %!loaders{"PIR"} := ParrotTest::Harness::Loader::PIR.new;
+        %!loaders{"NQP"} := Rosella::Harness::Loader::NQP.new;
+        %!loaders{"PIR"} := Rosella::Harness::Loader::PIR.new;
         self.reset_counts();
         self.setup_next_run();
     }

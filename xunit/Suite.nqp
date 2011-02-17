@@ -1,7 +1,7 @@
 # Copyright (C) 2010, Austin Hastings. See accompanying LICENSE file, or
 # http://www.opensource.org/licenses/artistic-license-2.0.php for license.
 
-class ParrotTest::Suite {
+class Rosella::Suite {
     has @!members;
     has $!num_tests;
     has $!name;
@@ -20,8 +20,8 @@ class ParrotTest::Suite {
     }
 
     my method default_result() {
-        my $result := ParrotTest::Result.new();
-        $result.add_listener(ParrotTest::Listener::TAP.new);
+        my $result := Rosella::Result.new();
+        $result.add_listener(Rosella::Listener::TAP.new);
         $result;
     }
 
@@ -42,7 +42,7 @@ class ParrotTest::Suite {
     }
 
     our method sort() {
-        @!members.sort(ParrotTest::Suite::sort_cmp);
+        @!members.sort(Rosella::Suite::sort_cmp);
         self;
     }
 

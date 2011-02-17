@@ -1,3 +1,3 @@
 INIT {
-    pir::load_bytecode("parrot_container_action.pbc");
+    pir::load_bytecode("rosella/action.pbc");
 }

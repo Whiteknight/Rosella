@@ -1,6 +1,6 @@
 # A basic class for handling prototypes only. Much lighter-weight than
-# ParrotContainer::Container
-class ParrotContainer::PrototypeManager {
+# Rosella::Container
+class Rosella::PrototypeManager {
     has %!library;
 
     sub new_hash(*%hash) { %hash; }

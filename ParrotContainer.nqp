@@ -1,4 +1,4 @@
-class ParrotContainer {
+class Rosella {
 
 
     # Helper method to call a Parrot method on an object with the given
