@@ -21,8 +21,14 @@ sub MAIN(@argv) {
         :inst_lib([])
     );
 
+    my @rosella_files := <
+        core/Rosella
+        core/Error
+    >;
+    setup_lib(%rosella, "rosella/core.pbc", @rosella_files);
+
     my @action_files := <
-        ParrotContainer
+        action/Setup
         action/Action
         action/ActionArg
     >;
@@ -31,6 +37,7 @@ sub MAIN(@argv) {
     my @container_files := <
         container/Container
         container/ItemBuilder
+        container/ItemCreator
         container/Setup
     >;
     setup_lib(%rosella, "rosella/container.pbc", @container_files);

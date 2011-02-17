@@ -1,6 +1,5 @@
-class Rosella::ItemBuilder
-{
-    has @!method_initializers;
+class Rosella::ItemBuilder {
+    has @!method_initializers; # a list of Actions
 
     method method_initializers(@meth_inits) {
         if pir::defined(@meth_inits) {
@@ -10,10 +9,10 @@ class Rosella::ItemBuilder
         }
     }
 
-    method resolve(*%options) {
+    method resolve(@overrides?) {
         my $item := self.resolve_instance();
         for @!method_initializers {
-            $_.execute($item);
+            $_.execute($item, @overrides);
         }
         return $item;
     }

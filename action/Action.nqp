@@ -13,16 +13,21 @@ class Rosella::Action {
         }
     }
 
-    method prepare_args(@pos, %named) {
+    method prepare_args(@pos, %named, @overrides?) {
         for @!args {
             $_.resolve_to(@pos, %named);
         }
+        if pir::defined(@overrides) {
+            for @overrides {
+                $_.resolve_to(@pos, %named);
+            }
+        }
     }
 
-    method execute($obj) {
+    method execute($obj, @overrides?) {
         my @pos := [];
         my %named := {};
-        self.prepare_args(@pos, %named);
+        self.prepare_args(@pos, %named, @overrides);
         self.execute_initializer($obj, @pos, %named);
     }
 }

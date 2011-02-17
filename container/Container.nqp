@@ -1,11 +1,17 @@
 class Rosella::Container {
     has %!library;
+    has $!default_builder;
     our $default_container;
 
     sub new_hash(*%hash) { %hash; }
 
-    method BUILD() {
+    method BUILD(:$builder?) {
         %!library := new_hash();
+        if pir::defined($builder) {
+            $!default_builder := $builder;
+        } else {
+            $!default_builder := Rosella::ItemCreator::Default.new;
+        }
     }
 
     # A readily-available global container instance. Creates a new container
@@ -59,36 +65,28 @@ class Rosella::Container {
 
     # Full resolution. Look for a registered type to resolve. If not found,
     # attempt to create a fresh item of the given type.
-    method resolve($type, *%named_opts) {
+    method resolve($type, *@overrides, *%named_opts) {
         my $name := Rosella::get_type_name($type);
         my $item := %!library{$name};
         if pir::defined($item) {
-            return $item.resolve(|%named_opts);
+            return $item.resolve(@overrides);
         }
-        return self.resolve_create($type, |%named_opts);
+        return self.resolve_create($type, @overrides);
     }
 
     # Create a new object only. Do not attempt to resolve from the library
-    # of registered types
-    method resolve_create($type, *%named_opts) {
-        if pir::isa($type, "P6protoobject") {
-            return $type.new();
-        }
-        my $init := %named_opts{"init_pmc"};
-        my $class := Rosella::get_type_class($type);
-        if pir::defined($init) {
-            return pir::new__PPP($class, $init);
-        }
-        return pir::new__PP($class);
+    # of registered types.
+    method resolve_create($type, @actions?) {
+        return $!default_builder.create($type, @actions);
     }
 
     # Resolve from the library only. Attempting to resolve a type that has
     # not previously been registered causes an error
-    method resolve_nocreate($type, *%named_opts) {
+    method resolve_nocreate($type, @overrides?, *%named_opts) {
         my $name := Rosella::get_type_name($type);
         my $item := %!library{$name};
         if pir::defined($item) {
-            return $item.resolve(self, |%named_opts);
+            return $item.resolve(@overrides);
         }
         pir::die("Type $name not registered");
     }
