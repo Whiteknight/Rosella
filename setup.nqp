@@ -29,7 +29,6 @@ sub MAIN(@argv) {
     setup_lib(%pc, "parrot_container_action.pbc", @action_files);
 
     my @container_files := <
-        ParrotContainer
         container/Container
         container/ItemBuilder
         container/Setup

@@ -5,7 +5,8 @@ INIT {
 my $harness := ParrotTest::Harness.new();
 $harness.initialize();
 $harness.add_test_dirs("NQP",
-    "t/action"
+    "t/action",
+    "t/container"
 
 );
 $harness.run();
