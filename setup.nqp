@@ -1,46 +1,52 @@
 INIT {
-    pir::load_language('parrot');
     pir::load_bytecode('distutils.pbc');
-
-    pir::load_bytecode('dumper.pir');
-}
-
-sub get_args() {
-    my $interp := pir::getinterp__P();
-    $interp[2];
 }
 
 sub new_hash(*%args) { %args; }
 
-MAIN(get_args());
+MAIN(pir::getinterp__P()[2]);
 
 sub MAIN(@argv) {
-    my %parrot_test := new_hash(
-        :name('Parrot-Test'),
-        :abstract('Testing library for Parrot'),
+    my %rosella := new_hash(
+        :name('Rosella'),
+        :abstract('Utilities Library for Parrot'),
         :authority('http://github.com/Whiteknight'),
-        :copyright_holder('Andrew Whitworth and Austin Hastings'),
-        #:doc_files(		<README CREDITS> ),
-        :keywords(< xunit >),
+        :copyright_holder('Andrew Whitworth'),
+        :keywords(< test tap xunit event container dependency-injection >),
         :license_type('Artistic License 2.0'),
         :license_uri('http://www.perlfoundation.org/artistic_license_2_0' ),
-        :checkout_uri('git://github.com/Whiteknight/parrot-test.git' ),
-        :browser_uri('git://github.com/Whiteknight/parrot-test'),
-        :project_uri('git://github.com/Whiteknight/parrot-test'),
-
-        #:harness_files(		pir::join(' ', <
-        #    !t/test-data
-        #    !t/Matchers/Tree.nqp
-        #    !t/Pmc
-        #    !t/Structure
-        #    t
-        #>) ),
-
-        #:release_id(			'release-10' ),
-        #:release_dir_format(	'released/%s'),
+        :checkout_uri('git://github.com/Whiteknight/rosella.git' ),
+        :browser_uri('git://github.com/Whiteknight/rosella'),
+        :project_uri('git://github.com/Whiteknight/rosella'),
+        :inst_lib([])
     );
 
-    %parrot_test<inst_lib> := < >;
+    my @action_files := <
+        ParrotContainer
+        action/Action
+        action/ActionArg
+    >;
+    setup_lib(%rosella, "rosella/action.pbc", @action_files);
+
+    my @container_files := <
+        container/Container
+        container/ItemBuilder
+        container/Setup
+    >;
+    setup_lib(%rosella, "rosella/container.pbc", @container_files);
+
+    my @event_files := <
+        event/Setup
+        event/Event
+        event/EventManager
+    >;
+    setup_lib(%rosella, "rosella/event.pbc", @event_files);
+
+    my @proto_files := <
+        ParrotContainer
+        prototype/PrototypeManager
+    >;
+    setup_lib(%rosella, "rosella/prototype.pbc", @proto_files);
 
     my @xunit_files := <
         xunit/Assertions
@@ -52,7 +58,7 @@ sub MAIN(@argv) {
         xunit/Testcase
         xunit/UnitTestFailure
     >;
-    my @xunit_pbcs := setup_lib(%parrot_test, "parrot_test_xunit.pbc", @xunit_files);
+    setup_lib(%rosella, "rosella/xunit.pbc", @xunit_files);
 
     my @mockobject_files := <
         mockobject/Setup
@@ -64,7 +70,7 @@ sub MAIN(@argv) {
         mockobject/SigMatcher
         mockobject/Verifier
     >;
-    my @mockobject_pbcs := setup_lib(%parrot_test, "parrot_test_mockobject.pbc", @mockobject_files);
+    setup_lib(%rosella, "rosella/mockobject.pbc", @mockobject_files);
 
     my @tap_harness_files := <
         tap_harness/Harness
@@ -73,22 +79,24 @@ sub MAIN(@argv) {
         tap_harness/Output
         tap_harness/TestFile
     >;
-    my @tap_harness_pbcs := setup_lib(%parrot_test, "parrot_test_tap_harness.pbc", @tap_harness_files);
+    setup_lib(%rosella, "rosella/tap_harness.pbc", @tap_harness_files);
+
 
     pir::shift(@argv);
-    setup(@argv, %parrot_test);
+    setup(@argv, %rosella);
 }
 
-sub setup_lib(%parrot_test, $lib, @files) {
+sub setup_lib(%rosella, $name, @files) {
     my @pbcs := < >;
     for @files {
         my $path := $_;
         my $nqp_file := $path ~ '.nqp';
         my $pir_file := $path ~ '.pir';
         my $pbc_file := $path ~ '.pbc';
-        %parrot_test<pir_nqp-rx>{$pir_file} := $nqp_file;
-        %parrot_test<pbc_pir>{$pbc_file} := $pir_file;
+        %rosella<pir_nqp-rx>{$pir_file} := $nqp_file;
+        %rosella<pbc_pir>{$pbc_file} := $pir_file;
         @pbcs.push($pbc_file);
     }
-    %parrot_test<pbc_pbc>{$lib} := @pbcs;
+    %rosella<pbc_pbc>{$name} := @pbcs;
+    pir::push(%rosella<inst_lib>, $name);
 }
