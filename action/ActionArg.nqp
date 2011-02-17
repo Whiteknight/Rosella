@@ -1,4 +1,4 @@
-class ParrotContainer::InitializerArg {
+class ParrotContainer::ActionArg {
     has $!name;
     has $!position;
 
@@ -49,8 +49,8 @@ class ParrotContainer::InitializerArg {
 }
 
 # A type to be resolved recursively by the container
-class ParrotContainer::InitializerArg::Resolver
-    is ParrotContainer::InitializerArg
+class ParrotContainer::ActionArg::ContainerResolver
+    is ParrotContainer::ActionArg
 {
     has $!container;
     has $!type;
@@ -66,8 +66,8 @@ class ParrotContainer::InitializerArg::Resolver
 }
 
 # An explicit item instance to be passed
-class ParrotContainer::InitializerArg::Instance
-    is ParrotContainer::InitializerArg
+class ParrotContainer::ActionArg::Instance
+    is ParrotContainer::ActionArg
 {
     has $!instance;
 

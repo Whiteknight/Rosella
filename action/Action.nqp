@@ -1,8 +1,8 @@
 # A method initializer calls a method on the new object, using a
 # series of predefined arguments.
-class ParrotContainer::Initializer {
+class ParrotContainer::Action {
     has $!method;
-    has @!args;   # a list of Container::InitializerArgs
+    has @!args;   # a list of ActionArgs
 
     method BUILD($method, @args) {
         $!method := $method;
@@ -23,13 +23,13 @@ class ParrotContainer::Initializer {
     }
 }
 
-class ParrotContainer::Initializer::Method is ParrotContainer::Initializer {
+class ParrotContainer::Action::Method is ParrotContainer::Action {
     method execute_initializer($obj, @pos, %named) {
         ParrotContainer::call_parrot_method($obj, $!method, @pos, %named);
     }
 }
 
-class ParrotContainer::Initializer::Sub is ParrotContainer::Initializer {
+class ParrotContainer::Action::Sub is ParrotContainer::Action {
     method execute_initializer($obj, @pos, %named) {
         $!method($obj, |@pos, |%named);
     }

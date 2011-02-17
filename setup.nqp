@@ -21,18 +21,24 @@ sub MAIN(@argv) {
         :inst_lib([])
     );
 
+    my @action_files := <
+        action/Action
+        action/ActionArg
+    >;
+    setup_lib(%pc, "parrot_container_action.pbc", @action_files);
+
     my @container_files := <
         ParrotContainer
         container/Container
         container/ItemBuilder
-        container/InitializerArg
-        container/Initializer
+        container/Setup
     >;
     setup_lib(%pc, "parrot_container.pbc", @container_files);
 
     my @proto_files := <
         ParrotContainer
-        prototype/PrototypeManager>;
+        prototype/PrototypeManager
+    >;
     setup_lib(%pc, "parrot_container_prototype.pbc", @proto_files);
 
     pir::shift(@argv);
