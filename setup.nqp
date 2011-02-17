@@ -37,7 +37,7 @@ sub MAIN(@argv) {
     my @container_files := <
         container/Container
         container/ItemBuilder
-        container/ItemCreator
+        container/ObjectFactory
         container/Setup
     >;
     setup_lib(%rosella, "rosella/container.pbc", @container_files);

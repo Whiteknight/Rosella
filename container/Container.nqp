@@ -1,16 +1,16 @@
 class Rosella::Container {
     has %!library;
-    has $!default_builder;
+    has $!default_factory;
     our $default_container;
 
     sub new_hash(*%hash) { %hash; }
 
-    method BUILD(:$builder?) {
+    method BUILD(:$factory?) {
         %!library := new_hash();
-        if pir::defined($builder) {
-            $!default_builder := $builder;
+        if pir::defined($factory) {
+            $!default_factory := $factory;
         } else {
-            $!default_builder := Rosella::ItemCreator::Default.new;
+            $!default_factory := Rosella::ObjectFactory::Default.new;
         }
     }
 
