@@ -35,6 +35,13 @@ sub MAIN(@argv) {
     >;
     setup_lib(%pc, "parrot_container.pbc", @container_files);
 
+    my @event_files := <
+        event/Setup
+        event/Event
+        event/EventManager
+    >;
+    setup_lib(%pc, "parrot_container_event.pbc", @event_files);
+
     my @proto_files := <
         ParrotContainer
         prototype/PrototypeManager

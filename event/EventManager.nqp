@@ -1,8 +1,17 @@
-class EventManager {
-    method register_event($name, $event) {
+class ParrotContainer::EventManager {
+    has %!events;
+
+    method BUILD() {
+        %!events := {};
     }
 
-    method raise_event($name, *@args) {
+    method register_event($name, $event) {
+        # TODO: Behavior on duplicates/override?
+        %!events{$name} := $event;
+    }
+
+    method raise_event($name, *@args, *%named) {
+        %!events{$name}.raise(@args, %named);
     }
 
     method remove_event($name) {

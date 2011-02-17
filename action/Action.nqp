@@ -4,9 +4,13 @@ class ParrotContainer::Action {
     has $!method;
     has @!args;   # a list of ActionArgs
 
-    method BUILD($method, @args) {
+    method BUILD($method, @args?) {
         $!method := $method;
-        @!args := @args;
+        if pir::defined(@args) {
+            @!args := @args;
+        } else {
+            @!args := [];
+        }
     }
 
     method prepare_args(@pos, %named) {
@@ -15,9 +19,21 @@ class ParrotContainer::Action {
         }
     }
 
-    method execute($obj) {
-        my @pos := [];
-        my %named := {};
+    method execute($obj, @pos_args?, %named_args?) {
+        my @pos;
+        if pir::defined(@pos_args) {
+            # TODO: We probably want a clone here. Don't reuse the same
+            #       array since we are modifying it
+            @pos := @pos_args;
+        } else {
+            @pos := [];
+        }
+        my %named;
+        if pir::defined(%named_args) {
+            %named := %named_args;
+        } else {
+            %named := {};
+        }
         self.prepare_args(@pos, %named);
         self.execute_initializer($obj, @pos, %named);
     }
