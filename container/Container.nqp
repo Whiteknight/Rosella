@@ -136,7 +136,6 @@ class Rosella::Container {
         return $item;
     }
 
-
     # Helper Methods
 
     # Give this routine a shorter name, since it's so common and important
