@@ -10,6 +10,11 @@ class ContainerTest is ParrotTest::Testcase {
         my $container := ParrotContainer::build(ParrotContainer::Container);
     }
 
+    method test_default_container() {
+        my $c := ParrotContainer::Container::default_container();
+        Assert::instance_of($c, ParrotContainer::Container, "no default");
+    }
+
     method test_register_factory_method() {
         my $c := ParrotContainer::build(ParrotContainer::Container);
         $c.register_factory_method("Foobar", sub () {
