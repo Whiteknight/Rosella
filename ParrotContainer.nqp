@@ -1,19 +1,5 @@
 class ParrotContainer {
-    our $container;
 
-    # A readily-available global container instance. Creates a new container
-    # if one has not already be set as the global default.
-    our sub default_container($new_cont?) {
-        our $container;
-        if pir::defined($new_cont) {
-            $container := $new_cont;
-        }
-        if pir::defined($container) {
-            return $container;
-        }
-        $container := build(ParrotContainer::Container);
-        return $container;
-    }
 
     # Helper method to call a Parrot method on an object with the given
     # arguments

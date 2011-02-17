@@ -1,10 +1,25 @@
 class ParrotContainer::Container {
     has %!library;
+    our $default_container;
 
     sub new_hash(*%hash) { %hash; }
 
     method BUILD() {
         %!library := new_hash();
+    }
+
+    # A readily-available global container instance. Creates a new container
+    # if one has not already be set as the global default.
+    our sub default_container($new_cont?) {
+        our $default_container;
+        if pir::defined($new_cont) {
+            $default_container := $new_cont;
+        }
+        if pir::defined($default_container) {
+            return $default_container;
+        }
+        $default_container := create(ParrotContainer::Container);
+        return $default_container;
     }
 
     # Registration Methods
