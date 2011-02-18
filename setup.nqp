@@ -51,8 +51,8 @@ sub MAIN(@argv) {
 
     my @proto_files := <
         prototype/Setup
-        prototype/PrototypeItem
-        prototype/PrototypeManager
+        prototype/Item
+        prototype/Manager
     >;
     setup_lib(%rosella, "rosella/prototype.pbc", @proto_files);
 
