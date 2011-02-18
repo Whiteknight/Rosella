@@ -58,4 +58,18 @@ class ContainerTest is Rosella::Testcase {
         my $bar := $c.resolve("String");
         Assert::equal($bar, "FooCarCaz", "not equal");
     }
+
+    method test_auto_register() {
+        my $c := Rosella::build(Rosella::Container, :auto_register(1));
+        my $a := $c.resolve("String");
+        my $b := $c.resolve("String");
+        Assert::same($a, $b);
+    }
+
+    method test_auto_register_disabled() {
+        my $c := Rosella::build(Rosella::Container, :auto_register(0));
+        my $a := $c.resolve("String");
+        my $b := $c.resolve("String");
+        Assert::not_same($a, $b);
+    }
 }
