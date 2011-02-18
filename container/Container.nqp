@@ -77,7 +77,7 @@ class Rosella::Container {
     # Create a new object only. Do not attempt to resolve from the library
     # of registered types.
     method resolve_create($type, @actions?) {
-        return $!default_builder.create($type, @actions);
+        return $!default_factory.create($type, @actions);
     }
 
     # Resolve from the library only. Attempting to resolve a type that has

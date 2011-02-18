@@ -2,8 +2,7 @@ INIT {
     pir::load_bytecode("rosella/tap_harness.pbc");
 }
 
-my $harness := Rosella::Harness.new();
-$harness.initialize();
+my $harness := Rosella::build(Rosella::Harness);
 $harness.add_test_dirs("NQP",
     "t/action",
     "t/container",

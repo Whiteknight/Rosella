@@ -6,7 +6,7 @@ class Rosella::Harness {
     has @!tests;
     has %!loaders;
 
-    method initialize() {
+    method BUILD() {
         %!loaders := new_hash();
         %!loaders{"NQP"} := Rosella::Harness::Loader::NQP.new;
         %!loaders{"PIR"} := Rosella::Harness::Loader::PIR.new;

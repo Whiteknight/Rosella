@@ -51,6 +51,7 @@ our sub not_equal($o1, $o2, $message = "objects are equal") {
     fail($message) if pir::iseq__IPP($o2, $o1);
 }
 
+# Only works with P6metaclass/P6protoobject classes
 our sub instance_of($obj, $class, $message = "object is not instance_of") {
     fail($message) unless pir::class__PP($obj) =:= P6metaclass.get_parrotclass($class);
 }
