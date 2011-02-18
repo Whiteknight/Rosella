@@ -14,7 +14,7 @@ class Rosella::Prototype::Item {
         if pir::defined(&!constructor) {
             Rosella::call_parrot_method($item, &!constructor, @pos, %named);
         }
-        retutn $item;
+        return $item;
     }
 
     method prototype($proto?) {

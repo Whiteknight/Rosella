@@ -96,13 +96,13 @@ class Rosella {
         if ! pir::defined($val) {
             Rosella::Error::variable($class, $name, "failed defined");
         }
-        if pir::defined($isa) && !pir::isa($isa) {
+        if pir::defined($isa) && !pir::isa($val, $isa) {
             Rosella::Error::variable($class, $name, "failed isa $isa");
         }
-        if pir::defined($does) && !pir::does($does) {
+        if pir::defined($does) && !pir::does($val, $does) {
             Rosella::Error::variable($class, $name, "failed does $does");
         }
-        if pir::defined($can) && !pir::can($can) {
+        if pir::defined($can) && !pir::can($val, $can) {
             Rosella::Error::variable($class, $name, "failed can $can");
         }
     }
