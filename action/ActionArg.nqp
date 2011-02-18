@@ -14,6 +14,14 @@ class Rosella::ActionArg {
         $!position := $value;
     }
 
+    method setup_positioning(:$position?, :$name?) {
+        if pir::defined($position) {
+            self.position($position);
+        } elsif pir::defined($name) {
+            self.name($name);
+        }
+    }
+
     method type() {
         if pir::defined($!name) {
             return "Named";
@@ -55,9 +63,10 @@ class Rosella::ActionArg::ContainerResolver
     has $!container;
     has $!type;
 
-    method BUILD($container, $type) {
+    method BUILD($container, $type, *%named) {
         $!container := $container;
         $!type := $type;
+        self.setup_positioning(|%named);
     }
 
     method resolve_value() {
@@ -71,14 +80,9 @@ class Rosella::ActionArg::Instance
 {
     has $!instance;
 
-    method BUILD($instance, :$position?, :$name?) {
+    method BUILD($instance, *%named) {
         $!instance := $instance;
-        if pir::defined($position) {
-            self.position($position);
-        }
-        if pir::defined($name) {
-            self.name($name);
-        }
+        self.setup_positioning(|%named);
     }
 
     method resolve_value() {
