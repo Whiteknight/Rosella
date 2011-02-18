@@ -7,7 +7,8 @@ $harness.initialize();
 $harness.add_test_dirs("NQP",
     "t/action",
     "t/container",
-    "t/event"
+    "t/event",
+    "t/prototype"
 
 );
 $harness.run();
