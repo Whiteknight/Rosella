@@ -7,6 +7,10 @@ module Error {
         pir::die("Rosella ($name) : $err");
     }
 
+    our sub variable($name, $err) {
+        pir::die("Rosella variable $name : $err");
+    }
+
     our sub not_implemented($class, $func) {
         pir::die("Rosella ($class . $func) : Not implemented");
     }

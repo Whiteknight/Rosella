@@ -91,5 +91,20 @@ class Rosella {
         }
         return pir::get_class__PP($type);
     }
+
+    sub verify_constructor_arg($val, $class, $name, :$isa?, :$does?, :$can?) {
+        if ! pir::defined($val) {
+            Rosella::Error::variable($class, $name, "failed defined");
+        }
+        if pir::defined($isa) && !pir::isa($isa) {
+            Rosella::Error::variable($class, $name, "failed isa $isa");
+        }
+        if pir::defined($does) && !pir::does($does) {
+            Rosella::Error::variable($class, $name, "failed does $does");
+        }
+        if pir::defined($can) && !pir::can($can) {
+            Rosella::Error::variable($class, $name, "failed can $can");
+        }
+    }
 }
 

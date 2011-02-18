@@ -1,19 +1,26 @@
 # A basic class for handling prototypes only. Much lighter-weight than
 # Rosella::Container
-class Rosella::PrototypeManager {
+class Rosella::Prototype::Manager {
     has %!library;
 
-    sub new_hash(*%hash) { %hash; }
-
     method initialize(*%lib) {
-        %!library := new_hash(|%lib);
+        %!library := { };
     }
 
-    method add_prototype($name, $proto) {
-        %!library{$name} := $proto;
+    method add_prototype($name, $proto, &sub?) {
+        my $entry := Rosella::build(Rosella::Prototype::Item, $proto, &sub);
+        %!library{$name} := $entry
     }
 
-    method instance($name) {
-        return pir::clone(%!library{$name});
+    method instance($name, *@pos, *%named) {
+        return %!library{$name}.create(@pos, %named);
+    }
+
+    method get_prototype($name) {
+        return %!library{$name}.prototype();
+    }
+
+    method get_constructor($name) {
+        return %!library{$name}.constructor();
     }
 }

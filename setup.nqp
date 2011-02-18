@@ -35,10 +35,10 @@ sub MAIN(@argv) {
     setup_lib(%rosella, "rosella/action.pbc", @action_files);
 
     my @container_files := <
+        container/Setup
         container/Container
         container/ItemBuilder
         container/ObjectFactory
-        container/Setup
     >;
     setup_lib(%rosella, "rosella/container.pbc", @container_files);
 
@@ -50,7 +50,8 @@ sub MAIN(@argv) {
     setup_lib(%rosella, "rosella/event.pbc", @event_files);
 
     my @proto_files := <
-        ParrotContainer
+        prototype/Setup
+        prototype/PrototypeItem
         prototype/PrototypeManager
     >;
     setup_lib(%rosella, "rosella/prototype.pbc", @proto_files);
