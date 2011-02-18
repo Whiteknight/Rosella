@@ -28,14 +28,15 @@ sub MAIN(@argv) {
     setup_lib(%rosella, "rosella/core.pbc", @rosella_files);
 
     my @action_files := <
-        action/Setup
+        include/Core
         action/Action
         action/ActionArg
     >;
     setup_lib(%rosella, "rosella/action.pbc", @action_files);
 
     my @container_files := <
-        container/Setup
+        include/Core
+        include/Action
         container/Container
         container/ItemBuilder
         container/ObjectFactory
@@ -43,20 +44,22 @@ sub MAIN(@argv) {
     setup_lib(%rosella, "rosella/container.pbc", @container_files);
 
     my @event_files := <
-        event/Setup
+        include/Core
+        include/Action
         event/Event
         event/EventManager
     >;
     setup_lib(%rosella, "rosella/event.pbc", @event_files);
 
     my @proto_files := <
-        prototype/Setup
+        include/Core
         prototype/Item
         prototype/Manager
     >;
     setup_lib(%rosella, "rosella/prototype.pbc", @proto_files);
 
     my @xunit_files := <
+        include/Core
         xunit/Assertions
         xunit/Listener
         xunit/Listener/TAP
@@ -69,7 +72,7 @@ sub MAIN(@argv) {
     setup_lib(%rosella, "rosella/xunit.pbc", @xunit_files);
 
     my @mockobject_files := <
-        mockobject/Setup
+        include/Core
         mockobject/Antiphon
         mockobject/Cuckoo
         mockobject/Cuculus
@@ -81,6 +84,7 @@ sub MAIN(@argv) {
     setup_lib(%rosella, "rosella/mockobject.pbc", @mockobject_files);
 
     my @tap_harness_files := <
+        include/Core
         tap_harness/Harness
         tap_harness/Line
         tap_harness/Loader
