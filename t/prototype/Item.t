@@ -14,25 +14,27 @@ class PrototypeItemTest is Rosella::Testcase {
     method test_create() {
         my $proto := "This is a string";
         my $item := Rosella::build(Rosella::Prototype::Item, $proto);
-        my $other := $item.create([], {});
+        my $other := $item.create();
         Assert::equal($proto, $other);
         Assert::not_same($proto, $other);
     }
 
-    method test_create_constructor() {
+    method test_construct() {
         my $proto := "This is a string";
         my &const := sub($self) { $self.replace("This", "That"); };
         my $item := Rosella::build(Rosella::Prototype::Item, $proto, &const);
-        my $other := $item.create([], {});
+        my $other := $item.create();
+        $item.construct($other);
         Assert::equal($other, "That is a string");
         Assert::not_equal($other, $proto);
     }
 
-    method test_create_constructor_args() {
+    method test_construct_args() {
         my $proto := "This is a string";
         my &const := sub($self, $a, $b) { $self.replace($a, $b); };
         my $item := Rosella::build(Rosella::Prototype::Item, $proto, &const);
-        my $other := $item.create(["string", "test"], {});
+        my $other := $item.create();
+        $item.construct($other, ["string", "test"]);
         Assert::equal($other, "This is a test");
         Assert::not_equal($other, $proto);
     }

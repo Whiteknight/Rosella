@@ -9,12 +9,15 @@ class Rosella::Prototype::Item {
         }
     }
 
-    method create(@pos, %named) {
+    method create() {
         my $item := pir::clone($!prototype);
+        return $item;
+    }
+
+    method construct($item, @pos?, %named?) {
         if pir::defined(&!constructor) {
             Rosella::call_parrot_method($item, &!constructor, @pos, %named);
         }
-        return $item;
     }
 
     method prototype($proto?) {

@@ -12,8 +12,21 @@ class Rosella::Prototype::Manager {
         %!library{$name} := $entry
     }
 
+    # Get a fresh instance
     method instance($name, *@pos, *%named) {
-        return %!library{$name}.create(@pos, %named);
+        my $entry := %!library{$name};
+        my $obj := $entry.create();
+        $entry.construct(@pos, %named);
+        return $obj;
+    }
+
+    # Get a fresh instance, and run it through a specified constructor
+    # instead of any already-registered constructors.
+    method instance_constructor($name, &constructor, *@pos, *%named) {
+        my $entry := %!library{$name};
+        my $obj := $entry.create();
+        Rosella::call_parrot_method($obj, &constructor, @pos, %named);
+        return $obj;
     }
 
     method get_prototype($name) {
