@@ -3,7 +3,7 @@
 class Rosella::Prototype::Manager {
     has %!library;
 
-    method initialize(*%lib) {
+    method BUILD() {
         %!library := { };
     }
 
