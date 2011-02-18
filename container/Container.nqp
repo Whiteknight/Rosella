@@ -88,7 +88,7 @@ class Rosella::Container {
         if pir::defined($item) {
             return $item.resolve(@overrides);
         }
-        pir::die("Type $name not registered");
+        Rosella::Error::invalid(Rosella::Container, "Type $name not registered");
     }
 
     # Get Item Methods

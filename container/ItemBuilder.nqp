@@ -18,7 +18,7 @@ class Rosella::ItemBuilder {
     }
 
     method resolve_instance() {
-        pir::die("Must use a subclass");
+        Rosella::Error::must_subclass(Rosella::ItemBuilder, "resolve_instance");
     }
 }
 

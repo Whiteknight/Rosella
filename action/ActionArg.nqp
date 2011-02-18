@@ -43,7 +43,7 @@ class Rosella::ActionArg {
     }
 
     method resolve_value() {
-        pir::die("Must use a subclass");
+        Rosella::Error::must_subclass(Rosella::ActionArg, "resolve_value");
     }
 
 }
