@@ -1,12 +1,13 @@
 class Rosella::Container {
     has %!library;
     has $!default_factory;
+    has %!options;
     our $default_container;
 
-    sub new_hash(*%hash) { %hash; }
-
-    method BUILD(:$factory?) {
-        %!library := new_hash();
+    method BUILD(:$factory?, :$auto_register = 0) {
+        %!library := { };
+        %!options := { };
+        %!options{"auto_register"} := $auto_register;
         if pir::defined($factory) {
             $!default_factory := $factory;
         } else {
@@ -71,11 +72,15 @@ class Rosella::Container {
         if pir::defined($item) {
             return $item.resolve(@overrides);
         }
-        return self.resolve_create($type, @overrides);
+        my $obj := self.resolve_create($type, @overrides);
+        if %!options{"auto_register"} {
+            self.register_instance($type, $obj, @overrides);
+        }
+        return $obj;
     }
 
     # Create a new object only. Do not attempt to resolve from the library
-    # of registered types.
+    # of registered types. Do not auto-register the result
     method resolve_create($type, @actions?) {
         return $!default_factory.create($type, @actions);
     }

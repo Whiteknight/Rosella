@@ -13,5 +13,5 @@ $harness.add_test_dirs("NQP",
 );
 $harness.run();
 
-my $output := Rosella::Harness::Output::Console.new();
+my $output := Rosella::build(Rosella::Harness::Output::Console);
 $output.show_results_summary($harness);
