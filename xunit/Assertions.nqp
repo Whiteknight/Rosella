@@ -4,7 +4,7 @@
 module Assert;
 
 our sub fail($why = "Unknown failure") {
-    my $ex := Exception::RosellaFailure.new();
+    my $ex := Rosella::build(Rosella::TestFailure);
     $ex.message($why);
     $ex.throw();
 }
