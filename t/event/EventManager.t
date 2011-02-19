@@ -4,7 +4,7 @@ INIT {
     pir::load_bytecode("rosella/event.pbc");
 }
 
-EventManagerTest.suite.run();
+Rosella::Testcase::test(EventManagerTest);
 
 class EventManagerTest is Rosella::Testcase {
     method test_BUILD() {

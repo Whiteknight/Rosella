@@ -3,7 +3,7 @@ INIT {
     pir::load_bytecode("rosella/action.pbc");
 }
 
-ActionArgInstanceTest.suite.run();
+Rosella::Testcase::test(ActionArgInstanceTest);
 
 class ActionArgInstanceTest is Rosella::Testcase {
     method test_BUILD() {

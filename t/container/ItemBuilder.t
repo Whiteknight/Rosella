@@ -3,7 +3,7 @@ INIT {
     pir::load_bytecode("rosella/container.pbc");
 }
 
-ItemBuilderTest.suite.run();
+Rosella::Testcase::test(ItemBuilderTest);
 
 class ItemBuilderTest is Rosella::Testcase {
 }

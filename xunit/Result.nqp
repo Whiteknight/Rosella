@@ -108,7 +108,7 @@ class Rosella::Result {
     }
 
     our method start_test($test) {
-        self.num_tests(self.num_tests + $test.num_tests);
+        self.num_tests(self.num_tests + $test.__num_tests);
         self.notify_listeners('start_test', $test);
     }
 

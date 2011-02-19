@@ -45,7 +45,7 @@ our method end_test($test) {
 }
 
 our method get_test_label($test) {
-    $test.verify || $test.name || '';
+    $test.verify || $test.__name || '';
 }
 
 our method plan_tests($num_tests) {

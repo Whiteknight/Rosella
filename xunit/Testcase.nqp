@@ -6,107 +6,37 @@ class Rosella::Testcase {
     has $!verify;
     has $!name;
 
-    my method default_loader() {
-        return Rosella::build(Rosella::Loader);
+    method BUILD($name) {
+        $!name := $name;
     }
 
-    our method name($value?) { pir::defined__IP($value) ?? ($!name := $value) !! $!name; }
-
-    our method verify($value?) {
-        if pir::defined($value) {
-            $!verify := $value;
+    our sub test($testproto, :$loaderproto?, *%opts) {
+        my $loader;
+        if pir::defined($loaderproto) {
+            $loader := Rosella::build($loaderproto);
+        } else {
+            $loader := Rosella::build(Rosella::Loader);
         }
-        $!verify;
+        my $suite := $loader.load_tests_from_testcase($testproto);
+        $suite.name: "Test suite for " ~ pir::typeof__SP($testproto.WHAT);
+        $suite.run();
     }
 
-    our method todo($value?) {
-        if pir::defined($value) {
-            $!todo := $value;
-        }
-        $!todo;
-    }
+    our method __name() { $!name; }
 
-    my method default_result() {
-        my $result := Rosella::build(Rosella::Result);
-        $result.add_listener: Rosella::build(Rosella::Listener::TAP);
-        return $result;
-    }
+    our method __num_tests() { 1; }
 
-    our method num_tests() {
-        1;
-    }
+    our method __set_up() { }
 
-    # NOTE: Don't call this directly!! Call .suite.run instead.
-    our method run($result = self.default_result) {
-        $result.start_test(self);
-        my $exception;
+    our method __tear_down() { }
 
-        try {
-            self.set_up();
-            self.run_test();
+    # Provide an alternate text to display on output
+    our method verify($verify?) { pir::defined__IP($verify) ?? ($!verify := $verify) !! $!verify; }
 
-            CATCH {
-                $exception := $!;
-                #$!.handled(1);
-            }
-        };
+    our method todo($todo?) { pir::defined__IP($todo) ?? ($!todo := $todo) !! $!todo; }
 
-        try {
-            self.tear_down();
-
-            CATCH {
-                pir::say("Caught exception while tearing down test " ~ pir::typeof__SP(self));
-                pir::say($!);
-                # TODO: We should set a "suite-related error" message on the Result
-            }
-        };
-
-        if pir::defined__iP($exception) {
-            $result.add_failure(self, $exception);
-        }
-        else {
-            $result.end_test(self);
-        }
-
-        $result;
-    }
-
-    our method run_test() {
-        my $method_name := self.name;
-        my $object := self;
-        Q:PIR {
-            .local pmc object, meth
-            object = find_lex '$object'
-            meth = find_lex '$method_name'
-
-            $I0 = isa meth, 'Sub'
-            unless $I0 goto call_string
-
-            object.meth()
-
-          call_string:
-            $S0 = meth
-            object.$S0()
-        };
-    }
-
-    our method set_up() { }
-
-    our method suite() {
-        my $suite := self.default_loader.load_tests_from_testcase(self);
-        $suite.name: "Test suite for " ~ pir::typeof__SP(self.WHAT);
-        $suite;
-    }
-
-    our method tear_down() { }
-
-    # TODO: Figure out what this is and implement it
-    method todo_test( *@text ) {
-        $!todo := @text.join;
-    }
-
-    # TODO: Figure this out
-    method verify_that(*@text) {
-        $!verify := @text.join;
+    our method unimplemented($msg) {
+        self.todo($msg);
+        Assert::fail("Unimplemented: " ~ $!name);
     }
 }

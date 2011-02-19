@@ -4,7 +4,7 @@ INIT {
     pir::load_bytecode("rosella/prototype.pbc");
 }
 
-PrototypeManagerTest.suite.run();
+Rosella::Testcase::test(PrototypeManagerTest);
 
 class PrototypeManagerTest is Rosella::Testcase {
     method test_BUILD() {

@@ -4,7 +4,7 @@ INIT {
     pir::load_bytecode("rosella/container.pbc");
 }
 
-ActionArgContainerResolverTest.suite.run();
+Rosella::Testcase::test(ActionArgContainerResolverTest);
 
 class ActionArgContainerResolverTest is Rosella::Testcase {
     method test_BUILD() {

@@ -7,7 +7,7 @@ class Rosella::Loader {
     has $!test_prefix;
 
     method BUILD() {
-        $!test_prefix := 'test';
+        $!test_prefix := "test_";
     }
 
     sub compare_methods($a, $b) {
@@ -19,8 +19,7 @@ class Rosella::Loader {
         my $protoobject := pir::getattribute__pps($metaclass, 'protoobject');
 
         for @tests -> $test {
-            my $test_obj := $protoobject.new();
-            $test_obj.name($test);
+            my $test_obj := Rosella::build($protoobject, $test);
             $suite.add_test: $test_obj
         }
 
