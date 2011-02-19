@@ -8,6 +8,7 @@ class Rosella::TestFailure {
         }
         my $ex := $!exception;
         pir::setattribute__vPSP($ex, "message", $msg);
+        pir::setattribute__vPSP($ex, "payload", self);
     }
 
     our method throw() {

@@ -61,13 +61,19 @@ class Rosella::Suite {
             }
         };
 
-        if pir::defined__iP($exception) {
+        if ! pir::defined($exception) {
+            $result.end_test($test);
+            return $result;
+        }
+
+        my $payload := pir::getattribute__PPS($exception, "payload");
+        if ! pir::isnull__IP($payload) &&
+            pir::class__PP($payload) =:= P6metaclass.get_parrotclass(Rosella::TestFailure) {
             $result.add_failure($test, $exception);
         }
         else {
-            $result.end_test($test);
+            $result.add_error($test, $exception);
         }
-
         $result;
     }
 

@@ -12,6 +12,7 @@ class ActionTest is Rosella::Testcase {
     }
 
     method test_prepare_args_empty() {
+        self.todo("Oh noes!");
         my $action := Rosella::build(Rosella::Action, "foo", []);
         my @pos := [];
         my %named := {};

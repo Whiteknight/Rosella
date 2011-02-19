@@ -36,6 +36,10 @@ invoke them at a later time.
 A multicast event system. Objects can subscribe to events by name, and can
 receive notifications later when those events are triggered.
 
+## Test (rosella/test.pbc)
+
+A simple TAP test library modeled on Test::Builder and Test::More
+
 ## xUnit Tests (rosella/xunit.pbc)
 
 A unit testing library in the spirit of xUnit.

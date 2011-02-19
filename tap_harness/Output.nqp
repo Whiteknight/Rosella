@@ -64,6 +64,9 @@ class Rosella::Harness::Output::Console {
         }
     }
 
+    method show_todo_pass_details($harness) {
+    }
+
     method show_passed_detail($harness) {
     }
 }

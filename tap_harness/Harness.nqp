@@ -2,6 +2,8 @@ class Rosella::Harness {
     has $!total_passed;
     has $!total_failed;
     has $!total_files;
+    has $!todo_passed_tests;
+    has $!todo_passed_files;
     has %!results;
     has @!tests;
     has %!loaders;
@@ -25,6 +27,8 @@ class Rosella::Harness {
         $!total_passed := 0;
         $!total_failed := 0;
         $!total_files := 0;
+        $!todo_passed_tests := 0;
+        $!todo_passed_files := 0;
 
         %!results := {};
         %!results{"PASSED"} := [];
@@ -74,10 +78,16 @@ class Rosella::Harness {
             $test.run($run_inline);
             $test.print_result();
             my $status := $test.status();
+            pir::say("### STATUS: $status");
             %!results{$status}.push($test);
             if $status ne "ABORTED" {
                 $!total_passed := $!total_passed + $test.passed_tests();
                 $!total_failed := $!total_failed + $test.failed_tests();
+                my $todo_passed := $test.todo_passed_tests();
+                if $todo_passed {
+                    $!todo_passed_files := $!todo_passed_files + 1;
+                    $!todo_passed_tests := $!todo_passed_tests + $todo_passed;
+                }
             }
         }
         self.setup_next_run();
@@ -99,6 +109,8 @@ class Rosella::Harness {
     method num_failed_tests() { $!total_failed; }
     method num_passed_tests() { $!total_passed; }
     method num_test_files() { $!total_files; }
+    method num_todo_passed_tests() { $!todo_passed_tests; }
+    method num_todo_passed_files() { $!todo_passed_files; }
 }
 
 # TAP grammar in ABNF

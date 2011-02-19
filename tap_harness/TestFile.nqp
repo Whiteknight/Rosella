@@ -9,13 +9,11 @@ class Rosella::Harness::TestFile {
     has $!num_tests;
     has $!failed_tests;
     has $!passed_tests;
-    has $!todo_failed;
 
     method BUILD($filename) {
         $!filename := $filename;
         $!failed_tests := 0;
         $!passed_tests := 0;
-        $!todo_failed := 0;
         @!failures := [];
         @!todo_passed := [];
     }
@@ -38,6 +36,10 @@ class Rosella::Harness::TestFile {
 
     method list_of_todo_passed() {
         return @!todo_passed;
+    }
+
+    method todo_passed_tests() {
+        return +@!todo_passed;
     }
 
     method filename() {
@@ -119,6 +121,7 @@ class Rosella::Harness::TestFile {
         $!result := "aborted prematurely";
         $!errdetails := $err;
         $!status := "ABORTED";
+        pir::say("### TestFile: Marked ABORTED");
     }
 
     method mark_test_empty() {
@@ -150,15 +153,15 @@ class Rosella::Harness::TestFile {
         } else {
             self.spawn_and_execute();
         }
-        if $!status eq "ABORTED" {
-            return;
-        }
-        if self.has_tap_output() {
-            self.get_plan();
-            self.parse();
-        }
-        else {
-            self.mark_test_empty();
+        if $!status ne "ABORTED" {
+            pir::say("### TestFile: Aborted, exiting");
+            if self.has_tap_output() {
+                self.get_plan();
+                self.parse();
+            }
+            else {
+                self.mark_test_empty();
+            }
         }
     }
 
@@ -180,13 +183,14 @@ class Rosella::Harness::TestFile {
 
     # TODO: refactor this out into a TAP parser class
     method parse() {
+        pir::say("### TestFile: Parsing");
         for @!lines {
             my $line := $_;
             if $line {
                 my $lineobj := Rosella::build(Rosella::Harness::Line, $line);
                 if ! $lineobj.ignore(){
                     my $msg := "test " ~ $lineobj.number();
-                    $msg := $msg ~ $lineobj.name();
+                    $msg := "$msg - " ~ $lineobj.name();
 
                     if $lineobj.success {
                         $!passed_tests := $!passed_tests + 1;
