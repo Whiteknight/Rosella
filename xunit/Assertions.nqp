@@ -3,8 +3,6 @@
 
 module Assert;
 
-our sub _initload() { }
-
 our sub fail($why = "Unknown failure") {
     my $ex := Exception::RosellaFailure.new();
     $ex.message($why);

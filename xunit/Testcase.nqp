@@ -7,7 +7,7 @@ class Rosella::Testcase {
     has $!name;
 
     my method default_loader() {
-        Rosella::Loader.new;
+        return Rosella::build(Rosella::Loader);
     }
 
     our method name($value?) { pir::defined__IP($value) ?? ($!name := $value) !! $!name; }
@@ -27,8 +27,8 @@ class Rosella::Testcase {
     }
 
     my method default_result() {
-        my $result := Rosella::Result.new;
-        $result.add_listener: Rosella::Listener::TAP.new;
+        my $result := Rosella::build(Rosella::Result);
+        $result.add_listener: Rosella::build(Rosella::Listener::TAP);
         return $result;
     }
 
@@ -100,10 +100,12 @@ class Rosella::Testcase {
 
     our method tear_down() { }
 
+    # TODO: Figure out what this is and implement it
     method todo_test( *@text ) {
         $!todo := @text.join;
     }
 
+    # TODO: Figure this out
     method verify_that(*@text) {
         $!verify := @text.join;
     }

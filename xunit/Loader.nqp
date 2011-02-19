@@ -6,6 +6,10 @@ class Rosella::Loader {
     has %!seen_methods;
     has $!test_prefix;
 
+    method BUILD() {
+        $!test_prefix := 'test';
+    }
+
     sub compare_methods($a, $b) {
         pir::cmp__ISS(~$a, ~$b);
     }
@@ -24,8 +28,7 @@ class Rosella::Loader {
     }
 
     our method default_suite() {
-        my $suite := Rosella::Suite.new();
-        $suite.BUILD();
+        my $suite := Rosella::build(Rosella::Suite);
         return $suite;
     }
 
@@ -44,6 +47,7 @@ class Rosella::Loader {
         my $temp;
         return @array;
 
+        # TODO: Reimplement this.
         #while $bound > 0 {
         #    $swap := pir::rand__iiii(0, $bound);
         #    $swap-- if $swap > $bound;      # Rare but possible
@@ -76,27 +80,14 @@ class Rosella::Loader {
         self.order_tests(@test_methods);
     }
 
-    our method _init_obj(*@pos, *%named) {
-        $!test_prefix := 'test';
-
-        self._init_args(|@pos, |%named);
-    }
-
     # Returns true for "test_foo" and "testFoo" names
     our method is_test_method($name) {
         my $result := 0;
+        my $prefixlength := pir::length($!test_prefix);
 
-        if pir::length($name) > 4 && pir::substr($name, 0, 4) eq 'test' {
-
-            my $ch4 := $name[4];
-
-            # TODO: Translate this out. I don't think is_cclass is a method
-            #       on String
-            if $ch4 eq '_'
-                || $ch4.is_cclass(String::CharacterClass::UPPERCASE)
-                || $ch4.is_cclass(String::CharacterClass::NUMERIC) {
-                $result := 1;
-            }
+        if pir::length($name) > $prefixlength &&
+            pir::substr($name, 0, $prefixlength) eq $!test_prefix {
+            $result := 1;
         }
 
         $result;

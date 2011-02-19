@@ -61,6 +61,7 @@ sub MAIN(@argv) {
     my @xunit_files := <
         include/Core
         xunit/Assertions
+        xunit/Failure
         xunit/Listener
         xunit/Listener/TAP
         xunit/Loader
