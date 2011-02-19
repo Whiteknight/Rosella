@@ -1,6 +1,14 @@
 class Rosella::Harness::Loader {
     has $!os;
     has @!files;
+    has $!test_proto;
+
+    method BUILD($proto) {
+        $!test_proto := $proto;
+        @!files := [];
+        pir::loadlib("os");
+        $!os := pir::new__PS('OS');
+    }
 
     method max_filename_length() {
         my $max := 0;
@@ -19,11 +27,6 @@ class Rosella::Harness::Loader {
     }
 
     method get_dir_contents($path, $recurse, @contents) {
-        if ! pir::defined($!os) {
-            pir::loadlib("os");
-            $!os := pir::new__PS('OS');
-        }
-
         my $STAT_ISREG := 0x8000;
         my $STAT_ISDIR := 0x4000;
         my @contents_raw := $!os.readdir: ~$path;
@@ -64,8 +67,7 @@ class Rosella::Harness::Loader {
             self.get_dir_contents($dir, $recurse, @rawfiles);
             for @rawfiles {
                 my $filename := $_;
-                my $testobj := self.make_test_obj();
-                $testobj.filename: $filename;
+                my $testobj := self.make_test_obj($filename);
                 @tests.push($testobj);
                 @!files.push($filename);
             }
@@ -77,8 +79,7 @@ class Rosella::Harness::Loader {
         my @tests := [];
         for @filenames {
             my $filename := $_;
-            my $testobj := self.make_test_obj();
-            $testobj.filename($filename);
+            my $testobj := self.make_test_obj($filename);
             @tests.push($testobj);
             @!files.push($filename);
         }
@@ -86,20 +87,9 @@ class Rosella::Harness::Loader {
     }
 
 
-    method make_test_obj() {
-        pir::die("Must use a subclass");
+    method make_test_obj($filename) {
+        Rosella::build($!test_proto, $filename);
     }
 }
 
-class Rosella::Harness::Loader::NQP is Rosella::Harness::Loader {
-    method make_test_obj() {
-        Rosella::Harness::TestFile::NQP.new();
-    }
-}
-
-class Rosella::Harness::Loader::PIR is Rosella::Harness::Loader {
-    method make_test_obj() {
-        Rosella::Harness::TestFile::PIR.new();
-    }
-}
 

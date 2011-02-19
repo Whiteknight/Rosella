@@ -4,15 +4,20 @@ class Rosella::Harness::TestFile {
     has $!errdetails;
     has $!status;
     has @!failures;
+    has @!todo_passed;
     has @!lines;
     has $!num_tests;
     has $!failed_tests;
     has $!passed_tests;
+    has $!todo_failed;
 
-    method setup() {
+    method BUILD($filename) {
+        $!filename := $filename;
         $!failed_tests := 0;
         $!passed_tests := 0;
+        $!todo_failed := 0;
         @!failures := [];
+        @!todo_passed := [];
     }
 
     method total_tests() {
@@ -20,7 +25,7 @@ class Rosella::Harness::TestFile {
     }
 
     method failed_tests() {
-        return $!failed_tests;
+        return +@!failures;
     }
 
     method passed_tests() {
@@ -31,10 +36,11 @@ class Rosella::Harness::TestFile {
         return @!failures;
     }
 
-    method filename($filename?) {
-        if pir::defined($filename) {
-            $!filename := $filename;
-        }
+    method list_of_todo_passed() {
+        return @!todo_passed;
+    }
+
+    method filename() {
         $!filename;
     }
 
@@ -177,27 +183,29 @@ class Rosella::Harness::TestFile {
         for @!lines {
             my $line := $_;
             if $line {
-                my $lineobj := Rosella::Harness::Line.new();
-                $lineobj.set_line($line);
-                if $lineobj.ignore() {
-                    continue;
-                }
-                elsif $lineobj.success() {
-                    $!passed_tests := $!passed_tests + 1;
-                }
-                else {
-                    $!failed_tests := $!failed_tests + 1;
+                my $lineobj := Rosella::build(Rosella::Harness::Line, $line);
+                if ! $lineobj.ignore(){
                     my $msg := "test " ~ $lineobj.number();
-                    my $name := $lineobj.name();
-                    if $name {
-                        $msg := $msg ~ " : $name";
+                    $msg := $msg ~ $lineobj.name();
+
+                    if $lineobj.success {
+                        $!passed_tests := $!passed_tests + 1;
+                        if $lineobj.todo {
+                            @!todo_passed.push($msg);
+                        }
+                    } else {
+                        if $lineobj.todo {
+                            $!passed_tests := $!passed_tests + 1;
+                        } else {
+                            @!failures.push($msg);
+                        }
                     }
-                    @!failures.push($msg);
                 }
             }
         }
-        if $!failed_tests {
-            $!result := "Failed $!failed_tests / $!num_tests";
+        if +@!failures {
+            my $num_failures := +@!failures;
+            $!result := "Failed $num_failures / $!num_tests";
             $!status := "FAILED";
         }
         else {

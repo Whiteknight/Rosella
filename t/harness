@@ -10,8 +10,8 @@ $harness.add_test_dirs("NQP",
     "t/event",
     "t/prototype",
     :recurse(1)
-
 );
+#$harness.add_test_files("NQP", "t/action/ActionArg.t");
 $harness.run();
 
 my $output := Rosella::build(Rosella::Harness::Output::Console);

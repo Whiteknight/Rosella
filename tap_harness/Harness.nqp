@@ -7,9 +7,9 @@ class Rosella::Harness {
     has %!loaders;
 
     method BUILD() {
-        %!loaders := new_hash();
-        %!loaders{"NQP"} := Rosella::Harness::Loader::NQP.new;
-        %!loaders{"PIR"} := Rosella::Harness::Loader::PIR.new;
+        %!loaders := {};
+        %!loaders{"NQP"} := Rosella::build(Rosella::Harness::Loader, Rosella::Harness::TestFile::NQP);
+        %!loaders{"PIR"} := Rosella::build(Rosella::Harness::Loader, Rosella::Harness::TestFile::PIR);
         self.reset_counts();
         self.setup_next_run();
     }
@@ -26,8 +26,7 @@ class Rosella::Harness {
         $!total_failed := 0;
         $!total_files := 0;
 
-        # TODO: TODOPASSED, TODOFAILED, SKIPPED
-        %!results := new_hash();
+        %!results := {};
         %!results{"PASSED"} := [];
         %!results{"FAILED"} := [];
         %!results{"ABORTED"} := [];
@@ -65,15 +64,12 @@ class Rosella::Harness {
         return $max;
     }
 
-    sub new_hash(*%hash) { %hash; }
-
     method run (:$run_inline = 0, :$line_length = 0) {
         $!total_files := $!total_files + +@!tests;
         my $max_length := self.find_max_file_length();
         $max_length := $line_length if $line_length > $max_length;
         for @!tests {
             my $test := $_;
-            $test.setup();
             $test.print_filename($max_length);
             $test.run($run_inline);
             $test.print_result();
