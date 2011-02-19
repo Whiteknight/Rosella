@@ -58,8 +58,15 @@ sub MAIN(@argv) {
     >;
     setup_lib(%rosella, "rosella/prototype.pbc", @proto_files);
 
+    my @test_files := <
+        include/Core
+        test/Builder
+    >;
+    setup_lib(%rosella, "rosella/test.pbc", @test_files);
+
     my @xunit_files := <
         include/Core
+        include/Test
         xunit/Assertions
         xunit/Failure
         xunit/Listener

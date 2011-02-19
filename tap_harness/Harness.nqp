@@ -79,7 +79,6 @@ class Rosella::Harness {
                 $!total_passed := $!total_passed + $test.passed_tests();
                 $!total_failed := $!total_failed + $test.failed_tests();
             }
-            self.reset_test_environment();
         }
         self.setup_next_run();
     }
@@ -100,16 +99,6 @@ class Rosella::Harness {
     method num_failed_tests() { $!total_failed; }
     method num_passed_tests() { $!total_passed; }
     method num_test_files() { $!total_files; }
-
-    method reset_test_environment() {
-        # TODO: This is an evil hack. Test::Builder doesn't clean up it's environment
-        #       so when I try to run multiple tests in a single program instance
-        #       it breaks. When Test::Builder gets fixed, remove this nonsense
-        Q:PIR {
-            $P0 = new "Undef"
-            set_hll_global [ 'Test'; 'Builder'; '_singleton' ], 'singleton', $P0
-        };
-    }
 }
 
 # TAP grammar in ABNF
