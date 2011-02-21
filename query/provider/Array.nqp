@@ -1,10 +1,10 @@
 class Rosella::Query::Provider::Array is Rosella::Query::Provider {
     method map(@data, &mapper) {
         my @new_data := [];
-        my $i = 0;
+        my $i := 0;
         while $i <= pir::elements(@data) {
             @new_data[$i] := &mapper(@data[$i]);
-            $i = $i + 1;
+            $i := $i + 1;
         }
         return @new_data;
     }
@@ -41,6 +41,7 @@ class Rosella::Query::Provider::Array is Rosella::Query::Provider {
             return self.filter(@data, &func, :limit($limit));
         }
         my $count := 0;
+        my @new_data := [];
         for @data {
             my $item := $_;
             pir::push(@new_data, $item);
@@ -88,9 +89,9 @@ class Rosella::Query::Provider::Array is Rosella::Query::Provider {
                 keys = find_lex "%keys"
                 key = find_lex "$key"
                 conflict = find_lex "$conflict"
-                $I0 = exists keys [$_]
+                $I0 = exists keys [key]
                 conflict = $I0
-            }
+            };
             if $conflict {
                 %keys{$key} := &dispute($key, %keys{$key}, $value);
             } else {

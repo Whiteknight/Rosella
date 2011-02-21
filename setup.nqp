@@ -58,6 +58,15 @@ sub MAIN(@argv) {
     >;
     setup_lib(%rosella, "rosella/prototype.pbc", @proto_files);
 
+    my @query_files := <
+        include/Core
+        query/Query
+        query/Provider
+        query/provider/Array
+        query/provider/Hash
+    >;
+    setup_lib(%rosella, "rosella/query.pbc", @query_files);
+
     my @test_files := <
         include/Core
         test/Builder

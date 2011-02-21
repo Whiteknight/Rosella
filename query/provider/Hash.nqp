@@ -24,15 +24,37 @@ class Rosella::Query::Provider::Hash is Rosella::Query::Provider {
         return %new_data;
     }
 
+    # There really isn't a good way to do this in pure nqp if we want to
+    # reuse the iterator
     method fold($seed, %data, &func) {
-        if ! pir::defined($seed) {
-            $seed := pir::shift(@data);
-        }
-        my $result := $seed;
-        for @data {
-            $result := &func($result, $_);
-        }
-        return $result;
+        return Q:PIR {
+            .local pmc seed, data, func
+            seed = find_lex "$seed"
+            data = find_lex "%data"
+            func = find_lex "&func"
+
+            .local pmc h_iter, result
+            h_iter = iter data
+            if h_iter goto have_data
+            .return(seed)
+
+          have_data:
+            $I0 = defined seed
+            if $I0 goto have_seed
+            seed = shift h_iter
+          have_seed:
+            if h_iter goto have_data_and_seed
+            .return(seed)
+
+          have_data_and_seed:
+            result = seed
+
+          loop_top:
+            $P0 = shift h_iter
+            result = func(result, $P0)
+            if h_iter goto loop_top
+            %r = result
+        };
     }
 
     method take(%data, $limit, &func?) {
@@ -73,15 +95,15 @@ class Rosella::Query::Provider::Hash is Rosella::Query::Provider {
         }
         for %b {
             my $value_b := %b{$_};
-            my $key := &key_func($_, $value);
+            my $key := &key_func($_, $value_b);
             Q:PIR {
                 .local pmc new_data, key, conflict
                 new_data = find_lex "%new_data"
                 key = find_lex "$key"
                 conflict = find_lex "$conflict"
-                $I0 = exists new_data [$_]
+                $I0 = exists new_data [key]
                 conflict = $I0
-            }
+            };
             if $conflict {
                 %new_data{$key} := &dispute($key, %a{$_}, $value_b);
             } else {
