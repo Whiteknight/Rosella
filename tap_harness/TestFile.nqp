@@ -121,7 +121,7 @@ class Rosella::Harness::TestFile {
         $!result := "aborted prematurely";
         $!errdetails := $err;
         $!status := "ABORTED";
-        pir::say("### TestFile: Marked ABORTED");
+        pir::say($err);
     }
 
     method mark_test_empty() {
@@ -154,7 +154,6 @@ class Rosella::Harness::TestFile {
             self.spawn_and_execute();
         }
         if $!status ne "ABORTED" {
-            pir::say("### TestFile: Aborted, exiting");
             if self.has_tap_output() {
                 self.get_plan();
                 self.parse();
@@ -183,28 +182,10 @@ class Rosella::Harness::TestFile {
 
     # TODO: refactor this out into a TAP parser class
     method parse() {
-        pir::say("### TestFile: Parsing");
         for @!lines {
             my $line := $_;
             if $line {
-                my $lineobj := Rosella::build(Rosella::Harness::Line, $line);
-                if ! $lineobj.ignore(){
-                    my $msg := "test " ~ $lineobj.number();
-                    $msg := "$msg - " ~ $lineobj.name();
-
-                    if $lineobj.success {
-                        $!passed_tests := $!passed_tests + 1;
-                        if $lineobj.todo {
-                            @!todo_passed.push($msg);
-                        }
-                    } else {
-                        if $lineobj.todo {
-                            $!passed_tests := $!passed_tests + 1;
-                        } else {
-                            @!failures.push($msg);
-                        }
-                    }
-                }
+                self.parse_line($line);
             }
         }
         if +@!failures {
@@ -214,6 +195,28 @@ class Rosella::Harness::TestFile {
         }
         else {
             $!status := "PASSED";
+        }
+    }
+
+    method parse_line($line) {
+        my $lineobj := Rosella::build(Rosella::Harness::Line, $line);
+        if $lineobj.ignore() {
+            return;
+        }
+        my $msg := "test " ~ $lineobj.number();
+        $msg := "$msg - " ~ $lineobj.name();
+
+        if $lineobj.success {
+            $!passed_tests := $!passed_tests + 1;
+            if $lineobj.todo {
+                @!todo_passed.push($msg);
+            }
+        } else {
+            if $lineobj.todo {
+                $!passed_tests := $!passed_tests + 1;
+            } else {
+                @!failures.push($msg);
+            }
         }
     }
 }

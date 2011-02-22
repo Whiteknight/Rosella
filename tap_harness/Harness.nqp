@@ -78,7 +78,6 @@ class Rosella::Harness {
             $test.run($run_inline);
             $test.print_result();
             my $status := $test.status();
-            pir::say("### STATUS: $status");
             %!results{$status}.push($test);
             if $status ne "ABORTED" {
                 $!total_passed := $!total_passed + $test.passed_tests();
