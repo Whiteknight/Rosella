@@ -64,6 +64,7 @@ sub MAIN(@argv) {
         query/Provider
         query/provider/Array
         query/provider/Hash
+        query/Path
     >;
     setup_lib(%rosella, "rosella/query.pbc", @query_files);
 
