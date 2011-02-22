@@ -2,9 +2,9 @@ class Rosella::Query::Provider::Hash is Rosella::Query::Provider {
     method map(%data, &mapper) {
         my %new_data := {};
         for %data {
-            %new_data{$_} := &mapper(%data{$_}, :name($_));
+            %new_data{$_} := &mapper(%data{$_});
         }
-        retutn %new_data;
+        return %new_data;
     }
 
     method filter(%data, &func, :$limit = pir::elements(%data)) {

@@ -8,28 +8,35 @@ module Rosella::Query {
     }
 
     sub get_provider($data, $provider) {
+        pir::say(pir::typeof__SP($data));
         if pir::defined($provider) {
+            pir::say("A");
             return $provider;
         }
-        if pir::does($data, "Array") {
-            return Rosella::build(Rosella::Query::Array);
+        if pir::does($data, "array") {
+            pir::say("B");
+            return Rosella::build(Rosella::Query::Provider::Array);
         }
-        if pir::does($data, "Hash") {
-            return Rosella::build(Rosella::Query::Hash);
+        if pir::does($data, "hash") {
+            pir::say("C");
+            return Rosella::build(Rosella::Query::Provider::Hash);
         }
+        pir::say("D");
     }
 
-    sub map($data, &mapper, :$provider?) {
+    our sub map($data, &mapper, :$provider?) {
+        pir::say(pir::typeof__SP($data));
         $provider := get_provider($data, $provider);
+        pir::say(pir::typeof__SP($provider));
         return $provider.map($data, &mapper);
     }
 
-    sub filter($data, &func, :$provider?) {
+    our sub filter($data, &func, :$provider?) {
         $provider := get_provider($data, $provider);
         return $provider.filter($data, &func);
     }
 
-    sub fold($data, &func, :$seed?, :$provider?) {
+    our sub fold($data, &func, :$seed?, :$provider?) {
         $provider := get_provider($data, $provider);
         return $provider.fold($data, &func);
     }
