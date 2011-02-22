@@ -9,6 +9,7 @@ $harness.add_test_dirs("NQP",
     "t/container",
     "t/event",
     "t/prototype",
+    "t/query",
     :recurse(1)
 );
 $harness.run();
