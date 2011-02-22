@@ -9,7 +9,10 @@ class Rosella::Query::Provider::Array is Rosella::Query::Provider {
         return @new_data;
     }
 
-    method filter(@data, &func, :$limit = pir::elements(@data)) {
+    method filter(@data, &func, :$limit?) {
+        if ! pir::defined($limit) {
+            $limit := pir::elements(@data)
+        }
         my @new_data := [];
         my $count := 0;
         for @data {

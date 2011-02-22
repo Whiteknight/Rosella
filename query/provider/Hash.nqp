@@ -7,7 +7,10 @@ class Rosella::Query::Provider::Hash is Rosella::Query::Provider {
         return %new_data;
     }
 
-    method filter(%data, &func, :$limit = pir::elements(%data)) {
+    method filter(%data, &func, :$limit?) {
+        if ! pir::defined($limit) {
+            $limit := pir::elements(%data);
+        }
         my %new_data := {};
         my $count := 0;
         for %data {
@@ -16,7 +19,7 @@ class Rosella::Query::Provider::Hash is Rosella::Query::Provider {
             if &func($item) {
                 %new_data{$name} := $item;
                 $count := $count + 1;
-                if ($count > $limit) {
+                if $count > $limit {
                     return %new_data;
                 }
             }
