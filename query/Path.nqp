@@ -43,7 +43,10 @@ class Rosella::Query::Path {
             $remainder := pir::substr($name, $idx + 1);
             #pir::say("try_get_hash: searching $idx, $search, $remainder");
             if hash_contains(%obj, $search) {
-                return self.get(%obj{$search}, $remainder);
+                my $result := self.get(%obj{$search}, $remainder);
+                if !pir::isnull($result) && pir::defined($result) {
+                    return $result;
+                }
             }
             $idx := $search.reverse_index($!seperator, 0);
         }
@@ -51,18 +54,26 @@ class Rosella::Query::Path {
     }
 
     method try_get_attribute($obj, $name) {
-        pir::say("try_get_attribute: $name");
+        #pir::say("try_get_attribute: $name");
         my $idx := pir::index__ISS($name, $!seperator);
         if $idx == -1 {
-            return pir::getattribute__PPS($obj, $name);
+            return self.try_get_attribute_internal($obj, $name);
         }
         while $idx != -1 {
             my $attr := pir::substr($name, 0, $idx - 1);
-            my $result := pir::getattribute__PPS($obj, $attr);
+            my $result := self.try_get_attribute_internal($obj, $attr);
             if !pir::isnull($result) && pir::defined($result) {
                 return self.get($result, pir::substr($name, $idx));
             }
             $idx := pir::index__ISSI($name, $!seperator, $idx + 1);
+        }
+        return pir::new__PS("Undef");
+    }
+
+    method try_get_attribute_internal($obj, $name) {
+        try {
+            return pir::getattribute__PPS($obj, $name);
+            CATCH {}
         }
         return pir::new__PS("Undef");
     }
