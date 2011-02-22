@@ -2,7 +2,7 @@ class Rosella::Query::Provider::Array is Rosella::Query::Provider {
     method map(@data, &mapper) {
         my @new_data := [];
         my $i := 0;
-        while $i <= pir::elements(@data) {
+        while $i < pir::elements(@data) {
             @new_data[$i] := &mapper(@data[$i]);
             $i := $i + 1;
         }

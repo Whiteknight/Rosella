@@ -13,7 +13,7 @@ class Rosella::Query::Provider::Hash is Rosella::Query::Provider {
         for %data {
             my $name := $_;
             my $item := %data{$name};
-            if &func($item, :name($name)) {
+            if &func($item) {
                 %new_data{$name} := $item;
                 $count := $count + 1;
                 if ($count > $limit) {
