@@ -263,3 +263,19 @@ class Rosella::Harness::TestFile::PIR is Rosella::Harness::TestFile {
         return "parrot $!filename";
     }
 }
+
+class Rosella::Harness::TestFile::Winxed is Rosella::Harness::TestFile {
+    our $have_winxed;
+    method compile_test() {
+        if !pir::defined($have_winxed) {
+            pir::load_language("winxed");
+            $have_winxed := 1;
+        }
+        my $winxed := pir::compreg__PS("winxed");
+        return $winxed.compile_file($!filename);
+    }
+
+    method get_spawn_command() {
+        return "winxed $!filename";
+    }
+}
