@@ -20,6 +20,7 @@ sub MAIN(@argv) {
         :project_uri('git://github.com/Whiteknight/rosella'),
         :inst_lib([])
     );
+    if @argv[1] eq "test" { do_test(); }
 
     my @rosella_files := <
         core/Rosella
@@ -129,4 +130,10 @@ sub setup_lib(%rosella, $name, @files) {
     }
     %rosella<pbc_pbc>{$name} := @pbcs;
     pir::push(%rosella<inst_lib>, $name);
+}
+
+sub do_test() {
+    my $nqp := get_nqp();
+    my $result := pir::spawnw__IS($nqp ~ " t/harness");
+    pir::exit(+$result);
 }
