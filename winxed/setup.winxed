@@ -1,0 +1,40 @@
+function main[main](argv) {
+    setup_distutils();
+    var data = {
+        "pir_winxed" : {
+            "winxed/setup.pir" : "winxed/setup.winxed"
+        },
+        "pbc_pir" : {
+            "winxed/setup.pbc" : "winxed/setup.pir"
+        }
+    };
+
+    using WinxedDistutils.winxed_setup;
+    argv.shift();
+    winxed_setup(argv, data);
+}
+
+function setup_distutils() {
+    string file = "winxed/Distutils.winxed";
+    string pir_file = get_pir_file_name(file);
+    compile_to_pir(file, pir_file);
+    load_bytecode(pir_file);
+}
+
+function get_pir_file_name(string winxed_file) {
+    int index;
+    ${ index index, winxed_file, ".winxed" };
+    if (index == -1)
+        die(winxed_file + " is not a winxed file");
+    string pir_file;
+    ${ substr pir_file, winxed_file, 0, index };
+    return pir_file + ".pir";
+}
+
+function compile_to_pir(string winxed_file, string pir_file) {
+    string cmd = "winxed -c " + winxed_file;
+    int result;
+    say(cmd);
+    ${ spawnw result, cmd };
+    return result;
+}
