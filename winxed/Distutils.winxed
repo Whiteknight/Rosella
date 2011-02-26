@@ -6,6 +6,7 @@ namespace WinxedDistutils
         using register_step_before;
 
         using static build_winxed;
+        using static clean_winxed;
         register_step_before("build", build_winxed);
         register_step_before("clean", clean_winxed);
         setup(cmds, data);

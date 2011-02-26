@@ -1,0 +1,71 @@
+namespace Rosella
+{
+    function call_parrot_method(var object, var method, var pos [slurpy], var named [slurpy,named])
+    {
+        if (method instanceof String)
+            method = find_method(object, method);
+        return method(object, pos:[flat], named:[flat,named]);
+    }
+
+    function build(var proto, var pos [slurpy], var named [slurpy, named])
+    {
+        var object;
+        if (proto instanceof 'P6protoobject') {
+            object = proto.new();
+        } else {
+            var obj_class = get_type_class(proto);
+            ${ new object, obj_class };
+        }
+
+        var method;
+        try {
+            ${ find_method method, object, "BUILD" };
+        } catch() {
+            method = null;
+        }
+        if (method != null) {
+            object.BUILD(pos:[flat], named:[flat,named]);
+        }
+        return object;
+    }
+
+    function get_type_name(var type)
+    {
+        if (type instanceof "String")
+            return type;
+
+        if (type instanceof "P6protoobject")
+            type = type.HOW().get_parrotclass(type.HOW()).get_namespace();
+        else if (type instanceof "P6metaclass")
+            type = type.get_parrotclass().get_namespace();
+        else if (type instanceof "Class")
+            type = type.get_namespace();
+        else if (type instanceof "Key")
+            ${ get_namespace type, type };
+
+        if (type instanceof "NameSpace")
+            return join("::", type.get_name());
+        int is_array = 0;
+        ${ does is_array, type, "array" };
+        if (is_array)
+            return join("::", type);
+        return string(type);
+    }
+
+    function get_type_class(var type)
+    {
+        if (type instanceof "Class")
+            return type;
+        if (type instanceof "P6metaclass")
+            return type.get_parrotclass();
+        if (type instanceof "P6protoobject")
+            return type.HOW().get_parrotclass();
+
+        if (type instanceof "String")
+            type = split("::", type);
+        var class_obj;
+        ${ get_class class_obj, type };
+        return class_obj;
+    }
+}
+

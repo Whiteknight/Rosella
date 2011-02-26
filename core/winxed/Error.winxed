@@ -1,0 +1,15 @@
+namespace Rosella { namespace Error {
+
+    function must_subclass(string name) {
+        throw_error("Rosella (" + name + ") : You ust use a subclass instead");
+    }
+
+    function not_implemented(string class, string func) {
+        throw_error("Rosella (" + class + "." + func + ") : Not implemented");
+    }
+
+    function throw_error(string msg) {
+        die(msg);
+    }
+
+}}

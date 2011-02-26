@@ -1,17 +1,151 @@
 function main[main](argv) {
     setup_distutils();
-    var data = {
-        "pir_winxed" : {
-            "winxed/setup.pir" : "winxed/setup.winxed"
-        },
-        "pbc_pir" : {
-            "winxed/setup.pbc" : "winxed/setup.pir"
-        }
+    var rosella = {
+        "name"             : 'Rosella',
+        "abstract"         : 'Utilities Library for Parrot',
+        "authority"        : 'http://github.com/Whiteknight',
+        "copyright_holder" : 'Andrew Whitworth',
+        "keywords"         : ["test", "tap", "xunit", "event", "container", "dependency injection"],
+        "license_type"     : 'Artistic License 2.0',
+        "license_uri"      : 'http://www.perlfoundation.org/artistic_license_2_0',
+        "checkout_uri"     : 'git://github.com/Whiteknight/rosella.git',
+        "browser_uri"      : 'git://github.com/Whiteknight/rosella',
+        "project_uri"      : 'git://github.com/Whiteknight/rosella',
+        "pir_nqp-rx"       : {},
+        "pir_winxed"       : {},
+        "pbc_pbc"          : {},
+        "pbc_pir"          : {},
+        "inst_lib"         : []
     };
+
+    //var core_files = [
+    //    "core/Rosella",
+    //    "core/Error"
+    //];
+    //setup_nqp_lib(rosella, "rosella/core.pbc", core_files);
+
+    var core_winxed_files = [
+        "core/winxed/Rosella",
+        "core/winxed/Error"
+    ];
+    setup_winxed_lib(rosella, "rosella/core.pbc", core_winxed_files);
+
+    var action_files = [
+        "include/Core",
+        "action/Action",
+        "action/ActionArg"
+    ];
+    setup_nqp_lib(rosella, "rosella/action.pbc", action_files);
+
+    var container_files = [
+        "include/Core",
+        "include/Action",
+        "container/Container",
+        "container/ItemBuilder",
+        "container/ObjectFactory"
+    ];
+    setup_nqp_lib(rosella, "rosella/container.pbc", container_files);
+
+//     my @event_files := <
+//         include/Core
+//         include/Action
+//         event/Event
+//         event/EventManager
+//     >;
+//     setup_lib(%rosella, "rosella/event.pbc", @event_files);
+//
+//     my @proto_files := <
+//         include/Core
+//         prototype/Item
+//         prototype/Manager
+//     >;
+//     setup_lib(%rosella, "rosella/prototype.pbc", @proto_files);
+//
+//     my @query_files := <
+//         include/Core
+//         query/Query
+//         query/Provider
+//         query/provider/Array
+//         query/provider/Hash
+//         query/Path
+//     >;
+//     setup_lib(%rosella, "rosella/query.pbc", @query_files);
+
+    var test_files = [
+        "include/Core",
+        "test/Builder"
+    ];
+    setup_nqp_lib(rosella, "rosella/test.pbc", test_files);
+
+    var xunit_files = [
+        "include/Core",
+        "include/Test",
+        "xunit/Assertions",
+        "xunit/Failure",
+        "xunit/Listener",
+        "xunit/Listener/TAP",
+        "xunit/Loader",
+        "xunit/Result",
+        "xunit/Suite",
+        "xunit/Testcase",
+        "xunit/UnitTestFailure"
+    ];
+    setup_nqp_lib(rosella, "rosella/xunit.pbc", xunit_files);
+
+//     my @mockobject_files := <
+//         include/Core
+//         mockobject/Antiphon
+//         mockobject/Cuckoo
+//         mockobject/Cuculus
+//         mockobject/MockFS
+//         mockobject/Ovum
+//         mockobject/SigMatcher
+//         mockobject/Verifier
+//     >;
+//     setup_lib(%rosella, "rosella/mockobject.pbc", @mockobject_files);
+//
+//     my @tap_harness_files := <
+//         include/Core
+//         tap_harness/Harness
+//         tap_harness/Line
+//         tap_harness/Loader
+//         tap_harness/Output
+//         tap_harness/TestFile
+//     >;
+//     setup_lib(%rosella, "rosella/tap_harness.pbc", @tap_harness_files);
+
 
     using WinxedDistutils.winxed_setup;
     argv.shift();
-    winxed_setup(argv, data);
+    winxed_setup(argv, rosella);
+}
+
+function setup_nqp_lib(var rosella, string name, var files) {
+    var pbcs = [];
+    for (string path in files) {
+        string nqp_file = path + ".nqp";
+        string pir_file = path + ".pir";
+        string pbc_file = path + ".pbc";
+        rosella["pir_nqp-rx"][pir_file] = nqp_file;
+        rosella["pbc_pir"][pbc_file] = pir_file;
+        pbcs.push(pbc_file);
+    }
+    rosella["pbc_pbc"][name] = pbcs;
+    rosella["inst_lib"].push(name);
+}
+
+function setup_winxed_lib(var rosella, string name, var files) {
+    var pbcs = [];
+    for (string path in files) {
+        string winxed_file = path + ".winxed";
+        string pir_file = path + ".pir";
+        string pbc_file = path + ".pbc";
+        rosella["pir_winxed"][pir_file] = winxed_file;
+        rosella["pbc_pir"][pbc_file] = pir_file;
+        pbcs.push(pbc_file);
+    }
+    rosella["pbc_pbc"][name] = pbcs;
+    rosella["inst_lib"].push(name);
 }
 
 function setup_distutils() {
