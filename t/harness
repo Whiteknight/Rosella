@@ -5,6 +5,7 @@ INIT {
 
 my $harness := Rosella::build(Rosella::Harness);
 $harness.add_test_dirs("NQP",
+    "t/core",
     "t/action",
     "t/container",
     "t/event",

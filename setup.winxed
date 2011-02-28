@@ -36,8 +36,8 @@ function main[main](argv) {
         "core/Rosella",
         "core/Error"
     ];
-    setup_nqp_lib(rosella, "rosella/core.pbc", core_files);
-    //setup_winxed_lib(rosella, "rosella/core.pbc", core_files);
+    //setup_nqp_lib(rosella, "rosella/core.pbc", core_files);
+    setup_winxed_lib(rosella, "rosella/core.pbc", core_files);
 
     // The action library. Allows creating Action/Command objects for
     // delayed evaluation.

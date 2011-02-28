@@ -1,8 +1,8 @@
 namespace Rosella
 {
-    function call_parrot_method(var object, var method, var pos [slurpy], var named [slurpy,named])
+    function call_parrot_method(var object, var method, var pos, var named)
     {
-        if (method instanceof String)
+        if (method instanceof "String")
             method = find_method(object, method);
         return object.*method(pos:[flat], named:[flat,named]);
     }
