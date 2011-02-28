@@ -1,0 +1,8 @@
+Several parts of Rosella, specifically the xunit-based tests, parts of the
+mock object library, and several individual routines throughout are based on
+the work of Austin Hastings in the Kakapo project.
+
+Parts of the tap_harness library are influenced by the TAPIR project by
+Jonathan Leto and the distutils library by François Perrad.
+
+
