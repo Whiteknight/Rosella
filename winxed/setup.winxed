@@ -18,17 +18,12 @@ function main[main](argv) {
         "inst_lib"         : []
     };
 
-    //var core_files = [
-    //    "core/Rosella",
-    //    "core/Error"
-    //];
-    //setup_nqp_lib(rosella, "rosella/core.pbc", core_files);
-
-    var core_winxed_files = [
-        "core/winxed/Rosella",
-        "core/winxed/Error"
+    var core_files = [
+        "core/Rosella",
+        "core/Error"
     ];
-    setup_winxed_lib(rosella, "rosella/core.pbc", core_winxed_files);
+    setup_nqp_lib(rosella, "rosella/core.pbc", core_files);
+    //setup_winxed_lib(rosella, "rosella/core.pbc", core_files);
 
     var action_files = [
         "include/Core",
