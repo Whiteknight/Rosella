@@ -4,7 +4,7 @@ namespace Rosella
     {
         if (method instanceof String)
             method = find_method(object, method);
-        return method(object, pos:[flat], named:[flat,named]);
+        return object.*method(pos:[flat], named:[flat,named]);
     }
 
     function build(var proto, var pos [slurpy], var named [slurpy, named])
