@@ -1,13 +1,14 @@
-# Copyright (C) 2010, Austin Hastings. See accompanying LICENSE file, or
-# http://www.opensource.org/licenses/artistic-license-2.0.php for license.
-
 class Rosella::Loader {
     has $!class;
     has %!seen_methods;
     has $!test_prefix;
 
-    method BUILD() {
-        $!test_prefix := "test_";
+    method BUILD(:$prefix?) {
+        if pir::defined($prefix) {
+            $!test_prefix := $prefix;
+        } else {
+            $!test_prefix := "test_";
+        }
     }
 
     sub compare_methods($a, $b) {
@@ -92,8 +93,8 @@ class Rosella::Loader {
         $result;
     }
 
-    our method load_tests_from_testcase($class, *%named) {
-        $!class := P6metaclass.get_parrotclass($class);
+    our method load_tests_from_testcase($type, *%named) {
+        $!class := Rosella::get_type_class($type);
         my @tests := self.get_test_methods;
 
         self.configure_suite(@tests, |%named);

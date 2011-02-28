@@ -54,12 +54,12 @@ namespace Rosella
 
     function get_type_class(var type)
     {
+        if (type instanceof "P6metaclass")
+            return type.get_parrotclass(type);
+        if (type instanceof "P6protoobject")
+            return type.HOW().get_parrotclass(type);
         if (type instanceof "Class")
             return type;
-        if (type instanceof "P6metaclass")
-            return type.get_parrotclass();
-        if (type instanceof "P6protoobject")
-            return type.HOW().get_parrotclass();
 
         if (type instanceof "String")
             type = split("::", type);
