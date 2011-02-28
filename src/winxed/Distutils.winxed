@@ -1,3 +1,5 @@
+using extern "io_ops";
+
 namespace WinxedDistutils
 {
     function winxed_setup(var cmds, var data)
@@ -21,7 +23,9 @@ namespace WinxedDistutils
         using newer;
         for (string pir_file in winxed_files) {
             string winxed_file = winxed_files[pir_file];
-            if (newer(winxed_file, pir_file))
+            int e = 0;
+            ${ stat e, pir_file, 0 };
+            if (!e || newer(winxed_file, pir_file))
                 compile_to_pir(winxed_file, pir_file);
         }
     }
@@ -33,7 +37,10 @@ namespace WinxedDistutils
         int num_files = elements(winxed_files);
         using unlink;
         for (string file in winxed_files) {
-            unlink(file);
+            int e = 0;
+            ${ stat e, file, 0 };
+            if (e)
+                unlink(file);
         }
     }
 

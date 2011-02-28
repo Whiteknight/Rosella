@@ -1,3 +1,5 @@
+using extern "io_ops";
+
 function main[main](argv) {
     setup_distutils();
     var rosella = {
@@ -165,8 +167,13 @@ function setup_winxed_lib(var rosella, string name, var files) {
 
 function setup_distutils() {
     // This is bootstrapped from src/winxed/Distutils.winxed
-    string file = "src/winxed/Distutils.pir";
-    load_bytecode(file);
+    int e = 0;
+    string distutils = "src/winxed/Distutils.pir";
+    ${ stat e, distutils, 0 };
+    if (e)
+        load_bytecode(distutils);
+    else
+        load_bytecode("src/winxed/DistutilsSt1.pir");
 }
 
 function do_test() {
