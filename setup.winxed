@@ -46,7 +46,8 @@ function main[main](argv) {
         "action/Action",
         "action/ActionArg"
     ];
-    setup_nqp_lib(rosella, "rosella/action.pbc", action_files);
+    //setup_nqp_lib(rosella, "rosella/action.pbc", action_files);
+    setup_winxed_lib(rosella, "rosella/action.pbc", action_files);
 
     // Dependency Injection / Inversion of Control container library
     var container_files = [

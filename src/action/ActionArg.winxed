@@ -1,0 +1,99 @@
+namespace Rosella
+{
+    class ActionArg
+    {
+        var position;
+        var name;
+
+        function name(string name)
+        {
+            self.name = name;
+            self.position = -9999;
+        }
+
+        function position(int pos)
+        {
+            self.position = pos;
+            self.name = null;
+        }
+
+        function setup_positioning(
+                int position [named,optional], int have_pos [opt_flag],
+                string name [named,optional], int have_name [opt_flag])
+        {
+            if (have_pos)
+                self.position(position);
+            else if (have_name)
+                self.name(name);
+        }
+
+        function type()
+        {
+            if (self.name != null)
+                return "Named";
+            if (self.position != -9999)
+                return "Positional";
+            return "Unknown";
+        }
+
+        function resolve_to(var pos, var named)
+        {
+            var value = self.resolve_value();
+            if (self.name != null)
+                named[self.name] = value;
+            else if (self.position != -9999) {
+                if (self.position >= 0)
+                     pos[self.position] = value;
+                else
+                    ${ push pos, value };
+            }
+            else
+                die("Method argument must be Named or Positional");
+        }
+
+        function resolve_value()
+        {
+            using Rosella.Error.must_subclass;
+            must_subclass("resolve_value");
+        }
+    }
+
+    namespace ActionArg
+    {
+        class ContainerResolver : Rosella.ActionArg
+        {
+            var container;
+            var type;
+
+            function BUILD(var container, var type, var args [slurpy,named])
+            {
+                self.container = container;
+                self.type = type;
+                self.setup_positioning(args:[flat,named]);
+            }
+
+            function resolve_value()
+            {
+                return self.container.resolve(self.type);
+            }
+
+        }
+
+        class Instance : Rosella.ActionArg
+        {
+            var instance;
+
+            function BUILD(var instance, var args [slurpy,named])
+            {
+                self.instance = instance;
+                self.setup_positioning(args:[flat,named]);
+            }
+
+            function resolve_value()
+            {
+                return self.instance;
+            }
+        }
+    }
+}
+
