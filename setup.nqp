@@ -127,7 +127,7 @@ sub MAIN(@argv) {
 sub setup_lib(%rosella, $name, @files) {
     my @pbcs := < >;
     for @files {
-        my $path := $_;
+        my $path := "src/$_";
         my $nqp_file := $path ~ '.nqp';
         my $pir_file := $path ~ '.pir';
         my $pbc_file := $path ~ '.pbc';
