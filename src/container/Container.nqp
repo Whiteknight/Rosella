@@ -11,7 +11,7 @@ class Rosella::Container {
         if pir::defined($factory) {
             $!default_factory := $factory;
         } else {
-            $!default_factory := Rosella::ObjectFactory::Default.new;
+            $!default_factory := Rosella::ObjectFactory.new;
         }
     }
 

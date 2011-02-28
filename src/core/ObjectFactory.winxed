@@ -1,0 +1,11 @@
+namespace Rosella
+{
+    class ObjectFactory
+    {
+        function create(var type, var pos [slurpy], var named [slurpy,named])
+        {
+            using Rosella.build;
+            return build(type, pos:[flat], named:[flat,named]);
+        }
+    }
+}

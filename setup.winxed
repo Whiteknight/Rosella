@@ -36,7 +36,8 @@ function main[main](argv) {
     // required by other libraries in the sequence
     var core_files = [
         "core/Rosella",
-        "core/Error"
+        "core/Error",
+        "core/ObjectFactory"
     ];
     //setup_nqp_lib(rosella, "rosella/core.pbc", core_files);
     setup_winxed_lib(rosella, "rosella/core.pbc", core_files);
@@ -56,8 +57,7 @@ function main[main](argv) {
         "include/Core",
         "include/Action",
         "container/Container",
-        "container/ItemBuilder",
-        "container/ObjectFactory"
+        "container/ItemBuilder"
     ];
     setup_nqp_lib(rosella, "rosella/container.pbc", container_files);
 
