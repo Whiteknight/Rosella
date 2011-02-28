@@ -1,0 +1,4 @@
+function include_core [anon,init,load]()
+{
+    load_bytecode("rosella/core.pbc");
+}
