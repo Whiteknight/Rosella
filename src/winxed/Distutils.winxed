@@ -30,7 +30,8 @@ namespace WinxedDistutils
         }
     }
 
-    function clean_winxed(var args [slurpy,named]) {
+    function clean_winxed(var args [slurpy,named])
+    {
         var winxed_files = args["pir_winxed"];
         if (winxed_files == null)
             return;
@@ -44,7 +45,8 @@ namespace WinxedDistutils
         }
     }
 
-    function get_pir_file_name(string winxed_file) {
+    function get_pir_file_name(string winxed_file)
+    {
         int index;
         ${ index index, winxed_file, ".winxed" };
         if (index == -1)
@@ -54,7 +56,8 @@ namespace WinxedDistutils
         return pir_file + ".pir";
     }
 
-    function compile_to_pir(string winxed_file, string pir_file) {
+    function compile_to_pir(string winxed_file, string pir_file)
+    {
         //string cmd = "winxed -o " + pir_file + " -c " + winxed_file;
         string cmd = "winxed -c " + winxed_file;
         int result;

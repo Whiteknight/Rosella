@@ -165,8 +165,10 @@ function setup_winxed_lib(var rosella, string name, var files) {
     rosella["inst_lib"].push(name);
 }
 
+// Load in the distutils library, which we are also responsible for
+// building. If we don't have a version handy, load in the bootstrapping
+// version. If we do have one built, use that instead
 function setup_distutils() {
-    // This is bootstrapped from src/winxed/Distutils.winxed
     int e = 0;
     string distutils = "src/winxed/Distutils.pir";
     ${ stat e, distutils, 0 };
