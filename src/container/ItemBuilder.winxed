@@ -1,0 +1,133 @@
+namespace Rosella
+{
+    class ItemBuilder
+    {
+        var method_initializers;
+
+        function method_initializers(var inits)
+        {
+            int have_inits = 0;
+            ${ defined have_inits, inits };
+            if (have_inits)
+                self.method_initializers = inits;
+            else
+                self.method_initializers = [];
+        }
+
+        function resolve(var overrides [optional], int have_o [opt_flag])
+        {
+            var item = self.resolve_instance();
+            for (var init in self.method_initializers) {
+                init.execute(item, overrides);
+            }
+            return item;
+        }
+
+        function resolve_instance()
+        {
+            using Rosella.Error.must_subclass;
+            must_subclass("Rosella::ItemBuilder", "resolve_instance");
+        }
+    }
+
+    namespace ItemBuilder
+    {
+        class Instance : Rosella.ItemBuilder
+        {
+            var instance;
+
+            function BUILD(var obj, var inits)
+            {
+                self.instance = obj;
+                self.method_initializers(inits);
+            }
+
+            function resolve_instance()
+            {
+                return self.instance;
+            }
+        }
+
+        class P6protoobject : Rosella.ItemBuilder
+        {
+            var proto;
+
+            function BUILD(var proto, var inits)
+            {
+                self.proto = proto;
+                self.method_initializers(inits);
+            }
+
+            function resolve_instance()
+            {
+                return self.proto.new();
+            }
+        }
+
+
+        class ParrotClass : Rosella.ItemBuilder
+        {
+            var class_obj;
+            var init_pmc;
+
+            function BUILD(var class_obj, var init, var inits)
+            {
+                self.class_obj = class_obj;
+                self.init_pmc = init;
+                self.method_initializers(inits);
+            }
+
+            function resolve_instance()
+            {
+                int have_init_pmc = 0;
+                ${ defined have_init_pmc, self.init_pmc };
+                var object = null;
+                if (have_init_pmc)
+                    ${ new object, self.class_obj, self.init_pmc };
+                else
+                    ${ new object, self.class_obj };
+                return object;
+            }
+        }
+
+        class Prototype : Rosella.ItemBuilder
+        {
+            var prototype;
+
+            function BUILD(var proto, var inits)
+            {
+                self.prototype = proto;
+                self.method_initializers(inits);
+            }
+
+            function resolve_instance() {
+                var object = null;
+                ${ clone object, self.prototype };
+                return object;
+            }
+        }
+
+        class FactoryMethod : Rosella.ItemBuilder
+        {
+            var sub;
+            var arg_initializers;
+
+            function BUILD(var sub, var inits, var arg_inits)
+            {
+                self.sub = sub;
+                self.arg_initializers = arg_inits;
+                self.method_initializers(inits);
+            }
+
+            function resolve_instance()
+            {
+                var pos = [];
+                var named = {};
+                for (var arg_init in self.arg_initializers)
+                    arg_init.prepare_args(pos, named);
+                var sub = self.sub;
+                return sub(pos:[flat], named:[flat,named]);
+            }
+        }
+    }
+}

@@ -1,0 +1,155 @@
+namespace Rosella
+{
+    class Container
+    {
+        var library;
+        var default_factory;
+        var options;
+        // TODO: default_container;
+
+        function BUILD(var factory [named,optional], int have_fact [opt_flag],
+                var auto_register [named,optional], int have_auto_reg [opt_flag])
+        {
+            self.library = {};
+            self.options = {};
+            if (have_auto_reg)
+                self.options["auto_register"] = auto_register;
+            else
+                self.options["auto_register"] = 0;
+            if (have_factory)
+                self.default_factory = factory;
+            else
+                self.default_factory = new Rosella.ObjectFactory;
+        }
+
+        // TODO: default_container()
+
+        function register_type(var type,
+                var init_pmc [named,optional], int have_init [opt_flag],
+                var meth_inits [named,optional], int have_inits [opt_flag])
+        {
+            using Rosella.get_type_name;
+            string name = get_type_name(type);
+            if (!have_init)
+                init_pmc = new 'Undef';
+            if (!have_inits)
+                meth_inits = [];
+            var item = self.get_generator_item(type, init_pmc, meth_inits);
+            self.library[name] = item;
+        }
+
+        function register_prototype(var type, var prototype,
+                var meth_inits [named,optional], int have_inits [opt_flag])
+        {
+            using Rosella.get_type_name;
+            string name = get_type_name(type);
+            if (!have_inits)
+                meth_inits = [];
+            var item = self.get_prototype_item(proto, meth_inits);
+            self.library[name] = item;
+        }
+
+        function register_instance(var instance
+                var meth_inits [named,optional], int have_inits [opt_flag])
+        {
+            var type = self.get_instance_type(instance);
+            if (!have_inits)
+                meth_inits = [];
+            self.register_instance(type, instance, "meth_inits" => meth_inits);
+        }
+
+        function register_instance(var type, var instance
+                var meth_inits [named,optional], int have_inits [opt_flag])
+        {
+            using Rosella.get_type_name;
+            string name = get_type_name(type);
+            if (!have_inits)
+                meth_inits = [];
+            var item = self.get_instance_item(instance, meth_inits);
+            self.library[name] = item;
+        }
+
+        function register_factory_method(var type, var factory,
+                var meth_inits [named,optional], int have_inits [opt_flag],
+                var arg_inits [named,optional], int have_args [opt_flag])
+        {
+            using Rosella.get_type_name;
+            string name = get_type_name(type);
+            if (!have_inits)
+                meth_inits = [];
+            if (!have_args)
+                arg_inits = [];
+            var item = self.get_factory_method_item(factory, meth_inits, arg_inits);
+            self.library[name] = item;
+        }
+
+        function resolve(var type, var overrides [slurpy], var named_opts [slurpy,named])
+        {
+            using Rosella.get_type_name;
+            string name = get_type_name(type);
+            if (exists self.library[name])
+                return self.library[name].resolve(overrides);
+            var obj = self.resolve_create(type, overrides);
+            if (self.options["auto_register"])
+                self.register_instance(type, obj, overrides);
+            return obj;
+        }
+
+        function resolve_create(var type, var actions)
+        {
+            return self.default_factory.create(type, actions);
+        }
+
+        function resolve_nocreate(var type, var overrides [slurpy], var named_opts[slurpy,named])
+        {
+            using Rosella.get_type_name;
+            string name = get_type_name(type);
+            if (exists self.library[name])
+                return self.library[name].resolve(overrides);
+            using Rosella.Error.invalid;
+            invalid("Rosella::Container", "Type " + type + " not registered");
+        }
+
+        function get_instance_item(var instance, var meth_inits)
+        {
+            // TODO: In Winxed, Rosella.ItemBuilder.Instance doesn't point to
+            //       the Class object. Find another way to reference it.
+            using Rosella.build;
+            var item = build(Rosella.ItemBuilder.Instance, instance, meth_inits);
+            return item;
+        }
+
+        function get_prototype_item(var proto, var meth_inits)
+        {
+            using Rosella.build;
+            var item = build(Rosella.ItemBuilder.Prototype, proto, meth_inits);
+            return item;
+        }
+
+        function get_generator_item(var type, var init_pmc, var meth_inits)
+        {
+            var item;
+            using Rosella.build;
+            if (type instanceof "P6protoobject")
+                item = build(Rosella.ItemBuilder.P6protoobject, type, meth_inits);
+            else if (type instanceof "Class") {
+                item = build(Rosella.ItemBuilder.ParrotClass, type, init_pmc, meth_inits);
+            else {
+                using Rosella.get_type_class;
+                var class_obj = get_type_class(type);
+                item = build(Rosella.ItemBuilder.ParrotClass, class_obj, init_pmc, meth_inits);
+            }
+            return item;
+        }
+
+        function get_factory_method_item(var sub, var meth_inits, var arg_inits)
+        {
+            using Rosella.build;
+            var item = build(Rosella.ItemBuilder.FactoryMethod, sub, meth_inits, arg_inits);
+            return item;
+        }
+    }
+}
+
+
+

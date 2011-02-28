@@ -52,7 +52,7 @@ class Rosella::Container {
 
     method register_instance($type, $instance, :@meth_inits?) {
         my $name := Rosella::get_type_name($type);
-        my $item := self.get_instance_item($instance, @meth_inits);
+        my $item := self.get_instance_item($instance, :meth_inits(@meth_inits));
         %!library{$name} := $item;
     }
 

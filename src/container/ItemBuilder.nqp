@@ -108,6 +108,6 @@ class Rosella::ItemBuilder::FactoryMethod
         for @!arg_initializers {
             $_.prepare_args(@pos, %named);
         }
-        my $obj := &!sub(|@pos, |%named);
+        return &!sub(|@pos, |%named);
     }
 }
