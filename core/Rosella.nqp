@@ -77,14 +77,14 @@ class Rosella {
     # Look up a Parrot Class PMC for the given type. $type can be any of
     # the PMC types used in get_type_name above
     our sub get_type_class($type) {
-        if pir::isa($type, "Class") {
-            return $type;
-        }
         if pir::isa($type, "P6metaclass") {
             return $type.get_parrotclass();
         }
         if pir::isa($type, "P6protoobject") {
-            return $type.HOW().get_parrotclass();
+            return P6metaclass.get_parrotclass($type);
+        }
+        if pir::isa($type, "Class") {
+            return $type;
         }
         if pir::isa($type, "String") {
             $type := pir::split__PSS("::", $type);

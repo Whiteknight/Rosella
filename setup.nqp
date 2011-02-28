@@ -69,6 +69,13 @@ sub MAIN(@argv) {
     >;
     setup_lib(%rosella, "rosella/query.pbc", @query_files);
 
+    my @proxy_files := <
+        include/Core
+        proxy/Factory
+        proxy/MethodProxy
+    >;
+    setup_lib(%rosella, "rosella/proxy.pbc", @proxy_files);
+
     my @test_files := <
         include/Core
         test/Builder
