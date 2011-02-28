@@ -1,6 +1,7 @@
 namespace WinxedDistutils
 {
-    function winxed_setup(var cmds, var data) {
+    function winxed_setup(var cmds, var data)
+    {
         load_bytecode("distutils.pbc");
         using setup;
         using register_step_before;
@@ -12,13 +13,16 @@ namespace WinxedDistutils
         setup(cmds, data);
     }
 
-    function build_winxed(var args [slurpy,named]) {
+    function build_winxed(var args [slurpy,named])
+    {
         var winxed_files = args["pir_winxed"];
         if (winxed_files == null)
             return;
-        int num_files = elements(winxed_files);
-        for (string file in winxed_files) {
-            compile_to_pir(winxed_files[file], file);
+        using newer;
+        for (string pir_file in winxed_files) {
+            string winxed_file = winxed_files[pir_file];
+            if (newer(winxed_file, pir_file))
+                compile_to_pir(winxed_file, pir_file);
         }
     }
 
@@ -44,6 +48,7 @@ namespace WinxedDistutils
     }
 
     function compile_to_pir(string winxed_file, string pir_file) {
+        //string cmd = "winxed -o " + pir_file + " -c " + winxed_file;
         string cmd = "winxed -c " + winxed_file;
         int result;
         say(cmd);
