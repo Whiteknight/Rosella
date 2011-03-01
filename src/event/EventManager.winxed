@@ -1,0 +1,33 @@
+namespace Rosella
+{
+    class EventManager
+    {
+        var events;
+
+        function BUILD()
+        {
+            self.events = {};
+        }
+
+        function register_event(string name, var event)
+        {
+            // TODO: Behavior on duplicates/override?
+            self.events[name] = event;
+        }
+
+        function raise_event(string name,
+                var args [slurpy], var named [slurpy,named])
+        {
+            if (exists self.events[name]) {
+                self.events[name].raise(args:[flat], named:[flat,named]);
+            }
+        }
+
+        function remove_event(name)
+        {
+            if (exists self.events[name]) {
+                delete self.events[name];
+            }
+        }
+    }
+}

@@ -68,7 +68,8 @@ function main[main](argv) {
         "event/Event",
         "event/EventManager"
     ];
-    setup_nqp_lib(rosella, "rosella/event.pbc", event_files);
+    //setup_nqp_lib(rosella, "rosella/event.pbc", event_files);
+    setup_winxed_lib(rosella, "rosella/event.pbc", event_files);
 
     var proto_files = [
         "include/Core",

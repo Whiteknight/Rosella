@@ -1,0 +1,64 @@
+namespace Rosella
+{
+    class Event
+    {
+        var actions;
+        var current_action_name;
+        var current_pos_payload;
+        var current_named_payload;
+        var handled;
+
+        function BUILD(var acts [slurpy,named])
+        {
+            self.actions = acts;
+        }
+
+        function add_action(string name, var action)
+        {
+            self.actions[name] = action;
+        }
+
+        function get_action(string name)
+        {
+            return self.actions[name];
+        }
+
+        function remove_action(string name)
+        {
+            if (exists self.actions[name]) {
+                delete self.actions[name];
+            }
+        }
+
+        function get_pmc_keyed[vtable](var key)
+        {
+            return self.current_named_payload[key];
+        }
+
+        function get_pmc_keyed_int[vtable](int key)
+        {
+            return self.current_pos_payload[key];
+        }
+
+        function positional_payload() { return self.current_pos_payload; }
+        function named_payload() { return self.current_named_payload; }
+        function action_name() { return self.current_action_name; }
+        function handled(int handled)
+        {
+            self.handled = handled;
+        }
+
+        function raise(var pos [slurpy], var named [slurpy,named])
+        {
+            self.current_pos_payload = pos;
+            self.current_named_payload = named;
+            self.handled = 0;
+            for (var action in self.actions) {
+                self.current_action_name = action;
+                self.actions[action].execute(self);
+                if (self.handled)
+                    break;
+            }
+        }
+    }
+}
