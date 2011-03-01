@@ -1,5 +1,28 @@
+function __get_container() {
+    using Rosella.build;
+    var class_obj = class Rosella.Container;
+    return build(class_obj);
+}
+
 namespace Rosella
 {
+    namespace Container
+    {
+        function default_container(var new_cont [optional], int has_cont [opt_flag])
+        {
+            var default_cont = null;
+            if (has_cont)
+                default_cont = new_cont;
+            else {
+                using static __get_container;
+                default_cont = __get_container();
+            }
+          get_container:
+            yield default_cont;
+            goto get_container;
+        }
+    }
+
     class Container
     {
         var library;
