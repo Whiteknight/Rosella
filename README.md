@@ -30,7 +30,8 @@ If you do not have winxed, Parrot ships with NQP which can also be used:
 The libraries built using both methods should both operate identically and
 should pass all the same tests. However, the winxed method may expose
 additional functionality or build additional winxed-only libraries which the
-NQP version does not build.
+NQP version does not build. The NQP method may build libraries which rely on
+"P6object.pbc", from the Parrot distribution.
 
 # Component Libraries
 
