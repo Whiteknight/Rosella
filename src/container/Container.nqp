@@ -72,7 +72,7 @@ class Rosella::Container {
         if pir::defined($item) {
             return $item.resolve(@overrides);
         }
-        my $obj := self.resolve_create($type, @overrides);
+        my $obj := self.resolve_create($type);
         if %!options{"auto_register"} {
             self.register_instance($type, $obj, @overrides);
         }
@@ -81,8 +81,8 @@ class Rosella::Container {
 
     # Create a new object only. Do not attempt to resolve from the library
     # of registered types. Do not auto-register the result
-    method resolve_create($type, @actions?) {
-        return $!default_factory.create($type, @actions);
+    method resolve_create($type, *@pos, *%named) {
+        return $!default_factory.create($type, |@pos, |%named);
     }
 
     # Resolve from the library only. Attempting to resolve a type that has

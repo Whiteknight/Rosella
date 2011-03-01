@@ -113,15 +113,15 @@ namespace Rosella
             string name = get_type_name(type);
             if (exists self.library[name])
                 return self.library[name].resolve(overrides);
-            var obj = self.resolve_create(type, overrides);
+            var obj = self.resolve_create(type);
             if (self.options["auto_register"])
                 self.register_instance(type, obj, overrides);
             return obj;
         }
 
-        function resolve_create(var type, var actions)
+        function resolve_create(var type, var pos [slurpy], var named [slurpy,named])
         {
-            return self.default_factory.create(type, actions);
+            return self.default_factory.create(type, pos:[flat], named:[flat,named]);
         }
 
         function resolve_nocreate(var type, var overrides [slurpy],
