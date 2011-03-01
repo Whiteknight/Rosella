@@ -40,8 +40,10 @@ namespace WinxedDistutils
         for (string file in winxed_files) {
             int e = 0;
             ${ stat e, file, 0 };
-            if (e)
+            if (e) {
+                say("unlink " + file);
                 unlink(file);
+            }
         }
     }
 
@@ -58,11 +60,11 @@ namespace WinxedDistutils
 
     function compile_to_pir(string winxed_file, string pir_file)
     {
-        //string cmd = "winxed -o " + pir_file + " -c " + winxed_file;
-        string cmd = "winxed -c " + winxed_file;
+        string cmd = "winxed -o " + pir_file + " -c " + winxed_file;
         int result;
         say(cmd);
         ${ spawnw result, cmd };
-        return result;
+        if (result != 0)
+            die("exit status: " + result + "\ncommand: " + cmd);
     }
 }
