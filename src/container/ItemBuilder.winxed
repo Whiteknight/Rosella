@@ -80,12 +80,15 @@ namespace Rosella
             function resolve_instance()
             {
                 int have_init_pmc = 0;
-                ${ defined have_init_pmc, self.init_pmc };
+                var init_pmc = self.init_pmc;
+                ${ defined have_init_pmc, init_pmc };
                 var object = null;
-                if (have_init_pmc)
-                    ${ new object, self.class_obj, self.init_pmc };
-                else
-                    ${ new object, self.class_obj };
+                var class_obj = self.class_obj;
+                if (have_init_pmc) {
+                    var init_pmc = self.init_pmc;
+                    ${ new object, class_obj, init_pmc };
+                } else
+                    ${ new object, class_obj };
                 return object;
             }
         }
@@ -102,7 +105,8 @@ namespace Rosella
 
             function resolve_instance() {
                 var object = null;
-                ${ clone object, self.prototype };
+                var prototype = self.prototype;
+                ${ clone object, prototype };
                 return object;
             }
         }

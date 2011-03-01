@@ -45,7 +45,7 @@ namespace Rosella
             string name = get_type_name(type);
             if (!have_inits)
                 meth_inits = [];
-            var item = self.get_prototype_item(proto, meth_inits);
+            var item = self.get_prototype_item(prototype, meth_inits);
             self.library[name] = item;
         }
 

@@ -59,7 +59,8 @@ function main[main](argv) {
         "container/Container",
         "container/ItemBuilder"
     ];
-    setup_nqp_lib(rosella, "rosella/container.pbc", container_files);
+    //setup_nqp_lib(rosella, "rosella/container.pbc", container_files);
+    setup_winxed_lib(rosella, "rosella/container.pbc", container_files);
 
     var event_files = [
         "include/Core",
