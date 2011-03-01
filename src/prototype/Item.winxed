@@ -1,0 +1,53 @@
+namespace Rosella { namespace Prototype
+{
+    class Item
+    {
+        var prototype;
+        var constructor;
+
+        function BUILD(var proto, var sub [optional], int has_sub [opt_flag])
+        {
+            self.prototype = proto;
+            if (has_sub)
+                self.constructor = sub;
+            else
+                self.constructor = null;
+        }
+
+        function create()
+        {
+            var item = null;
+            var prototype = self.prototype;
+            ${ clone item, prototype };
+            return item;
+        }
+
+        function construct(var item,
+                var pos [optional], int has_pos [opt_flag],
+                var named [optional], int has_named [opt_flag])
+        {
+            if (self.constructor == null)
+                return;
+            if (!has_pos)
+                pos = [];
+            if (!has_named)
+                named = {};
+            using Rosella.call_parrot_method;
+            call_parrot_method(item, self.constructor, pos, named);
+        }
+
+        function prototype(var proto [optional], int has_proto [opt_flag]) {
+            if (has_proto)
+                self.prototype = proto;
+            return self.prototype;
+        }
+
+        function constructor(var sub [optional], int has_sub [opt_flag])
+        {
+            if (has_sub)
+                self.constructor = sub;
+            return self.sub;
+        }
+    }
+}
+}

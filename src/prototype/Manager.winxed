@@ -1,0 +1,54 @@
+namespace Rosella { namespace Prototype
+{
+    class Manager
+    {
+        var library;
+
+        function BUILD()
+        {
+            self.library = {};
+        }
+
+        function add_prototype(string name, var proto,
+                var sub [optional], int has_sub [opt_flag])
+        {
+            using Rosella.build;
+            var class_obj = class Rosella.Prototype.Item;
+            if (!has_sub)
+                sub = null;
+            var entry = build(class_obj, proto, sub);
+            self.library[name] = entry;
+        }
+
+        // Get a fresh instance
+        function instance(string name, var pos [slurpy], var named [slurpy,named])
+        {
+            var entry = self.library[name];
+            var obj = entry.create();
+            entry.construct(pos, named);
+            return obj;
+        }
+
+        // Get a fresh instance, and run it through a specified constructor
+        // instead of any already-registered constructors.
+        function instance_constructor(string name, var constructor,
+                var pos [slurpy], var named [slurpy,named])
+        {
+            var entry = self.library[name];
+            var obj = entry.create();
+            using Rosella.call_parrot_method;
+            call_parrot_method(obj, constructor, pos, named);
+            return obj;
+        }
+
+        function get_prototype(string name)
+        {
+            return self.library[name].prototype();
+        }
+
+        function get_constructor(string name)
+        {
+            return self.library[name].constructor();
+        }
+    }
+}}

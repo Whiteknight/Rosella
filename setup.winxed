@@ -76,7 +76,8 @@ function main[main](argv) {
         "prototype/Item",
         "prototype/Manager"
     ];
-    setup_nqp_lib(rosella, "rosella/prototype.pbc", proto_files);
+    //setup_nqp_lib(rosella, "rosella/prototype.pbc", proto_files);
+    setup_winxed_lib(rosella, "rosella/prototype.pbc", proto_files);
 
     var query_files = [
         "include/Core",
