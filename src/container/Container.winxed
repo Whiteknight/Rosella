@@ -16,7 +16,7 @@ namespace Rosella
                 self.options["auto_register"] = auto_register;
             else
                 self.options["auto_register"] = 0;
-            if (have_factory)
+            if (have_fact)
                 self.default_factory = factory;
             else
                 self.default_factory = new Rosella.ObjectFactory;
@@ -49,16 +49,16 @@ namespace Rosella
             self.library[name] = item;
         }
 
-        function register_instance(var instance
+        function register_instance(var instance,
                 var meth_inits [named,optional], int have_inits [opt_flag])
         {
             var type = self.get_instance_type(instance);
             if (!have_inits)
                 meth_inits = [];
-            self.register_instance(type, instance, "meth_inits" => meth_inits);
+            self.register_instance(type, instance, meth_inits:[named]);
         }
 
-        function register_instance(var type, var instance
+        function register_instance(var type, var instance,
                 var meth_inits [named,optional], int have_inits [opt_flag])
         {
             using Rosella.get_type_name;
@@ -83,7 +83,8 @@ namespace Rosella
             self.library[name] = item;
         }
 
-        function resolve(var type, var overrides [slurpy], var named_opts [slurpy,named])
+        function resolve(var type, var overrides [slurpy],
+                var named_opts [slurpy,named])
         {
             using Rosella.get_type_name;
             string name = get_type_name(type);
@@ -100,7 +101,8 @@ namespace Rosella
             return self.default_factory.create(type, actions);
         }
 
-        function resolve_nocreate(var type, var overrides [slurpy], var named_opts[slurpy,named])
+        function resolve_nocreate(var type, var overrides [slurpy],
+                var named_opts[slurpy,named])
         {
             using Rosella.get_type_name;
             string name = get_type_name(type);
@@ -112,17 +114,18 @@ namespace Rosella
 
         function get_instance_item(var instance, var meth_inits)
         {
-            // TODO: In Winxed, Rosella.ItemBuilder.Instance doesn't point to
-            //       the Class object. Find another way to reference it.
             using Rosella.build;
-            var item = build(Rosella.ItemBuilder.Instance, instance, meth_inits);
+            var class_obj = class Rosella.ItemBuilder.Instance;
+            var item = build(class_obj, instance,
+                    meth_inits);
             return item;
         }
 
         function get_prototype_item(var proto, var meth_inits)
         {
             using Rosella.build;
-            var item = build(Rosella.ItemBuilder.Prototype, proto, meth_inits);
+            var class_obj = class Rosella.ItemBuilder.Prototype;
+            var item = build(class_obj, proto, meth_inits);
             return item;
         }
 
@@ -130,14 +133,18 @@ namespace Rosella
         {
             var item;
             using Rosella.build;
-            if (type instanceof "P6protoobject")
-                item = build(Rosella.ItemBuilder.P6protoobject, type, meth_inits);
-            else if (type instanceof "Class") {
-                item = build(Rosella.ItemBuilder.ParrotClass, type, init_pmc, meth_inits);
-            else {
+            var class_obj = null;
+            if (type instanceof "P6protoobject") {
+                class_obj = class Rosella.ItemBuilder.P6protoobject;
+                item = build(class_obj, type, meth_inits);
+            } else if (type instanceof "Class") {
+                class_obj = class Rosella.ItemBuilder.ParrotClass;
+                item = build(class_obj, type, init_pmc, meth_inits);
+            } else {
                 using Rosella.get_type_class;
-                var class_obj = get_type_class(type);
-                item = build(Rosella.ItemBuilder.ParrotClass, class_obj, init_pmc, meth_inits);
+                class_obj = class Rosella.ItemBuilder.ParrotClass;
+                var type_obj = get_type_class(type);
+                item = build(class_obj, type_obj, init_pmc, meth_inits);
             }
             return item;
         }
@@ -145,7 +152,8 @@ namespace Rosella
         function get_factory_method_item(var sub, var meth_inits, var arg_inits)
         {
             using Rosella.build;
-            var item = build(Rosella.ItemBuilder.FactoryMethod, sub, meth_inits, arg_inits);
+            var class_obj = class Rosella.ItemBuilder.FactoryMethod;
+            var item = build(class_obj, sub, meth_inits, arg_inits);
             return item;
         }
     }

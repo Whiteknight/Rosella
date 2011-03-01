@@ -1,0 +1,4 @@
+function rosella_include_action [anon,init,load]()
+{
+    load_bytecode("rosella/action.pbc");
+}
