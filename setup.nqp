@@ -25,6 +25,7 @@ sub MAIN(@argv) {
     my @rosella_files := <
         core/Rosella
         core/Error
+        core/ObjectFactory
     >;
     setup_lib(%rosella, "rosella/core.pbc", @rosella_files);
 
@@ -40,7 +41,6 @@ sub MAIN(@argv) {
         include/Action
         container/Container
         container/ItemBuilder
-        container/ObjectFactory
     >;
     setup_lib(%rosella, "rosella/container.pbc", @container_files);
 
