@@ -7,7 +7,7 @@ namespace Rosella
         return object.*method(pos:[flat], named:[flat,named]);
     }
 
-    function build(var proto, var pos [slurpy], var named [slurpy, named])
+    function alloc(var proto)
     {
         var object;
         if (proto instanceof 'P6protoobject') {
@@ -16,16 +16,40 @@ namespace Rosella
             var obj_class = get_type_class(proto);
             ${ new object, obj_class };
         }
+        return object;
+    }
 
+    function find_method(var object, string meth_name)
+    {
         var method;
         try {
-            ${ find_method method, object, "BUILD" };
+            ${ find_method method, object, meth_name };
         } catch() {
             method = null;
         }
+        return method;
+    }
+
+    // P6ish version, builds the new object and calls the BUILD method on it.
+    function build(var proto, var pos [slurpy], var named [slurpy, named])
+    {
+        var object = alloc(proto);
+        var method = find_method(object, "BUILD");
         if (method != null) {
-            object.BUILD(pos:[flat], named:[flat,named]);
+            object.*method(pos:[flat], named:[flat,named]);
         }
+        return object;
+    }
+
+    // Winxedish version. Builds the new object and calls the method of the
+    // same name as the class.
+    function construct(var proto, var pos [slurpy], var named [slurpy,named])
+    {
+        var object = alloc(proto);
+        var class_obj = get_type_class(proto);
+        var method = find_method(object, class_obj.name());
+        if (method != null)
+            object.*method(pos:[flat], named:[flat,named]);
         return object;
     }
 
