@@ -131,7 +131,8 @@ function main[main](argv) {
          "tap_harness/Output",
          "tap_harness/TestFile"
      ];
-     setup_nqp_lib(rosella, "rosella/tap_harness.pbc", tap_harness_files);
+     //setup_nqp_lib(rosella, "rosella/tap_harness.pbc", tap_harness_files);
+     setup_winxed_lib(rosella, "rosella/tap_harness.pbc", tap_harness_files);
 
 
     using WinxedDistutils.winxed_setup;

@@ -1,0 +1,129 @@
+namespace Rosella
+{
+    class Harness
+    {
+        var total_passed;
+        var total_failed;
+        var total_files;
+        var todo_passed_tests;
+        var todo_passed_files;
+        var results;
+        var tests;
+        var loaders;
+
+        function BUILD()
+        {
+            self.loaders = {};
+            using Rosella.build;
+            var loader_class = class Rosella.Harness.Loader;
+            self.loaders["NQP"] = build(loader_class, class Rosella.Harness.TestFile.NQP);
+            self.loaders["PIR"] = build(loader_class, class Rosella.Harness.TestFile.PIR);
+            self.reset_counts();
+            self.setup_next_run();
+        }
+
+        function setup_next_run()
+        {
+            self.tests = [];
+            for (var loader in self.loaders)
+                self.loaders[loader].prepare_new_run();
+        }
+
+        function reset_counts()
+        {
+            self.total_passed = 0;
+            self.total_failed = 0;
+            self.total_files = 0;
+            self.todo_passed_tests = 0;
+            self.todo_passed_files = 0;
+
+            self.results = {};
+            self.results["PASSED"] = [];
+            self.results["FAILED"] = [];
+            self.results["ABORTED"] = [];
+            self.results["EMPTY"] = [];
+        }
+
+        function add_test_dirs(string loader, var dirs [slurpy],
+                int recurse [named,optional], int has_recurse [opt_flag])
+        {
+            if (!has_recurse)
+                recurse = 0;
+            var tests = self.loaders[loader].get_tests_from_dirs(dirs, recurse);
+            self.add_test_objects(tests);
+        }
+
+        function add_test_files(string loader, files [slurpy])
+        {
+            var tests = self.loaders[loader].get_tests_from_files(files);
+            self.add_test_objects(tests);
+        }
+
+        function add_test_loader(string name, var loader)
+        {
+            self.loaders[name] = loader;
+        }
+
+        function add_test_objects(var tests)
+        {
+            for (var test in tests)
+                push(self.tests, test);
+        }
+
+        function find_max_file_length(int start_length)
+        {
+            int max = start_length;
+            for (var loader in self.loaders) {
+                int len = self.loaders[loader].max_filename_length();
+                if (len > max)
+                    max = len;
+            }
+            return max;
+        }
+
+        function run (int run_inline [named,optional], int has_ri [opt_flag],
+                int line_length [named,optional], int has_ll [opt_flag])
+        {
+            if (!has_ri)
+                run_inline = 0;
+            if (!has_ll)
+                line_length = 0;
+            self.total_files = self.total_files + int(self.tests);
+            int max_length = self.find_max_file_length(line_length);
+            for (var test in self.tests) {
+                test.print_filename(max_length);
+                test.run(run_inline);
+                test.print_result();
+                string status = test.status();
+                push(self.results[status], test);
+                if (status != "ABORTED") {
+                    self.total_passed = self.total_passed + test.passed_tests();
+                    self.total_failed = self.total_failed + test.failed_tests();
+                    int todo_passed = test.todo_passed_tests();
+                    if (todo_passed) {
+                        self.todo_passed_files = self.todo_passed_files + 1;
+                        self.todo_passed_tests = self.todo_passed_tests + todo_passed;
+                    }
+                }
+            }
+            self.setup_next_run();
+        }
+
+        function run_was_success()
+        {
+            int aborted = int(self.results["ABORTED"]);
+            if (aborted || int(self.total_failed))
+                return 0;
+            return 1;
+        }
+
+        function aborted_test_files() { return self.results["ABORTED"]; }
+        function failed_test_files() { return self.results["FAILED"]; }
+        function passed_test_files() { return self.results["PASSED"]; }
+        function num_failed_tests() { return self.total_failed; }
+        function num_passed_tests() { return self.total_passed; }
+        function num_test_files() { return self.total_files; }
+        function num_todo_passed_tests() { return self.todo_passed_tests; }
+        function num_todo_passed_files() { return self.todo_passed_files; }
+    }
+}

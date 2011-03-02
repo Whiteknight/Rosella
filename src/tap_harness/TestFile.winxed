@@ -1,0 +1,312 @@
+namespace Rosella { namespace Harness
+{
+    class TestFile
+    {
+        var filename;
+        var result;
+        var errdetails;
+        var status;
+        var failures;
+        var todo_passed;
+        var lines;
+        var num_tests;
+        var failed_tests;
+        var passed_tests;
+
+        function BUILD(string filename)
+        {
+            self.filename = filename;
+            self.failed_tests = 0;
+            self.passed_tests = 0;
+            self.failures = [];
+            self.todo_passed = [];
+            self.result = null;
+            self.errdetails = null;
+            self.status = null;
+        }
+
+        function total_tests()
+        {
+            return self.num_tests;
+        }
+
+        function failed_tests()
+        {
+            return int(self.failures);
+        }
+
+        function passed_tests()
+        {
+            return self.passed_tests;
+        }
+
+        function list_of_failures()
+        {
+            return self.failures;
+        }
+
+        function list_of_todo_passed()
+        {
+            return self.todo_passed;
+        }
+
+        function todo_passed_tests()
+        {
+            return int(self.todo_passed);
+        }
+
+        function filename()
+        {
+            return string(self.filename);
+        }
+
+        function print_result()
+        {
+            if (self.result != null)
+                say("not ok (" + string(self.result) + ")");
+            else
+                say("ok");
+            if (self.errdetails != null)
+            {
+                // TODO: Break this out into a separate reporting class
+                say("# " + string(self.errdetails));
+            }
+        }
+
+        function status()
+        {
+            return string(self.status);
+        }
+
+        // TODO: Break this out into a separate reporting class
+        function print_filename(int max_length [optional], int has_max [opt_flag])
+        {
+            int len = length(self.filename);
+            if (!has_max || max_length < len)
+                max_length = len;
+            int diff = max_length - len + 3;
+            string elipses = "";
+            ${ repeat elipses, '.', diff };
+            print(string(self.filename) + " " + elipses + " ");
+        }
+
+        // TODO: Move into a utils class
+        function swap_handles(var handles)
+        {
+            var save_handles;
+            var interp = getinterp();
+
+            if (exists handles["stderr"]) {
+                save_handles["stderr"] = interp.stderr_handle();
+                interp.stderr_handle(handles["stderr"]);
+            }
+
+            if (exists handles["stdin"]) {
+                save_handles["stdin"] = interp.stdin_handle();
+                interp.stdin_handle(handles["stdin"]);
+            }
+
+            if (exists handles["stdout"]) {
+                save_handles["stdout"] = interp.stdout_handle();
+                interp.stdout_handle(handles["stdout"]);
+            }
+
+            return save_handles;
+        }
+
+        function compile_and_execute()
+        {
+            var sub = self.compile_test();
+            var stdout = new "StringHandle";
+            stdout.open("blah", "rw");
+            var save_handles = swap_handles(
+                {"stdout" : stdout, "stderr" : stdout}
+            );
+            try {
+                sub();
+            } catch(e) {
+                self.mark_test_abort(e);
+            }
+            string output = stdout.readall();
+            swap_handles(save_handles);
+            self.lines = split("\n", output);
+        }
+
+        function compile_test()
+        {
+            using Rosella.Error.must_subclass;
+            must_subclass("Rosella::Harness::TestFile");
+        }
+
+        function mark_test_abort(var err)
+        {
+            self.result = "aborted prematurely";
+            self.errdetails = err;
+            self.status = "ABORTED";
+        }
+
+        function mark_test_empty()
+        {
+            self.result = "no TAP output";
+            self.status = "EMPTY";
+        }
+
+        function spawn_and_execute()
+        {
+            var pipe = new "FileHandle";
+            pipe.encoding('utf8');
+            string cmd = self.get_spawn_command();
+            pipe.open(cmd, "rp");
+            string output = pipe.readall();
+            pipe.close();
+            int exit_status = pipe.exit_status();
+            if (exit_status != 0)
+                self.mark_test_abort("Test aborted with exit code " + exit_status);
+            self.lines = split("\n", output);
+        }
+
+        function get_spawn_command()
+        {
+            using Rosella.Error.must_subclass;
+            must_subclass("Rosella::Harness::TestFile");
+        }
+
+        function run(int run_inline [optional], int has_ri [opt_flag])
+        {
+            if (!has_ri)
+                run_inline = 0;
+            if (run_inline)
+                self.compile_and_execute();
+            else
+                self.spawn_and_execute();
+
+            if (self.status == null || self.status != "ABORTED") {
+                if (self.has_tap_output()) {
+                    self.get_plan();
+                    self.parse();
+                }
+                else
+                    self.mark_test_empty();
+            }
+        }
+
+        // TODO: A more robust check
+        function has_tap_output()
+        {
+            if (int(self.lines) < 2)
+                return 0;
+            return 1;
+        }
+
+        function get_plan()
+        {
+            // TODO: Detect bad plan
+            string plan    = self.lines[0];
+            var plan_parts = split("..", plan);
+            var num_tests  = plan_parts[1];
+            var lines = self.lines;
+            var dummy = null;
+            ${ shift dummy, lines };
+            self.lines = lines;
+        }
+
+        // TODO: refactor this out into a TAP parser class
+        function parse()
+        {
+            for (string line in self.lines) {
+                if (line != null && length(line) != 0)
+                    self.parse_line(line);
+            }
+            if (int(self.failures)) {
+                int num_failures = int(self.failures);
+                self.result = "Failed " + num_failures + " / " + self.num_tests;
+                self.status = "FAILED";
+            } else
+                self.status = "PASSED";
+        }
+
+        function parse_line(string line)
+        {
+            using Rosella.build;
+            var lineobj = build(class Rosella.Harness.Line, line);
+            if (lineobj.ignore())
+                return;
+            string msg = "test " + lineobj.number() + " - " + lineobj.name();
+
+            if (lineobj.success()) {
+                self.passed_tests = self.passed_tests + 1;
+                if (lineobj.todo())
+                    self.todo_passed.push(msg);
+            } else {
+                if (lineobj.todo())
+                    self.passed_tests = self.passed_tests + 1;
+                else
+                    self.failures.push(msg);
+            }
+        }
+    }
+
+    namespace TestFile
+    {
+        class NQP : Rosella.Harness.TestFile
+        {
+            function compile_test()
+            {
+                var compiler = compreg('NQP-rx');
+                var handle = new "FileHandle";
+                handle.open(self.filename, 'r');
+
+                string code = handle.readall();
+                handle.close();
+
+                var result = compiler.compile(code);
+                return result[0];
+            }
+
+            function get_spawn_command()
+            {
+                // TODO: be more generic
+                return "parrot-nqp " + string(self.filename);
+            }
+        }
+
+        class PIR : Rosella.Harness.TestFile
+        {
+            function compile_test()
+            {
+                var compiler = compreg("PIR");
+                var handle = new "FileHandle";
+                handle.open(self.filename, 'r');
+                string code = handle.readall();
+                handle.close();
+                var result = compiler(code);
+                return result[0];
+            }
+
+            function get_spawn_command()
+            {
+                // TODO: be more generic
+                return "parrot " + string(self.filename);
+            }
+        }
+
+        class Winxed : Rosella.Harness.TestFile
+        {
+            //our $have_winxed;
+            function compile_test()
+            {
+                //if !pir::defined($have_winxed) {
+                //    pir::load_language("winxed");
+                //    $have_winxed = 1;
+                //}
+                var winxed = compreg("winxed");
+                return winxed.compile_file(self.filename);
+            }
+
+            function get_spawn_command()
+            {
+                return "winxed --nowarn " + string(self.filename);
+            }
+        }
+    }
+}}

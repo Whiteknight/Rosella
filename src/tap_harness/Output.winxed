@@ -1,0 +1,69 @@
+namespace Rosella { namespace Harness
+{
+    class Output
+    {
+        function debug(string line) { say("# " + string(line)); }
+
+        function show_results_summary(var harness)
+        {
+            var aborted_files = harness.aborted_test_files();
+            int num_aborted = int(aborted_files);
+            int total_files = harness.num_test_files();
+            int passed_tests = harness.num_passed_tests();
+            int failed_tests = harness.num_failed_tests();
+            var failed_files = harness.failed_test_files();
+            int num_failed_files = int(failed_files);
+
+            if (num_aborted || failed_tests) {
+                say("Result: FAILED");
+                say("\tPassed " + passed_tests + " tests in " + total_files + " files");
+                if (num_aborted)
+                    say("\tFailed " + num_aborted + " files due to premature exit");
+                if (failed_tests)
+                    say("\tFailed " + failed_tests + " tests in " + num_failed_files + " files");
+                say("");
+            } else {
+                say("Result: PASSED");
+                say("\tPassed " + passed_tests + " tests in " + total_files + " files");
+            }
+        }
+
+        function show_error_detail(var harness)
+        {
+            int failed_tests = harness.num_failed_tests();
+            if (failed_tests == 0)
+                return;
+
+            var failed_files = harness.failed_test_files();
+            int num_failed_files = int(failed_files);
+            say("\tList of failed tests by file:");
+            for (var test in failed_files) {
+                say("\t\t" + test.filename());
+                for (var failure in test.list_of_failures())
+                    say("\t\t\t" + failure);
+            }
+        }
+
+        function show_failure_detail(var harness)
+        {
+            var aborted_files = harness.aborted_test_files();
+            int num_aborted = int(aborted_files);
+            if (num_aborted) {
+                say("\tList of files with premature exits:");
+                for (var file in aborted_files) {
+                    # TODO: Should record and output error codes or other
+                    #       error info. Display some diagnostics here
+                    say("\t\t" + string(file.filename()));
+                }
+            }
+        }
+
+        function show_todo_pass_details(var harness)
+        {
+        }
+
+        function show_passed_detail(var harness)
+        {
+        }
+    }
+}}
