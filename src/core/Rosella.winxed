@@ -19,14 +19,12 @@ namespace Rosella
         return object;
     }
 
-    function find_method(var object, string meth_name)
+    function find_named_method(var object, string meth_name)
     {
-        var method;
+        var method = null;
         try {
             ${ find_method method, object, meth_name };
-        } catch() {
-            method = null;
-        }
+        } catch() { }
         return method;
     }
 
@@ -34,7 +32,7 @@ namespace Rosella
     function build(var proto, var pos [slurpy], var named [slurpy, named])
     {
         var object = alloc(proto);
-        var method = find_method(object, "BUILD");
+        var method = find_named_method(object, "BUILD");
         if (method != null) {
             object.*method(pos:[flat], named:[flat,named]);
         }
