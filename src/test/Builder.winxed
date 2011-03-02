@@ -1,0 +1,61 @@
+// a TAP output builder, to replace Test;Builder from the Parrot standard lib
+namespace Rosella { namespace Test
+{
+    class Builder
+    {
+        var test_number;
+
+        function BUILD()
+        {
+            self.test_number = 0;
+        }
+
+        function reset()
+        {
+            self.test_number = 0;
+        }
+
+        function todo(int pass, string msg,
+                int todo [optional], int has_todo [opt_flag])
+        {
+            self.test_number = self.test_number + 1;
+            string output = self._get_result_text(self.test_number, pass, msg);
+            if (has_todo)
+                say(output + " # TODO " + todo);
+            else
+                say(output + " # TODO");
+        }
+
+        function ok(int pass, string msg [optional], int has_msg [opt_flag])
+        {
+            self.test_number = self.test_number + 1;
+            if (!has_msg)
+                msg = null;
+            say(self._get_result_text(self.test_number, pass, msg));
+        }
+
+        function _get_result_text(int number, int pass, string msg)
+        {
+            string result = null;
+            if (pass)
+                result = "ok " + number;
+            else
+                result = "not ok " + number;
+            if (msg != null)
+                return result + " - " + msg;
+            else
+                return result;
+        }
+
+        function diag(string msg)
+        {
+            say("# " + msg);
+        }
+
+        function plan(int count)
+        {
+            // TODO: Error checking
+            say("1.." + count);
+        }
+    }
+}}

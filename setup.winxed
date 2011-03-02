@@ -93,7 +93,8 @@ function main[main](argv) {
         "include/Core",
         "test/Builder"
     ];
-    setup_nqp_lib(rosella, "rosella/test.pbc", test_files);
+    //setup_nqp_lib(rosella, "rosella/test.pbc", test_files);
+    setup_winxed_lib(rosella, "rosella/test.pbc", test_files);
 
     var xunit_files = [
         "include/Core",
