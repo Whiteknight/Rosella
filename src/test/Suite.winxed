@@ -1,0 +1,79 @@
+namespace Rosella { namespace Test
+{
+    class Suite
+    {
+        var members;
+        var num_tests;
+        var name;
+
+        function BUILD(string name)
+        {
+            self.num_tests = 0;
+            self.members = [];
+            self.name = name;
+        }
+
+        function add_test(var test)
+        {
+            push(self.members, test);
+            self.num_tests = self.num_tests + test.num_tests;
+            return self;
+        }
+
+        function default_result()
+        {
+            using Rosella.build;
+            var result = build(class Rosella.Test.Result);
+            var tap_listener = build(class Rosella.Test.Listener.TAP);
+            result.add_listener(tap_listener);
+            return result;
+        }
+
+        function run(/* $result? */)
+        {
+            var result = self.default_result();
+            for (var member in self.members) {
+                if (!result.should_stop())
+                    self.run_test(member, result);
+            }
+            return result;
+        }
+
+        function run_test(var test, var result)
+        {
+            var exception = null;
+            result.start_test(test);
+            try {
+                test.__set_up();
+                self.run_test_method(test);
+            } catch (e) {
+                exception = e;
+            }
+            try {
+                test.__tear_down();
+            } catch (e) {
+                string type = null;
+                ${ typeof type, test };
+                say("Caught exception while tearing down test " + type);
+                say(e);
+            }
+            if (exception == null) {
+                result.end_test(test);
+                return result;
+            }
+
+            var payload = exception.payload;
+            if (payload != null && payload instanceof "Failure")
+                result.add_failure(test, exception);
+            else
+                result.add_error(test, exception);
+            return result;
+        }
+
+        function run_test_method(var test)
+        {
+            test.*(test.name)();
+        }
+    }
+}}
+

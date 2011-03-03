@@ -1,0 +1,60 @@
+namespace Rosella { namespace Test { namespace Listener
+{
+    // The TAP listener listens for test results, and passes them on to the
+    // simple TAP output builder
+    class TAP : Rosella.Test.Listener
+    {
+        var test_builder;
+
+        function BUILD()
+        {
+            using Rosella.build;
+            self.test_builder = build(class Rosella.Test.Builder);
+        }
+
+        function add_error(var test, var error)
+        {
+            self.add_failure(test, error); // Same, as far as we care
+        }
+
+        function add_failure(var test, var error)
+        {
+            string label = self.get_get_label(test);
+            string todo = test.todo;
+            if (todo != null)
+                self.test_builder.todo(0, label, todo);
+            else
+                self.test_builder.ok(0, label);
+
+            string msg = error.message;
+            self.test_builder.diag(msg);
+            return self;
+        }
+
+        function end_test(var test)
+        {
+            string label = self.get_test_label(test);
+            string todo = test.todo;
+            if (todo != null)
+                self.test_builder.todo(1, label, todo);
+            else
+                self.test_builder.ok(1, label);
+            return self;
+        }
+
+        function get_test_label(var test)
+        {
+            if (test.verify != null)
+                return test.verify;
+            if (test.name != null)
+                return test.name;
+            return "";
+        }
+
+        function plan_tests(int num_tests)
+        {
+            self.test_builder.plan(num_tests);
+        }
+    }
+}}}
+

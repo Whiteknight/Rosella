@@ -3,7 +3,7 @@ namespace Rosella { namespace Test
     namespace Testcase
     {
         function test(var testproto,
-                var loaderproto [named,optional[, int has_lp [opt_flag],
+                var loaderproto [named,optional], int has_lp [opt_flag],
                 var opts [slurpy])
         {
             var loader;
@@ -15,7 +15,7 @@ namespace Rosella { namespace Test
 
             var suite = loader.load_tests_from_testcase(testproto);
             using Rosella.get_type_name;
-            suite.name("Test suite for " + get_type_name($testproto));
+            suite.name("Test suite for " + get_type_name(testproto));
             suite.run();
         }
     }
@@ -25,33 +25,29 @@ namespace Rosella { namespace Test
         var todo;
         var verify;
         var name;
+        var num_tests;
 
         function BUILD(string name)
         {
             self.name = name;
+            self.todo = null;
+            self.verify = null;
+            self.num_tests = 1;
         }
-
-        function __name() { return self.name; }
-
-        function __num_tests() { return 1; }
 
         function __set_up() { }
 
         function __tear_down() { }
 
         # Provide an alternate text to display on output
-        function verify(string verify [optional], int has_v [opt_flag])
+        function verify(string verify)
         {
-            if (has_v)
-                self.verify = verify;
-            return self.verify;
+            self.verify = verify;
         }
 
-        function todo(string todo [optional], int has_todo [opt_flag])
+        function todo(string todo)
         {
-            if (has_todo)
-                self.todo = todo;
-            return self.todo;
+            self.todo = todo;
         }
 
         function unimplemented(string msg)

@@ -28,53 +28,83 @@ namespace Assert
             fail(message);
     }
 
-    function can(var obj, string method, string message [optional], int has_msg [opt_flag])
+    function can(var obj, string method,
+            string message [optional], int has_msg [opt_flag])
     {
         message = default_message(message, has_msg, "item failed 'can'");
-        if (!can(obj, method))
+        int i_can = 0;
+        ${ can i_can, obj, method };
+        if (!i_can)
             fail(message);
     }
 
-    function can_not($obj, $method, string message [optional], int has_msg [opt_flag])
+    function can_not(var obj, string method,
+            string message [optional], int has_msg [opt_flag])
     {
         message = default_message(message, has_msg, "item failed 'can_not'");
-        fail($message) if pir::can($obj, $method);
+        int i_can = 0;
+        ${ can i_can, obj, method };
+        if (i_can)
+            fail(message);
     }
 
-    function defined($obj, string message [optional], int has_msg [opt_flag])
+    function defined(var obj,
+            string message [optional], int has_msg [opt_flag])
     {
         message = default_message(message, has_msg, "item not defined");
-        fail($message) unless pir::defined($obj);
+        int is_defined = 0;
+        ${ defined is_defined, obj };
+        if (!is_defined)
+            fail(message);
     }
 
-    function not_defined($obj, string message [optional], int has_msg [opt_flag])
+    function not_defined(var obj,
+            string message [optional], int has_msg [opt_flag])
     {
         message = default_message(message, has_msg, "item is defined");
-        fail($message) if pir::defined($obj);
+        int is_defined = 0;
+        ${ defined is_defined, obj };
+        if (is_defined)
+            fail(message);
     }
 
-    function does($obj, $role, string message [optional], int has_msg [opt_flag])
+    function does(var obj, var role,
+            string message [optional], int has_msg [opt_flag])
     {
         message = default_message(message, has_msg, "item failed 'does'");
-        fail($message) unless pir::class__PP($obj).does($role);
+        int obj_does = 0;
+        ${ does obj_does, obj, role };
+        if (!obj_does)
+            fail(message);
     }
 
-    function does_not($obj, $role, string message [optional], int has_msg [opt_flag])
+    function does_not(obj, role, string message [optional], int has_msg [opt_flag])
     {
         message = default_message(message, has_msg, "item failed 'does'");
-        fail($message) if pir::class__PP($obj).does($role);
+        int obj_does = 0;
+        ${ does obj_does, obj, role };
+        if (obj_does)
+            fail(message);
     }
 
-    function equal($o1, $o2, string message [optional], int has_msg [opt_flag])
+    function equal(var o1, var o2,
+            string message [optional], int has_msg [opt_flag])
     {
         message = default_message(message, has_msg, "objects not equal");
-        fail($message) unless pir::iseq__IPP($o2, $o1);
+        int equal = 0;
+        ${ iseq equal, o1, o2 };
+        if (!equal)
+            fail(message);
     }
 
-    function not_equal($o1, $o2, string message [optional], int has_msg [opt_flag])
+    function not_equal(var o1, var o2,
+            string message [optional], int has_msg [opt_flag])
     {
         message = default_message(message, has_msg, "objects equal");
-        fail($message) if pir::iseq__IPP($o2, $o1);
+        int equal = 0;
+        ${ iseq equal, o1, o2 };
+        if (!equal)
+            fail(message);
     }
 
     // Only works with P6metaclass/P6protoobject classes
@@ -109,53 +139,62 @@ namespace Assert
     //    }
     //}
 
-    function null($obj, string message [optional], int has_msg [opt_flag] = "object not null") {
-        fail($message) unless pir::isnull($obj);
+    function is_null(var obj, string message [optional], int has_msg [opt_flag])
+    {
+        message = default_message(message, has_msg, "object is not null");
+        if (obj != null)
+            fail(message);
     }
 
-    function not_null($obj, string message [optional], int has_msg [opt_flag] = "object is null") {
-        fail($message) if pir::isnull($obj);
+    function not_null(var obj, string message [optional], int has_msg [opt_flag])
+    {
+        message = default_message(message, has_msg, "object is null");
+        if (obj == null)
+            fail(message);
     }
 
-    function same($o1, $o2, string message [optional], int has_msg [opt_flag] = "objects are not the same") {
-        fail($message) unless $o1 == $o2;
-    }
+    //function same($o1, $o2, string message [optional], int has_msg [opt_flag])
+    //{
+    //    message = default_message(message, has_msg, "objects not same");
+    //    fail($message) unless $o1 == $o2;
+    //}
 
-    function not_same($o1, $o2, string message [optional], int has_msg [opt_flag] = "objects are the same") {
-        fail($message) if $o1 == $o2;
-    }
+    //function not_same($o1, $o2, string message [optional], int has_msg [opt_flag]) {
+    //    message = default_message(message, has_msg, "objects are same");
+    //    fail($message) if $o1 == $o2;
+    //}
 
-    function throws(&block, string message [optional], int has_msg [opt_flag]) {
-        my $exception;
-
+    function throws(var block, string message [optional], int has_msg [opt_flag])
+    {
+        message = default_message(message, has_msg, "does not throw");
         try {
-            &block();
+            block();
+            fail(message);
+        } catch() {}
+    }
 
-            CATCH { $exception = $!; }
-        };
-
-        unless pir::defined($exception) {
-            fail($message);
+    function throws_nothing(var block, string message [optional], int has_msg [opt_flag])
+    {
+        message = default_message(message, has_msg, "block throws");
+        try {
+            block();
+        } catch() {
+            fail(message);
         }
     }
 
-    function throws_nothing(&block, string message [optional], int has_msg [opt_flag]) {
-        my $ok = 1;
-
-        try {
-            &block();
-            CATCH { $ok = 0; }
-        };
-
-        fail($message) unless $ok;
+    function is_true(int bool, string message [optional], int has_msg [opt_flag])
+    {
+        message = default_message(message, has_msg, "is not true");
+        if (!bool)
+            fail(message);
     }
 
-    function true($bool, string message [optional], int has_msg [opt_flag] "is not true") {
-        fail($message) unless $bool;
-    }
-
-    function false($bool, string message [optional], int has_msg [opt_flag] "is not false") {
-        fail($message) if $bool;
+    function is_false(int bool, string message [optional], int has_msg [opt_flag])
+    {
+        message = default_message(message, has_msg, "is not false");
+        if (bool)
+            fail(message);
     }
 
     //function within_delta($o1, $o2, $delta, string message [optional], int has_msg [opt_flag] "difference not within delta") {

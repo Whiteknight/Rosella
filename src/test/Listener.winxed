@@ -1,0 +1,12 @@
+namespace Rosella { namespace Test
+{
+    // The default Listener does nothing. For interesting behaviors, you must
+    // subclass
+    class Listener
+    {
+        function add_error(var test, var fault) { }
+        function add_failure(var test, var fault) { }
+        function end_test(var test) { }
+        function start_test(var test) { }
+    }
+}}

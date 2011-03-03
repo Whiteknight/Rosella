@@ -92,25 +92,18 @@ function main[main](argv) {
 
     var test_files = [
         "include/Core",
-        "test/Builder"
+        "test/Builder",
+        "test/Assertions",
+        "test/Failure",
+        "test/Listener",
+        "test/Listener/TAP",
+        "test/Loader",
+        "test/Result",
+        "test/Suite",
+        "test/Testcase"
     ];
     //setup_nqp_lib(rosella, "rosella/test.pbc", test_files);
     setup_winxed_lib(rosella, "rosella/test.pbc", test_files);
-
-    var xunit_files = [
-        "include/Core",
-        "include/Test",
-        "xunit/Assertions",
-        "xunit/Failure",
-        "xunit/Listener",
-        "xunit/Listener/TAP",
-        "xunit/Loader",
-        "xunit/Result",
-        "xunit/Suite",
-        "xunit/Testcase",
-        "xunit/UnitTestFailure"
-    ];
-    setup_nqp_lib(rosella, "rosella/xunit.pbc", xunit_files);
 
 //     my @mockobject_files := <
 //         include/Core

@@ -1,0 +1,92 @@
+namespace Rosella { namespace Test
+{
+    class Loader
+    {
+        var class_obj;
+        var proto_obj;
+        var seen_methods;
+        var test_prefix;
+
+        function BUILD(/* :$prefix? */)
+        {
+            // TODO: Set the class here
+            // self.class =
+            self.test_prefix = "test_";
+            self.seen_methods = {};
+        }
+
+        function compare_methods(string a, string b)
+        {
+            int compare = 0;
+            ${ cmp compare, a, b };
+            return compare;
+        }
+
+        function configure_suite(var tests, var suite [optional], int has_suite [opt_flag])
+        {
+            if (!has_suite)
+                suite = self.default_suite();
+            using Rosella.build;
+            for (var test in tests) {
+                var test_obj = build(self.proto_obj, test);
+                suite.add_test(test_obj);
+            }
+            return suite;
+        }
+
+        function default_suite()
+        {
+            using Rosella.build;
+            var suite = build(class Rosella.Test.Suite);
+            return suite;
+        }
+
+        function array_unsort(var array)
+        {
+            // TODO: implement a shuffle
+            return array;
+        }
+
+        function get_test_methods()
+        {
+            var mro = self.class_obj.inspect("all_parents");
+            var test_methods = [];
+            for (var parent in mro) {
+                var methods = parent.inspect("methods");
+                for (var method in methods) {
+                    if (self.is_test_method(method) && !(exists self.seen_methods[method])) {
+                        self.seen_methods[method] = 1;
+                        test_methods.push(method);
+                    }
+                }
+            }
+            return self.order_tests(test_methods);
+        }
+
+        function is_test_method(string name)
+        {
+            int is_test = 0;
+            int prefix_length = length(self.test_prefix);
+            if (length(name) > prefix_length &&
+                substr(name, 0, prefix_length) == self.test_prefix) {
+                is_test = 1;
+            }
+            return is_test;
+        }
+
+        function load_tests_from_testcase(var proto, var suite)
+        {
+            self.proto = proto;
+            using Rosella.get_type_class;
+            self.class = get_type_class(proto);
+            var tests = self.get_test_methods();
+            self.configure_suite(tests, suite);
+        }
+
+
+        function order_tests(var tests)
+        {
+            return self.array_unsort(tests);
+        }
+    }
+}}

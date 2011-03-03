@@ -1,0 +1,84 @@
+namespace Rosella { namespace Test
+{
+    class Result
+    {
+        var errors;
+        var failures;
+        var listeners;
+        var should_stop;
+        var num_tests;
+        var planned_tests;
+
+        function BUILD()
+        {
+            self.errors = 0;
+            self.failures = 0;
+            self.listeners = [];
+            self.should_stop = 0;
+            self.num_tests = 0;
+            self.planned_tests = 0;
+        }
+
+        function num_tests(var value [optional], int has_value [opt_flag])
+        {
+            if (has_value)
+                self.num_tests = value;
+            return self.num_tests;
+        }
+
+        function add_error(test, error)
+        {
+            self.errors = self.errors + 1;
+            self.notify_listeners("add_error", test, error);
+        }
+
+        function add_failure(test, failure)
+        {
+            self.failures = self.failures + 1;
+            self.notify_listeners("add_failure", test, failure);
+        }
+
+        function add_listener(var listener)
+        {
+            push(self.listeners, listener);
+            return self;
+        }
+
+        function end_test(var test)
+        {
+            self.notify_listeners("end_test", test);
+        }
+
+        function notify_listeners(string method, var args [slurpy])
+        {
+            for (var listener in self.listeners)
+                listener.*method(args:[flat]);
+            return self;
+        }
+
+        function plan_tests(int num_tests)
+        {
+            if (!self.planned_tests) {
+                self.planned_tests = num_tests;
+                self.notify_listeners("plan_tests", num_tests);
+            }
+        }
+
+        function start_test(var test)
+        {
+            self.num_tests(self.num_tests + test.num_tests);
+            self.notify_listeners("start_test", test);
+        }
+
+        function stop()
+        {
+            self.should_stop = 1;
+            return self;
+        }
+
+        function was_successful()
+        {
+            return self.error_count == 0 && self.failure_count == 0;
+        }
+    }
+}}

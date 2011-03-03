@@ -1,16 +1,18 @@
 namespace Rosella { namespace Test
 {
+    // An exception wrapper object to signal failure and abort the current
+    // test.
     class Failure
     {
         var exception;
 
-        method message(var value [slurpy])
+        function message(var value [slurpy])
         {
             string msg = join(" ", value);
             if (self.exception == null)
                 self.exception = new 'Exception';
-            exception.message = msg;
-            exception.payload = self;
+            self.exception.message = msg;
+            self.exception.payload = self;
         }
 
         function throw()
