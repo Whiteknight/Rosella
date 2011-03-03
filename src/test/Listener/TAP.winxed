@@ -19,7 +19,7 @@ namespace Rosella { namespace Test { namespace Listener
 
         function add_failure(var test, var error)
         {
-            string label = self.get_get_label(test);
+            string label = self.get_test_label(test);
             string todo = test.todo;
             if (todo != null)
                 self.test_builder.todo(0, label, todo);

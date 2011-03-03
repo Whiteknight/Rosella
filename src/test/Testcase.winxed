@@ -3,8 +3,7 @@ namespace Rosella { namespace Test
     namespace Testcase
     {
         function test(var testproto,
-                var loaderproto [named,optional], int has_lp [opt_flag],
-                var opts [slurpy])
+                var loaderproto [named,optional], int has_lp [opt_flag])
         {
             var loader;
             using Rosella.build;
@@ -15,7 +14,6 @@ namespace Rosella { namespace Test
 
             var suite = loader.load_tests_from_testcase(testproto);
             using Rosella.get_type_name;
-            suite.name("Test suite for " + get_type_name(testproto));
             suite.run();
         }
     }

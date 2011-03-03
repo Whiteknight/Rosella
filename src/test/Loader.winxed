@@ -37,7 +37,9 @@ namespace Rosella { namespace Test
         function default_suite()
         {
             using Rosella.build;
-            var suite = build(class Rosella.Test.Suite);
+            using Rosella.get_type_name;
+            string type = get_type_name(self.proto_obj);
+            var suite = build(class Rosella.Test.Suite, "Suite for " + type);
             return suite;
         }
 
@@ -74,13 +76,13 @@ namespace Rosella { namespace Test
             return is_test;
         }
 
-        function load_tests_from_testcase(var proto, var suite)
+        function load_tests_from_testcase(var proto)
         {
-            self.proto = proto;
+            self.proto_obj = proto;
             using Rosella.get_type_class;
-            self.class = get_type_class(proto);
+            self.class_obj = get_type_class(proto);
             var tests = self.get_test_methods();
-            self.configure_suite(tests, suite);
+            return self.configure_suite(tests);
         }
 
 

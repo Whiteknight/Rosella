@@ -33,7 +33,7 @@ namespace Rosella { namespace Test
         {
             var result = self.default_result();
             for (var member in self.members) {
-                if (!result.should_stop())
+                if (!result.should_stop)
                     self.run_test(member, result);
             }
             return result;
@@ -72,7 +72,8 @@ namespace Rosella { namespace Test
 
         function run_test_method(var test)
         {
-            test.*(test.name)();
+            string method = test.name;
+            test.*method();
         }
     }
 }}
