@@ -26,7 +26,7 @@ class PathTest is Rosella::Testcase {
 
     method test_attr_search() {
         my $q := Rosella::build(Rosella::Query::Path);
-        my $result := $q.get($q, '$!seperator');
+        my $result := $q.get($q, 'separator');
         Assert::equal($result, ".");
     }
 
@@ -41,7 +41,7 @@ class PathTest is Rosella::Testcase {
             )),
             :d("h")
         );
-        my $result := $q.get(%a, 'b.foo.$!seperator');
+        my $result := $q.get(%a, 'b.foo.separator');
         Assert::equal($result, ".");
     }
 

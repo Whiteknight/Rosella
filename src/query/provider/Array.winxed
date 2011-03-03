@@ -1,0 +1,108 @@
+namespace Rosella { namespace Query { namespace Provider
+{
+    class Array : Rosella.Query.Provider
+    {
+        function map(var data, var mapper)
+        {
+            // TODO: Can we presize this?
+            var new_data = [];
+            int i = 0;
+            int elems = 0;
+            ${ elements elems, data };
+            while (i < elems) {
+                new_data[i] = mapper(data[i]);
+                i = i + 1;
+            }
+            return new_data;
+        }
+
+        function filter(var data, var func,
+            int limit [optional], int has_limit [opt_flag])
+        {
+            if (!has_limit)
+                ${ elements limit, data };
+            var new_data = [];
+            if (limit <= 0)
+                return new_data;
+            int count = 0;
+            for (var item in data) {
+                if (func(item)) {
+                    push(new_data, item);
+                    count = count + 1;
+                    if (count > limit)
+                        return new_data;
+                }
+            }
+            return new_data;
+        }
+
+        function fold(var seed, var data, var func)
+        {
+            var result = seed;
+            for (var item in data)
+                result = func(result, item);
+            return result;
+        }
+
+        function take(var data, var limit,
+                var func [optional], int has_func [opt_flag])
+        {
+            if (has_func)
+                return self.filter(data, func, limit:[named]);
+            int count = 0;
+            var new_data = [];
+            for (var item in data) {
+                push(new_data, item);
+                count = count + 1;
+                if (count > limit)
+                    return new_data;
+            }
+            return new_data;
+        }
+
+        function combine(var a, var b,
+                var filter [optional], int has_filter [opt_flag],
+                var key_func [optional], int has_key_func [opt_flag],
+                var dispute [optional], int has_dispute [opt_flag])
+        {
+            if (has_filter) {
+                a = self.filter(a, filter);
+                b = self.filter(b, filter);
+            }
+            if (has_key_func) {
+                if (!has_dispute)
+                    dispute = function (data_a, data_b) { return data_a; };
+                return self.join_key(a, b, key_func, dispute);
+            }
+            var new_data = [];
+            for (var item_a in a)
+                push(new_data, item_a);
+            for (var item_b in b)
+                push(new_data, item_b);
+            return new_data;
+        }
+
+        function combine_key(var a, var b, var key_func, var dispute)
+        {
+            var keys = {};
+            for (var item_a in a) {
+                var key = key_func(item_a);
+                if (exists keys[key])
+                    keys[key] = dispute(key, keys[key], item_a);
+                else
+                    keys[key] = item_a;
+            }
+            for (var item_b in b) {
+                var key = key_func(item_b);
+                if (exists keys[key])
+                    keys[key] = dispute(key, keys[key], item_b);
+                else
+                    keys[key] = item_b;
+            }
+            var new_data = [];
+            for (string key in keys)
+                push(new_data, keys[key]);
+            return new_data;
+        }
+    }
+}}}

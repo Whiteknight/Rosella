@@ -2,7 +2,7 @@ class Rosella::Query::Path {
     has $!seperator;
 
     method BUILD($seperator?) {
-        $!seperator := $seperator // ".";
+        $!seperator := $seperator // "."; #/
     }
 
     method get($obj, $name) {

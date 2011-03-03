@@ -87,7 +87,8 @@ function main[main](argv) {
         "query/provider/Hash",
         "query/Path"
     ];
-    setup_nqp_lib(rosella, "rosella/query.pbc", query_files);
+    //setup_nqp_lib(rosella, "rosella/query.pbc", query_files);
+    setup_winxed_lib(rosella, "rosella/query.pbc", query_files);
 
     var test_files = [
         "include/Core",

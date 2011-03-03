@@ -1,0 +1,85 @@
+namespace Rosella { namespace Query { namespace Provider
+{
+    class Hash : Rosella.Query.Provider
+    {
+        function map(var data, var mapper)
+        {
+            var new_data = {};
+            for (string key in data)
+                new_data[key] = mapper(data[key]);
+            return new_data;
+        }
+
+        function filter(var data, var func,
+                int limit [optional], int has_limit [opt_flag])
+        {
+            if (!has_limit)
+                ${ elements limit, data };
+            var new_data = {};
+            int count = 0;
+            for (string key in data) {
+                var item = data[key];
+                if (func(item)) {
+                    new_data[key] = item;
+                    count = count + 1;
+                    if (count > limit)
+                        return new_data;
+                }
+            }
+            return new_data;
+        }
+
+        function fold(var seed, var data, var func)
+        {
+            var result = seed;
+            for (string key in data)
+                result = func(result, data[key]);
+            return result;
+        }
+
+        function take(var data, var limit,
+                var func [optional], int has_func [opt_flag])
+        {
+            if (has_func)
+                return self.filter(data, func, limit:[named]);
+            int num = 0;
+            var new_data = {};
+            for (string key in data) {
+                var item = data[key];
+                new_data[key] = item;
+                num = num + 1;
+                if (num > limit)
+                    return new_data;
+            }
+            return new_data;
+        }
+
+        function combine(var a, var b,
+                var filter [optional], int has_filter [opt_flag],
+                var key_func [optional], int has_key_func [opt_flag],
+                var dispute [optional], int has_dispute [opt_flag])
+        {
+            if (has_filter) {
+                a = self.filter(a, filter);
+                b = self.filter(b, filter);
+            }
+            if (!has_dispute)
+                dispute = function(key, data_a, data_b) { return data_a; };
+            if (has_key_func)
+                die("Query::Provider::Hash: Cannot combine hashes by keys");
+
+            var new_data = {};
+            var conflict = 0;
+            for (string key_a in a)
+                new_data[key_a] = a[key_a];
+            for (string key_b in b) {
+                var value_b = b[key_b];
+                if (exists new_data[key_b])
+                    new_data[key_b] = dispute(new_data[key_b], value_b);
+                else
+                    new_data[key_b] = value_b;
+            }
+            return new_data;
+        }
+    }
+}}}

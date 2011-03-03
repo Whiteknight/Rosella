@@ -1,0 +1,54 @@
+namespace Rosella { namespace Query
+{
+    class Provider
+    {
+        function map(var data, var func)
+        {
+            using Rosella.Error.must_subclass;
+            must_subclass("Rosella::Query::Provider");
+        }
+
+        function filter(var data, var func)
+        {
+            using Rosella.Error.must_subclass;
+            must_subclass("Rosella::Query::Provider");
+        }
+
+        function fold(var seed, var data, var func)
+        {
+            using Rosella.Error.must_subclass;
+            must_subclass("Rosella::Query::Provider");
+        }
+
+        function count(var data, var func [optional], int has_func [opt_flag])
+        {
+            if (has_func)
+                data = self.filter(data, func);
+            int elems = 0;
+            ${ elements elems, data };
+            return elems;
+        }
+
+        function take(var data, int count, var func [optional], int has_func [opt_flag])
+        {
+            using Rosella.Error.must_subclass;
+            must_subclass("Rosella::Query::Provider");
+        }
+
+        function skip(var data, var count, var func [optional], int has_func [opt_flag])
+        {
+            using Rosella.Error.must_subclass;
+            must_subclass("Rosella::Query::Provider");
+        }
+
+
+        function combine(var a, var b,
+                var filter [optional], int has_filter [opt_flag],
+                var key_func [optional], int has_key_func [opt_flag],
+                var dispute [optional], int has_dispute [opt_flag])
+        {
+            using Rosella.Error.must_subclass;
+            must_subclass("Rosella::Query::Provider");
+        }
+    }
+}}
