@@ -1,0 +1,21 @@
+namespace Rosella { namespace Test
+{
+    class Failure
+    {
+        var exception;
+
+        method message(var value [slurpy])
+        {
+            string msg = join(" ", value);
+            if (self.exception == null)
+                self.exception = new 'Exception';
+            exception.message = msg;
+            exception.payload = self;
+        }
+
+        function throw()
+        {
+            throw self.exception;
+        }
+    }
+}}

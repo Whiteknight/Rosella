@@ -1,0 +1,177 @@
+namespace Assert
+{
+    function default_message(string msg, int has_msg, string def)
+    {
+        if (has_msg)
+            return msg;
+        return def;
+    }
+
+    function fail(string why [optional], int has_why [opt_flag])
+    {
+        why = default_message(why, has_why, "Unknown failure");
+        using Rosella.build;
+        var ex = build(class Rosella.Test.Failure);
+        ex.message(why);
+        ex.throw();
+    }
+
+    function block(string message, var block)
+    {
+        if (!block())
+            fail(message);
+    }
+
+    function block_false(string message, var block)
+    {
+        if (block())
+            fail(message);
+    }
+
+    function can(var obj, string method, string message [optional], int has_msg [opt_flag])
+    {
+        message = default_message(message, has_msg, "item failed 'can'");
+        if (!can(obj, method))
+            fail(message);
+    }
+
+    function can_not($obj, $method, string message [optional], int has_msg [opt_flag])
+    {
+        message = default_message(message, has_msg, "item failed 'can_not'");
+        fail($message) if pir::can($obj, $method);
+    }
+
+    function defined($obj, string message [optional], int has_msg [opt_flag])
+    {
+        message = default_message(message, has_msg, "item not defined");
+        fail($message) unless pir::defined($obj);
+    }
+
+    function not_defined($obj, string message [optional], int has_msg [opt_flag])
+    {
+        message = default_message(message, has_msg, "item is defined");
+        fail($message) if pir::defined($obj);
+    }
+
+    function does($obj, $role, string message [optional], int has_msg [opt_flag])
+    {
+        message = default_message(message, has_msg, "item failed 'does'");
+        fail($message) unless pir::class__PP($obj).does($role);
+    }
+
+    function does_not($obj, $role, string message [optional], int has_msg [opt_flag])
+    {
+        message = default_message(message, has_msg, "item failed 'does'");
+        fail($message) if pir::class__PP($obj).does($role);
+    }
+
+    function equal($o1, $o2, string message [optional], int has_msg [opt_flag])
+    {
+        message = default_message(message, has_msg, "objects not equal");
+        fail($message) unless pir::iseq__IPP($o2, $o1);
+    }
+
+    function not_equal($o1, $o2, string message [optional], int has_msg [opt_flag])
+    {
+        message = default_message(message, has_msg, "objects equal");
+        fail($message) if pir::iseq__IPP($o2, $o1);
+    }
+
+    // Only works with P6metaclass/P6protoobject classes
+    //function instance_of($obj, $class, string message [optional], int has_msg [opt_flag] = "object is not instance_of") {
+    //    fail($message) unless pir::class__PP($obj) == P6metaclass.get_parrotclass($class);
+    //}
+
+    //function not_instance_of($obj, $class, string message [optional], int has_msg [opt_flag] = "object is instance of") {
+    //    fail($message) if pir::class__PP($obj) == P6metaclass.get_parrotclass($class);
+    //}
+
+    //function isa($obj, $class, string message [optional], int has_msg [opt_flag] = "object not isa") {
+    //    fail($message) unless pir::isa__iPP($obj, P6metaclass.get_parrotclass($class));
+    //}
+
+    //function not_isa($obj, $class, string message [optional], int has_msg [opt_flag] = "object isa") {
+    //    fail($message) if pir::isa__iPP($obj, P6metaclass.get_parrotclass($class));
+    //}
+
+    // TODO: Port matcher library
+    //function match($obj, $matcher, string message [optional], int has_msg [opt_flag] = "match failed") {
+    //    unless $matcher.matches($obj) {
+    //        my $explain = $matcher.describe_self("\nExpected ")
+    //            ~ $matcher.describe_failure("\nbut ", $obj);
+    //        fail($message ~ $explain);
+    //    }
+    //}
+
+    //function not_match($obj, $matcher, string message [optional], int has_msg [opt_flag]) {
+    //    if $matcher.matches($obj) {
+    //        fail($message);
+    //    }
+    //}
+
+    function null($obj, string message [optional], int has_msg [opt_flag] = "object not null") {
+        fail($message) unless pir::isnull($obj);
+    }
+
+    function not_null($obj, string message [optional], int has_msg [opt_flag] = "object is null") {
+        fail($message) if pir::isnull($obj);
+    }
+
+    function same($o1, $o2, string message [optional], int has_msg [opt_flag] = "objects are not the same") {
+        fail($message) unless $o1 == $o2;
+    }
+
+    function not_same($o1, $o2, string message [optional], int has_msg [opt_flag] = "objects are the same") {
+        fail($message) if $o1 == $o2;
+    }
+
+    function throws(&block, string message [optional], int has_msg [opt_flag]) {
+        my $exception;
+
+        try {
+            &block();
+
+            CATCH { $exception = $!; }
+        };
+
+        unless pir::defined($exception) {
+            fail($message);
+        }
+    }
+
+    function throws_nothing(&block, string message [optional], int has_msg [opt_flag]) {
+        my $ok = 1;
+
+        try {
+            &block();
+            CATCH { $ok = 0; }
+        };
+
+        fail($message) unless $ok;
+    }
+
+    function true($bool, string message [optional], int has_msg [opt_flag] "is not true") {
+        fail($message) unless $bool;
+    }
+
+    function false($bool, string message [optional], int has_msg [opt_flag] "is not false") {
+        fail($message) if $bool;
+    }
+
+    //function within_delta($o1, $o2, $delta, string message [optional], int has_msg [opt_flag] "difference not within delta") {
+    //    my $difference = $o1 - $o2;
+    //    $difference = - $difference if $difference < 0;
+    //    fail($message) unless $difference < $delta;
+    //}
+
+    //#~ like(obj, regex, message)
+    //#~ not_like
+
+    //#function want_fail($message, &block) {
+    //#    throws(Exception::RosellaFailure, $message, &block);
+    //#}
+
+    //#function want_pass($message, &block) {
+    //#    throws_nothing($message, &block);
+    //#}
+}

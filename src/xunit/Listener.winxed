@@ -1,0 +1,10 @@
+namespace Rosella { namespace Test
+{
+    class Listener
+    {
+        function add_error(var failure) { }
+        function add_failure(var failure) { }
+        function end_test(var test) { }
+        function start_test(var test) { }
+    }
+}}
