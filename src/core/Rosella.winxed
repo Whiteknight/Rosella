@@ -1,12 +1,24 @@
+/*
+    The Rosella namespace is the base namespace of the Rosella library. All
+    Rosella libraries are in their own namespaces nested under the ["Rosella"]
+    namespace.
+
+    This namespace provides a handful of basic functions which are used
+    throughout rosella for some base functionality. These functions can be
+    broken into two general groups: functions for creating new objects, and
+    functions for working with types.
+*/
 namespace Rosella
 {
-    function call_parrot_method(var object, var method, var pos, var named)
-    {
-        if (method instanceof "String")
-            method = find_method(object, method);
-        return object.*method(pos:[flat], named:[flat,named]);
-    }
+    /* Allocation / Construction Functions
+        These functions allocate a new object using some kind of proto-
+        or meta-object. This meta-object can be a Class PMC, a PMC which can
+        be used to look up a class (String, String array, NameSpace, Key),
+        or something from the P6object system (P6metaclass, P6protoobject)
+    */
 
+    // Allocate a fresh new object from the meta-object. Do not manipulate it,
+    // initialize it, or call any methods on it.
     function alloc(var proto)
     {
         var object;
@@ -19,16 +31,8 @@ namespace Rosella
         return object;
     }
 
-    function find_named_method(var object, string meth_name)
-    {
-        var method = null;
-        try {
-            ${ find_method method, object, meth_name };
-        } catch() { }
-        return method;
-    }
-
-    // P6ish version, builds the new object and calls the BUILD method on it.
+    // P6-ish initializer routine. Allocate a new object and call the BUILD
+    // method on it, if it is defined.
     function build(var proto, var pos [slurpy], var named [slurpy, named])
     {
         var object = alloc(proto);
@@ -39,8 +43,9 @@ namespace Rosella
         return object;
     }
 
-    // Winxedish version. Builds the new object and calls the method of the
-    // same name as the class.
+    // Construct a new object. Allocate a fresh object of the given type and
+    // call the class constructor. The class constructor is a method with the
+    // same name as the short name of the Class.
     function construct(var proto, var pos [slurpy], var named [slurpy,named])
     {
         var object = alloc(proto);
@@ -51,6 +56,12 @@ namespace Rosella
         return object;
     }
 
+    /* Type Manipulation Functions
+        These functions take a meta-object (one of the types listed above)
+        and extracts useful information from them in a common way.
+    */
+
+    // Get the fully-qualified string name of the type
     function get_type_name(var type)
     {
         if (type instanceof "String")
@@ -74,6 +85,7 @@ namespace Rosella
         return string(type);
     }
 
+    // Get the Parrot Class PMC associated with the type.
     function get_type_class(var type)
     {
         if (type instanceof "P6metaclass")
@@ -88,6 +100,32 @@ namespace Rosella
         var class_obj;
         ${ get_class class_obj, type };
         return class_obj;
+    }
+
+    /* Method-Utility Functions
+        These functions help do things with functions and methods. These are
+        NOT part of the standard API of the Rosella namespace, they only exist
+        to help deal with shortcomings in various parts of the toolchain.
+        These functions will disappear when they are no longer needed
+    */
+
+    // Call the method on the object with all the given parameters.
+    function call_parrot_method(var object, var method, var pos, var named)
+    {
+        if (method instanceof "String")
+            method = find_method(object, method);
+        return object.*method(pos:[flat], named:[flat,named]);
+    }
+
+    // find a method PMC on the given object without throwing an exception on
+    // failure.
+    function find_named_method(var object, string meth_name)
+    {
+        var method = null;
+        try {
+            ${ find_method method, object, meth_name };
+        } catch() { }
+        return method;
     }
 }
 
