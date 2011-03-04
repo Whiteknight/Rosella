@@ -1,9 +1,15 @@
 namespace Rosella
 {
+    /* ItemBuilder is the class that handles resolving a single type.
+       ItemBuilder is an abstract parent class and should not be used
+       directly. You should use one of the existing subclasses or a custom
+       subclass instead.
+    */
     class ItemBuilder
     {
         var method_initializers;
 
+        // Set up the list of method initializers
         function method_initializers(var inits)
         {
             int have_inits = 0;
@@ -14,15 +20,17 @@ namespace Rosella
                 self.method_initializers = [];
         }
 
-        function resolve(var overrides [optional], int have_o [opt_flag])
+        // Resolve the item, and execute any initializers on it
+        function resolve()
         {
             var item = self.resolve_instance();
             for (var init in self.method_initializers) {
-                init.execute(item, overrides);
+                init.execute(item);
             }
             return item;
         }
 
+        // Get a fresh, uninitialized instance object. This must be subclassed
         function resolve_instance()
         {
             using Rosella.Error.must_subclass;
@@ -32,6 +40,7 @@ namespace Rosella
 
     namespace ItemBuilder
     {
+        // An ItemBuilder subclass for resolving an instance
         class Instance : Rosella.ItemBuilder
         {
             var instance;
@@ -48,6 +57,7 @@ namespace Rosella
             }
         }
 
+        // An ItemBuilder for resolving from a P6protoobject
         class P6protoobject : Rosella.ItemBuilder
         {
             var proto;
@@ -64,7 +74,8 @@ namespace Rosella
             }
         }
 
-
+        // An ItemBuilder for resolving from a Parrot Class PMC (or anything
+        // that can be resolved to a class using Rosella.build)
         class ParrotClass : Rosella.ItemBuilder
         {
             var class_obj;
@@ -93,6 +104,7 @@ namespace Rosella
             }
         }
 
+        // An ItemBuilder to resolve from a prototype by cloning
         class Prototype : Rosella.ItemBuilder
         {
             var prototype;
@@ -111,6 +123,7 @@ namespace Rosella
             }
         }
 
+        // An ItemBuilder to resolve from a factory method object
         class FactoryMethod : Rosella.ItemBuilder
         {
             var sub;

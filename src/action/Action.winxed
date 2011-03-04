@@ -26,14 +26,11 @@ namespace Rosella
             }
         }
 
-        function execute(var obj, var overrides [optional], int has_overrides [opt_flag])
+        function execute(var obj)
         {
             var pos = [];
             var named = {};
-            if (has_overrides)
-                self.prepare_args(pos, named, overrides);
-            else
-                self.prepare_args(pos, named);
+            self.prepare_args(pos, named);
             self.execute_initializer(obj, pos, named);
         }
 

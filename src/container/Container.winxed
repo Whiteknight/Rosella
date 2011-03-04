@@ -1,3 +1,5 @@
+// Hack function to get a container instance.
+// TODO: Get rid of this when Winxed supports root-class lookups with class
 function __get_container() {
     using Rosella.build;
     var class_obj = class Rosella.Container;
@@ -8,6 +10,12 @@ namespace Rosella
 {
     namespace Container
     {
+        // A global-point of access for a container. If called with a
+        // container instance, that container will be the global container.
+        // Otherwise, if called without a container or a pre-existing global
+        // container, it creates a new one.
+        // Notice that you do not need to use this for your program, it is
+        // only a convenience to help bootstrap dependency injection
         function default_container(var new_cont [optional], int has_cont [opt_flag])
         {
             var default_cont = null;
@@ -23,13 +31,34 @@ namespace Rosella
         }
     }
 
+    /* Dependency Injection / Inversion of Control Container
+        The Container class implements a dependency injection and type
+        resolution system. Types are registered with the container, and later
+        instances of those types can be resolved according to a set of
+        resolution rules.
+
+        If the container does not have a pre-registered set of rules for a
+        type, it falls back to using an ObjectFactory to build one. The
+        object factory to use can be specified when the container is
+        constructed.
+
+        Use the "register" set of functions to set up resolution rules for a
+        type. Use the "resolve" set of functions to get an instance of that
+        type according to the resolution rules.
+
+        "Resolution Rules" are lists of Action objects, which are executed
+        on the new instance as soon as it is fetched/allocated.
+    */
     class Container
     {
         var library;
         var default_factory;
         var options;
-        // TODO: default_container;
 
+        // Constructor. Set up the container. If we pass in an object factory
+        // the container will use that for fallback resolution behavior. If
+        // we set auto_register to 1 (true) we will automatically register
+        // automatically generated instances with the container.
         function BUILD(var factory [named,optional], int have_fact [opt_flag],
                 var auto_register [named,optional], int have_auto_reg [opt_flag])
         {
@@ -45,8 +74,25 @@ namespace Rosella
                 self.default_factory = new Rosella.ObjectFactory;
         }
 
-        // TODO: default_container()
+        /* Registration Functions
+            Registrations happen with a type "key". The type can be any object
+            understood by Rosella.build. The container can currently only
+            support a single registration per type key. Subsequent
+            registrations with the same key, or with a different type object
+            which stringifies to the same thing as an existing key, will
+            overwrite the old value.
 
+            Registration functions all take a "meth_inits" argument, which is
+            an array of Action objects to execute on the object after it is
+            fetched/allocated, but before it is returned to the user. This
+            parameter must be provided, but may be an empty array, Null, or
+            Undef.
+        */
+
+        // Register a type object. The type object is used as a meta-object
+        // to instantiate instances. init_pmc, if given, might be used if
+        // the type is (or refers to) a Parrot Class PMC. In that case, it
+        // will be passed as the second input argument to new_p_p_p.
         function register_type(var type,
                 var init_pmc [named,optional], int have_init [opt_flag],
                 var meth_inits [named,optional], int have_inits [opt_flag])
@@ -61,6 +107,8 @@ namespace Rosella
             self.library[name] = item;
         }
 
+        // Register a type prototype. The prototype is cloned to produce
+        // new instances.
         function register_prototype(var type, var prototype,
                 var meth_inits [named,optional], int have_inits [opt_flag])
         {
@@ -72,6 +120,9 @@ namespace Rosella
             self.library[name] = item;
         }
 
+        // Register a type instance. The type always resolves to this single
+        // instance, and new objects are not created. The type to use is
+        // inferred from the instance object.
         function register_instance(var instance,
                 var meth_inits [named,optional], int have_inits [opt_flag])
         {
@@ -81,6 +132,7 @@ namespace Rosella
             self.register_instance(type, instance, meth_inits:[named]);
         }
 
+        // Register a type instance. The type key is provided explicitly
         function register_instance(var type, var instance,
                 var meth_inits [named,optional], int have_inits [opt_flag])
         {
@@ -92,6 +144,11 @@ namespace Rosella
             self.library[name] = item;
         }
 
+        // Register a type with a factory method. The method is an invokable
+        // object (Sub, method, etc) which is expected to return an instance.
+        // In addition to the meth_inits argument, it also takes a list of
+        // arg_inits, ActionArg objects which are passed to the factory
+        // method as parameters.
         function register_factory_method(var type, var factory,
                 var meth_inits [named,optional], int have_inits [opt_flag],
                 var arg_inits [named,optional], int have_args [opt_flag])
@@ -106,24 +163,40 @@ namespace Rosella
             self.library[name] = item;
         }
 
-        function resolve(var type, var overrides [slurpy],
-                var named_opts [slurpy,named])
+        /* Resolution Functions
+            These functions resolve a type key into a usable instance.
+            Each of these functions takes a type key to use for looking up
+            the resolution rules and ultimately providing an instance.
+        */
+
+        // Resolve the type using full resolution. If the type is not
+        // registered, fall back to the default factory to allocate one.
+        // If auto_register is set, automatically register the output of
+        // the default factory as the instance for that type.
+        // Notice that when falling back to the default factory, no arguments
+        // can be provided.
+        // TODO: Allow arguments to be passed to the default factory.
+        function resolve(var type)
         {
             using Rosella.get_type_name;
             string name = get_type_name(type);
             if (exists self.library[name])
-                return self.library[name].resolve(overrides);
+                return self.library[name].resolve();
             var obj = self.resolve_create(type);
             if (self.options["auto_register"])
-                self.register_instance(type, obj, overrides);
+                self.register_instance(type, obj);
             return obj;
         }
 
+        // Create-only resolution. Do not attempt to resolve using normal
+        // rules, always use the default factory.
         function resolve_create(var type, var pos [slurpy], var named [slurpy,named])
         {
             return self.default_factory.create(type, pos:[flat], named:[flat,named]);
         }
 
+        // Partial resolution. Resolve the instance only if the type has been
+        // previously registered. If there is no registration, die.
         function resolve_nocreate(var type, var overrides [slurpy],
                 var named_opts[slurpy,named])
         {
@@ -135,6 +208,16 @@ namespace Rosella
             invalid("Rosella::Container", "Type " + type + " not registered");
         }
 
+        /* Instance Entry Functions
+            These functions are not part of the public interface for
+            Container.
+
+            These functions are used to create ItemBuilder objects for each
+            registration. ItemBuilder is the class that performs rule-based
+            resolutions
+        */
+
+        // Get an ItemBuilder for handling instance registrations
         function get_instance_item(var instance, var meth_inits)
         {
             using Rosella.build;
@@ -144,6 +227,7 @@ namespace Rosella
             return item;
         }
 
+        // Get an ItemBuilder for handling prototype registrations
         function get_prototype_item(var proto, var meth_inits)
         {
             using Rosella.build;
@@ -152,6 +236,8 @@ namespace Rosella
             return item;
         }
 
+        // Get an ItemBuilder for handling a Class or P6protoobject
+        // registration.
         function get_generator_item(var type, var init_pmc, var meth_inits)
         {
             var item;
@@ -172,6 +258,7 @@ namespace Rosella
             return item;
         }
 
+        // Get an ItemBuilder for a factory method registration
         function get_factory_method_item(var sub, var meth_inits, var arg_inits)
         {
             using Rosella.build;
