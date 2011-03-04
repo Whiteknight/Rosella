@@ -45,7 +45,7 @@ namespace Rosella
     {
         var object = alloc(proto);
         var class_obj = get_type_class(proto);
-        var method = find_method(object, class_obj.name());
+        var method = find_named_method(object, class_obj.name());
         if (method != null)
             object.*method(pos:[flat], named:[flat,named]);
         return object;

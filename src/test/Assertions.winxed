@@ -107,7 +107,8 @@ namespace Assert
             fail(message);
     }
 
-    function instance_of(var obj, var type, string message [optional], int has_msg [opt_flag]) {
+    function instance_of(var obj, var type, string message [optional], int has_msg [opt_flag])
+    {
         message = default_message(message, has_msg, "object is not instance_of");
         using Rosella.get_type_class;
         var class_obj = get_type_class(type);
