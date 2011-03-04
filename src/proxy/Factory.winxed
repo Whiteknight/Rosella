@@ -1,11 +1,25 @@
 namespace Rosella { namespace Proxy
 {
+    /* Proxy Factory type is used to create proxy objects. Each factory takes
+       a target type to shadow and a list of builder objects. Builder objects
+       set up the proxy class and the proxy objects to have a variety of
+       behaviors.
+
+       Every proxy is associated with a Controller object. The Controller
+       implements the behaviors of the proxy, depending on which behaviors
+       have been assigned by the builders. If the builders have not prepared
+       a particular behavior, the proxy will not direct those kinds of
+       requests to the controller.
+    */
     class Factory
     {
         var target_class;
         var proxy_class;
         var builders;
 
+        // Construct the factory given the target type to proxy and the
+        // list of builders to use. Immediately create a new Class for our
+        // proxies, and execute the builders to set it up.
         function BUILD(var target_type, var builders)
         {
             using Rosella.get_type_class;
@@ -21,6 +35,10 @@ namespace Rosella { namespace Proxy
                 builder.setup_proxy_class(self.target_class, self.proxy_class);
         }
 
+        // Create a new proxy object. Attach it to the controller and set a
+        // little bit of other metadata on it. Execute all the builders on it
+        // for any per-instance settings that need to be changed, and then
+        // tell the controller to initialize it.
         function get_proxy(var controller)
         {
             using Rosella.Proxy.set_proxy_private_attr;

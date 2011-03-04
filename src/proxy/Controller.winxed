@@ -13,7 +13,9 @@ namespace Rosella { namespace Proxy
         function initialize_proxy(var proxy) { }
 
         /* Imitation Methods
-            These methods are called on Imitator proxies (Builder::Imitate)
+            These methods are called on Imitator proxies (Builder::Imitate).
+            If no other behavior is provided, fall back to ask the target
+            class to fulfill the requests.
         */
 
         // "can" is related to find_method. If we don't have an
@@ -29,32 +31,50 @@ namespace Rosella { namespace Proxy
 
         function does(var proxy, string role)
         {
+            using Rosella.Proxy.get_proxy_private_attr;
+            var class_obj = get_proxy_private_attr(proxy, "target_class");
+            if (class_obj != null)
+                return class_obj.does(role);
             return 0;
         }
 
         function isa(var proxy, string type)
         {
+            using Rosella.Proxy.get_proxy_private_attr;
+            var class_obj = get_proxy_private_attr(proxy, "target_class");
+            if (class_obj != null)
+                return class_obj.isa(type);
             return 0;
         }
 
         function isa_pmc(var proxy, pmc type)
         {
+            using Rosella.Proxy.get_proxy_private_attr;
+            var class_obj = get_proxy_private_attr(proxy, "target_class");
+            if (class_obj != null)
+                return class_obj.isa(type);
             return 0;
         }
 
         /* Method Intercept Methods
             These methods are called on Method Interceptor proxies
-            (Builder::MethodInterceptor)
+            (Builder::MethodInterceptor). If no other behavior is provided,
+            fall back to ask the target class for the method.
         */
 
         function find_method(var proxy, string name)
         {
+            using Rosella.Proxy.get_proxy_private_attr;
+            var class_obj = get_proxy_private_attr(proxy, "target_class");
+            if (class_obj != null)
+                return class_obj.find_method(name);
             return null;
         }
 
         /* Attribute Intercept Methods
             These methods are called on Attribute Interceptor proxies
-            (Builder::AttributeInterceptor)
+            (Builder::AttributeInterceptor). There is no fallback behavior
+            for these.
         */
 
         function get_attribute(var proxy, string name)

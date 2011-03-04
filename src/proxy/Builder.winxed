@@ -1,9 +1,34 @@
 namespace Rosella { namespace Proxy
 {
+    /* A Builder is an object that configures a proxy and its class. Builders
+       must implement two methods: setup_proxy_class is called on the proxy
+       class to configure settings common to all instances. setup_proxy_object
+       is called on each instance to configure that instance */
     class Builder
     {
-        function setup_proxy_class(var proxy_class) { }
-
+        // Do nothing. All interesting behavior is performed in subclasses
+        function setup_proxy_class(var target_class, var proxy_class) { }
         function setup_proxy_object(var proxy_obj, var controller) { }
+    }
+
+    namespace Builder
+    {
+        function get_builders(var builders [slurpy])
+        {
+            using Rosella.build;
+
+            var array = [];
+            for (string builder in builders) {
+                if (builder == "MethodInterceptor")
+                    push(array, build(class Rosella.Proxy.Builder.MethodInterceptor));
+                else if (builder == "AttributeInterceptor")
+                    push(array, build(class Rosella.Proxy.Builder.AttributeInterceptor));
+                else if (builder == "Imitate")
+                    push array, build(class Rosella.Proxy.Builder.Imitate);
+                else
+                    die("Do not know builder type " + builder);
+            }
+            return array;
+        }
     }
 }}

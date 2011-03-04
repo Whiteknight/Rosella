@@ -1,0 +1,9 @@
+namespace Rosella { namespace MockObject
+{
+    class Controller : Rosella.Proxy.Controller
+    {
+        function ExpectMethod(string name)
+        {
+        }
+    }
+}}
