@@ -1,0 +1,19 @@
+namespace Rosella
+{
+    namespace Test
+    {
+        function test(var testproto,
+                var loaderproto [named,optional], int has_lp [opt_flag])
+        {
+            var loader;
+            using Rosella.build;
+            if (has_lp)
+                loader = build(loaderproto);
+            else
+                loader = build(class Rosella.Test.Loader);
+
+            var suite = loader.load_tests_from_testcase(testproto);
+            suite.run();
+        }
+    }
+}

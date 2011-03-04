@@ -32,6 +32,7 @@ namespace Rosella { namespace Test
         function run(/* $result? */)
         {
             var result = self.default_result();
+            result.plan_tests(self.num_tests);
             for (var member in self.members) {
                 if (!result.should_stop)
                     self.run_test(member, result);
