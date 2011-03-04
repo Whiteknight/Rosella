@@ -103,14 +103,19 @@ namespace Assert
         message = default_message(message, has_msg, "objects equal");
         int equal = 0;
         ${ iseq equal, o1, o2 };
-        if (!equal)
+        if (equal)
             fail(message);
     }
 
-    // Only works with P6metaclass/P6protoobject classes
-    //function instance_of($obj, $class, string message [optional], int has_msg [opt_flag] = "object is not instance_of") {
-    //    fail($message) unless pir::class__PP($obj) == P6metaclass.get_parrotclass($class);
-    //}
+    function instance_of(var obj, var type, string message [optional], int has_msg [opt_flag]) {
+        message = default_message(message, has_msg, "object is not instance_of");
+        using Rosella.get_type_class;
+        var class_obj = get_type_class(type);
+        int it_isa = 0;
+        ${ isa it_isa, obj, class_obj };
+        if (!it_isa)
+            fail(message);
+    }
 
     //function not_instance_of($obj, $class, string message [optional], int has_msg [opt_flag] = "object is instance of") {
     //    fail($message) if pir::class__PP($obj) == P6metaclass.get_parrotclass($class);
@@ -153,16 +158,19 @@ namespace Assert
             fail(message);
     }
 
-    //function same($o1, $o2, string message [optional], int has_msg [opt_flag])
-    //{
-    //    message = default_message(message, has_msg, "objects not same");
-    //    fail($message) unless $o1 == $o2;
-    //}
+    function same(var o1, var o2, string message [optional], int has_msg [opt_flag])
+    {
+        message = default_message(message, has_msg, "objects not same");
+        if (o1 !== o2)
+            fail(message);
+    }
 
-    //function not_same($o1, $o2, string message [optional], int has_msg [opt_flag]) {
-    //    message = default_message(message, has_msg, "objects are same");
-    //    fail($message) if $o1 == $o2;
-    //}
+    function not_same(var o1, var o2, string message [optional], int has_msg [opt_flag])
+    {
+        message = default_message(message, has_msg, "objects are same");
+        if (o1 === o2)
+            fail(message);
+    }
 
     function throws(var block, string message [optional], int has_msg [opt_flag])
     {

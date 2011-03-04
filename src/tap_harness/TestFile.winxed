@@ -203,7 +203,7 @@ namespace Rosella { namespace Harness
             // TODO: Detect bad plan
             string plan    = self.lines[0];
             var plan_parts = split("..", plan);
-            var num_tests  = plan_parts[1];
+            self.num_tests  = plan_parts[1];
             var lines = self.lines;
             var dummy = null;
             ${ shift dummy, lines };
@@ -219,7 +219,7 @@ namespace Rosella { namespace Harness
             }
             if (int(self.failures)) {
                 int num_failures = int(self.failures);
-                self.result = "Failed " + num_failures + " / " + self.num_tests;
+                self.result = "Failed " + num_failures + " / " + string(self.num_tests);
                 self.status = "FAILED";
             } else
                 self.status = "PASSED";

@@ -19,13 +19,13 @@ class ContainerTest is Rosella::Test::Testcase {
         my $c := Rosella::build(Rosella::Container);
         # No previous registration, falls back to the default object factory
         my $item := $c.resolve("String");
-        Assert::true(pir::isa($item, "String"));
+        Assert::instance_of($item, "String");
     }
 
     method test_resolve_create() {
         my $c := Rosella::build(Rosella::Container);
         my $item := $c.resolve_create("String");
-        Assert::true(pir::isa($item, "String"));
+        Assert::instance_of($item, "String");
     }
 
     method test_register_factory_method() {
