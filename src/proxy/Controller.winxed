@@ -1,24 +1,67 @@
 namespace Rosella { namespace Proxy
 {
+    /* Proxy Controller type changes the way the proxy behaves. The methods
+       called on the controller are dependent on the types of builder objects
+       used by the proxy factory. The default implementation does almost no
+       work. For anything interesting, you should subclass Controller and
+       override the various methods to provide your expected behavior.
+    */
     class Controller
     {
-        function find_method(var proxy, var target, string name)
+        // Initialize the proxy after all the builders have tweaked it.
+        // Do nothing. Subclass Controller for any interesting behavior
+        function initialize_proxy(var proxy) { }
+
+        /* Imitation Methods
+            These methods are called on Imitator proxies (Builder::Imitate)
+        */
+
+        // "can" is related to find_method. If we don't have an
+        // implementation here, just fall back to the default behavior with
+        // find_method.
+        function can(var proxy, string method)
+        {
+            var meth_obj = self.find_method(proxy, method);
+            if (meth_obj != null)
+                return 1;
+            return 0;
+        }
+
+        function does(var proxy, string role)
+        {
+            return 0;
+        }
+
+        function isa(var proxy, string type)
+        {
+            return 0;
+        }
+
+        function isa_pmc(var proxy, pmc type)
+        {
+            return 0;
+        }
+
+        /* Method Intercept Methods
+            These methods are called on Method Interceptor proxies
+            (Builder::MethodInterceptor)
+        */
+
+        function find_method(var proxy, string name)
         {
             return null;
         }
+
+        /* Attribute Intercept Methods
+            These methods are called on Attribute Interceptor proxies
+            (Builder::AttributeInterceptor)
+        */
 
         function get_attribute(var proxy, string name)
         {
             return null;
         }
 
-        function set_attribute(var proxy, string name, var value)
-        {
-        }
-
-        function initialize_proxy(var proxy)
-        {
-            // Do nothing. Subclass Controller for any interesting behavior
-        }
+        function set_attribute(var proxy, string name, var value) { }
     }
 }}
