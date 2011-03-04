@@ -15,23 +15,15 @@ without burdening anybody with unwanted overhead.
 
 # Building Rosella
 
-To build Rosella, the preferred method is to use Winxed:
+To build Rosella you need to use Winxed:
 
     winxed setup.winxed build
     winxed setup.winxed test
     winxed setup.winxed install
 
-If you do not have winxed, Parrot ships with NQP which can also be used:
-
-    parrot-nqp setup.nqp build
-    parrot-nqp setup.nqp test
-    parrot-nqp setup.nqp install
-
-The libraries built using both methods should both operate identically and
-should pass all the same tests. However, the winxed method may expose
-additional functionality or build additional winxed-only libraries which the
-NQP version does not build. The NQP method may build libraries which rely on
-"P6object.pbc", from the Parrot distribution.
+Winxed is a language compiler for Parrot with a syntax similar to JavaScript.
+Rosella libraries are written in Winxed, although they should be usable by
+any software written in any language targetting Parrot.
 
 # Component Libraries
 
