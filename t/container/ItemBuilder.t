@@ -1,9 +1,9 @@
 INIT {
-    pir::load_bytecode("rosella/xunit.pbc");
+    pir::load_bytecode("rosella/test.pbc");
     pir::load_bytecode("rosella/container.pbc");
 }
 
-Rosella::Testcase::test(ItemBuilderTest);
+Rosella::Test::test(ItemBuilderTest);
 
-class ItemBuilderTest is Rosella::Testcase {
+class ItemBuilderTest is Rosella::Test::Testcase {
 }

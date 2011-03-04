@@ -1,11 +1,11 @@
 INIT {
-    pir::load_bytecode("rosella/xunit.pbc");
+    pir::load_bytecode("rosella/test.pbc");
     pir::load_bytecode("rosella/query.pbc");
 }
 
-Rosella::Testcase::test(PathTest);
+Rosella::Test::test(PathTest);
 
-class PathTest is Rosella::Testcase {
+class PathTest is Rosella::Test::Testcase {
 
     sub new_hash(*%h) { return %h; }
 

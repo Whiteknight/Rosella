@@ -1,12 +1,11 @@
 INIT {
-    pir::load_bytecode("rosella/core.pbc");
-    pir::load_bytecode("rosella/xunit.pbc");
+    pir::load_bytecode("rosella/test.pbc");
     pir::load_bytecode("rosella/prototype.pbc");
 }
 
-Rosella::Testcase::test(PrototypeItemTest);
+Rosella::Test::test(PrototypeItemTest);
 
-class PrototypeItemTest is Rosella::Testcase {
+class PrototypeItemTest is Rosella::Test::Testcase {
     method test_BUILD() {
         my $pmc := Rosella::build(Rosella::Prototype::Item, 1);
     }

@@ -1,12 +1,11 @@
 INIT {
-    pir::load_bytecode("rosella/xunit.pbc");
-    pir::load_bytecode("rosella/action.pbc");
+    pir::load_bytecode("rosella/test.pbc");
     pir::load_bytecode("rosella/event.pbc");
 }
 
-Rosella::Testcase::test(EventManagerTest);
+Rosella::Test::test(EventManagerTest);
 
-class EventManagerTest is Rosella::Testcase {
+class EventManagerTest is Rosella::Test::Testcase {
     method test_BUILD() {
         my $em := Rosella::build(Rosella::EventManager);
     }

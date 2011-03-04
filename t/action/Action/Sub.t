@@ -1,11 +1,11 @@
 INIT {
-    pir::load_bytecode("rosella/xunit.pbc");
+    pir::load_bytecode("rosella/test.pbc");
     pir::load_bytecode("rosella/action.pbc");
 }
 
-Rosella::Testcase::test(ActionSubTest);
+Rosella::Test::test(ActionSubTest);
 
-class ActionSubTest is Rosella::Testcase {
+class ActionSubTest is Rosella::Test::Testcase {
     method test_BUILD() {
         my $action := Rosella::build(Rosella::Action::Sub, sub($item){}, []);
         Assert::instance_of($action, Rosella::Action::Sub, "Is not an Action");
