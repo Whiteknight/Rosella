@@ -1,0 +1,24 @@
+namespace Rosella { namespace Proxy
+{
+    class Controller
+    {
+        function find_method(var proxy, var target, string name)
+        {
+            return null;
+        }
+
+        function get_attribute(var proxy, string name)
+        {
+            return null;
+        }
+
+        function set_attribute(var proxy, string name, var value)
+        {
+        }
+
+        function initialize_proxy(var proxy)
+        {
+            // Do nothing. Subclass Controller for any interesting behavior
+        }
+    }
+}}

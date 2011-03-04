@@ -90,6 +90,18 @@ function main[main](argv) {
     //setup_nqp_lib(rosella, "rosella/query.pbc", query_files);
     setup_winxed_lib(rosella, "rosella/query.pbc", query_files);
 
+    var proxy_files = [
+        "include/Core",
+        "proxy/Builder",
+        "proxy/Controller",
+        "proxy/Factory",
+        "proxy/Proxy",
+        "proxy/builder/MethodIntercept",
+        "proxy/builder/AttributeIntercept",
+        "proxy/builder/Imitate"
+    ];
+    setup_winxed_lib(rosella, "rosella/proxy.pbc", proxy_files);
+
     var test_files = [
         "include/Core",
         "test/Builder",

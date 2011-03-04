@@ -1,0 +1,36 @@
+namespace Rosella
+{
+    namespace Proxy
+    {
+        // Get a name for the attribute which contains special characters
+        // that are unlikely to be used by the object systems in any HLLs
+        function get_private_attr_name(string attr)
+        {
+            return "!!!" + attr;
+        }
+
+        function add_proxy_class_private_attr(var proxy_class, string attr)
+        {
+            attr = get_private_attr_name(attr);
+            proxy_class.add_attribute(attr);
+        }
+
+        // The 4-argument getattribute and setattribute ops point to the
+        // [get|set]_attr_keyed vtable, which cannot be overridden
+        function get_proxy_private_attr(var proxy, string attr)
+        {
+            var value = null;
+            attr = get_private_attr_name(attr);
+            var class_obj = typeof(proxy);
+            ${ getattribute value, proxy, class_obj, attr };
+            return value;
+        }
+
+        function set_proxy_private_attr(var proxy, string attr, var value)
+        {
+            attr = get_private_attr_name(attr);
+            var class_obj = typeof(proxy);
+            ${ setattribute proxy, class_obj, attr, value };
+        }
+    }
+}

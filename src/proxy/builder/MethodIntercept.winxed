@@ -1,0 +1,29 @@
+namespace Rosella { namespace Proxy { namespace Builder
+{
+    // Proxy Builder class to intercept find_method requests and forward them
+    // to the controller
+    // Notice that this also overrides the behavior of the "can" vtable,
+    // unless a separate override for can has also been set up.
+    class MethodIntercept : Rosella.Proxy.Builder
+    {
+        function setup_proxy_class(var target_class, var proxy_class)
+        {
+            // TODO: Find the old VTABLE_find_method entry, and add that to
+            //       the fallback logic
+            using Rosella.Proxy.Builder.MethodIntercept.intercept_find_method;
+            proxy_class.add_vtable_override("find_method", intercept_find_method);
+        }
+
+        // intercept replacement routine for find_method. Pass the request
+        // to the controller. The controller should override the find_method
+        // method
+        function intercept_find_method[nsentry](string name)
+        {
+            using Rosella.Proxy.get_proxy_private_attr;
+            var controller = get_proxy_private_attr(self, "proxy_controller");
+            if (controller != null)
+                return controller.find_method(self, name);
+            return null;
+        }
+    }
+}}}

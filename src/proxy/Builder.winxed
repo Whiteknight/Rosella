@@ -1,0 +1,9 @@
+namespace Rosella { namespace Proxy
+{
+    class Builder
+    {
+        function setup_proxy_class(var proxy_class) { }
+
+        function setup_proxy_object(var proxy_obj, var controller) { }
+    }
+}}
