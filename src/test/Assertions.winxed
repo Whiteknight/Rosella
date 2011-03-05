@@ -222,4 +222,42 @@ namespace Assert
     //#function want_pass($message, &block) {
     //#    throws_nothing($message, &block);
     //#}
+
+    // meta-test. Runs the block as a test, and expects a failure
+    function expect_fail(var block, string message [optional], int has_msg [opt_flag])
+    {
+        message = default_message(message, has_msg, "test did not fail");
+        var exception = null;
+        try {
+            block();
+        } catch (e) {
+            say("catch");
+            exception = e;
+        }
+        if (exception == null)
+            fail(message);
+        var payload = exception.payload;
+
+        // Work around weirdness in winxed's instanceof operator.
+        var failure_class = class Rosella.Test.Failure;
+        int isa_failure = 0;
+        ${ isa isa_failure, payload, failure_class };
+
+        if (payload == null || !isa_failure)
+            fail(message);
+    }
+
+    // meta-test. Runs the block as a test, and expects a pass
+    function expect_pass(var block, string message [optional], int has_msg [opt_flag])
+    {
+        message = default_message(message, has_msg, "test did not pass");
+        var exception = null;
+        try {
+            block();
+        } catch (e) {
+            exception = e;
+        }
+        if (exception != null)
+            fail(message);
+    }
 }
