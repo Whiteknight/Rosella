@@ -80,6 +80,18 @@ namespace Rosella { namespace MockObject
             fail("Can not match set " + name);
         }
 
+        function invoke(var proxy, var pos, var named)
+        {
+            for (var expect in self.expectations) {
+                if (expect.__can_match_invoke(pos, named)) {
+                    expect.__match();
+                    return expect.__run_will_behavior();
+                }
+            }
+            using Assert.fail;
+            fail("Can not match invoke");
+        }
+
         // Get a count of remaining expecations which can accept a method of
         // the given name. We do this in find_method, before we invoke to save
         // effort.

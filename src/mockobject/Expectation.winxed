@@ -60,6 +60,13 @@ namespace Rosella { namespace MockObject
             return self;
         }
 
+        function invoke()
+        {
+            self.type = "invoke";
+            self.name = null;
+            return self;
+        }
+
         // behaviors
         function will_return(var value)
         {
@@ -121,19 +128,8 @@ namespace Rosella { namespace MockObject
 
         // Internal functions used by the controller
 
-        // true if we can match these args exactly
-        function __can_match_function_args(string name, var pos, var named)
+        function __match_args(var pos, var named)
         {
-            if (self.type != "method" || self.name != name)
-                return 0;
-
-            // First, check if we have any left
-            if (string(self.quantity_modifier) == "<=" && self.quantity <= 0)
-                return 0;
-            if (string(self.quantity_modifier) == "=" && self.quantity <= 0)
-                return 0;
-            // if we are ">=", there is no upper-bound.
-
             if (string(self.with_behavior) == "any")
                 return 1;
             if (string(self.with_behavior) == "none") {
@@ -158,9 +154,23 @@ namespace Rosella { namespace MockObject
             return 1;
         }
 
+        // true if we can match these args exactly
+        function __can_match_function_args(string name, var pos, var named)
+        {
+            if (self.type != "method" || self.name != name)
+                return 0;
+            if (!self.__available())
+                return 0;
+            if (!self.__match_args(pos, named))
+                return 0;
+            return 1;
+        }
+
         function __can_match_get_attr(string name)
         {
             if (self.type != "get_attribute" || self.name != name)
+                return 0;
+            if (!self.__available())
                 return 0;
             return 1;
         }
@@ -169,7 +179,20 @@ namespace Rosella { namespace MockObject
         {
             if (self.type != "set_attribute" || self.name != name)
                 return 0;
+            if (!self.__available())
+                return 0;
             if (self.pos_args[0] != value)
+                return 0;
+            return 1;
+        }
+
+        function __can_match_invoke(var pos, var named)
+        {
+            if (self.type != "invoke")
+                return 0;
+            if (!self.__available())
+                return 0;
+            if (!self.__match_args(pos, named))
                 return 0;
             return 1;
         }
