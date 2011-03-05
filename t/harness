@@ -13,6 +13,7 @@ $harness.add_test_dirs("NQP",
     "t/prototype",
     "t/query",
     "t/proxy",
+    "t/mockobject",
     :recurse(1)
 );
 $harness.run();

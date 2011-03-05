@@ -22,7 +22,7 @@ namespace Rosella { namespace MockObject
             self.named_args = null; // named args
             self.will_behavior = null; // "return" or "throw"
             self.will_value = null; // either the return value or the exception message/object
-            self.with_behavior = null; // "any", "verbatim"
+            self.with_behavior = "any"; // "any", "verbatim", "none"
         }
 
         function quantity(int num, string mod)
@@ -106,8 +106,8 @@ namespace Rosella { namespace MockObject
                 die("no behavior set");
             if (self.type == "get_attribute")
                 die("attribute get does not take args");
-            if (self.with_behavior != null)
-                die("You cannot specify arguments twice");
+            //if (self.with_behavior != null)
+            //    die("You cannot specify arguments twice");
         }
 
         function with_no_args()
@@ -136,6 +136,11 @@ namespace Rosella { namespace MockObject
 
             if (string(self.with_behavior) == "any")
                 return 1;
+            if (string(self.with_behavior) == "none") {
+                if (int(pos) != 0 || int(named) != 0)
+                    return 0;
+                return 1;
+            }
             if (int(pos) != int(self.pos_args))
                 return 0;
             if (int(named) != int(self.named_args))
