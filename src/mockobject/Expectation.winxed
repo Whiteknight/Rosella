@@ -20,7 +20,6 @@ namespace Rosella { namespace MockObject
             self.name = null;
             self.pos_args = null; // verbatim list of positional arguments to expect
             self.named_args = null; // named args
-            self.ret = null;
             self.will_behavior = null; // "return" or "throw"
             self.will_value = null; // either the return value or the exception message/object
             self.with_behavior = null; // "any", "verbatim"
@@ -91,19 +90,21 @@ namespace Rosella { namespace MockObject
             self.with_behavior = "verbatim";
             self.pos_args = pos;
             self.named_args = named;
+            return self;
         }
 
         function with_any_args()
         {
             self.__verify_can_set_args();
             self.with_behavior = "any";
+            return self;
         }
 
         function __verify_can_set_args()
         {
-            if (self.will_behavior == null)
+            if (self.type == null)
                 die("no behavior set");
-            if (self.will_behavior == "get_attribute")
+            if (self.type == "get_attribute")
                 die("attribute get does not take args");
             if (self.with_behavior != null)
                 die("You cannot specify arguments twice");
@@ -115,6 +116,7 @@ namespace Rosella { namespace MockObject
             if (self.type == "set_attribute")
                 die("set_attribute must have 1 argument");
             self.with_behavior = "none";
+            return self;
         }
 
         // Internal functions used by the controller
