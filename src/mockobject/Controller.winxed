@@ -2,6 +2,7 @@ namespace Rosella { namespace MockObject
 {
     class Controller : Rosella.Proxy.Controller
     {
+        var mock;
         var expectations;
 
         function BUILD()
@@ -19,6 +20,11 @@ namespace Rosella { namespace MockObject
             var expect = build(class Rosella.MockObject.Expectation);
             push(self.expectations, expect);
             return expect;
+        }
+
+        function mock()
+        {
+            return self.mock;
         }
 
         function verify()
@@ -42,6 +48,8 @@ namespace Rosella { namespace MockObject
             var name_pmc = name; // needs to be a PMC to be lexically scoped
             return function(var pos [slurpy], var named [slurpy,named])
                     {
+                        var dummy = null;
+                        ${ shift dummy, pos }; // remove the invocant. We're not a method call here
                         var expect = controller.match_function(name_pmc, pos, named);
                         return expect.__run_will_behavior();
                     };

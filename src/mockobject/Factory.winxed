@@ -13,12 +13,12 @@ namespace Rosella { namespace MockObject
             self.proxy_factory = build(class Rosella.Proxy.Factory, type_to_mock, builders);
         }
 
-        function get_mock()
+        function get_mock_controller()
         {
             using Rosella.build;
 
             var controller = build(class Rosella.MockObject.Controller);
-            self.proxy_factory.get_proxy(controller);
+            controller.mock = self.proxy_factory.get_proxy(controller);
             return controller;
         }
     }
