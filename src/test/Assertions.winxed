@@ -231,7 +231,6 @@ namespace Assert
         try {
             block();
         } catch (e) {
-            say("catch");
             exception = e;
         }
         if (exception == null)
