@@ -2,8 +2,100 @@ namespace Rosella { namespace MockObject
 {
     class Controller : Rosella.Proxy.Controller
     {
-        function ExpectMethod(string name)
+        var expectations;
+
+        function BUILD()
         {
+            self.expectations = [];
+        }
+
+        // 1. Setup expectations
+        // 2. ... test logic ...
+        // 3. verify()
+
+        function expect()
+        {
+            using Rosella.build;
+            var expect = build(class Rosella.MockObject.Expectation);
+            push(self.expectations, expect);
+            return expect;
+        }
+
+        function verify()
+        {
+            using Assert.fail;
+            for (var expect in self.expectations) {
+                if (!expect.__satisfied())
+                    fail("not all expectations have been met");
+            }
+        }
+
+        // Controller methods
+
+        function find_method(var proxy, string name)
+        {
+            using Assert.fail;
+            int expects = self.method_expectations(name);
+            if (expects == 0)
+                fail("Unexpected call to method " + name);
+            var controller = self;
+            var name_pmc = name; // needs to be a PMC to be lexically scoped
+            return function(var pos [slurpy], var named [slurpy,named])
+                    {
+                        var expect = controller.match_function(name_pmc, pos, named);
+                        return expect.__run_will_behavior();
+                    };
+        }
+
+        function get_attr_str(var proxy, string name)
+        {
+            for (var expect in self.expectations) {
+                if (expect.__can_match_get_attr()) {
+                    expect.__match();
+                    return expect.__run_will_behavior();
+                }
+            }
+            using Assert.fail;
+            fail("Can not match get " + name);
+        }
+
+        function set_attr_str(var proxy, string name, var value)
+        {
+            for (var expect in self.expectations) {
+                if (expect.type == "set_attribute" && expect.name == name && expect.__can_match_set_attr(value)) {
+                    expect.__match();
+                    expect.__run_will_behavior(); // everything besides "throw" is ignored
+                    return;
+                }
+            }
+            using Assert.fail;
+            fail("Can not match set " + name);
+        }
+
+        // Get a count of remaining expecations which can accept a method of
+        // the given name. We do this in find_method, before we invoke to save
+        // effort.
+        function method_expectations(string name)
+        {
+            int count = 0;
+            for (var expect in self.expectations) {
+                if (expect.type == "method" && expect.name == name && expect.__available())
+                    count = count + 1;
+            }
+            return count;
+        }
+
+        function match_function(string name, var pos, var named)
+        {
+            for (var expect in self.expectations) {
+                if (expect.__can_match_function_args(name, pos, named)) {
+                    expect.__match();
+                    return expect;
+                }
+            }
+            // TODO: verbose list of failures
+            using Assert.fail;
+            fail("Unmatchable invocation of " + name);
         }
     }
 }}

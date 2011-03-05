@@ -24,7 +24,7 @@ namespace Rosella { namespace Proxy
                 else if (builder == "AttributeInterceptor")
                     push(array, build(class Rosella.Proxy.Builder.AttributeInterceptor));
                 else if (builder == "Imitate")
-                    push array, build(class Rosella.Proxy.Builder.Imitate);
+                    push(array, build(class Rosella.Proxy.Builder.Imitate));
                 else
                     die("Do not know builder type " + builder);
             }

@@ -1,0 +1,210 @@
+namespace Rosella { namespace MockObject
+{
+    class Expectation
+    {
+        var quantity;
+        var quantity_modifier;
+        var type;
+        var name;
+        var pos_args;
+        var named_args;
+        var with_behavior;
+        var will_behavior;
+        var will_value;
+
+        function BUILD()
+        {
+            self.quantity = 0;
+            self.quantity_modifier = "="; // "=", "<=", ">="
+            self.type = null; // "method", "get_attribute", or "set_attribute"
+            self.name = null;
+            self.pos_args = null; // verbatim list of positional arguments to expect
+            self.named_args = null; // named args
+            self.ret = null;
+            self.will_behavior = null; // "return" or "throw"
+            self.will_value = null; // either the return value or the exception message/object
+            self.with_behavior = null; // "any", "verbatim"
+        }
+
+        function quantity(int num, string mod)
+        {
+            self.quantity = num;
+            self.quantity_modifier = mod;
+            return self;
+        }
+
+        // quantifiers
+        function once() { return self.quantity(1, "="); }
+        function none() { return self.quantity(0, "="); } // This is really a no-op
+        function at_least(int n) { return self.quantity(n, ">="); }
+        function at_most(int n) { return self.quantity(n, "<="); }
+
+        // type
+        function method(string name)
+        {
+            self.name = name;
+            self.type = "method";
+            return self;
+        }
+
+        function get_attribute(string name)
+        {
+            self.name = name;
+            self.type = "get_attribute";
+            return self;
+        }
+
+        function set_attribute(string name)
+        {
+            self.name = name;
+            self.type = "set_attribute";
+            return self;
+        }
+
+        // behaviors
+        function will_return(var value)
+        {
+            if (self.type == null)
+                die("Type not set");
+            if (self.type == "set_attribute")
+                die("set_attribute does not return a value");
+            self.will_behavior = "return";
+            self.will_value = value;
+            return self;
+        }
+
+        function will_throw(var value)
+        {
+            self.will_behavior = "throw";
+            self.will_value = value;
+            return self;
+        }
+
+        // argument
+        function with_args(var pos [slurpy], var named [named,slurpy])
+        {
+            self.__verify_can_set_args();
+            if (self.type == "set_attribute") {
+                if (int(pos) != 1 || int(named) != 0)
+                    die("set_attribute takes exactly 1 positional and 0 named args");
+            }
+            self.with_behavior = "verbatim";
+            self.pos_args = pos;
+            self.named_args = named;
+        }
+
+        function with_any_args()
+        {
+            self.__verify_can_set_args();
+            self.with_behavior = "any";
+        }
+
+        function __verify_can_set_args()
+        {
+            if (self.will_behavior == null)
+                die("no behavior set");
+            if (self.will_behavior == "get_attribute")
+                die("attribute get does not take args");
+            if (self.with_behavior != null)
+                die("You cannot specify arguments twice");
+        }
+
+        function with_no_args()
+        {
+            self.__verify_can_set_args();
+            if (self.type == "set_attribute")
+                die("set_attribute must have 1 argument");
+            self.with_behavior = "none";
+        }
+
+        // Internal functions used by the controller
+
+        // true if we can match these args exactly
+        function __can_match_function_args(string name, var pos, var named)
+        {
+            if (self.type != "method" || self.name != name)
+                return 0;
+
+            // First, check if we have any left
+            if (string(self.quantity_modifier) == "<=" && self.quantity <= 0)
+                return 0;
+            if (string(self.quantity_modifier) == "=" && self.quantity <= 0)
+                return 0;
+            // if we are ">=", there is no upper-bound.
+
+            if (string(self.with_behavior) == "any")
+                return 1;
+            if (int(pos) != int(self.pos_args))
+                return 0;
+            if (int(named) != int(self.named_args))
+                return 0;
+            for (int i = 0; i < int(pos); i++) {
+                if (pos[i] != self.pos_args[i])
+                    return 0;
+            }
+            for (string name in named) {
+                if (!(exists self.named_args[name]))
+                    return 0;
+                if (named[name] != self.named_args[named])
+                    return 0;
+            }
+            return 1;
+        }
+
+        function __can_match_get_attr(string name)
+        {
+            if (self.type != "get_attribute" || self.name != name)
+                return 0;
+            return 1;
+        }
+
+        function __can_match_set_attr(string name, var value)
+        {
+            if (self.type != "set_attribute" || self.name != name)
+                return 0;
+            if (self.pos_args[0] != value)
+                return 0;
+            return 1;
+        }
+
+        // mark this expectation matched
+        function __match()
+        {
+            self.quantity--;
+        }
+
+        // true if this expectation is available to be matched
+        function __available()
+        {
+            if (string(self.quantity_modifier) == "=" && self.quantity > 0)
+                return 1;
+            if (string(self.quantity_modifier) == "<=" && self.quantity > 0)
+                return 1;
+            if (string(self.quantity_modifier) == ">=")
+                return 1;
+            return 0;
+        }
+
+        // true if this expectation has been satisfied
+        function __satisfied()
+        {
+            if (string(self.quantity_modifier) == "=" && self.quantity == 0)
+                return 1;
+            if (string(self.quantity_modifier) == "<=" && self.quantity >= 0)
+                return 1;
+            if (string(self.quantity_modifier) == ">=" && self.quantity <= 0)
+                return 1;
+            return 0;
+        }
+
+        // Do the thing we say we will
+        function __run_will_behavior()
+        {
+            if (self.will_behavior == "return")
+                return self.will_value;
+            if (self.will_behavior == "throw")
+                die(self.will_behavior);
+            return null;
+        }
+    }
+}}

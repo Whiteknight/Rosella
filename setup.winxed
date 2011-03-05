@@ -118,28 +118,25 @@ function main[main](argv) {
     //setup_nqp_lib(rosella, "rosella/test.pbc", test_files);
     setup_winxed_lib(rosella, "rosella/test.pbc", test_files);
 
-//     my @mockobject_files := <
-//         include/Core
-//         mockobject/Antiphon
-//         mockobject/Cuckoo
-//         mockobject/Cuculus
-//         mockobject/MockFS
-//         mockobject/Ovum
-//         mockobject/SigMatcher
-//         mockobject/Verifier
-//     >;
-//     setup_lib(%rosella, "rosella/mockobject.pbc", @mockobject_files);
+    var mockobject_files = [
+        "include/Test",
+        "include/Proxy",
+        "mockobject/Controller",
+        "mockobject/Expectation",
+        "mockobject/Factory"
+    ];
+    setup_winxed_lib(rosella, "rosella/mockobject.pbc", mockobject_files);
 
-     var tap_harness_files = [
-         "include/Core",
-         "tap_harness/Harness",
-         "tap_harness/Line",
-         "tap_harness/Loader",
-         "tap_harness/Output",
-         "tap_harness/TestFile"
-     ];
-     //setup_nqp_lib(rosella, "rosella/tap_harness.pbc", tap_harness_files);
-     setup_winxed_lib(rosella, "rosella/tap_harness.pbc", tap_harness_files);
+    var tap_harness_files = [
+        "include/Core",
+        "tap_harness/Harness",
+        "tap_harness/Line",
+        "tap_harness/Loader",
+        "tap_harness/Output",
+        "tap_harness/TestFile"
+    ];
+    //setup_nqp_lib(rosella, "rosella/tap_harness.pbc", tap_harness_files);
+    setup_winxed_lib(rosella, "rosella/tap_harness.pbc", tap_harness_files);
 
 
     using WinxedDistutils.winxed_setup;

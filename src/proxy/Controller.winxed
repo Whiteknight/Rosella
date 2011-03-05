@@ -47,7 +47,7 @@ namespace Rosella { namespace Proxy
             return 0;
         }
 
-        function isa_pmc(var proxy, pmc type)
+        function isa_pmc(var proxy, var type)
         {
             using Rosella.Proxy.get_proxy_private_attr;
             var class_obj = get_proxy_private_attr(proxy, "target_class");
