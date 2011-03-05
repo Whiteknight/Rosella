@@ -86,15 +86,24 @@ namespace Rosella { namespace Proxy
 
         /* Keyed Access Methods
             These methods are called on array- and hash-like keyed vtable
-            accesses.
+            accesses. Key types are "pmc", "integer", "string".
         */
 
-        function get_keyed(var proxy, string val_type, string key_type, string key)
+        function get_keyed(var proxy, string val_type, string key_type, var key)
         {
             return null;
         }
 
-        function set_keyed(var proxy, string val_type, string key_type, string key, var value)
+        function set_keyed(var proxy, string val_type, string key_type, var key, var value)
+        {
+        }
+
+        function exists_keyed(var proxy, string val_type, string key_type, var key)
+        {
+            return 0;
+        }
+
+        function delete_keyed(var proxy, string val_type, string key_type, var key)
         {
         }
     }
