@@ -2,28 +2,32 @@ namespace Rosella { namespace MockObject
 {
     class Expectation
     {
-        var quantity;
-        var quantity_modifier;
-        var type;
-        var name;
-        var pos_args;
-        var named_args;
-        var with_behavior;
-        var will_behavior;
-        var will_value;
+        var quantity;          // The number of times we expect this behavior
+        var quantity_modifier; // "=", "<=", ">="
+        var type;              // "method", "get_attribute", "set_attribute", "invoke"
+        var name;              // The name of the method/attribute
+        var pos_args;          // Positional arguments
+        var named_args;        // Named arguments
+        var with_behavior;     // "any", "verbatim", "none"
+        var will_behavior;     // Whether to "return" or "throw"
+        var will_value;        // The value to return or throw
 
         function BUILD()
         {
-            self.quantity = 0;
-            self.quantity_modifier = "="; // "=", "<=", ">="
-            self.type = null; // "method", "get_attribute", or "set_attribute"
+            self.quantity = 1;
+            self.quantity_modifier = "=";
+            self.type = null;
             self.name = null;
-            self.pos_args = null; // verbatim list of positional arguments to expect
-            self.named_args = null; // named args
-            self.will_behavior = null; // "return" or "throw"
-            self.will_value = null; // either the return value or the exception message/object
-            self.with_behavior = "any"; // "any", "verbatim", "none"
+            self.pos_args = null;
+            self.named_args = null;
+            self.will_behavior = "return";
+            self.will_value = null;
+            self.with_behavior = "any";
         }
+
+        /* Quantifiers
+            Tell how many times we expect this to happen
+        */
 
         function quantity(int num, string mod)
         {
@@ -31,14 +35,16 @@ namespace Rosella { namespace MockObject
             self.quantity_modifier = mod;
             return self;
         }
-
-        // quantifiers
         function once() { return self.quantity(1, "="); }
         function none() { return self.quantity(0, "="); } // This is really a no-op
         function at_least(int n) { return self.quantity(n, ">="); }
         function at_most(int n) { return self.quantity(n, "<="); }
 
-        // type
+        /* Expectation Type
+            The type of behavior we expect.
+        */
+        // TODO: Try to refactor some of this logic into delegate classes
+
         function method(string name)
         {
             self.name = name;
@@ -67,7 +73,12 @@ namespace Rosella { namespace MockObject
             return self;
         }
 
-        // behaviors
+        /* Behaviors
+            These are things the mock should do in response to the request.
+            Typically the options are to return a value or to throw an
+            exception.
+        */
+
         function will_return(var value)
         {
             if (self.type == null)
@@ -86,7 +97,11 @@ namespace Rosella { namespace MockObject
             return self;
         }
 
-        // argument
+        /* Arguments
+            methods, invokes, and set_attribute requests all take parameters.
+            These methods set up the expectation to match those.
+        */
+
         function with_args(var pos [slurpy], var named [named,slurpy])
         {
             self.__verify_can_set_args();
@@ -107,6 +122,23 @@ namespace Rosella { namespace MockObject
             return self;
         }
 
+        function with_no_args()
+        {
+            self.__verify_can_set_args();
+            if (self.type == "set_attribute")
+                die("set_attribute must have 1 argument");
+            self.with_behavior = "none";
+            return self;
+        }
+
+
+        /* Internal Methods
+            These methods are used internally by the mock system and should
+            not be used by user code
+        */
+
+        // Basic sanity check that we can set arguments. Check that we are in
+        // a mode that accepts arguments
         function __verify_can_set_args()
         {
             if (self.type == null)
@@ -117,19 +149,11 @@ namespace Rosella { namespace MockObject
             //    die("You cannot specify arguments twice");
         }
 
-        function with_no_args()
-        {
-            self.__verify_can_set_args();
-            if (self.type == "set_attribute")
-                die("set_attribute must have 1 argument");
-            self.with_behavior = "none";
-            return self;
-        }
-
-        // Internal functions used by the controller
-
+        // Match a given set of arguments against the expected list
         function __match_args(var pos, var named)
         {
+            // If any, we always match. If none, we match if we received
+            // nothing.
             if (string(self.with_behavior) == "any")
                 return 1;
             if (string(self.with_behavior) == "none") {
@@ -137,10 +161,14 @@ namespace Rosella { namespace MockObject
                     return 0;
                 return 1;
             }
+
+            // Check that we have the correct number of args.
             if (int(pos) != int(self.pos_args))
                 return 0;
             if (int(named) != int(self.named_args))
                 return 0;
+
+            // Check that we have the correct values
             for (int i = 0; i < int(pos); i++) {
                 if (pos[i] != self.pos_args[i])
                     return 0;
@@ -154,7 +182,8 @@ namespace Rosella { namespace MockObject
             return 1;
         }
 
-        // true if we can match these args exactly
+        // True if this expectation can match the specified method call with
+        // args
         function __can_match_function_args(string name, var pos, var named)
         {
             if (self.type != "method" || self.name != name)
@@ -166,6 +195,8 @@ namespace Rosella { namespace MockObject
             return 1;
         }
 
+        // True if this expectation can match the specified get_attribute
+        // request
         function __can_match_get_attr(string name)
         {
             if (self.type != "get_attribute" || self.name != name)
@@ -175,6 +206,8 @@ namespace Rosella { namespace MockObject
             return 1;
         }
 
+        // True if this expectation can match the specified set_attribute
+        // request
         function __can_match_set_attr(string name, var value)
         {
             if (self.type != "set_attribute" || self.name != name)
@@ -186,6 +219,7 @@ namespace Rosella { namespace MockObject
             return 1;
         }
 
+        // True if this expecation can match the specified invoke request
         function __can_match_invoke(var pos, var named)
         {
             if (self.type != "invoke")
@@ -197,13 +231,14 @@ namespace Rosella { namespace MockObject
             return 1;
         }
 
-        // mark this expectation matched
+        // mark this expectation matched, and reduce the quantity available.
         function __match()
         {
             self.quantity--;
         }
 
-        // true if this expectation is available to be matched
+        // true if this expectation is available to be matched. This depends
+        // on both the quantity and modifier
         function __available()
         {
             if (string(self.quantity_modifier) == "=" && self.quantity > 0)
@@ -215,7 +250,9 @@ namespace Rosella { namespace MockObject
             return 0;
         }
 
-        // true if this expectation has been satisfied
+        // true if this expectation has been satisfied. We are satisfied if
+        // our remaining quantity and our quantity modifier say we are
+        // satisfied
         function __satisfied()
         {
             if (string(self.quantity_modifier) == "=" && self.quantity == 0)
@@ -227,7 +264,8 @@ namespace Rosella { namespace MockObject
             return 0;
         }
 
-        // Do the thing we say we will
+        // execute the will behavior, returning any necessary values or
+        // throwing any necessary exceptions
         function __run_will_behavior()
         {
             if (self.will_behavior == null)

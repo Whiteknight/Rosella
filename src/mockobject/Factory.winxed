@@ -1,5 +1,8 @@
 namespace Rosella { namespace MockObject
 {
+    /* Mock Object Factory.
+        Uses the Proxy factory to create and configure mock objects.
+    */
     class Factory
     {
         var proxy_factory;
@@ -20,6 +23,8 @@ namespace Rosella { namespace MockObject
             self.proxy_factory = build(class Rosella.Proxy.Factory, type_to_mock, builders);
         }
 
+        // Get a new Mock and Controller. Return the Controller, from which
+        // we can get the mock later
         function get_mock_controller()
         {
             using Rosella.build;

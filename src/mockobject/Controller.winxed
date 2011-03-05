@@ -1,5 +1,18 @@
 namespace Rosella { namespace MockObject
 {
+    /* Mock Object Controller
+        configures expectations on the mock, and handles all the messy details
+        of object proxying and expectation setup/verification.
+
+        In a mockobject-based test, there are a few basic steps:
+
+        1. Create a mock object factory
+        2. Use the factory to create a controller
+        3. Use the controller to setup expectations.
+        4. Get the mock from the controller
+        5. Run your test logic, executing requests against the mock
+        6. Call controller.verify() to verify all expectations have been met.
+    */
     class Controller : Rosella.Proxy.Controller
     {
         var mock;
@@ -10,10 +23,11 @@ namespace Rosella { namespace MockObject
             self.expectations = [];
         }
 
-        // 1. Setup expectations
-        // 2. ... test logic ...
-        // 3. verify()
+        /* Mocking Methods
+            These methods are used to help setup and control the mock
+        */
 
+        // Create and return a new expectation object.
         function expect()
         {
             using Rosella.build;
@@ -36,8 +50,15 @@ namespace Rosella { namespace MockObject
             }
         }
 
-        // Controller methods
+        /* Controller Methods
+            These methods are used to satisfy the Rosella::Proxy::Controller
+            interface. These are the routines used by the mock to intercept
+            and validate behavior.
+        */
 
+        // intercept find_method vtable calls. Check if we have any
+        // expectations available by this name. If we do, return a stub
+        // method object to be used in place of the method call.
         function find_method(var proxy, string name)
         {
             using Assert.fail;
@@ -55,6 +76,7 @@ namespace Rosella { namespace MockObject
                     };
         }
 
+        // Callback when the mock receives a get_attr_str request
         function get_attr_str(var proxy, string name)
         {
             for (var expect in self.expectations) {
@@ -67,6 +89,7 @@ namespace Rosella { namespace MockObject
             fail("Can not match get " + name);
         }
 
+        // Callback when the mock receives a set_attr_str request
         function set_attr_str(var proxy, string name, var value)
         {
             for (var expect in self.expectations) {
@@ -80,6 +103,8 @@ namespace Rosella { namespace MockObject
             fail("Can not match set " + name);
         }
 
+        // Callback for when the mock is invoked. Note that not all mocks
+        // support invoke. You need to specify that behavior in the factory.
         function invoke(var proxy, var pos, var named)
         {
             for (var expect in self.expectations) {
@@ -91,6 +116,11 @@ namespace Rosella { namespace MockObject
             using Assert.fail;
             fail("Can not match invoke");
         }
+
+        /* Support Routines
+            These routines are used internally to the Controller and should
+            not be used by other code
+        */
 
         // Get a count of remaining expecations which can accept a method of
         // the given name. We do this in find_method, before we invoke to save
@@ -105,6 +135,7 @@ namespace Rosella { namespace MockObject
             return count;
         }
 
+        // Attempt to match a method invoke to an expectation.
         function match_function(string name, var pos, var named)
         {
             for (var expect in self.expectations) {
