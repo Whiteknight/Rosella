@@ -19,10 +19,10 @@ namespace Rosella { namespace Proxy
 
             var array = [];
             for (string builder in builders) {
-                if (builder == "MethodInterceptor")
-                    push(array, build(class Rosella.Proxy.Builder.MethodInterceptor));
-                else if (builder == "AttributeInterceptor")
-                    push(array, build(class Rosella.Proxy.Builder.AttributeInterceptor));
+                if (builder == "MethodIntercept")
+                    push(array, build(class Rosella.Proxy.Builder.MethodIntercept));
+                else if (builder == "AttributeIntercept")
+                    push(array, build(class Rosella.Proxy.Builder.AttributeIntercept));
                 else if (builder == "Imitate")
                     push(array, build(class Rosella.Proxy.Builder.Imitate));
                 else

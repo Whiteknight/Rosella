@@ -9,8 +9,8 @@ namespace Rosella { namespace MockObject
             using Rosella.build;
             using Rosella.Proxy.Builder.get_builders;
 
-            var builders = get_builders("MethodInterceptor", "AttributeInterceptor");
-            self.proxy_factory = build(class Rosella.Proto.Factory, type_to_mock, builders);
+            var builders = get_builders("MethodIntercept", "AttributeIntercept");
+            self.proxy_factory = build(class Rosella.Proxy.Factory, type_to_mock, builders);
         }
 
         function get_mock()
