@@ -202,10 +202,12 @@ namespace Rosella { namespace MockObject
         // Do the thing we say we will
         function __run_will_behavior()
         {
+            if (self.will_behavior == null)
+                return null;
             if (self.will_behavior == "return")
                 return self.will_value;
             if (self.will_behavior == "throw")
-                die(self.will_behavior);
+                die(self.will_value);
             return null;
         }
     }

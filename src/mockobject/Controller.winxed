@@ -58,7 +58,7 @@ namespace Rosella { namespace MockObject
         function get_attr_str(var proxy, string name)
         {
             for (var expect in self.expectations) {
-                if (expect.__can_match_get_attr()) {
+                if (expect.__can_match_get_attr(name)) {
                     expect.__match();
                     return expect.__run_will_behavior();
                 }
@@ -70,7 +70,7 @@ namespace Rosella { namespace MockObject
         function set_attr_str(var proxy, string name, var value)
         {
             for (var expect in self.expectations) {
-                if (expect.type == "set_attribute" && expect.name == name && expect.__can_match_set_attr(value)) {
+                if (expect.__can_match_set_attr(name, value)) {
                     expect.__match();
                     expect.__run_will_behavior(); // everything besides "throw" is ignored
                     return;
