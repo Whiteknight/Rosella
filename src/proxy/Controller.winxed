@@ -106,5 +106,12 @@ namespace Rosella { namespace Proxy
         function delete_keyed(var proxy, string val_type, string key_type, var key)
         {
         }
+
+        /* Invoke
+        */
+
+        function invoke(var proxy, var pos, var named)
+        {
+        }
     }
 }}

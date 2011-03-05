@@ -17,6 +17,7 @@ function main[main](argv) {
         "pir_winxed"       : {},
         "pbc_pbc"          : {},
         "pbc_pir"          : {},
+        "pir_pir"          : {},
         "inst_lib"         : []
     };
 
@@ -26,71 +27,61 @@ function main[main](argv) {
 
     // A distutils wrapper library which adds winxed functionality.
     // A bootstrapped version is included in the repo because we need it
-    // to run setup.winxed (this script)
-    var distutils_files = [
-        "winxed/Distutils"
-    ];
-    setup_winxed_lib(rosella, "rosella/winxed_distutils.pbc", distutils_files);
+    // to run setup.winxed (this script). This is the only rosella library
+    // which doesn't rely on Core.
+    setup_winxed_lib(rosella, "winxed_distutils", "winxed/Distutils");
 
     // The Rosella "core" library. Does very little on its own but is
     // required by other libraries in the sequence
-    var core_files = [
+    setup_winxed_lib(rosella, "core",
         "core/Rosella",
         "core/Error",
         "core/ObjectFactory"
-    ];
-    //setup_nqp_lib(rosella, "rosella/core.pbc", core_files);
-    setup_winxed_lib(rosella, "rosella/core.pbc", core_files);
+    );
 
     // The action library. Allows creating Action/Command objects for
     // delayed evaluation.
-    var action_files = [
+    setup_winxed_lib(rosella, "action",
         "include/Core",
         "action/Action",
         "action/ActionArg"
-    ];
-    //setup_nqp_lib(rosella, "rosella/action.pbc", action_files);
-    setup_winxed_lib(rosella, "rosella/action.pbc", action_files);
+    );
 
     // Dependency Injection / Inversion of Control container library
-    var container_files = [
+    setup_winxed_lib(rosella, "container",
         "include/Core",
         "include/Action",
         "container/Container",
         "container/ItemBuilder"
-    ];
-    //setup_nqp_lib(rosella, "rosella/container.pbc", container_files);
-    setup_winxed_lib(rosella, "rosella/container.pbc", container_files);
+    );
 
-    var event_files = [
+    // Event library. Subscript to, receive, and publish event notifications.
+    setup_winxed_lib(rosella, "event",
         "include/Core",
         "include/Action",
         "event/Event",
         "event/EventManager"
-    ];
-    //setup_nqp_lib(rosella, "rosella/event.pbc", event_files);
-    setup_winxed_lib(rosella, "rosella/event.pbc", event_files);
+    );
 
-    var proto_files = [
+    // A prototype library for managing a prototype-based object system
+    setup_winxed_lib(rosella, "prototype",
         "include/Core",
         "prototype/Item",
         "prototype/Manager"
-    ];
-    //setup_nqp_lib(rosella, "rosella/prototype.pbc", proto_files);
-    setup_winxed_lib(rosella, "rosella/prototype.pbc", proto_files);
+    );
 
-    var query_files = [
+    // A library for working with aggregates
+    setup_winxed_lib(rosella, "query",
         "include/Core",
         "query/Query",
         "query/Provider",
         "query/provider/Array",
         "query/provider/Hash",
         "query/Path"
-    ];
-    //setup_nqp_lib(rosella, "rosella/query.pbc", query_files);
-    setup_winxed_lib(rosella, "rosella/query.pbc", query_files);
+    );
 
-    var proxy_files = [
+    // A proxying library for building and managing proxies
+    setup_winxed_lib(rosella, "proxy",
         "include/Core",
         "proxy/Builder",
         "proxy/Controller",
@@ -98,11 +89,12 @@ function main[main](argv) {
         "proxy/Proxy",
         "proxy/builder/MethodIntercept",
         "proxy/builder/AttributeIntercept",
-        "proxy/builder/Imitate"
-    ];
-    setup_winxed_lib(rosella, "rosella/proxy.pbc", proxy_files);
+        "proxy/builder/Imitate",
+        "proxy/builder/InvokeIntercept"
+    );
 
-    var test_files = [
+    // A testing library for writing and running unit tests.
+    setup_winxed_lib(rosella, "test",
         "include/Core",
         "test/Builder",
         "test/Assertions",
@@ -114,29 +106,26 @@ function main[main](argv) {
         "test/Suite",
         "test/Test",
         "test/Testcase"
-    ];
-    //setup_nqp_lib(rosella, "rosella/test.pbc", test_files);
-    setup_winxed_lib(rosella, "rosella/test.pbc", test_files);
+    );
 
-    var mockobject_files = [
+    // A mock object library for advanced unit testing
+    setup_winxed_lib(rosella, "mockobject",
         "include/Test",
         "include/Proxy",
         "mockobject/Controller",
         "mockobject/Expectation",
         "mockobject/Factory"
-    ];
-    setup_winxed_lib(rosella, "rosella/mockobject.pbc", mockobject_files);
+    );
 
-    var tap_harness_files = [
+    // A tap harness library for building easy, extensible test harnesses
+    setup_winxed_lib(rosella, "tap_harness",
         "include/Core",
         "tap_harness/Harness",
         "tap_harness/Line",
         "tap_harness/Loader",
         "tap_harness/Output",
         "tap_harness/TestFile"
-    ];
-    //setup_nqp_lib(rosella, "rosella/tap_harness.pbc", tap_harness_files);
-    setup_winxed_lib(rosella, "rosella/tap_harness.pbc", tap_harness_files);
+    );
 
 
     using WinxedDistutils.winxed_setup;
@@ -144,23 +133,9 @@ function main[main](argv) {
     winxed_setup(argv, rosella);
 }
 
-function setup_nqp_lib(var rosella, string name, var files) {
-    var pbcs = [];
-    for (string p_path in files) {
-        string path = "src/" + p_path;
-        string nqp_file = path + ".nqp";
-        string pir_file = path + ".pir";
-        string pbc_file = path + ".pbc";
-        rosella["pir_nqp-rx"][pir_file] = nqp_file;
-        rosella["pbc_pir"][pbc_file] = pir_file;
-        pbcs.push(pbc_file);
-    }
-    rosella["pbc_pbc"][name] = pbcs;
-    rosella["inst_lib"].push(name);
-}
-
-function setup_winxed_lib(var rosella, string name, var files) {
-    var pbcs = [];
+function setup_winxed_lib(var rosella, string name, var files [slurpy]) {
+    var pbc_files = [];
+    var pir_files = [];
     for (string p_path in files) {
         string path = "src/" + p_path;
         string winxed_file = path + ".winxed";
@@ -168,10 +143,14 @@ function setup_winxed_lib(var rosella, string name, var files) {
         string pbc_file = path + ".pbc";
         rosella["pir_winxed"][pir_file] = winxed_file;
         rosella["pbc_pir"][pbc_file] = pir_file;
-        pbcs.push(pbc_file);
+        pbc_files.push(pbc_file);
+        pir_files.push(pir_file);
     }
-    rosella["pbc_pbc"][name] = pbcs;
-    rosella["inst_lib"].push(name);
+    string pbc_lib_name = "rosella/" + name + ".pbc";
+    string pir_lib_name = "rosella/" + name + ".pir";
+    rosella["pbc_pbc"][pbc_lib_name] = pbc_files;
+    rosella["pir_pir"][pir_lib_name] = pir_files;
+    rosella["inst_lib"].push(pbc_lib_name);
 }
 
 // Load in the distutils library, which we are also responsible for
