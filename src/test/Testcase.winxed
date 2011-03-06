@@ -1,11 +1,19 @@
 namespace Rosella { namespace Test
 {
+    /* The Testcase. Tests are methods on the Testcase. When we run the Suite,
+       each test method is given its own instance of Testcase and run by
+       itself.
+
+       To add tests, you must subclass Testcase
+    */
+
     class Testcase
     {
         var todo;
         var verify;
         var name;
 
+        // Constructor. Take the name of the method this instance should run
         function BUILD(string name)
         {
             self.name = name;
@@ -13,8 +21,11 @@ namespace Rosella { namespace Test
             self.verify = null;
         }
 
+        // Optional setup routine, if needed. Executed before each test method
         function __set_up() { }
 
+        // Optional tear-down routine, if needed. Executed after each test
+        // method
         function __tear_down() { }
 
         // Provide an alternate text to display on output
@@ -23,11 +34,13 @@ namespace Rosella { namespace Test
             self.verify = verify;
         }
 
+        // Mark the test as TODO, with a message
         function todo(string todo)
         {
             self.todo = todo;
         }
 
+        // Mark the test as being unimplemented. This is TODO+fail
         function unimplemented(string msg)
         {
             using Assert.fail;
