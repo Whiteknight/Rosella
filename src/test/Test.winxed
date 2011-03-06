@@ -15,27 +15,23 @@ namespace Rosella
         {
             using Rosella.build;
             using Rosella.get_type_name;
+            using Rosella.Test.Loader.load;
 
             string test_type_name = get_type_name(testproto);
 
             // Get the Loader. If nothing else is specified, use the default
             // Rosella::Test::Loader
-            var loader;
             if (!has_lo)
                 loaderopts = {};
-            if (has_lp)
-                loader = build(loaderproto, testproto, loaderopts:[named,flat]);
-            else
-                loader = build(class Rosella.Test.Loader, testproto, loaderopts:[named,flat]);
+            if (!has_lp)
+                loaderproto = class Rosella.Test.Loader;
+            var tests = load(loaderproto, testproto, loaderopts);
 
             // Get the Suite. If nothing else is specified use the default
             // Rosella::Test::Suite
             if (!has_sp)
                 suiteproto = class Rosella.Test.Suite;
-            var suite = build(suiteproto, "Suite for " + test_type_name);
-
-            // Load tests into the suite, and run
-            loader.load_tests_into_suite(suite);
+            var suite = build(suiteproto, tests, "Suite for " + test_type_name);
             suite.run();
         }
     }

@@ -1,45 +1,44 @@
 namespace Rosella { namespace Test
 {
+    /* The test Suite object. The Suite takes a list of tests (probably from
+       a Loader) and runs it. As tests are run, events are passed to the
+       Result object.
+    */
     class Suite
     {
-        var members;
-        var num_tests;
-        var name;
+        var members; // List of tests to run
+        var name;    // Name of the suite
 
-        function BUILD(string name)
+        // Set up the suite with the given name and list of tests
+        function BUILD(var tests, string name)
         {
-            self.num_tests = 0;
-            self.members = [];
+            self.members = tests;
             self.name = name;
         }
 
-        function add_test(var test)
-        {
-            push(self.members, test);
-            self.num_tests = self.num_tests + test.num_tests;
-            return self;
-        }
-
+        // Get the default Result object to use. In this case, it's a
+        // basic Rosella.Test.Result object with a Rosella.Test.Listener.TAP
+        // listener. To get something else, subclass.
         function default_result()
         {
             using Rosella.build;
-            var result = build(class Rosella.Test.Result);
             var tap_listener = build(class Rosella.Test.Listener.TAP);
-            result.add_listener(tap_listener);
+            var result = build(class Rosella.Test.Result, [tap_listener]);
             return result;
         }
 
-        function run(/* $result? */)
+        // Run the tests
+        function run(var result [named,optional], int has_result [opt_flag])
         {
-            var result = self.default_result();
-            result.plan_tests(self.num_tests);
-            for (var member in self.members) {
-                if (!result.should_stop)
-                    self.run_test(member, result);
-            }
+            if (!has_result)
+                result = self.default_result();
+            result.plan_tests(int(self.members));
+            for (var member in self.members)
+                self.run_test(member, result);
             return result;
         }
 
+        // Run a single test
         function run_test(var test, var result)
         {
             var exception = null;
@@ -64,13 +63,17 @@ namespace Rosella { namespace Test
             }
 
             var payload = exception.payload;
-            if (payload != null && payload instanceof "Failure")
+            var failure_class = class Rosella.Test.Failure;
+            int isa_failure = 0;
+            ${ isa isa_failure, payload, failure_class };
+            if (isa_failure)
                 result.add_failure(test, exception);
             else
                 result.add_error(test, exception);
             return result;
         }
 
+        // Execute the actual test method
         function run_test_method(var test)
         {
             string method = test.name;

@@ -5,21 +5,19 @@ namespace Rosella { namespace Test
         var todo;
         var verify;
         var name;
-        var num_tests;
 
         function BUILD(string name)
         {
             self.name = name;
             self.todo = null;
             self.verify = null;
-            self.num_tests = 1;
         }
 
         function __set_up() { }
 
         function __tear_down() { }
 
-        # Provide an alternate text to display on output
+        // Provide an alternate text to display on output
         function verify(string verify)
         {
             self.verify = verify;

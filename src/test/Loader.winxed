@@ -1,8 +1,24 @@
 namespace Rosella { namespace Test
 {
+    namespace Loader
+    {
+        // Helper routine to generate a loader and extract a list of tests
+        // from a Testcase
+        function load(var loaderproto, var testproto, var loaderopts)
+        {
+            using Rosella.build;
+            var loader = build(loaderproto, testproto, loaderopts:[named,flat]);
+            var tests = loader.load_tests();
+            return tests;
+        }
+    }
+
     /* Test Loader class. This class takes a reference to a test type and
        creates a list of Testcase objects for it. That list of test cases
        is fed into a Suite object to run.
+
+       The Loader is created with a single test type. It extracts methods from
+       that type and inserts them into a Suite.
     */
     class Loader
     {
@@ -25,17 +41,19 @@ namespace Rosella { namespace Test
             self.seen_methods = {};
         }
 
-        // Load the given suite with tests
-        function load_tests_into_suite(var suite)
+        // Load and return a list of tests
+        function load_tests()
         {
             using Rosella.build;
-            var tests = self.get_test_methods();
-            tests = self.order_tests(tests);
+            var test_names = self.get_test_methods();
+            test_names = self.order_tests(test_names);
+            var tests = [];
 
-            for (var test in tests) {
-                var test_obj = build(self.proto_obj, test);
-                suite.add_test(test_obj);
+            for (var test_name in test_names) {
+                var test_obj = build(self.proto_obj, test_name);
+                push(tests, test_obj);
             }
+            return tests;
         }
 
         // Get a list of all test methods, searching up the MRO for any
