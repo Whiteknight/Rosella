@@ -1,54 +1,45 @@
 namespace Rosella { namespace Test
 {
+    /* Test Loader class. This class takes a reference to a test type and
+       creates a list of Testcase objects for it. That list of test cases
+       is fed into a Suite object to run.
+    */
     class Loader
     {
-        var class_obj;
-        var proto_obj;
-        var seen_methods;
-        var test_prefix;
+        var class_obj;    // The Parrot Class
+        var proto_obj;    // The type key (Class, P6protoobject, etc)
+        var seen_methods; // A list of methods we've already seen, so we don't duplicate
+        var test_prefix;  // prefix for valid tests
 
-        function BUILD(/* :$prefix? */)
+        // Constructor. Take the test proto object and a few other options
+        function BUILD(var test_proto,
+                string test_prefix [named,optional], int has_prefix [opt_flag])
         {
-            // TODO: Set the class here
-            // self.class =
-            self.test_prefix = "test_";
+            using Rosella.get_type_class;
+            self.proto_obj = test_proto;
+            self.class_obj = get_type_class(test_proto);
+            if (has_prefix)
+                self.test_prefix = test_prefix;
+            else
+                self.test_prefix = "test_";
             self.seen_methods = {};
         }
 
-        function compare_methods(string a, string b)
+        // Load the given suite with tests
+        function load_tests_into_suite(var suite)
         {
-            int compare = 0;
-            ${ cmp compare, a, b };
-            return compare;
-        }
-
-        function configure_suite(var tests, var suite [optional], int has_suite [opt_flag])
-        {
-            if (!has_suite)
-                suite = self.default_suite();
             using Rosella.build;
+            var tests = self.get_test_methods();
+            tests = self.order_tests(tests);
+
             for (var test in tests) {
                 var test_obj = build(self.proto_obj, test);
                 suite.add_test(test_obj);
             }
-            return suite;
         }
 
-        function default_suite()
-        {
-            using Rosella.build;
-            using Rosella.get_type_name;
-            string type = get_type_name(self.proto_obj);
-            var suite = build(class Rosella.Test.Suite, "Suite for " + type);
-            return suite;
-        }
-
-        function array_unsort(var array)
-        {
-            // TODO: implement a shuffle
-            return array;
-        }
-
+        // Get a list of all test methods, searching up the MRO for any
+        // methods which match the prefix.
         function get_test_methods()
         {
             var mro = self.class_obj.inspect("all_parents");
@@ -62,9 +53,11 @@ namespace Rosella { namespace Test
                     }
                 }
             }
-            return self.order_tests(test_methods);
+            return test_methods;
         }
 
+        // Determine if this is a test method or not. There are a handful of
+        // utility methods in Testcase, and others which the user can add too.
         function is_test_method(string name)
         {
             int is_test = 0;
@@ -76,19 +69,11 @@ namespace Rosella { namespace Test
             return is_test;
         }
 
-        function load_tests_from_testcase(var proto)
-        {
-            self.proto_obj = proto;
-            using Rosella.get_type_class;
-            self.class_obj = get_type_class(proto);
-            var tests = self.get_test_methods();
-            return self.configure_suite(tests);
-        }
-
-
+        // Order the list of test methods. In the default case do no
+        // ordering. Subclasses can override this.
         function order_tests(var tests)
         {
-            return self.array_unsort(tests);
+            return tests;
         }
     }
 }}

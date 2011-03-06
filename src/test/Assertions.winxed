@@ -1,3 +1,7 @@
+
+/* Functions for test assertions. These are in the ["Assert"] namespace, not
+   ["Rosella";"Test";"Assert"], for brevity.
+*/
 namespace Assert
 {
     function default_message(string msg, int has_msg, string def)
@@ -9,10 +13,10 @@ namespace Assert
 
     function fail(string why [optional], int has_why [opt_flag])
     {
-        why = default_message(why, has_why, "Unknown failure");
         using Rosella.build;
-        var ex = build(class Rosella.Test.Failure);
-        ex.message(why);
+
+        why = default_message(why, has_why, "Unknown failure");
+        var ex = build(class Rosella.Test.Failure, why);
         ex.throw();
     }
 

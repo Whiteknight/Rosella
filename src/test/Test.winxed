@@ -1,18 +1,41 @@
 namespace Rosella
 {
+    /* The Rosella Test Library
+        This library is used to implement unit tests, although not a test
+        harness. By default, the test library produces TAP output, although
+        that and much other behavior can be overridden by subclassing
+    */
     namespace Test
     {
+        // Setup and run a test using Testcase-based tests.
         function test(var testproto,
-                var loaderproto [named,optional], int has_lp [opt_flag])
+                var loaderproto [named,optional], int has_lp [opt_flag], // the type of Loader to use
+                var loaderopts [named,optional], int has_lo [opt_flag],  // hash of options for the Loader
+                var suiteproto [named,optional], int has_sp [opt_flag])  // the type of Suite to use)
         {
-            var loader;
             using Rosella.build;
-            if (has_lp)
-                loader = build(loaderproto);
-            else
-                loader = build(class Rosella.Test.Loader);
+            using Rosella.get_type_name;
 
-            var suite = loader.load_tests_from_testcase(testproto);
+            string test_type_name = get_type_name(testproto);
+
+            // Get the Loader. If nothing else is specified, use the default
+            // Rosella::Test::Loader
+            var loader;
+            if (!has_lo)
+                loaderopts = {};
+            if (has_lp)
+                loader = build(loaderproto, testproto, loaderopts:[named,flat]);
+            else
+                loader = build(class Rosella.Test.Loader, testproto, loaderopts:[named,flat]);
+
+            // Get the Suite. If nothing else is specified use the default
+            // Rosella::Test::Suite
+            if (!has_sp)
+                suiteproto = class Rosella.Test.Suite;
+            var suite = build(suiteproto, "Suite for " + test_type_name);
+
+            // Load tests into the suite, and run
+            loader.load_tests_into_suite(suite);
             suite.run();
         }
     }

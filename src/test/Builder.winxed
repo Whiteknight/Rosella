@@ -1,6 +1,8 @@
-// a TAP output builder, to replace Test;Builder from the Parrot standard lib
 namespace Rosella { namespace Test
 {
+    /* A TAP output builder. Can be used similarly to Test::More from the Parrot
+       library.
+    */
     class Builder
     {
         var test_number;
