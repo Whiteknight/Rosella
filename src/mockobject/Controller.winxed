@@ -44,10 +44,18 @@ namespace Rosella { namespace MockObject
         function verify()
         {
             using Assert.fail;
+            var missed_expectations = [];
             for (var expect in self.expectations) {
                 if (!expect.__satisfied())
-                    fail("not all expectations have been met");
+                    push(missed_expectations, expect);
             }
+            if (int(missed_expectations) == 0)
+                return;
+            string errmsg = "Not all expectations have been met!";
+            for (var missed in missed_expectations) {
+                errmsg = errmsg + "\n\t" + string(missed.to_string());
+            }
+            fail(errmsg);
         }
 
         /* Controller Methods

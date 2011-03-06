@@ -63,6 +63,10 @@ namespace Rosella { namespace Test
             }
 
             var payload = exception.payload;
+            if (payload == null) {
+                result.add_error(test, exception);
+                return result;
+            }
             var failure_class = class Rosella.Test.Failure;
             int isa_failure = 0;
             ${ isa isa_failure, payload, failure_class };

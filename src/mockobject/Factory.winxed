@@ -5,10 +5,20 @@ namespace Rosella { namespace MockObject
     */
     class Factory
     {
-        var proxy_factory;
+        var proxy_factories;
 
-        function BUILD(var type_to_mock, var opts [slurpy,named])
+        function BUILD()
         {
+            self.proxy_factories = {};
+        }
+
+        function get_controller_factory(var type_to_mock, var opts)
+        {
+            using Rosella.get_type_name;
+            string type_name = get_type_name(type_to_mock);
+            if (exists self.proxy_factories[type_name])
+                return self.proxy_factories[type_name];
+
             using Rosella.build;
             using Rosella.Proxy.Builder.get_builders;
             var builder_types = [
@@ -20,17 +30,20 @@ namespace Rosella { namespace MockObject
                 push(builder_types, "InvokeIntercept");
 
             var builders = get_builders(builder_types);
-            self.proxy_factory = build(class Rosella.Proxy.Factory, type_to_mock, builders);
+            var factory = build(class Rosella.Proxy.Factory, type_to_mock, builders);
+            self.proxy_factories[type_name] = factory;
+            return factory;
         }
 
         // Get a new Mock and Controller. Return the Controller, from which
         // we can get the mock later
-        function get_mock_controller()
+        function get_mock_controller(var type_to_mock, var opts [slurpy,named])
         {
             using Rosella.build;
+            var factory = self.get_controller_factory(type_to_mock, opts);
 
             var controller = build(class Rosella.MockObject.Controller);
-            controller.mock = self.proxy_factory.get_proxy(controller);
+            controller.mock = factory.get_proxy(controller);
             return controller;
         }
     }

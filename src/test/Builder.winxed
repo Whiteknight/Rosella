@@ -49,9 +49,21 @@ namespace Rosella { namespace Test
                 return result;
         }
 
-        function diag(string msg)
+        function diag(var error)
         {
-            say("# " + msg);
+            if (error instanceof "Exception") {
+                var errmsg = error.message;
+                var lines = split("\n", errmsg);
+                for (string line in lines)
+                    say("# " + line);
+                var bt_list = error.backtrace_strings();
+                for (string bt in bt_list) {
+                    var frames = split("\n", bt);
+                    for (string frame in frames)
+                        say("# " + frame);
+                }
+            } else
+                say("# " + string(error));
         }
 
         function plan(int count)
