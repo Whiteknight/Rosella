@@ -22,35 +22,35 @@
             "type" : "repository"
         },
         "update"   : {
-            "type" : "parrot_setup"
+            "type" : "winxed_setup"
         },
         "build"    : {
-            "type" : "parrot_setup"
+            "type" : "winxed_setup"
         },
         "test"     : {
-            "type" : "parrot_setup"
+            "type" : "winxed_setup"
         },
         "smoke"    : {
-            "type" : "parrot_setup"
+            "type" : "winxed_setup"
         },
         "install"  : {
-            "type" : "parrot_setup"
+            "type" : "winxed_setup"
         },
         "uninstall": {
-            "type" : "parrot_setup"
+            "type" : "winxed_setup"
         },
         "clean"    : {
-            "type" : "parrot_setup"
+            "type" : "winxed_setup"
         }
     },
     "dependency-info"  : {
         "provides"     : ["rosella"],
         "requires"     : {
             "fetch"    : ["git"],
-            "build"    : [],
-            "test"     : [],
-            "install"  : [],
-            "runtime"  : []
+            "build"    : ["winxed"],
+            "test"     : ["winxed"],
+            "install"  : ["winxed"],
+            "runtime"  : ["winxed"]
         }
     },
     "resources"            : {
