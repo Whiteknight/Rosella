@@ -26,8 +26,9 @@ namespace Rosella { namespace MockObject
         }
 
         function to_string() {
-            say("expect.to_string");
-            return sprintf("Expected %s '%s' (n %s %d times)", [self.type, self.name, self.quantity_modifier, self.quantity]);
+            return sprintf("Expected %s '%s' (n %s %d times)",
+                [self.type, self.name, self.quantity_modifier, self.quantity]
+            );
         }
 
         /* Quantifiers

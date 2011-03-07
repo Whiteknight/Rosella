@@ -93,7 +93,7 @@ namespace Rosella { namespace Harness
         // TODO: Move into a utils class
         function swap_handles(var handles)
         {
-            var save_handles;
+            var save_handles = {};
             var interp = getinterp();
 
             if (exists handles["stderr"]) {
@@ -119,7 +119,7 @@ namespace Rosella { namespace Harness
             var sub = self.compile_test();
             var stdout = new "StringHandle";
             stdout.open("blah", "rw");
-            var save_handles = swap_handles(
+            var save_handles = self.swap_handles(
                 {"stdout" : stdout, "stderr" : stdout}
             );
             try {
@@ -128,7 +128,7 @@ namespace Rosella { namespace Harness
                 self.mark_test_abort(e);
             }
             string output = stdout.readall();
-            swap_handles(save_handles);
+            self.swap_handles(save_handles);
             self.lines = split("\n", output);
         }
 
