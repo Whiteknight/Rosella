@@ -44,6 +44,8 @@ function main[main](argv) {
     setup_winxed_lib(rosella, "action",
         "include/Core",
         "action/Action",
+        "action/action/Sub",
+        "action/action/Method",
         "action/Argument",
         "action/argument/Instance"
     );

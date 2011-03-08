@@ -43,25 +43,4 @@ namespace Rosella
             must_subclass("execute_initializer");
         }
     }
-
-    namespace Action
-    {
-        class Method : Rosella.Action
-        {
-            function execute_initializer(var obj, var pos, var named)
-            {
-                using Rosella.call_parrot_method;
-                call_parrot_method(obj, self.method, pos, named);
-            }
-        }
-
-        class Sub : Rosella.Action
-        {
-            function execute_initializer(var obj, var pos, var named)
-            {
-                var sub = self.method;
-                sub(obj, pos:[flat], named:[flat,named]);
-            }
-        }
-    }
 }

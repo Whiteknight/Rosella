@@ -1,0 +1,11 @@
+namespace Rosella { namespace Action
+{
+    class Method : Rosella.Action
+    {
+        function execute_initializer(var obj, var pos, var named)
+        {
+            using Rosella.call_parrot_method;
+            call_parrot_method(obj, self.method, pos, named);
+        }
+    }
+}}
