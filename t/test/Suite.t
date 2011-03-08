@@ -36,14 +36,14 @@ class Test::Suite::Test is Rosella::Test::Testcase {
 
         # verify that we call all the right methods on the test.
         # TODO: These expectations are ordered
-        my $ctest := $factory.get_mock_controller(MyFakeTest);
+        my $ctest := $factory.create_typed(MyFakeTest);
         $ctest.expect.once.get("name").will_return("test_one");
         $ctest.expect.once.method("__set_up").with_no_args;
         $ctest.expect.once.method("test_one").with_no_args;
         $ctest.expect.once.method("__tear_down").with_no_args;
 
         # Verify that the result gets the correct details.
-        my $cresult := $factory.get_mock_controller(Rosella::Test::Loader);
+        my $cresult := $factory.create_typed(Rosella::Test::Loader);
         $cresult.expect.once.method("start_test").with_any_args;
         $cresult.expect.once.method("end_test").with_any_args;
 
@@ -56,7 +56,7 @@ class Test::Suite::Test is Rosella::Test::Testcase {
 
     method test_run_test_method() {
         my $factory := Rosella::build(Rosella::MockObject::Factory);
-        my $controller := $factory.get_mock_controller(MyFakeTest);
+        my $controller := $factory.create_typed(MyFakeTest);
         $controller.expect.once.get("name").will_return("test_one");
         $controller.expect.once.method("test_one").with_no_args();
         my $m := $controller.mock();

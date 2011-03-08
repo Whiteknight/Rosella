@@ -1,9 +1,10 @@
 namespace Rosella { namespace MockObject
 {
     /* Mock Object Factory.
-        Uses the Proxy factory to create and configure mock objects.
+        Uses the Proxy factory to create and configure mock object
+        controllers.
     */
-    class Factory
+    class Factory : Rosella.ObjectFactory
     {
         var proxy_factories;
 
@@ -12,7 +13,20 @@ namespace Rosella { namespace MockObject
             self.proxy_factories = {};
         }
 
-        function get_mock_factory(var type_to_mock)
+        // Get a new Mock and Controller. Return the Controller, from which
+        // we can get the mock later
+        function create_typed(var type_to_mock, var opts [slurpy,named])
+        {
+            using Rosella.build;
+            var factory = self.get_controller_factory_internal(type_to_mock, opts);
+
+            var controller = build(class Rosella.MockObject.Controller);
+            controller.mock = factory.create(controller);
+            return controller;
+        }
+
+        // Get a new proxy factory for the given type. For internal use only.
+        function get_controller_factory_internal(var type_to_mock, var opts)
         {
             using Rosella.build;
             using Rosella.get_type_name;
@@ -37,22 +51,6 @@ namespace Rosella { namespace MockObject
                 "InvokeIntercept"
             ];
             return get_builders(builder_types);
-        }
-
-        // Get a new Mock and Controller. Return the Controller, from which
-        // we can get the mock later
-        function get_mock_controller(var type_to_mock, var opts [slurpy,named])
-        {
-            using Rosella.build;
-            var mock_factory = self.get_mock_factory(type_to_mock);
-
-            var controller = null;
-            if (exists opts["ordered"] && opts["ordered"] == 1)
-                controller = build(class Rosella.MockObject.Controller.Ordered);
-            else
-                controller = build(class Rosella.MockObject.Controller);
-            controller.mock = mock_factory.get_proxy(controller);
-            return controller;
         }
     }
 }}

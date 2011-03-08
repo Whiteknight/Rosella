@@ -1,8 +1,25 @@
 namespace Rosella
 {
+    /* A generic object factory type, that serves as the basis for other
+       factory types. A factory must provide a "create" method, which returns
+       an object of the type which the factory is responsible for. Also, the
+       factory should provide a "create_typed" method, to attempt creating
+       an object of a different type (such as a subclass)
+    */
     class ObjectFactory
     {
-        function create(var type, var pos [slurpy], var named [slurpy,named])
+        // Create an object. The default implementation throws an error.
+        // subclasses may do something different
+        function create(var pos [slurpy], var named [slurpy,named])
+        {
+            die("ObjectFactory: Cannot create an object without at type.\n" +
+                "You must provide a type to create_typed, or subclass ObjectFactory");
+        }
+
+        // Create an object given a type and a list of parameters. The default
+        // behavior is to pass the given parameters to the object constructor.
+        // subclasses may do something different
+        function create_typed(var type, var pos [slurpy], var named [slurpy,named])
         {
             using Rosella.build;
             return build(type, pos:[flat], named:[flat,named]);

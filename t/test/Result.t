@@ -15,7 +15,7 @@ class MyFakeTest is Rosella::Test::Testcase {
 class Test::Result::Test is Rosella::Test::Testcase {
     sub get_listener_controller() {
         my $factory := Rosella::build(Rosella::MockObject::Factory);
-        return $factory.get_mock_controller(Rosella::Test::Listener);
+        return $factory.create_typed(Rosella::Test::Listener);
     }
 
     method test_BUILD() {

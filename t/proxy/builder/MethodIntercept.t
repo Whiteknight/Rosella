@@ -25,7 +25,7 @@ class MethodInterceptTest is Rosella::Test::Testcase {
             Rosella::build(Rosella::Proxy::Builder::MethodIntercept)
         ]);
 
-        my $p := $factory.get_proxy(FooController.new());
+        my $p := $factory.create(FooController.new());
         $result := $p.bar("next test");
         Assert::equal($result, "fake next test");
     }

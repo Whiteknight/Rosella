@@ -20,7 +20,7 @@ class InvokeInterceptTest is Rosella::Test::Testcase {
             Rosella::build(Rosella::Proxy::Builder::InvokeIntercept)
         ]);
 
-        my $p := $factory.get_proxy(FooController.new());
+        my $p := $factory.create(FooController.new());
         my $result := $p("first");
         Assert::equal($result, "invoked: first");
     }

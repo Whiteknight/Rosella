@@ -192,7 +192,9 @@ namespace Rosella
         // rules, always use the default factory.
         function resolve_create(var type, var pos [slurpy], var named [slurpy,named])
         {
-            return self.default_factory.create(type, pos:[flat], named:[flat,named]);
+            return self.default_factory.create_typed(
+                type, pos:[flat], named:[flat,named]
+            );
         }
 
         // Partial resolution. Resolve the instance only if the type has been

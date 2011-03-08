@@ -14,7 +14,7 @@ class MockObject::FactoryTest is Rosella::Test::Testcase {
 
     method test_get_mock_controller() {
         my $f := Rosella::build(Rosella::MockObject::Factory);
-        my $c := $f.get_mock_controller(MyClass);
+        my $c := $f.create_typed(MyClass);
         Assert::not_null($c);
         Assert::instance_of($c, Rosella::MockObject::Controller);
         Assert::not_instance_of($c, Rosella::MockObject::Controller::Ordered);

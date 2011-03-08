@@ -31,7 +31,7 @@ class AttributeInterceptTest is Rosella::Test::Testcase {
             Rosella::build(Rosella::Proxy::Builder::AttributeIntercept)
         ]);
 
-        my $p := $factory.get_proxy(FooController.new());
+        my $p := $factory.create(FooController.new());
         $result := pir::getattribute__PPS($p, '$!test');
         Assert::equal($result, 'fake: $!test - ');
     }
@@ -41,7 +41,7 @@ class AttributeInterceptTest is Rosella::Test::Testcase {
             Rosella::build(Rosella::Proxy::Builder::AttributeIntercept)
         ]);
 
-        my $p := $factory.get_proxy(FooController.new());
+        my $p := $factory.create(FooController.new());
         pir::setattribute__vPSP($p, '$!test', "hello");
         my $result := pir::getattribute__PPS($p, '$!test');
         Assert::equal($result, 'fake: $!test - fake hello');
