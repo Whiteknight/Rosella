@@ -1,0 +1,19 @@
+namespace Rosella { namespace Container { namespace ItemFactory
+{
+    // An ItemFactory for resolving from a P6protoobject
+    class P6protoobject : Rosella.Container.ItemFactory
+    {
+        var proto;
+
+        function BUILD(var proto, var inits)
+        {
+            self.proto = proto;
+            self.method_initializers(inits);
+        }
+
+        function resolve_instance()
+        {
+            return self.proto.new();
+        }
+    }
+}}}

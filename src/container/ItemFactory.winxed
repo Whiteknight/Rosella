@@ -1,0 +1,68 @@
+namespace Rosella { namespace Container
+{
+    /* ItemFactory is the class that handles resolving a single type.
+       ItemFactory is an abstract parent class and should not be used
+       directly. You should use one of the existing subclasses or a custom
+       subclass instead.
+
+       Container.ItemFactory is an ObjectFactory with the additional feature
+       of executing an array of Actions on the generated object.
+    */
+    class ItemFactory : Rosella.ObjectFactory
+    {
+        var method_initializers; // A list of Action objects
+
+        /* ObjectFactory public interface
+        */
+
+        // Create and initialize the object, according to the rules of this
+        // particular subclass.
+        function create(var p [slurpy], var n [named,slurpy])
+        {
+            var item = self.resolve_instance();
+            self.initialize(item);
+            return item;
+        }
+
+        // Create a new object using standard Rosella.build(). Execute all
+        // initializers on it. This ignores most behavior of the particular
+        // subclass and is probably not what you want.
+        function create_typed(var type, var p [slurpy], var n [named,slurpy])
+        {
+            using Rosella.build;
+            var object = build(type, p:[flat], n:[flat,named]);
+            self.initialize(object);
+            return object;
+        }
+
+        /* Private Internal Routines
+        */
+
+        function initialize(var object)
+        {
+            for (var init in self.method_initializers)
+                init.execute(object);
+        }
+
+        // Set up the list of method initializers
+        function method_initializers(var inits)
+        {
+            int have_inits = 0;
+            ${ defined have_inits, inits };
+            if (have_inits)
+                self.method_initializers = inits;
+            else
+                self.method_initializers = [];
+        }
+
+        /* Routines to be Subclassed
+        */
+
+        // Get a fresh, uninitialized instance object. This must be subclassed
+        function resolve_instance()
+        {
+            using Rosella.Error.must_subclass;
+            must_subclass("Rosella::ItemBuilder", "resolve_instance");
+        }
+    }
+}}

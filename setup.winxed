@@ -24,7 +24,6 @@ function main[main](argv) {
     if (argv[1] == "test")
         do_test();
 
-
     // A distutils wrapper library which adds winxed functionality.
     // A bootstrapped version is included in the repo because we need it
     // to run setup.winxed (this script). This is the only rosella library
@@ -55,7 +54,12 @@ function main[main](argv) {
         "include/Core",
         "include/Action",
         "container/Container",
-        "container/ItemBuilder",
+        "container/ItemFactory",
+        "container/itemfactory/ParrotClass",
+        "container/itemfactory/P6protoobject",
+        "container/itemfactory/Prototype",
+        "container/itemfactory/FactoryMethod",
+        "container/itemfactory/Instance",
         "container/action_argument/ContainerResolver"
     );
 

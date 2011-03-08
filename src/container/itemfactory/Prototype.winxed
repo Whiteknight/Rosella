@@ -1,0 +1,22 @@
+namespace Rosella { namespace Container { namespace ItemFactory
+{
+    // An ItemFactory to resolve from a prototype by cloning
+    class Prototype : Rosella.Container.ItemFactory
+    {
+        var prototype;
+
+        function BUILD(var proto, var inits)
+        {
+            self.prototype = proto;
+            self.method_initializers(inits);
+        }
+
+        function resolve_instance()
+        {
+            var object = null;
+            var prototype = self.prototype;
+            ${ clone object, prototype };
+            return object;
+        }
+    }
+}}}

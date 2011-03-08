@@ -181,7 +181,7 @@ namespace Rosella
             using Rosella.get_type_name;
             string name = get_type_name(type);
             if (exists self.library[name])
-                return self.library[name].resolve();
+                return self.library[name].create();
             var obj = self.resolve_create(type);
             if (self.options["auto_register"])
                 self.register_instance(type, obj);
@@ -205,7 +205,7 @@ namespace Rosella
             using Rosella.get_type_name;
             string name = get_type_name(type);
             if (exists self.library[name])
-                return self.library[name].resolve(overrides);
+                return self.library[name].create();
             using Rosella.Error.invalid;
             invalid("Rosella::Container", "Type " + type + " not registered");
         }
@@ -214,31 +214,31 @@ namespace Rosella
             These functions are not part of the public interface for
             Container.
 
-            These functions are used to create ItemBuilder objects for each
-            registration. ItemBuilder is the class that performs rule-based
+            These functions are used to create ItemFactory objects for each
+            registration. ItemFactory is the class that performs rule-based
             resolutions
         */
 
-        // Get an ItemBuilder for handling instance registrations
+        // Get an ItemFactory for handling instance registrations
         function get_instance_item(var instance, var meth_inits)
         {
             using Rosella.build;
-            var class_obj = class Rosella.ItemBuilder.Instance;
+            var class_obj = class Rosella.Container.ItemFactory.Instance;
             var item = build(class_obj, instance,
                     meth_inits);
             return item;
         }
 
-        // Get an ItemBuilder for handling prototype registrations
+        // Get an ItemFactory for handling prototype registrations
         function get_prototype_item(var proto, var meth_inits)
         {
             using Rosella.build;
-            var class_obj = class Rosella.ItemBuilder.Prototype;
+            var class_obj = class Rosella.Container.ItemFactory.Prototype;
             var item = build(class_obj, proto, meth_inits);
             return item;
         }
 
-        // Get an ItemBuilder for handling a Class or P6protoobject
+        // Get an ItemFactory for handling a Class or P6protoobject
         // registration.
         function get_generator_item(var type, var init_pmc, var meth_inits)
         {
@@ -246,25 +246,25 @@ namespace Rosella
             using Rosella.build;
             var class_obj = null;
             if (type instanceof "P6protoobject") {
-                class_obj = class Rosella.ItemBuilder.P6protoobject;
+                class_obj = class Rosella.Container.ItemFactory.P6protoobject;
                 item = build(class_obj, type, meth_inits);
             } else if (type instanceof "Class") {
-                class_obj = class Rosella.ItemBuilder.ParrotClass;
+                class_obj = class Rosella.Container.ItemFactory.ParrotClass;
                 item = build(class_obj, type, init_pmc, meth_inits);
             } else {
                 using Rosella.get_type_class;
-                class_obj = class Rosella.ItemBuilder.ParrotClass;
+                class_obj = class Rosella.Container.ItemFactory.ParrotClass;
                 var type_obj = get_type_class(type);
                 item = build(class_obj, type_obj, init_pmc, meth_inits);
             }
             return item;
         }
 
-        // Get an ItemBuilder for a factory method registration
+        // Get an ItemFactory for a factory method registration
         function get_factory_method_item(var sub, var meth_inits, var arg_inits)
         {
             using Rosella.build;
-            var class_obj = class Rosella.ItemBuilder.FactoryMethod;
+            var class_obj = class Rosella.Container.ItemFactory.FactoryMethod;
             var item = build(class_obj, sub, meth_inits, arg_inits);
             return item;
         }

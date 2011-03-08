@@ -1,0 +1,19 @@
+namespace Rosella { namespace Container { namespace ItemFactory
+{
+    // An ItemFactory subclass for resolving an instance
+    class Instance : Rosella.Container.ItemFactory
+    {
+        var instance;
+
+        function BUILD(var obj, var inits)
+        {
+            self.instance = obj;
+            self.method_initializers(inits);
+        }
+
+        function resolve_instance()
+        {
+            return self.instance;
+        }
+    }
+}}}
