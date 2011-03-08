@@ -147,7 +147,7 @@ namespace Rosella
         // Register a type with a factory method. The method is an invokable
         // object (Sub, method, etc) which is expected to return an instance.
         // In addition to the meth_inits argument, it also takes a list of
-        // arg_inits, ActionArg objects which are passed to the factory
+        // arg_inits, Argument objects which are passed to the factory
         // method as parameters.
         function register_factory_method(var type, var factory,
                 var meth_inits [named,optional], int have_inits [opt_flag],

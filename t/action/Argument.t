@@ -3,11 +3,11 @@ INIT {
     pir::load_bytecode("rosella/action.pbc");
 }
 
-Rosella::Test::test(ActionArgTest);
+Rosella::Test::test(Action::Argument::Test);
 
-class ActionArgTest is Rosella::Test::Testcase {
+class Action::Argument::Test is Rosella::Test::Testcase {
     method test_BUILD() {
-        my $arg := Rosella::build(Rosella::ActionArg);
+        my $arg := Rosella::build(Rosella::Action::Argument);
     }
 
     method test_name() {

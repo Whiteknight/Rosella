@@ -1,6 +1,6 @@
-namespace Rosella
+namespace Rosella { namespace Action
 {
-    class ActionArg
+    class Argument
     {
         var position;
         var name;
@@ -58,9 +58,9 @@ namespace Rosella
         }
     }
 
-    namespace ActionArg
+    namespace Argument
     {
-        class ContainerResolver : Rosella.ActionArg
+        class ContainerResolver : Rosella.Action.Argument
         {
             var container;
             var type;
@@ -79,7 +79,7 @@ namespace Rosella
 
         }
 
-        class Instance : Rosella.ActionArg
+        class Instance : Rosella.Action.Argument
         {
             var instance;
 
@@ -95,5 +95,5 @@ namespace Rosella
             }
         }
     }
-}
+}}
 

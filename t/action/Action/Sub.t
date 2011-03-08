@@ -28,8 +28,8 @@ class ActionSubTest is Rosella::Test::Testcase {
             sub($item, $a, $b) {
                 $item.replace($a, $b);
             }, [
-                Rosella::build(Rosella::ActionArg::Instance, "a", :position(0)),
-                Rosella::build(Rosella::ActionArg::Instance, "b", :position(1))
+                Rosella::build(Rosella::Action::Argument::Instance, "a", :position(0)),
+                Rosella::build(Rosella::Action::Argument::Instance, "b", :position(1))
             ]
         );
         $action.execute($data);
@@ -44,8 +44,8 @@ class ActionSubTest is Rosella::Test::Testcase {
             }, []
         );
         $action.execute($data, [
-            Rosella::build(Rosella::ActionArg::Instance, "a", :position(0)),
-            Rosella::build(Rosella::ActionArg::Instance, "b", :position(1))
+            Rosella::build(Rosella::Action::Argument::Instance, "a", :position(0)),
+            Rosella::build(Rosella::Action::Argument::Instance, "b", :position(1))
         ]);
         Assert::equal($data, "This is b test");
     }
@@ -56,12 +56,12 @@ class ActionSubTest is Rosella::Test::Testcase {
             sub($item, $a, $b) {
                 $item.replace($a, $b);
             }, [
-                Rosella::build(Rosella::ActionArg::Instance, "a", :position(0)),
-                Rosella::build(Rosella::ActionArg::Instance, "b", :position(1))
+                Rosella::build(Rosella::Action::Argument::Instance, "a", :position(0)),
+                Rosella::build(Rosella::Action::Argument::Instance, "b", :position(1))
             ]
         );
         $action.execute($data, [
-            Rosella::build(Rosella::ActionArg::Instance, "i", :position(0)),
+            Rosella::build(Rosella::Action::Argument::Instance, "i", :position(0)),
         ]);
         Assert::equal($data, "Thbs bs a test");
     }

@@ -7,6 +7,6 @@ Rosella::Test::test(ActionArgInstanceTest);
 
 class ActionArgInstanceTest is Rosella::Test::Testcase {
     method test_BUILD() {
-        my $arg := Rosella::build(Rosella::ActionArg::Instance, 1);
+        my $arg := Rosella::build(Rosella::Action::Argument::Instance, 1);
     }
 }

@@ -44,7 +44,7 @@ function main[main](argv) {
     setup_winxed_lib(rosella, "action",
         "include/Core",
         "action/Action",
-        "action/ActionArg"
+        "action/Argument"
     );
 
     // Dependency Injection / Inversion of Control container library

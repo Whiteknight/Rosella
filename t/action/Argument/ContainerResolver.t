@@ -9,6 +9,6 @@ Rosella::Test::test(ActionArgContainerResolverTest);
 class ActionArgContainerResolverTest is Rosella::Test::Testcase {
     method test_BUILD() {
         my $c := Rosella::build(Rosella::Container);
-        my $arg := Rosella::build(Rosella::ActionArg::ContainerResolver, $c, "String");
+        my $arg := Rosella::build(Rosella::Action::Argument::ContainerResolver, $c, "String");
     }
 }

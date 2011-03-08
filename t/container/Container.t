@@ -48,8 +48,8 @@ class ContainerTest is Rosella::Test::Testcase {
                 ),
                 Rosella::build(Rosella::Action::Method,
                     "replace", [
-                        Rosella::build(Rosella::ActionArg::Instance, "B", :position(0)),
-                        Rosella::build(Rosella::ActionArg::Instance, "C", :position(1))
+                        Rosella::build(Rosella::Action::Argument::Instance, "B", :position(0)),
+                        Rosella::build(Rosella::Action::Argument::Instance, "C", :position(1))
                     ]
                 )
             ]
