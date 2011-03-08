@@ -74,7 +74,7 @@ function main[main](argv) {
     // A prototype library for managing a prototype-based object system
     setup_winxed_lib(rosella, "prototype",
         "include/Core",
-        "prototype/Item",
+        "prototype/Entry",
         "prototype/Manager"
     );
 

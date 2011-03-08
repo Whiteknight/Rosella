@@ -1,0 +1,12 @@
+namespace Rosella { namespace Prototype
+{
+    class ObjectCloner
+    {
+        function clone(var prototype)
+        {
+            var object = null;
+            ${ clone object, prototype }
+            return object;
+        }
+    }
+}}

@@ -1,6 +1,6 @@
 namespace Rosella { namespace Prototype
 {
-    class Item
+    class Entry
     {
         var prototype;
         var constructor;
@@ -36,17 +36,8 @@ namespace Rosella { namespace Prototype
             call_parrot_method(item, self.constructor, pos, named);
         }
 
-        function prototype(var proto [optional], int has_proto [opt_flag]) {
-            if (has_proto)
-                self.prototype = proto;
+        function prototype() {
             return self.prototype;
-        }
-
-        function constructor(var sub [optional], int has_sub [opt_flag])
-        {
-            if (has_sub)
-                self.constructor = sub;
-            return self.sub;
         }
     }
 }
