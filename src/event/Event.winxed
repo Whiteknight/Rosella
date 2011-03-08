@@ -1,5 +1,19 @@
 namespace Rosella
 {
+    /* Event class. An Event is a collection of subscribers (Rosella.Action).
+       When we raise the event, all the subscribers are notified.
+
+       Events invoke Actions with only a single argument, the Event itself.
+       Actions are allowed to come packaged with their own Action.Arguments
+       to fill out a parameter list, but if an Action.Argument overwrites
+       the first positional argument (:position(0)), it will overwrite the
+       event object being passed.
+
+       When the event is raised, it contains the given arguments as payload.
+       The callee can access those arguments in the Event, introspect other
+       information about the Event, and set it to handled to prevent other
+       Actions from receiving it.
+    */
     class Event
     {
         var actions;
@@ -7,28 +21,57 @@ namespace Rosella
         var current_pos_payload;
         var current_named_payload;
         var handled;
+        var id_count;
 
-        function BUILD(var acts [slurpy,named])
+        function BUILD(int start_id, var acts [named,slurpy])
         {
             self.actions = acts;
+            self.id_count = start_id;
         }
 
-        function add_action(string name, var action)
+        /* Subscription Management Routines
+        */
+
+        // Add a new Action to the list of subscribers. Overwrites old entries
+        // without asking.
+        function add_subscriber_action(string id, var action)
         {
-            self.actions[name] = action;
+            if (id == null)
+                id = self.get_new_id();
+            self.actions[id] = action;
+            self.id_count = self.id_count + 1;
+            return id;
         }
 
-        function get_action(string name)
+        // Add a new object as a subscriber. The specified method will be
+        // invoked on the subscriber with the Event as an argument
+        function add_subscriber_object(string id, var object, var meth)
         {
-            return self.actions[name];
+            using Rosella.build;
+            var action = build(class Rosella.Action.Sub,
+                function(var e) {
+                    object.*meth(e);
+                }
+            );
+            return self.add_subscriber_action(id, action);
         }
 
-        function remove_action(string name)
+        // Remove a subscriber by name
+        function remove_subscriber(string id)
         {
-            if (exists self.actions[name]) {
-                delete self.actions[name];
-            }
+            if (exists self.actions[id])
+                delete self.actions[id];
         }
+
+        // Get an ID number which is unique in this Event. This can be used
+        // for generating non-overlapping action names
+        function get_count() { return self.id_count; }
+
+        /* Payload Routines
+            The Event class provides read-only Hash- and Array-like access for
+            payload values. Also, the payload properties can be accessed
+            directly as a raw Array and Hash.
+        */
 
         function get_pmc_keyed[vtable](var key)
         {
@@ -41,13 +84,26 @@ namespace Rosella
         }
 
         function positional_payload() { return self.current_pos_payload; }
+
         function named_payload() { return self.current_named_payload; }
+
+        /* Event Raise Routines
+        */
+
+        // Get the name of the currently executing Action. This is only
+        // defined during Event.raise()
         function action_name() { return self.current_action_name; }
+
+        // Set to 0 at the beginning of the .raise() sequence. The Event
+        // continues to execute its member actions until handled is set to 1
+        // or until it runs out of actions
         function handled(int handled)
         {
             self.handled = handled;
         }
 
+        // Raise the event. The given arguments are packed up into the payload
+        // of this Event object and passed to all subscribers.
         function raise(var pos [slurpy], var named [slurpy,named])
         {
             self.current_pos_payload = pos;
@@ -59,6 +115,21 @@ namespace Rosella
                 if (self.handled)
                     break;
             }
+        }
+
+        /* Internal Routines
+        */
+
+        // Get a new ID name which does not conflict with an existing entry
+        // name
+        function get_new_id()
+        {
+            string id = null;
+            do {
+                self.id_count = self.id_count + 1;
+                id = "__action_" + string(self.id_count);
+            } while (exists self.actions[id]);
+            return id;
         }
     }
 }

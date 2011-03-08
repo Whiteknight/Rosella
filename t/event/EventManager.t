@@ -14,7 +14,7 @@ class EventManagerTest is Rosella::Test::Testcase {
         my $em := Rosella::build(Rosella::EventManager);
         my $count := 0;
         $em.register_event("Test",
-            Rosella::build(Rosella::Event,
+            Rosella::build(Rosella::Event, 0,
                 :first(
                     Rosella::build(Rosella::Action::Sub,
                         sub($event) {
@@ -22,7 +22,7 @@ class EventManagerTest is Rosella::Test::Testcase {
                         }
                     )
                 )
-            )
+            ), 0
         );
         Assert::equal($count, 0, "not equal");
         $em.raise_event("Test");
@@ -35,7 +35,7 @@ class EventManagerTest is Rosella::Test::Testcase {
         my $em := Rosella::build(Rosella::EventManager);
         my $count := 0;
         $em.register_event("Test",
-            Rosella::build(Rosella::Event,
+            Rosella::build(Rosella::Event, 0,
                 :first(
                     Rosella::build(Rosella::Action::Sub,
                         sub($event) {
@@ -57,7 +57,7 @@ class EventManagerTest is Rosella::Test::Testcase {
                         }
                     )
                 )
-            )
+            ), 0
         );
         Assert::equal($count, 0, "not equal");
         $em.raise_event("Test");
@@ -68,7 +68,7 @@ class EventManagerTest is Rosella::Test::Testcase {
         my $em := Rosella::build(Rosella::EventManager);
         my $data := "Hello";
         $em.register_event("Test2",
-            Rosella::build(Rosella::Event,
+            Rosella::build(Rosella::Event, 0,
                 :first(
                     Rosella::build(Rosella::Action::Sub,
                         sub($event) {
@@ -76,7 +76,7 @@ class EventManagerTest is Rosella::Test::Testcase {
                         }
                     )
                 )
-            )
+            ), 0
         );
         Assert::equal($data, "Hello", "not equal");
         $em.raise_event("Test2", " World!");
@@ -87,7 +87,7 @@ class EventManagerTest is Rosella::Test::Testcase {
         my $em := Rosella::build(Rosella::EventManager);
         my $data := "Hello";
         $em.register_event("Test2",
-            Rosella::build(Rosella::Event,
+            Rosella::build(Rosella::Event, 0,
                 :first(
                     Rosella::build(Rosella::Action::Sub,
                         sub($event) {
@@ -95,7 +95,7 @@ class EventManagerTest is Rosella::Test::Testcase {
                         }
                     )
                 )
-            )
+            ), 0
         );
         Assert::equal($data, "Hello", "not equal");
         $em.raise_event("Test2", :arg(" World!"));

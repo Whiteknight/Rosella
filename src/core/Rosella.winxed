@@ -102,6 +102,15 @@ namespace Rosella
         return class_obj;
     }
 
+    // Determine if the given object is an instance of the given type.
+    function isa(var type, var object)
+    {
+        int is_type = 0;
+        var class_test = get_type_class(type);
+        ${ isa is_type, object, class_test };
+        return is_type;
+    }
+
     /* Method-Utility Functions
         These functions help do things with functions and methods. These are
         NOT part of the standard API of the Rosella namespace, they only exist

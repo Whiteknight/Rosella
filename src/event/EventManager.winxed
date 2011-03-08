@@ -1,5 +1,9 @@
 namespace Rosella
 {
+    /* EventManager acts like a single point of access for storing and firing
+       an entire set of Events. Events can be used without the EventManager,
+       although the interface isn't as friendly.
+    */
     class EventManager
     {
         var events;
@@ -9,25 +13,109 @@ namespace Rosella
             self.events = {};
         }
 
-        function register_event(string name, var event)
+        /* Event Management Routines
+            Events are registered by name. Names must be unique. If you
+            attempt to register a new event with the same name as an existing
+            event, the old one will be silently overwritten.
+        */
+
+        // Register a new event by name. The object registered must be a valid
+        // Event. The third argument says whether we merge the action lists
+        // together if there is a preexisting event of the same name. In this
+        // case, the actions from the new event will be written into the old
+        // event, overwriting any existing actions with duplicate ids.
+        function register_event(string event_name, var event, int merge)
         {
-            // TODO: Behavior on duplicates/override?
-            self.events[name] = event;
+            using Rosella.isa;
+
+            if (!isa(class Rosella.Event, event)) {
+                using Rosella.Error.invalid;
+                invalid("not a valid event");
+            }
+            var old_event = self.events[event_name];
+            if (old_event != null && merge) {
+                for (var action_name in event.actions) {
+                    var action = event.actions[action_name];
+                    old_event.add_subscriber_action(action_name, action);
+                }
+            } else
+                self.events[event_name] = event;
         }
 
-        function raise_event(string name,
+        // Remove an event by name if it exists. If not, do nothing.
+        function remove_event(string event_name)
+        {
+            if (exists self.events[event_name])
+                delete self.events[event_name];
+        }
+
+        /* Event Subscriber Management Routines
+            Subscribe routines return a unique identifier which can be used
+            to identify this specific subscription. The identifier is needed
+            if you want to unsubscribe from the event later, or perform any
+            other access on the Event. If you don't need to unsubscribe from
+            or modify the event, you can safely discard this identifier.
+        */
+
+        // Subscribe to an event by name. If the Event does not already exist,
+        // it will be created automatically with the given name.
+        function subscribe_object(string event_name, var object,
+                var meth)
+        {
+            var event = self.get_event_autocreate(event_name);
+            int count = event.get_count();
+            string id = sprintf("__em_%s_object_%d", [event_name, count]);
+            return event.add_subscriber_object(id, object, meth);
+        }
+
+        // Subscribe to an event with a pre-made Action.
+        function subscribe_action(string event_name, var action)
+        {
+            using Rosella.isa;
+            if (!isa(class Rosella.Action, action)) {
+                using Rosella.Error.invalid;
+                invalid("not a valid action");
+            }
+            var event = self.get_event_autocreate(event_name);
+            int count = event.get_count();
+            string id = sprintf("__em_%s_action_%d", [event_name, count]);
+            return event.add_subscriber_action(id, action);
+        }
+
+        // Unsubscribe from an event. Requires the event name and the action
+        // id returned from subscribe
+        function unsubscribe(string event_name, string id)
+        {
+            if (exists self.events[event_name])
+                self.events[event_name].remove_subscriber(id);
+        }
+
+        /* Raise Event Routines
+        */
+
+        // Raise an event by name. If the event is not registered, do nothing.
+        // Otherwise pass on to the Event object itself to notify all
+        // subscribers.
+        function raise_event(string event_name,
                 var args [slurpy], var named [slurpy,named])
         {
-            if (exists self.events[name]) {
-                self.events[name].raise(args:[flat], named:[flat,named]);
-            }
+            if (exists self.events[event_name])
+                self.events[event_name].raise(args:[flat], named:[flat,named]);
         }
 
-        function remove_event(name)
+        /* Internal Routines
+        */
+
+        // Get an event, creating it if necessary
+        function get_event_autocreate(string event_name)
         {
-            if (exists self.events[name]) {
-                delete self.events[name];
-            }
+            using Rosella.build;
+
+            if (exists self.events[event_name])
+                return self.events[event_name];
+            var event = build(class Rosella.Event, 0, []);
+            self.events[event_name] = event;
+            return event;
         }
     }
 }
