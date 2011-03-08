@@ -6,27 +6,30 @@ namespace Rosella { namespace MockObject
     */
     class Factory : Rosella.ObjectFactory
     {
-        var proxy_factories;
+        var proxy_factories;     // A hash of proxy factories, by target type name key
+        var controller_factory;  // A MockObject.Controller factory
 
         function BUILD()
         {
+            using Rosella.build;
+
             self.proxy_factories = {};
+            var c_type = class Rosella.MockObject.Controller;
+            self.controller_factory = build(class Rosella.ObjectFactory, c_type);
         }
 
         // Get a new Mock and Controller. Return the Controller, from which
         // we can get the mock later
         function create_typed(var type_to_mock, var opts [slurpy,named])
         {
-            using Rosella.build;
-            var factory = self.get_controller_factory_internal(type_to_mock, opts);
-
-            var controller = build(class Rosella.MockObject.Controller);
-            controller.mock = factory.create(controller);
+            var controller = self.controller_factory.create();
+            var mock_factory = self.get_mock_factory_internal(type_to_mock, opts);
+            controller.mock = mock_factory.create(controller);
             return controller;
         }
 
         // Get a new proxy factory for the given type. For internal use only.
-        function get_controller_factory_internal(var type_to_mock, var opts)
+        function get_mock_factory_internal(var type_to_mock, var opts)
         {
             using Rosella.build;
             using Rosella.get_type_name;

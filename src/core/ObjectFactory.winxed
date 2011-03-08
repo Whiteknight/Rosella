@@ -8,10 +8,22 @@ namespace Rosella
     */
     class ObjectFactory
     {
+        var target_type;
+
+        function BUILD(var target_type [optional], int has_type [opt_flag])
+        {
+            if (has_type)
+                self.target_type = target_type;
+            else
+                self.target_type = null;
+        }
+
         // Create an object. The default implementation throws an error.
         // subclasses may do something different
         function create(var pos [slurpy], var named [slurpy,named])
         {
+            if (self.target_type != null)
+                return self.create_typed(self.target_type, pos:[flat], named:[flat,named]);
             die("ObjectFactory: Cannot create an object without at type.\n" +
                 "You must provide a type to create_typed, or subclass ObjectFactory");
         }
