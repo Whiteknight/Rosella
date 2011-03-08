@@ -1,5 +1,13 @@
 namespace Rosella { namespace Action
 {
+    /* An argument object for Actions.
+        Each Argument object may create one or more actual arguments for a
+        function or method call. These arguments may be cached or generated
+        on a per-case basis.
+
+        Argument class is an abstract parent type which should not be used
+        directly. Use subclasses instead.
+    */
     class Argument
     {
         var position;
@@ -55,44 +63,6 @@ namespace Rosella { namespace Action
         {
             using Rosella.Error.must_subclass;
             must_subclass("resolve_value");
-        }
-    }
-
-    namespace Argument
-    {
-        class ContainerResolver : Rosella.Action.Argument
-        {
-            var container;
-            var type;
-
-            function BUILD(var container, var type, var args [slurpy,named])
-            {
-                self.container = container;
-                self.type = type;
-                self.setup_positioning(args:[flat,named]);
-            }
-
-            function resolve_value()
-            {
-                return self.container.resolve(self.type);
-            }
-
-        }
-
-        class Instance : Rosella.Action.Argument
-        {
-            var instance;
-
-            function BUILD(var instance, var args [slurpy,named])
-            {
-                self.instance = instance;
-                self.setup_positioning(args:[flat,named]);
-            }
-
-            function resolve_value()
-            {
-                return self.instance;
-            }
         }
     }
 }}

@@ -1,0 +1,18 @@
+namespace Rosella { namespace Action { namespace Argument
+{
+    class Instance : Rosella.Action.Argument
+    {
+        var instance;
+
+        function BUILD(var instance, var args [slurpy,named])
+        {
+            self.instance = instance;
+            self.setup_positioning(args:[flat,named]);
+        }
+
+        function resolve_value()
+        {
+            return self.instance;
+        }
+    }
+}}}

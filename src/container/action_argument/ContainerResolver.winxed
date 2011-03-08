@@ -1,0 +1,21 @@
+namespace Rosella { namespace Action { namespace Argument
+{
+    class ContainerResolver : Rosella.Action.Argument
+    {
+        var container;
+        var type;
+
+        function BUILD(var container, var type, var args [slurpy,named])
+        {
+            self.container = container;
+            self.type = type;
+            self.setup_positioning(args:[flat,named]);
+        }
+
+        function resolve_value()
+        {
+            return self.container.resolve(self.type);
+        }
+
+    }
+}}}

@@ -44,7 +44,8 @@ function main[main](argv) {
     setup_winxed_lib(rosella, "action",
         "include/Core",
         "action/Action",
-        "action/Argument"
+        "action/Argument",
+        "action/argument/Instance"
     );
 
     // Dependency Injection / Inversion of Control container library
@@ -52,7 +53,8 @@ function main[main](argv) {
         "include/Core",
         "include/Action",
         "container/Container",
-        "container/ItemBuilder"
+        "container/ItemBuilder",
+        "container/action_argument/ContainerResolver"
     );
 
     // Event library. Subscript to, receive, and publish event notifications.
