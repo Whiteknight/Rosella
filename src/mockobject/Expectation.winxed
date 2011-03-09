@@ -45,7 +45,6 @@ namespace Rosella { namespace MockObject
         /* Expectation Type
             The type of behavior we expect.
         */
-        // TODO: Try to refactor some of this logic into delegate classes
 
         function method(string name)
         {
@@ -54,14 +53,14 @@ namespace Rosella { namespace MockObject
             return self;
         }
 
-        function get_attribute(string name)
+        function get(string name)
         {
             self.name = name;
             self.type = "get_attribute";
             return self;
         }
 
-        function set_attribute(string name)
+        function set(string name)
         {
             self.name = name;
             self.type = "set_attribute";
@@ -103,6 +102,13 @@ namespace Rosella { namespace MockObject
             return self;
         }
 
+        function will(var will)
+        {
+            self.__can_set_will();
+            self.will = will;
+            return self;
+        }
+
         function __can_set_will()
         {
             if (self.type == null)
@@ -110,7 +116,6 @@ namespace Rosella { namespace MockObject
             if (self.will != null)
                 die("Cannot set Will behavior twice");
         }
-
 
         /* Arguments
             methods, invokes, and set_attribute requests all take parameters.
@@ -147,6 +152,13 @@ namespace Rosella { namespace MockObject
             if (self.type == "set_attribute")
                 die("set_attribute must have 1 argument");
             self.with = build(class Rosella.MockObject.Expectation.With.None);
+            return self;
+        }
+
+        function with(var with)
+        {
+            self.__verify_can_set_args();
+            self.with = with;
             return self;
         }
 
