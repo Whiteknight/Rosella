@@ -2,7 +2,9 @@ namespace Rosella { namespace MockObject
 {
     /* Mock Object Controller
         configures expectations on the mock, and handles all the messy details
-        of object proxying and expectation setup/verification.
+        of object proxying and expectation setup/verification. This controller
+        type allows expectations to be met in any order. For ordered behavior,
+        use Controller.Ordered instead. For other behavior, subclass.
 
         In a mockobject-based test, there are a few basic steps:
 
@@ -36,11 +38,15 @@ namespace Rosella { namespace MockObject
             return expect;
         }
 
+        // Get the associated mock. There is exactly one mock for each
+        // MockObject.Controller
         function mock()
         {
             return self.mock;
         }
 
+        // At the end of the test, verify that all expectations have been
+        // met.
         function verify()
         {
             using Assert.fail;
@@ -51,6 +57,9 @@ namespace Rosella { namespace MockObject
             }
             if (int(missed_expectations) == 0)
                 return;
+
+            // If we have unmatched expectations, create a detailed report
+            // of them and include that with the error message.
             string errmsg = "Not all expectations have been met!";
             for (var missed in missed_expectations)
                 errmsg = errmsg + "\n\t" + string(missed.to_string());
@@ -162,7 +171,8 @@ namespace Rosella { namespace MockObject
             return expect.__run_will_behavior();
         }
 
-        // Get a list of all available expectations
+        // Get a list of all available expectations. In the default case,
+        // all expectations are available because we don't care about order.
         function available_expectations()
         {
             return self.expectations;

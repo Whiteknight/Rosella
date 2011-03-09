@@ -1,5 +1,8 @@
 namespace Rosella { namespace MockObject { namespace Controller
 {
+    /* MockObject Controller class to require expectations be satisfied in
+      strict order.
+    */
     class Ordered : Rosella.MockObject.Controller
     {
         // Mark the expectation complete, and if necessary shift it off the
