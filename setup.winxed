@@ -115,6 +115,8 @@ function main[main](argv) {
         "mockobject/Controller",
         "mockobject/controller/Ordered",
         "mockobject/Expectation",
+        "mockobject/expectation/Will",
+        "mockobject/expectation/With",
         "mockobject/Factory"
     );
 

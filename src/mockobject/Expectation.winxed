@@ -6,11 +6,8 @@ namespace Rosella { namespace MockObject
         var quantity_modifier; // "=", "<=", ">="
         var type;              // "method", "get_attribute", "set_attribute", "invoke"
         var name;              // The name of the method/attribute
-        var pos_args;          // Positional arguments
-        var named_args;        // Named arguments
-        var with_behavior;     // "any", "verbatim", "none"
-        var will_behavior;     // Whether to "return" or "throw"
-        var will_value;        // The value to return or throw
+        var will;              // What the mock will do, once matched
+        var with;              // What values the mock is expecting to match
 
         function BUILD()
         {
@@ -18,11 +15,8 @@ namespace Rosella { namespace MockObject
             self.quantity_modifier = "=";
             self.type = null;
             self.name = null;
-            self.pos_args = null;
-            self.named_args = null;
-            self.will_behavior = "return";
-            self.will_value = null;
-            self.with_behavior = "any";
+            self.will = null;
+            self.with = null;
         }
 
         function to_string() {
@@ -43,6 +37,8 @@ namespace Rosella { namespace MockObject
         }
         function once() { return self.quantity(1, "="); }
         function none() { return self.quantity(0, "="); } // This is really a no-op
+        function exactly(int n) { return self.quantity(n, "="); }
+        function any() { return self.quantity(0, ">="); }
         function at_least(int n) { return self.quantity(n, ">="); }
         function at_most(int n) { return self.quantity(n, "<="); }
 
@@ -83,25 +79,38 @@ namespace Rosella { namespace MockObject
             These are things the mock should do in response to the request.
             Typically the options are to return a value or to throw an
             exception.
+
+            Will behaviors can only be set once we know the type.
         */
 
         function will_return(var value)
         {
-            if (self.type == null)
-                die("Type not set");
+            using Rosella.build;
+
+            self.__can_set_will();
             if (self.type == "set_attribute")
                 die("set_attribute does not return a value");
-            self.will_behavior = "return";
-            self.will_value = value;
+            self.will = build(class Rosella.MockObject.Expectation.Will.Return, value);
             return self;
         }
 
         function will_throw(var value)
         {
-            self.will_behavior = "throw";
-            self.will_value = value;
+            using Rosella.build;
+
+            self.__can_set_will();
+            self.will = build(class Rosella.MockObject.Expectation.Will.Throw, value);
             return self;
         }
+
+        function __can_set_will()
+        {
+            if (self.type == null)
+                die("Type not set");
+            if (self.will != null)
+                die("Cannot set Will behavior twice");
+        }
+
 
         /* Arguments
             methods, invokes, and set_attribute requests all take parameters.
@@ -110,38 +119,36 @@ namespace Rosella { namespace MockObject
 
         function with_args(var pos [slurpy], var named [named,slurpy])
         {
+            using Rosella.build;
+
             self.__verify_can_set_args();
             if (self.type == "set_attribute") {
                 if (int(pos) != 1 || int(named) != 0)
                     die("set_attribute takes exactly 1 positional and 0 named args");
             }
-            self.with_behavior = "verbatim";
-            self.pos_args = pos;
-            self.named_args = named;
+            self.with = build(class Rosella.MockObject.Expectation.With.Args, pos, named);
             return self;
         }
 
         function with_any_args()
         {
+            using Rosella.build;
+
             self.__verify_can_set_args();
-            self.with_behavior = "any";
+            self.with = build(class Rosella.MockObject.Expectation.With.Any);
             return self;
         }
 
         function with_no_args()
         {
+            using Rosella.build;
+
             self.__verify_can_set_args();
             if (self.type == "set_attribute")
                 die("set_attribute must have 1 argument");
-            self.with_behavior = "none";
+            self.with = build(class Rosella.MockObject.Expectation.With.None);
             return self;
         }
-
-
-        /* Internal Methods
-            These methods are used internally by the mock system and should
-            not be used by user code
-        */
 
         // Basic sanity check that we can set arguments. Check that we are in
         // a mode that accepts arguments
@@ -155,37 +162,18 @@ namespace Rosella { namespace MockObject
             //    die("You cannot specify arguments twice");
         }
 
+        /* Internal Methods
+            These methods are used internally by the mock system and should
+            not be used by user code
+        */
+
         // Match a given set of arguments against the expected list
         function __match_args(var pos, var named)
         {
-            // If any, we always match. If none, we match if we received
-            // nothing.
-            if (string(self.with_behavior) == "any")
+            if (self.with == null)
                 return 1;
-            if (string(self.with_behavior) == "none") {
-                if (int(pos) != 0 || int(named) != 0)
-                    return 0;
-                return 1;
-            }
-
-            // Check that we have the correct number of args.
-            if (int(pos) != int(self.pos_args))
-                return 0;
-            if (int(named) != int(self.named_args))
-                return 0;
-
-            // Check that we have the correct values
-            for (int i = 0; i < int(pos); i++) {
-                if (pos[i] != self.pos_args[i])
-                    return 0;
-            }
-            for (string name in named) {
-                if (!(exists self.named_args[name]))
-                    return 0;
-                if (named[name] != self.named_args[named])
-                    return 0;
-            }
-            return 1;
+            int is_match = self.with.match(pos, named);
+            return is_match;
         }
 
         // True if this expectation can match the specified method call with
@@ -220,7 +208,7 @@ namespace Rosella { namespace MockObject
                 return 0;
             if (!self.__available())
                 return 0;
-            if (self.pos_args[0] != value)
+            if (!self.__match_args([value], {}))
                 return 0;
             return 1;
         }
@@ -274,13 +262,9 @@ namespace Rosella { namespace MockObject
         // throwing any necessary exceptions
         function __run_will_behavior()
         {
-            if (self.will_behavior == null)
+            if (self.will == null)
                 return null;
-            if (self.will_behavior == "return")
-                return self.will_value;
-            if (self.will_behavior == "throw")
-                die(self.will_value);
-            return null;
+            return self.will.execute();
         }
     }
 }}

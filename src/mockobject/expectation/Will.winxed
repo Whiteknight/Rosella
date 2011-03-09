@@ -1,0 +1,40 @@
+namespace Rosella { namespace MockObject { namespace Expectation
+{
+    /* Class to contain information about what an expectation will do, once
+       matched.
+    */
+    class Will
+    {
+        var value;
+
+        function BUILD(var value)
+        {
+            self.value = value;
+        }
+
+        function execute()
+        {
+            using Rosella.Error.must_subclass;
+            must_subclass("Rosella.MockObject.Expectation.Will");
+        }
+    }
+
+    namespace Will
+    {
+        class Return : Rosella.MockObject.Expectation.Will
+        {
+            function execute()
+            {
+                return self.value;
+            }
+        }
+
+        class Throw : Rosella.MockObject.Expectation.Will
+        {
+            function execute()
+            {
+                throw self.value;
+            }
+        }
+    }
+}}}
