@@ -12,27 +12,31 @@ namespace Rosella { namespace MockObject
             self.proxy_factories = {};
         }
 
-        function get_controller_factory(var type_to_mock, var opts)
+        function get_mock_factory(var type_to_mock)
         {
+            using Rosella.build;
             using Rosella.get_type_name;
+
             string type_name = get_type_name(type_to_mock);
             if (exists self.proxy_factories[type_name])
                 return self.proxy_factories[type_name];
 
-            using Rosella.build;
-            using Rosella.Proxy.Builder.get_builders;
-            var builder_types = [
-                "MethodIntercept",
-                "AttributeIntercept"
-            ];
+            var builders = self.get_builder_types();
 
-            if (exists opts["allow_invoke"] && opts["allow_invoke"] != 0)
-                push(builder_types, "InvokeIntercept");
-
-            var builders = get_builders(builder_types);
             var factory = build(class Rosella.Proxy.Factory, type_to_mock, builders);
             self.proxy_factories[type_name] = factory;
             return factory;
+        }
+
+        function get_builder_types()
+        {
+            using Rosella.Proxy.Builder.get_builders;
+            var builder_types = [
+                "MethodIntercept",
+                "AttributeIntercept",
+                "InvokeIntercept"
+            ];
+            return get_builders(builder_types);
         }
 
         // Get a new Mock and Controller. Return the Controller, from which
@@ -40,10 +44,14 @@ namespace Rosella { namespace MockObject
         function get_mock_controller(var type_to_mock, var opts [slurpy,named])
         {
             using Rosella.build;
-            var factory = self.get_controller_factory(type_to_mock, opts);
+            var mock_factory = self.get_mock_factory(type_to_mock);
 
-            var controller = build(class Rosella.MockObject.Controller);
-            controller.mock = factory.get_proxy(controller);
+            var controller = null;
+            if (exists opts["ordered"] && opts["ordered"] == 1)
+                controller = build(class Rosella.MockObject.Controller.Ordered);
+            else
+                controller = build(class Rosella.MockObject.Controller);
+            controller.mock = mock_factory.get_proxy(controller);
             return controller;
         }
     }

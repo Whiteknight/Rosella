@@ -2,28 +2,11 @@ namespace Rosella
 {
     namespace Query
     {
-        function err_no_provider(var data)
-        {
-            using Rosella.get_type_name;
-            var class_obj = typeof(data);
-            string class_name = get_type_name(class_obj);
-            die("Query: Can not find provider for " + class_name);
-        }
+        /* External API Functions
+            These routines attempt to automatically delegate the query
+            request to the appropriate provider.
+        */
 
-        function get_provider(var data, var provider)
-        {
-            if (provider != null)
-                return provider;
-            using Rosella.build;
-            int satisfies = 0;
-            ${ does satisfies, data, "array" };
-            if (satisfies)
-                return build(class Rosella.Query.Provider.Array);
-            ${ does satisfies, data, "hash" };
-            if (satisfies)
-                return build(class Rosella.Query.Provider.Hash);
-            err_no_provider(data);
-        }
 
         function map(var data, var mapper,
             var provider [named,optional], int has_provider [opt_flag])
@@ -50,6 +33,41 @@ namespace Rosella
                 provider = null;
             provider = get_provider(data, provider);
             return provider.fold(seed, data, func);
+        }
+
+        function count(var data, var func,
+                var provider [named,optional], int has_provider [opt_flag])
+        {
+            if (!has_provider)
+                provider = null;
+            provider = get_provider(data, provider);
+            return provider.count(data, func);
+        }
+
+        /* Internal Helper Functions
+        */
+
+        function err_no_provider(var data)
+        {
+            using Rosella.get_type_name;
+            var class_obj = typeof(data);
+            string class_name = get_type_name(class_obj);
+            die("Query: Can not find provider for " + class_name);
+        }
+
+        function get_provider(var data, var provider)
+        {
+            if (provider != null)
+                return provider;
+            using Rosella.build;
+            int satisfies = 0;
+            ${ does satisfies, data, "array" };
+            if (satisfies)
+                return build(class Rosella.Query.Provider.Array);
+            ${ does satisfies, data, "hash" };
+            if (satisfies)
+                return build(class Rosella.Query.Provider.Hash);
+            err_no_provider(data);
         }
     }
 }

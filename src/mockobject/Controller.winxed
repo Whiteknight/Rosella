@@ -52,9 +52,8 @@ namespace Rosella { namespace MockObject
             if (int(missed_expectations) == 0)
                 return;
             string errmsg = "Not all expectations have been met!";
-            for (var missed in missed_expectations) {
+            for (var missed in missed_expectations)
                 errmsg = errmsg + "\n\t" + string(missed.to_string());
-            }
             fail(errmsg);
         }
 
@@ -70,59 +69,53 @@ namespace Rosella { namespace MockObject
         function find_method(var proxy, string name)
         {
             using Assert.fail;
-            int expects = self.method_expectations(name);
+            int expects = self.have_method_expectations(name);
             if (expects == 0)
-                fail("Unexpected call to method " + name);
+                self.unmatched("method '" + name + "'");
             var controller = self;
             var name_pmc = name; // needs to be a PMC to be lexically scoped
             return function(var pos [slurpy], var named [slurpy,named])
                     {
                         var dummy = null;
-                        ${ shift dummy, pos }; // remove the invocant. We're not a method call here
-                        var expect = controller.match_function(name_pmc, pos, named);
-                        return expect.__run_will_behavior();
+                        ${ shift dummy, pos }; // remove the invocant. We know it's the mock
+                        return controller.match_function(name_pmc, pos, named);
                     };
         }
 
         // Callback when the mock receives a get_attr_str request
         function get_attr_str(var proxy, string name)
         {
-            for (var expect in self.expectations) {
-                if (expect.__can_match_get_attr(name)) {
-                    expect.__match();
-                    return expect.__run_will_behavior();
-                }
+            var expectations = self.available_expectations();
+            for (var expect in expectations) {
+                if (expect.__can_match_get_attr(name))
+                    return self.complete_expectation(expect);
             }
-            using Assert.fail;
-            fail("Can not match get " + name);
+            self.unmatched("get_attr '" + name + "'");
         }
 
         // Callback when the mock receives a set_attr_str request
         function set_attr_str(var proxy, string name, var value)
         {
-            for (var expect in self.expectations) {
+            var expectations = self.available_expectations();
+            for (var expect in expectations) {
                 if (expect.__can_match_set_attr(name, value)) {
-                    expect.__match();
-                    expect.__run_will_behavior(); // everything besides "throw" is ignored
+                    self.complete_expectation(expect);
                     return;
                 }
             }
-            using Assert.fail;
-            fail("Can not match set " + name);
+            self.unmatched("set_attr '" + name + "'");
         }
 
         // Callback for when the mock is invoked. Note that not all mocks
         // support invoke. You need to specify that behavior in the factory.
         function invoke(var proxy, var pos, var named)
         {
-            for (var expect in self.expectations) {
-                if (expect.__can_match_invoke(pos, named)) {
-                    expect.__match();
-                    return expect.__run_will_behavior();
-                }
+            var expectations = self.available_expectations();
+            for (var expect in expectations) {
+                if (expect.__can_match_invoke(pos, named))
+                    return self.complete_expectation(expect);
             }
-            using Assert.fail;
-            fail("Can not match invoke");
+            self.unmatched("invoke");
         }
 
         /* Support Routines
@@ -130,31 +123,49 @@ namespace Rosella { namespace MockObject
             not be used by other code
         */
 
-        // Get a count of remaining expecations which can accept a method of
-        // the given name. We do this in find_method, before we invoke to save
-        // effort.
-        function method_expectations(string name)
+        // return 1 if we have an expectation available for the given method
+        // name. 0 otherwise. This way we can identify the expectation failure
+        // inside find_method instead of after we invoke the method.
+        function have_method_expectations(string name)
         {
             int count = 0;
             for (var expect in self.expectations) {
                 if (expect.type == "method" && expect.name == name && expect.__available())
-                    count = count + 1;
+                    return 1;
             }
-            return count;
+            return 0;
+        }
+
+        // Fail the test because we could not match
+        function unmatched(string type)
+        {
+            using Assert.fail;
+            fail("Can not match " + type);
         }
 
         // Attempt to match a method invoke to an expectation.
         function match_function(string name, var pos, var named)
         {
-            for (var expect in self.expectations) {
-                if (expect.__can_match_function_args(name, pos, named)) {
-                    expect.__match();
-                    return expect;
-                }
+            var expectations = self.available_expectations();
+            for (var expect in expectations) {
+                if (expect.__can_match_function_args(name, pos, named))
+                    return self.complete_expectation(expect);
             }
-            // TODO: verbose list of failures
-            using Assert.fail;
-            fail("Unmatchable invocation of " + name);
+            self.unmatched("method invoke '" + name + "'");
+        }
+
+        // We have a matching expectation. Do whatever we need to do to mark
+        // it matched and execute any necessary behaviors
+        function complete_expectation(var expect)
+        {
+            expect.__match();
+            return expect.__run_will_behavior();
+        }
+
+        // Get a list of all available expectations
+        function available_expectations()
+        {
+            return self.expectations;
         }
     }
 }}

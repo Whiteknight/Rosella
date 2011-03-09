@@ -1,0 +1,21 @@
+namespace Rosella { namespace Harness { namespace TestFile
+{
+    class Winxed : Rosella.Harness.TestFile
+    {
+        //our $have_winxed;
+        function compile_test()
+        {
+            //if !pir::defined($have_winxed) {
+            //    pir::load_language("winxed");
+            //    $have_winxed = 1;
+            //}
+            var winxed = compreg("winxed");
+            return winxed.compile_file(self.filename);
+        }
+
+        function get_spawn_command()
+        {
+            return "winxed --nowarn " + string(self.filename);
+        }
+    }
+}}}

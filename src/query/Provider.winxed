@@ -22,7 +22,7 @@ namespace Rosella { namespace Query
 
         function count(var data, var func [optional], int has_func [opt_flag])
         {
-            if (has_func)
+            if (has_func && func != null)
                 data = self.filter(data, func);
             int elems = 0;
             ${ elements elems, data };
@@ -40,7 +40,6 @@ namespace Rosella { namespace Query
             using Rosella.Error.must_subclass;
             must_subclass("Rosella::Query::Provider");
         }
-
 
         function combine(var a, var b,
                 var filter [optional], int has_filter [opt_flag],

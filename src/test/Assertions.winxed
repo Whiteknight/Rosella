@@ -122,9 +122,16 @@ namespace Assert
             fail(message);
     }
 
-    //function not_instance_of($obj, $class, string message [optional], int has_msg [opt_flag] = "object is instance of") {
-    //    fail($message) if pir::class__PP($obj) == P6metaclass.get_parrotclass($class);
-    //}
+    function not_instance_of(var obj, var type, string message [optional], int has_msg [opt_flag])
+    {
+        message = default_message(message, has_msg, "object is instance_of");
+        using Rosella.get_type_class;
+        var class_obj = get_type_class(type);
+        int it_isa = 0;
+        ${ isa it_isa, obj, class_obj };
+        if (it_isa)
+            fail(message);
+    }
 
     //function isa($obj, $class, string message [optional], int has_msg [opt_flag] = "object not isa") {
     //    fail($message) unless pir::isa__iPP($obj, P6metaclass.get_parrotclass($class));

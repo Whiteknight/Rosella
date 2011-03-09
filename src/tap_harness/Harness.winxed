@@ -1,5 +1,9 @@
 namespace Rosella
 {
+    /* TAP Harness class. Contains a list of TestFile objects and executes
+       each in a loop. The Harness keeps statistics about the test run, and
+       passes them off to other routines for display and analysis.
+    */
     class Harness
     {
         var total_passed;
@@ -11,39 +15,25 @@ namespace Rosella
         var tests;
         var loaders;
 
+        // Constructor. Set up a basic set of loaders.
         function BUILD()
         {
-            self.loaders = {};
             using Rosella.build;
+
+            self.loaders = {};
             var loader_class = class Rosella.Harness.Loader;
             self.loaders["NQP"] = build(loader_class, class Rosella.Harness.TestFile.NQP);
             self.loaders["PIR"] = build(loader_class, class Rosella.Harness.TestFile.PIR);
+            self.loaders["Winxed"] = build(loader_class, class Rosella.Harness.TestFile.Winxed);
             self.reset_counts();
             self.setup_next_run();
         }
 
-        function setup_next_run()
-        {
-            self.tests = [];
-            for (var loader in self.loaders)
-                self.loaders[loader].prepare_new_run();
-        }
+        /* Routines for Adding and Managing Tests and Loaders
+        */
 
-        function reset_counts()
-        {
-            self.total_passed = 0;
-            self.total_failed = 0;
-            self.total_files = 0;
-            self.todo_passed_tests = 0;
-            self.todo_passed_files = 0;
-
-            self.results = {};
-            self.results["PASSED"] = [];
-            self.results["FAILED"] = [];
-            self.results["ABORTED"] = [];
-            self.results["EMPTY"] = [];
-        }
-
+        // Add a list of directories. Directories are searched, possibly
+        // recursively, for a list of test files to run.
         function add_test_dirs(string loader, var dirs [slurpy],
                 int recurse [named,optional], int has_recurse [opt_flag])
         {
@@ -53,34 +43,24 @@ namespace Rosella
             self.add_test_objects(tests);
         }
 
+        // Add an individual test file
         function add_test_files(string loader, files [slurpy])
         {
             var tests = self.loaders[loader].get_tests_from_files(files);
             self.add_test_objects(tests);
         }
 
+        // Add a new loader. If a loader exists with the same name, it is
+        // overwritten
         function add_test_loader(string name, var loader)
         {
             self.loaders[name] = loader;
         }
 
-        function add_test_objects(var tests)
-        {
-            for (var test in tests)
-                push(self.tests, test);
-        }
+        /* Routines for Running the Harness
+        */
 
-        function find_max_file_length(int start_length)
-        {
-            int max = start_length;
-            for (var loader in self.loaders) {
-                int len = self.loaders[loader].max_filename_length();
-                if (len > max)
-                    max = len;
-            }
-            return max;
-        }
-
+        // Run the harness
         function run (int run_inline [named,optional], int has_ri [opt_flag],
                 int line_length [named,optional], int has_ll [opt_flag])
         {
@@ -109,6 +89,7 @@ namespace Rosella
             self.setup_next_run();
         }
 
+        // Returns 1 if the run was a success, 0 otherwise
         function run_was_success()
         {
             int aborted = int(self.results["ABORTED"]);
@@ -116,6 +97,11 @@ namespace Rosella
                 return 0;
             return 1;
         }
+
+        /* Reporting Functions
+            These routines are used to read statistics and count information
+            from the harness after a run.
+        */
 
         function aborted_test_files() { return self.results["ABORTED"]; }
         function failed_test_files() { return self.results["FAILED"]; }
@@ -125,5 +111,50 @@ namespace Rosella
         function num_test_files() { return self.total_files; }
         function num_todo_passed_tests() { return self.todo_passed_tests; }
         function num_todo_passed_files() { return self.todo_passed_files; }
+
+        /* Internal Helper Routines
+        */
+
+        // Prepare the harness to run a new set of tests.
+        function setup_next_run()
+        {
+            self.tests = [];
+            for (var loader in self.loaders)
+                self.loaders[loader].prepare_new_run();
+        }
+
+        // Reset the various counts and statistics.
+        function reset_counts()
+        {
+            self.total_passed = 0;
+            self.total_failed = 0;
+            self.total_files = 0;
+            self.todo_passed_tests = 0;
+            self.todo_passed_files = 0;
+
+            self.results = {};
+            self.results["PASSED"] = [];
+            self.results["FAILED"] = [];
+            self.results["ABORTED"] = [];
+            self.results["EMPTY"] = [];
+        }
+
+        function add_test_objects(var tests)
+        {
+            for (var test in tests)
+                push(self.tests, test);
+        }
+
+        function find_max_file_length(int start_length)
+        {
+            int max = start_length;
+            for (var loader in self.loaders) {
+                int len = self.loaders[loader].max_filename_length();
+                if (len > max)
+                    max = len;
+            }
+            return max;
+        }
+
     }
 }

@@ -113,6 +113,7 @@ function main[main](argv) {
         "include/Test",
         "include/Proxy",
         "mockobject/Controller",
+        "mockobject/controller/Ordered",
         "mockobject/Expectation",
         "mockobject/Factory"
     );
@@ -124,7 +125,10 @@ function main[main](argv) {
         "tap_harness/Line",
         "tap_harness/Loader",
         "tap_harness/Output",
-        "tap_harness/TestFile"
+        "tap_harness/TestFile",
+        "tap_harness/testfile/NQP",
+        "tap_harness/testfile/PIR",
+        "tap_harness/testfile/Winxed"
     );
 
 
