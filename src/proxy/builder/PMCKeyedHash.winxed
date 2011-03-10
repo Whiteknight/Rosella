@@ -1,0 +1,106 @@
+namespace Rosella { namespace Proxy { namespace Builder
+{
+    class PMCKeyedHash : Rosella.Proxy.Builder
+    {
+        function setup_proxy_class(var target_class, var proxy_class)
+        {
+            using Rosella.Proxy.Builder.PMCKeyedHash.intercept_get_pmc_keyed;
+            using Rosella.Proxy.Builder.PMCKeyedHash.intercept_get_string_keyed;
+            using Rosella.Proxy.Builder.PMCKeyedHash.intercept_get_integer_keyed;
+            using Rosella.Proxy.Builder.PMCKeyedHash.intercept_set_pmc_keyed;
+            using Rosella.Proxy.Builder.PMCKeyedHash.intercept_set_string_keyed;
+            using Rosella.Proxy.Builder.PMCKeyedHash.intercept_set_integer_keyed;
+            using Rosella.Proxy.Builder.PMCKeyedHash.intercept_defined_keyed;
+            using Rosella.Proxy.Builder.PMCKeyedHash.intercept_exists_keyed;
+            using Rosella.Proxy.Builder.PMCKeyedHash.intercept_delete_keyed;
+
+            proxy_class.add_vtable_override("get_pmc_keyed",     intercept_get_pmc_keyed);
+            proxy_class.add_vtable_override("get_string_keyed",  intercept_get_string_keyed);
+            proxy_class.add_vtable_override("get_integer_keyed", intercept_get_integer_keyed);
+            proxy_class.add_vtable_override("set_pmc_keyed",     intercept_set_pmc_keyed);
+            proxy_class.add_vtable_override("set_string_keyed",  intercept_set_string_keyed);
+            proxy_class.add_vtable_override("set_integer_keyed", intercept_set_integer_keyed);
+            proxy_class.add_vtable_override("defined_keyed",     intercept_defined_keyed);
+            proxy_class.add_vtable_override("exists_keyed",      intercept_exists_keyed);
+            proxy_class.add_vtable_override("delete_keyed",      intercept_delete_keyed);
+        }
+
+        function get_pmc_keyed(var key)
+        {
+            using Rosella.Proxy.get_proxy_private_attr;
+            var controller = get_proxy_private_attr(self, "proxy_controller");
+            if (controller != null)
+                return controller.get_keyed(self, "pmc", "pmc", key);
+            return null;
+        }
+
+        function get_string_keyed(var key)
+        {
+            using Rosella.Proxy.get_proxy_private_attr;
+            var controller = get_proxy_private_attr(self, "proxy_controller");
+            if (controller != null)
+                return controller.get_keyed(self, "string", "pmc", key);
+            return null;
+        }
+
+        function get_integer_keyed(var key)
+        {
+            using Rosella.Proxy.get_proxy_private_attr;
+            var controller = get_proxy_private_attr(self, "proxy_controller");
+            if (controller != null)
+                return controller.get_keyed(self, "integer", "pmc", key);
+            return null;
+        }
+
+        function set_pmc_keyed(var key, var value)
+        {
+            using Rosella.Proxy.get_proxy_private_attr;
+            var controller = get_proxy_private_attr(self, "proxy_controller");
+            if (controller != null)
+                controller.set_keyed(self, "pmc", "pmc", key, value);
+        }
+
+        function set_string_keyed(var key, var value)
+        {
+            using Rosella.Proxy.get_proxy_private_attr;
+            var controller = get_proxy_private_attr(self, "proxy_controller");
+            if (controller != null)
+                controller.set_keyed(self, "string", "pmc", key, value);
+        }
+
+        function set_integer_keyed(var key, var value)
+        {
+            using Rosella.Proxy.get_proxy_private_attr;
+            var controller = get_proxy_private_attr(self, "proxy_controller");
+            if (controller != null)
+                controller.set_keyed(self, "integer", "pmc", key, value);
+        }
+
+        function defined_keyed(var key)
+        {
+            using Rosella.Proxy.get_proxy_private_attr;
+            var controller = get_proxy_private_attr(self, "proxy_controller");
+            if (controller != null)
+                return controller.op_keyed(self, "defined", "pmc", key);
+            return 0;
+        }
+
+        function exists_keyed(var key)
+        {
+            using Rosella.Proxy.get_proxy_private_attr;
+            var controller = get_proxy_private_attr(self, "proxy_controller");
+            if (controller != null)
+                return controller.op_keyed(self, "exists", "pmc", key);
+            return 0;
+        }
+
+        function delete_keyed(var key)
+        {
+            using Rosella.Proxy.get_proxy_private_attr;
+            var controller = get_proxy_private_attr(self, "proxy_controller");
+            if (controller != null)
+                return controller.op_keyed(self, "delete", "pmc", key);
+            return 0;
+        }
+    }
+}}}

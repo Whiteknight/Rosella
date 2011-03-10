@@ -90,7 +90,10 @@ function main[main](argv) {
         "proxy/builder/MethodIntercept",
         "proxy/builder/AttributeIntercept",
         "proxy/builder/Imitate",
-        "proxy/builder/InvokeIntercept"
+        "proxy/builder/InvokeIntercept",
+        "proxy/builder/Array",
+        "proxy/builder/PMCKeyedHash",
+        "proxy/builder/StringKeyedHash"
     );
 
     // A testing library for writing and running unit tests.
