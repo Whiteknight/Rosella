@@ -27,6 +27,12 @@ namespace Rosella { namespace Proxy
                     push(array, build(class Rosella.Proxy.Builder.Imitate));
                 else if (builder == "InvokeIntercept")
                     push(array, build(class Rosella.Proxy.Builder.InvokeIntercept));
+                else if (builder == "PMCKeyedHash")
+                    push(array, build(class Rosella.Proxy.Builder.PMCKeyedHash));
+                else if (builder == "StringKeyedHash")
+                    push(array, build(class Rosella.Proxy.Builder.StringKeyedHash));
+                else if (builder == "Array")
+                    push(array, build(class Rosella.Proxy.Builder.Array));
                 else
                     die("Do not know builder type " + builder);
             }

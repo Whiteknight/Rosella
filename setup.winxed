@@ -127,6 +127,10 @@ function main[main](argv) {
         "mockobject/Controller",
         "mockobject/controller/Ordered",
         "mockobject/Expectation",
+        "mockobject/expectation/Get",
+        "mockobject/expectation/Set",
+        "mockobject/expectation/Method",
+        "mockobject/expectation/Invoke",
         "mockobject/expectation/Will",
         "mockobject/expectation/With",
         "mockobject/Factory"

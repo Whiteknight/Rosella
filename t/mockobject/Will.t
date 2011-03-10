@@ -14,7 +14,7 @@ class MockObject::Expectation::Will::Test is Rosella::Test::Testcase {
 
     method test_will_return() {
         my $c := get_controller();
-        $c.expect.once.method("test").will_return("foo");
+        $c.expect_method("test").once.will_return("foo");
         my $m := $c.mock;
         my $result := $m.test();
         Assert::equal($result, "foo");
@@ -24,7 +24,7 @@ class MockObject::Expectation::Will::Test is Rosella::Test::Testcase {
     method test_will_throw() {
         Assert::throws(sub() {
             my $c := get_controller();
-            $c.expect.once.method("test").will_throw("oopsies");
+            $c.expect_method("test").once.will_throw("oopsies");
             my $m := $c.mock;
             $m.test();
             $c.verify;
@@ -34,7 +34,7 @@ class MockObject::Expectation::Will::Test is Rosella::Test::Testcase {
     method test_will_do() {
         my $c := get_controller();
         my $value := 5;
-        $c.expect.once.method("test").will_do(sub() {
+        $c.expect_method("test").once.will_do(sub() {
             $value := $value + 7;
             return 4;
         });

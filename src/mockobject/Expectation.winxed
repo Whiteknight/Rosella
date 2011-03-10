@@ -4,26 +4,24 @@ namespace Rosella { namespace MockObject
     {
         var quantity;          // The number of times we expect this behavior
         var quantity_modifier; // "=", "<=", ">="
-        var type;              // "method", "get_attribute", "set_attribute", "invoke"
         var name;              // The name of the method/attribute
         var will;              // What the mock will do, once matched
         var with;              // What values the mock is expecting to match
 
-        function BUILD()
+        function BUILD(string name)
         {
             self.quantity = 1;
             self.quantity_modifier = "=";
-            self.type = null;
-            self.name = null;
+            self.name = name;
             self.will = null;
             self.with = null;
         }
 
         function to_string() {
-            if (self.type == null || self.name == null)
+            if (self.name == null)
                 return ("Null (unmatchable) expectation");
-            return sprintf("Expected %s '%s' (n %s %d times)",
-                [self.type, self.name, self.quantity_modifier, self.quantity]
+            return sprintf("Expected '%s' (n %s %d times)",
+                [self.name, self.quantity_modifier, self.quantity]
             );
         }
 
@@ -44,38 +42,6 @@ namespace Rosella { namespace MockObject
         function at_least(int n) { return self.quantity(n, ">="); }
         function at_most(int n)  { return self.quantity(n, "<="); }
 
-        /* Expectation Type
-            The type of behavior we expect.
-        */
-
-        function method(string name)
-        {
-            self.name = name;
-            self.type = "method";
-            return self;
-        }
-
-        function get(string name)
-        {
-            self.name = name;
-            self.type = "get_attribute";
-            return self;
-        }
-
-        function set(string name)
-        {
-            self.name = name;
-            self.type = "set_attribute";
-            return self;
-        }
-
-        function invoke()
-        {
-            self.type = "invoke";
-            self.name = null;
-            return self;
-        }
-
         /* Behaviors
             These are things the mock should do in response to the request.
             Typically the options are to return a value or to throw an
@@ -89,8 +55,6 @@ namespace Rosella { namespace MockObject
             using Rosella.build;
 
             self.__can_set_will();
-            if (self.type == "set_attribute")
-                die("set_attribute does not return a value");
             self.will = build(class Rosella.MockObject.Expectation.Will.Return, value);
             return self;
         }
@@ -122,8 +86,6 @@ namespace Rosella { namespace MockObject
 
         function __can_set_will()
         {
-            if (self.type == null)
-                die("Type not set");
             if (self.will != null)
                 die("Cannot set Will behavior twice");
         }
@@ -138,10 +100,6 @@ namespace Rosella { namespace MockObject
             using Rosella.build;
 
             self.__verify_can_set_args();
-            if (self.type == "set_attribute") {
-                if (int(pos) != 1 || int(named) != 0)
-                    die("set_attribute takes exactly 1 positional and 0 named args");
-            }
             self.with = build(class Rosella.MockObject.Expectation.With.Args, pos, named);
             return self;
         }
@@ -160,8 +118,6 @@ namespace Rosella { namespace MockObject
             using Rosella.build;
 
             self.__verify_can_set_args();
-            if (self.type == "set_attribute")
-                die("set_attribute must have 1 argument");
             self.with = build(class Rosella.MockObject.Expectation.With.None);
             return self;
         }
@@ -177,12 +133,8 @@ namespace Rosella { namespace MockObject
         // a mode that accepts arguments
         function __verify_can_set_args()
         {
-            if (self.type == null)
-                die("no behavior set");
-            if (self.type == "get_attribute")
-                die("attribute get does not take args");
-            //if (self.with_behavior != null)
-            //    die("You cannot specify arguments twice");
+            if (self.with != null)
+                die("You cannot specify arguments twice");
         }
 
         /* Internal Methods
@@ -201,51 +153,17 @@ namespace Rosella { namespace MockObject
 
         // True if this expectation can match the specified method call with
         // args
-        function __can_match_function_args(string name, var pos, var named)
+        function __can_match(string type, string name, var pos, var named)
         {
-            if (self.type != "method" || self.name != name)
+            if (self.name != name || !self.__available())
                 return 0;
-            if (!self.__available())
-                return 0;
-            if (!self.__match_args(pos, named))
-                return 0;
-            return 1;
+            return self.__can_match_internal(type, name, pos, named);
         }
 
-        // True if this expectation can match the specified get_attribute
-        // request
-        function __can_match_get_attr(string name)
+        function __can_match_internal(string type, string name, var pos, var named)
         {
-            if (self.type != "get_attribute" || self.name != name)
-                return 0;
-            if (!self.__available())
-                return 0;
-            return 1;
-        }
-
-        // True if this expectation can match the specified set_attribute
-        // request
-        function __can_match_set_attr(string name, var value)
-        {
-            if (self.type != "set_attribute" || self.name != name)
-                return 0;
-            if (!self.__available())
-                return 0;
-            if (!self.__match_args([value], {}))
-                return 0;
-            return 1;
-        }
-
-        // True if this expecation can match the specified invoke request
-        function __can_match_invoke(var pos, var named)
-        {
-            if (self.type != "invoke")
-                return 0;
-            if (!self.__available())
-                return 0;
-            if (!self.__match_args(pos, named))
-                return 0;
-            return 1;
+            using Rosella.Error.must_subclass;
+            must_subclass("Rosella.MockObject.Expectation");
         }
 
         // mark this expectation matched, and reduce the quantity available.

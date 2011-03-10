@@ -17,17 +17,9 @@ class MockObject::Expectation::Test is Rosella::Test::Testcase {
         $c.verify;
     }
 
-    method test_null_expectation() {
-        Assert::expect_fail(sub() {
-            my $c := get_controller();
-            $c.expect;
-            $c.verify;
-        });
-    }
-
     method test_default_method() {
         my $c := get_controller();
-        $c.expect.method("test");
+        $c.expect_method("test");
         my $m := $c.mock();
         $m.test();
         $c.verify();
@@ -35,7 +27,7 @@ class MockObject::Expectation::Test is Rosella::Test::Testcase {
 
     method test_default_get() {
         my $c := get_controller();
-        $c.expect.get("test");
+        $c.expect_get("test");
         my $m := $c.mock();
         my $dummy := pir::getattribute__PPS($m, "test");
         $c.verify();
@@ -43,7 +35,7 @@ class MockObject::Expectation::Test is Rosella::Test::Testcase {
 
     method test_default_set() {
         my $c := get_controller();
-        $c.expect.set("test");
+        $c.expect_set("test");
         my $m := $c.mock();
         pir::setattribute__vPSP($m, "test", "foo");
         $c.verify();

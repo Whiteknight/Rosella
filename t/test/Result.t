@@ -26,7 +26,7 @@ class Test::Result::Test is Rosella::Test::Testcase {
 
     method test_plan_tests() {
         my $c := get_listener_controller();
-        $c.expect().once().method("plan_tests").with_args(3);
+        $c.expect_method("plan_tests").once().with_args(3);
         my $m := $c.mock();
         my $result := Rosella::build(Rosella::Test::Result, [$m]);
         $result.plan_tests(3);
@@ -36,7 +36,7 @@ class Test::Result::Test is Rosella::Test::Testcase {
     method test_start_test() {
         my $c := get_listener_controller();
         my $faketest := MyFakeTest.new();
-        $c.expect().once().method("start_test").with_any_args();
+        $c.expect_method("start_test").once.with_any_args;
         my $m := $c.mock();
         my $result := Rosella::build(Rosella::Test::Result, [$m]);
         $result.start_test($faketest);
@@ -46,7 +46,7 @@ class Test::Result::Test is Rosella::Test::Testcase {
     method test_end_test() {
         my $c := get_listener_controller();
         my $faketest := MyFakeTest.new();
-        $c.expect().once().method("end_test").with_any_args();
+        $c.expect_method("end_test").once.with_any_args;
         my $m := $c.mock();
         my $result := Rosella::build(Rosella::Test::Result, [$m]);
         $result.end_test($faketest);
@@ -56,7 +56,7 @@ class Test::Result::Test is Rosella::Test::Testcase {
     method test_add_error() {
         my $c := get_listener_controller();
         my $faketest := MyFakeTest.new();
-        $c.expect().once().method("add_error").with_any_args();
+        $c.expect_method("add_error").once.with_any_args;
         my $m := $c.mock();
         my $result := Rosella::build(Rosella::Test::Result, [$m]);
         Assert::equal($result.was_successful, 1);
@@ -68,7 +68,7 @@ class Test::Result::Test is Rosella::Test::Testcase {
     method test_add_failure() {
         my $c := get_listener_controller();
         my $faketest := MyFakeTest.new();
-        $c.expect().once().method("add_failure").with_any_args();
+        $c.expect_method("add_failure").once.with_any_args;
         my $m := $c.mock();
         my $result := Rosella::build(Rosella::Test::Result, [$m]);
         Assert::equal($result.was_successful, 1);

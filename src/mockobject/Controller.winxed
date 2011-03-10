@@ -30,10 +30,34 @@ namespace Rosella { namespace MockObject
         */
 
         // Create and return a new expectation object.
-        function expect()
+        function expect_method(string name)
         {
             using Rosella.build;
-            var expect = build(class Rosella.MockObject.Expectation);
+            var expect = build(class Rosella.MockObject.Expectation.Method, name);
+            push(self.expectations, expect);
+            return expect;
+        }
+
+        function expect_get(string name)
+        {
+            using Rosella.build;
+            var expect = build(class Rosella.MockObject.Expectation.Get, name);
+            push(self.expectations, expect);
+            return expect;
+        }
+
+        function expect_set(string name)
+        {
+            using Rosella.build;
+            var expect = build(class Rosella.MockObject.Expectation.Set, name);
+            push(self.expectations, expect);
+            return expect;
+        }
+
+        function expect_invoke()
+        {
+            using Rosella.build;
+            var expect = build(class Rosella.MockObject.Expectation.Invoke, "");
             push(self.expectations, expect);
             return expect;
         }
@@ -96,7 +120,8 @@ namespace Rosella { namespace MockObject
         {
             var expectations = self.available_expectations();
             for (var expect in expectations) {
-                if (expect.__can_match_get_attr(name))
+                var n = null; // winxed doesn't like putting null,null in the arglist
+                if (expect.__can_match("get", name, n, n))
                     return self.complete_expectation(expect);
             }
             self.unmatched("get_attr '" + name + "'");
@@ -107,7 +132,7 @@ namespace Rosella { namespace MockObject
         {
             var expectations = self.available_expectations();
             for (var expect in expectations) {
-                if (expect.__can_match_set_attr(name, value)) {
+                if (expect.__can_match("set", name, [value], {})) {
                     self.complete_expectation(expect);
                     return;
                 }
@@ -121,7 +146,7 @@ namespace Rosella { namespace MockObject
         {
             var expectations = self.available_expectations();
             for (var expect in expectations) {
-                if (expect.__can_match_invoke(pos, named))
+                if (expect.__can_match("invoke", "", pos, named))
                     return self.complete_expectation(expect);
             }
             self.unmatched("invoke");
@@ -137,9 +162,12 @@ namespace Rosella { namespace MockObject
         // inside find_method instead of after we invoke the method.
         function have_method_expectations(string name)
         {
+            using Rosella.isa;
+            var expect_method = class Rosella.MockObject.Expectation.Method;
             int count = 0;
+
             for (var expect in self.expectations) {
-                if (expect.type == "method" && expect.name == name && expect.__available())
+                if (isa(expect_method, expect) && expect.name == name && expect.__available())
                     return 1;
             }
             return 0;
@@ -157,7 +185,7 @@ namespace Rosella { namespace MockObject
         {
             var expectations = self.available_expectations();
             for (var expect in expectations) {
-                if (expect.__can_match_function_args(name, pos, named))
+                if (expect.__can_match("method", name, pos, named))
                     return self.complete_expectation(expect);
             }
             self.unmatched("method invoke '" + name + "'");

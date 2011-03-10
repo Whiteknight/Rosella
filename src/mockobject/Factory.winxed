@@ -45,21 +45,31 @@ namespace Rosella { namespace MockObject
             if (exists self.proxy_factories[type_name])
                 return self.proxy_factories[type_name];
 
-            var builders = self.get_builder_types();
+            var builders = self.get_builder_types(opts);
 
             var factory = build(class Rosella.Proxy.Factory, type_to_mock, builders);
             self.proxy_factories[type_name] = factory;
             return factory;
         }
 
-        function get_builder_types()
+        function get_builder_types(var opts)
         {
             using Rosella.Proxy.Builder.get_builders;
             var builder_types = [
                 "MethodIntercept",
-                "AttributeIntercept",
-                "InvokeIntercept"
+                "AttributeIntercept"
             ];
+            if (exists opts["invoke"] && opts["invoke"] == 1)
+                push(builder_types, "InvokeIntercept");
+            if (exists opts["pmc_key"] && opts["pmc_key"] == 1)
+                push(builder_types, "PMCKeyedHash");
+            // No reason to do this, we can't access the *keyed_str vtables
+            // from PIR code.
+            //if (exists opts["string_key"] && opts["string_key"] == 1)
+            //    push(builder_types, "StringKeyedHash");
+            if (exists opts["array"] && opts["array"] == 1)
+                push(builder_types, "Array");
+
             return get_builders(builder_types);
         }
     }

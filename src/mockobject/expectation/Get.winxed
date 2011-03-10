@@ -1,0 +1,19 @@
+namespace Rosella { namespace MockObject { namespace Expectation
+{
+    class Get : Rosella.MockObject.Expectation
+    {
+        function __verify_can_set_args()
+        {
+            die("get attribute does not take any args");
+        }
+
+        // True if this expectation can match the specified get_attribute
+        // request
+        function __can_match_internal(string type, string name, var pos, var named)
+        {
+            if (type != "get")
+                return 0;
+            return 1;
+        }
+    }
+}}}
