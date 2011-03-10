@@ -31,8 +31,8 @@ class Proxy::Builder::PMCKeyedHash::Test is Rosella::Test::Testcase {
             Rosella::build(Rosella::Proxy::Builder::PMCKeyedHash)
         ]);
 
-        my $p := $factory.get_proxy(FooController.new());
-        $result := $p[1];
+        my $p := $factory.create(FooController.new());
+        my $result := $p[1];
         Assert::equal($result, 7);
     }
 
@@ -41,9 +41,9 @@ class Proxy::Builder::PMCKeyedHash::Test is Rosella::Test::Testcase {
             Rosella::build(Rosella::Proxy::Builder::PMCKeyedHash)
         ]);
 
-        my $p := $factory.get_proxy(FooController.new());
+        my $p := $factory.create(FooController.new());
         my $value := 0;
-        $p[1] := sub($i) { $value := $i; };
+        $p[1] := sub($i) { $value := pir::set__IP($i); };
         Assert::equal($value, 1);
     }
 
@@ -52,8 +52,8 @@ class Proxy::Builder::PMCKeyedHash::Test is Rosella::Test::Testcase {
             Rosella::build(Rosella::Proxy::Builder::PMCKeyedHash)
         ]);
 
-        my $p := $factory.get_proxy(FooController.new());
-        # TODO: This!
+        my $p := $factory.create(FooController.new());
+        self.unimplemented("test_delete_keyed_intercept");
     }
 
     method test_defined_keyed_intercept() {
@@ -61,8 +61,8 @@ class Proxy::Builder::PMCKeyedHash::Test is Rosella::Test::Testcase {
             Rosella::build(Rosella::Proxy::Builder::PMCKeyedHash)
         ]);
 
-        my $p := $factory.get_proxy(FooController.new());
-        # TODO: This!
+        my $p := $factory.create(FooController.new());
+        self.unimplemented("test_defined_keyed_intercept");
     }
 
     method test_exists_keyed_intercept() {
@@ -70,7 +70,7 @@ class Proxy::Builder::PMCKeyedHash::Test is Rosella::Test::Testcase {
             Rosella::build(Rosella::Proxy::Builder::PMCKeyedHash)
         ]);
 
-        my $p := $factory.get_proxy(FooController.new());
-        # TODO: This!
+        my $p := $factory.create(FooController.new());
+        self.unimplemented("test_exists_keyed_intercept");
     }
 }

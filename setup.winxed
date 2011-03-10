@@ -75,7 +75,8 @@ function main[main](argv) {
     setup_winxed_lib(rosella, "prototype",
         "include/Core",
         "prototype/Entry",
-        "prototype/Manager"
+        "prototype/Manager",
+        "prototype/ObjectCloner"
     );
 
     // A library for working with aggregates

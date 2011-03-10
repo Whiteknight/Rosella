@@ -4,28 +4,28 @@ namespace Rosella { namespace Proxy { namespace Builder
     {
         function setup_proxy_class(var target_class, var proxy_class)
         {
-            using Rosella.Proxy.Builder.PMCKeyedHash.intercept_get_pmc_keyed;
-            using Rosella.Proxy.Builder.PMCKeyedHash.intercept_get_string_keyed;
-            using Rosella.Proxy.Builder.PMCKeyedHash.intercept_get_integer_keyed;
-            using Rosella.Proxy.Builder.PMCKeyedHash.intercept_set_pmc_keyed;
-            using Rosella.Proxy.Builder.PMCKeyedHash.intercept_set_string_keyed;
-            using Rosella.Proxy.Builder.PMCKeyedHash.intercept_set_integer_keyed;
-            using Rosella.Proxy.Builder.PMCKeyedHash.intercept_defined_keyed;
-            using Rosella.Proxy.Builder.PMCKeyedHash.intercept_exists_keyed;
-            using Rosella.Proxy.Builder.PMCKeyedHash.intercept_delete_keyed;
+            using Rosella.Proxy.Builder.PMCKeyedHash.get_pmc_keyed;
+            using Rosella.Proxy.Builder.PMCKeyedHash.get_string_keyed;
+            using Rosella.Proxy.Builder.PMCKeyedHash.get_integer_keyed;
+            using Rosella.Proxy.Builder.PMCKeyedHash.set_pmc_keyed;
+            using Rosella.Proxy.Builder.PMCKeyedHash.set_string_keyed;
+            using Rosella.Proxy.Builder.PMCKeyedHash.set_integer_keyed;
+            using Rosella.Proxy.Builder.PMCKeyedHash.defined_keyed;
+            using Rosella.Proxy.Builder.PMCKeyedHash.exists_keyed;
+            using Rosella.Proxy.Builder.PMCKeyedHash.delete_keyed;
 
-            proxy_class.add_vtable_override("get_pmc_keyed",     intercept_get_pmc_keyed);
-            proxy_class.add_vtable_override("get_string_keyed",  intercept_get_string_keyed);
-            proxy_class.add_vtable_override("get_integer_keyed", intercept_get_integer_keyed);
-            proxy_class.add_vtable_override("set_pmc_keyed",     intercept_set_pmc_keyed);
-            proxy_class.add_vtable_override("set_string_keyed",  intercept_set_string_keyed);
-            proxy_class.add_vtable_override("set_integer_keyed", intercept_set_integer_keyed);
-            proxy_class.add_vtable_override("defined_keyed",     intercept_defined_keyed);
-            proxy_class.add_vtable_override("exists_keyed",      intercept_exists_keyed);
-            proxy_class.add_vtable_override("delete_keyed",      intercept_delete_keyed);
+            proxy_class.add_vtable_override("get_pmc_keyed",     get_pmc_keyed);
+            proxy_class.add_vtable_override("get_string_keyed",  get_string_keyed);
+            proxy_class.add_vtable_override("get_integer_keyed", get_integer_keyed);
+            proxy_class.add_vtable_override("set_pmc_keyed",     set_pmc_keyed);
+            proxy_class.add_vtable_override("set_string_keyed",  set_string_keyed);
+            proxy_class.add_vtable_override("set_integer_keyed", set_integer_keyed);
+            proxy_class.add_vtable_override("defined_keyed",     defined_keyed);
+            proxy_class.add_vtable_override("exists_keyed",      exists_keyed);
+            proxy_class.add_vtable_override("delete_keyed",      delete_keyed);
         }
 
-        function get_pmc_keyed(var key)
+        function get_pmc_keyed[nsentry](var key)
         {
             using Rosella.Proxy.get_proxy_private_attr;
             var controller = get_proxy_private_attr(self, "proxy_controller");
@@ -34,7 +34,7 @@ namespace Rosella { namespace Proxy { namespace Builder
             return null;
         }
 
-        function get_string_keyed(var key)
+        function get_string_keyed[nsentry](var key)
         {
             using Rosella.Proxy.get_proxy_private_attr;
             var controller = get_proxy_private_attr(self, "proxy_controller");
@@ -43,7 +43,7 @@ namespace Rosella { namespace Proxy { namespace Builder
             return null;
         }
 
-        function get_integer_keyed(var key)
+        function get_integer_keyed[nsentry](var key)
         {
             using Rosella.Proxy.get_proxy_private_attr;
             var controller = get_proxy_private_attr(self, "proxy_controller");
@@ -52,7 +52,7 @@ namespace Rosella { namespace Proxy { namespace Builder
             return null;
         }
 
-        function set_pmc_keyed(var key, var value)
+        function set_pmc_keyed[nsentry](var key, var value)
         {
             using Rosella.Proxy.get_proxy_private_attr;
             var controller = get_proxy_private_attr(self, "proxy_controller");
@@ -60,7 +60,7 @@ namespace Rosella { namespace Proxy { namespace Builder
                 controller.set_keyed(self, "pmc", "pmc", key, value);
         }
 
-        function set_string_keyed(var key, var value)
+        function set_string_keyed[nsentry](var key, var value)
         {
             using Rosella.Proxy.get_proxy_private_attr;
             var controller = get_proxy_private_attr(self, "proxy_controller");
@@ -68,7 +68,7 @@ namespace Rosella { namespace Proxy { namespace Builder
                 controller.set_keyed(self, "string", "pmc", key, value);
         }
 
-        function set_integer_keyed(var key, var value)
+        function set_integer_keyed[nsentry](var key, var value)
         {
             using Rosella.Proxy.get_proxy_private_attr;
             var controller = get_proxy_private_attr(self, "proxy_controller");
@@ -76,7 +76,7 @@ namespace Rosella { namespace Proxy { namespace Builder
                 controller.set_keyed(self, "integer", "pmc", key, value);
         }
 
-        function defined_keyed(var key)
+        function defined_keyed[nsentry](var key)
         {
             using Rosella.Proxy.get_proxy_private_attr;
             var controller = get_proxy_private_attr(self, "proxy_controller");
@@ -85,7 +85,7 @@ namespace Rosella { namespace Proxy { namespace Builder
             return 0;
         }
 
-        function exists_keyed(var key)
+        function exists_keyed[nsentry](var key)
         {
             using Rosella.Proxy.get_proxy_private_attr;
             var controller = get_proxy_private_attr(self, "proxy_controller");
@@ -94,7 +94,7 @@ namespace Rosella { namespace Proxy { namespace Builder
             return 0;
         }
 
-        function delete_keyed(var key)
+        function delete_keyed[nsentry](var key)
         {
             using Rosella.Proxy.get_proxy_private_attr;
             var controller = get_proxy_private_attr(self, "proxy_controller");

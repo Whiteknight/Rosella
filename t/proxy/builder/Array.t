@@ -31,8 +31,11 @@ class Proxy::Builder::Array::Test is Rosella::Test::Testcase {
             Rosella::build(Rosella::Proxy::Builder::Array)
         ]);
 
-        my $p := $factory.get_proxy(FooController.new());
-        $result := $p[1];
+        my $p := $factory.create(FooController.new());
+        my $result := Q:PIR {
+            $P0 = find_lex '$p'
+            %r = $P0[1]
+        };
         Assert::equal($result, 7);
     }
 
@@ -41,9 +44,14 @@ class Proxy::Builder::Array::Test is Rosella::Test::Testcase {
             Rosella::build(Rosella::Proxy::Builder::Array)
         ]);
 
-        my $p := $factory.get_proxy(FooController.new());
+        my $p := $factory.create(FooController.new());
         my $value := 0;
-        $p[1] := sub($i) { $value := $i; };
+        my $callback := sub($i) { $value := $i; };
+        Q:PIR {
+            $P0 = find_lex '$p'
+            $P1 = find_lex '$callback'
+            $P0[1] = $P1
+        };
         Assert::equal($value, 1);
     }
 
@@ -52,8 +60,8 @@ class Proxy::Builder::Array::Test is Rosella::Test::Testcase {
             Rosella::build(Rosella::Proxy::Builder::Array)
         ]);
 
-        my $p := $factory.get_proxy(FooController.new());
-        # TODO: This!
+        my $p := $factory.create(FooController.new());
+        self.unimplemented("test_delete_keyed_intercept");
     }
 
     method test_defined_keyed_intercept() {
@@ -61,8 +69,8 @@ class Proxy::Builder::Array::Test is Rosella::Test::Testcase {
             Rosella::build(Rosella::Proxy::Builder::Array)
         ]);
 
-        my $p := $factory.get_proxy(FooController.new());
-        # TODO: This!
+        my $p := $factory.create(FooController.new());
+        self.unimplemented("test_defined_keyed_intercept");
     }
 
     method test_exists_keyed_intercept() {
@@ -70,7 +78,7 @@ class Proxy::Builder::Array::Test is Rosella::Test::Testcase {
             Rosella::build(Rosella::Proxy::Builder::Array)
         ]);
 
-        my $p := $factory.get_proxy(FooController.new());
-        # TODO: This!
+        my $p := $factory.create(FooController.new());
+        self.unimplemented("test_exists_keyed_intercept");
     }
 }
