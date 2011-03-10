@@ -20,6 +20,8 @@ namespace Rosella { namespace MockObject
         }
 
         function to_string() {
+            if (self.type == null || self.name == null)
+                return ("Null (unmatchable) expectation");
             return sprintf("Expected %s '%s' (n %s %d times)",
                 [self.type, self.name, self.quantity_modifier, self.quantity]
             );
@@ -35,12 +37,12 @@ namespace Rosella { namespace MockObject
             self.quantity_modifier = mod;
             return self;
         }
-        function once() { return self.quantity(1, "="); }
-        function none() { return self.quantity(0, "="); } // This is really a no-op
-        function exactly(int n) { return self.quantity(n, "="); }
-        function any() { return self.quantity(0, ">="); }
+        function once()          { return self.quantity(1, "="); }
+        function none()          { return self.quantity(0, "="); } // This is really a no-op
+        function exactly(int n)  { return self.quantity(n, "="); }
+        function any()           { return self.quantity(0, ">="); }
         function at_least(int n) { return self.quantity(n, ">="); }
-        function at_most(int n) { return self.quantity(n, "<="); }
+        function at_most(int n)  { return self.quantity(n, "<="); }
 
         /* Expectation Type
             The type of behavior we expect.
