@@ -9,7 +9,7 @@ Rosella::Test::test(MockObject::Expectation::Will::Test);
 class MockObject::Expectation::Will::Test is Rosella::Test::Testcase {
     sub get_controller() {
         my $f := Rosella::build(Rosella::MockObject::Factory);
-        my $c := $f.get_mock_controller(MyClass);
+        my $c := $f.create_typed(MyClass);
     }
 
     method test_will_return() {
