@@ -5,7 +5,7 @@ namespace Rosella { namespace Prototype
         function clone(var prototype)
         {
             var object = null;
-            ${ clone object, prototype }
+            ${ clone object, prototype };
             return object;
         }
     }

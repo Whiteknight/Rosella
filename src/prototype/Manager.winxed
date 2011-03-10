@@ -25,7 +25,7 @@ namespace Rosella { namespace Prototype
             string type_name = get_type_name(type);
             if (!has_sub)
                 sub = null;
-            var entry = build(class Rosella.Prototype.Item, proto, sub);
+            var entry = build(class Rosella.Prototype.Entry, proto, sub);
             self.library[type_name] = entry;
         }
 
