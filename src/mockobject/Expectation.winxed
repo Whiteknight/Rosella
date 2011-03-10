@@ -104,6 +104,15 @@ namespace Rosella { namespace MockObject
             return self;
         }
 
+        function will_do(var value)
+        {
+            using Rosella.build;
+
+            self.__can_set_will();
+            self.will = build(class Rosella.MockObject.Expectation.Will.Do, value);
+            return self;
+        }
+
         function will(var will)
         {
             self.__can_set_will();

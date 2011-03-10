@@ -36,5 +36,14 @@ namespace Rosella { namespace MockObject { namespace Expectation
                 throw self.value;
             }
         }
+
+        class Do : Rosella.MockObject.Expectation.Will
+        {
+            function execute()
+            {
+                var sub = self.value;
+                return sub();
+            }
+        }
     }
 }}}
