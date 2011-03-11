@@ -30,13 +30,10 @@ namespace Rosella { namespace Decorator
             using Rosella.Decorator.Builder.intercept_get_attr_str;
             proxy_class.add_vtable_override("get_attr_str", intercept_get_attr_str);
 
-            say("immutable: " + string(self.immutable));
             if (self.immutable) {
-                say("setting immutable accessor");
                 using Rosella.Decorator.Builder.intercept_immutable;
                 proxy_class.add_vtable_override("set_attr_str", intercept_immutable);
             } else {
-                say("setting mutable accessor");
                 using Rosella.Decorator.Builder.intercept_set_attr_str;
                 proxy_class.add_vtable_override("set_attr_str", intercept_set_attr_str);
             }
@@ -53,7 +50,7 @@ namespace Rosella { namespace Decorator
             return function(var p [slurpy], var n [slurpy,named]) {
                 var me = null;
                 ${ shift me, p };
-                return target.*method(p:[flat], n:[flat,named]);
+                return self.*method(p:[flat], n:[flat,named]);
             };
         }
 
@@ -73,7 +70,6 @@ namespace Rosella { namespace Decorator
 
         function intercept_set_attr_str[nsentry](string name, var value)
         {
-            say("set_attr_str. oops");
             using Rosella.Proxy.get_proxy_private_attr;
             var attrs = get_proxy_private_attr(self, "attributes");
             if (exists attrs[name])
@@ -86,7 +82,6 @@ namespace Rosella { namespace Decorator
 
         function intercept_immutable[nsentry](var args [slurpy])
         {
-            say("Test");
             die("Cannot modify values of an immutable object");
         }
     }
