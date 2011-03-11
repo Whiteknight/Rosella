@@ -1,6 +1,8 @@
 namespace Rosella { namespace Container { namespace ItemFactory
 {
-    // An ItemFactory to resolve from a prototype by cloning
+    /* An ItemFactory to resolve from a prototype by cloning. This uses the
+       basic Parrot clone op.
+    */
     class Prototype : Rosella.Container.ItemFactory
     {
         var prototype;
@@ -11,6 +13,7 @@ namespace Rosella { namespace Container { namespace ItemFactory
             self.method_initializers(inits);
         }
 
+        // Clone the prototype and return the clone
         function resolve_instance()
         {
             var object = null;

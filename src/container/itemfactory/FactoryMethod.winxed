@@ -1,6 +1,7 @@
 namespace Rosella { namespace Container { namespace ItemFactory
 {
-    // An ItemBuilder to resolve from a factory method object
+    /* An ItemFactory to resolve from a factory method object.
+    */
     class FactoryMethod : Rosella.Container.ItemFactory
     {
         var sub;
@@ -13,6 +14,7 @@ namespace Rosella { namespace Container { namespace ItemFactory
             self.method_initializers(inits);
         }
 
+        // Execute the factory method to return an instance of the object.
         function resolve_instance()
         {
             var pos = [];

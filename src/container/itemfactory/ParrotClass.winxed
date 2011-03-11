@@ -14,6 +14,7 @@ namespace Rosella { namespace Container { namespace ItemFactory
             self.method_initializers(inits);
         }
 
+        // Instantiate the class, using the various data
         function resolve_instance()
         {
             int have_init_pmc = 0;

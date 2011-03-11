@@ -1,5 +1,7 @@
 namespace Rosella { namespace Action { namespace Argument
 {
+    /* An action type which uses the Container to resolve the value.
+    */
     class ContainerResolver : Rosella.Action.Argument
     {
         var container;
@@ -12,10 +14,10 @@ namespace Rosella { namespace Action { namespace Argument
             self.setup_positioning(args:[flat,named]);
         }
 
+        // Resolve the value from the container
         function resolve_value()
         {
             return self.container.resolve(self.type);
         }
-
     }
 }}}
