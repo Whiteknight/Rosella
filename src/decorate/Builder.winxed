@@ -2,14 +2,22 @@ namespace Rosella { namespace Decorator
 {
     class Builder : Rosella.Proxy.Builder
     {
+        var immutable;
+
+        function BUILD(int immutable [optional], int has_i [opt_flag])
+        {
+            if (has_i && immutable)
+                self.immutable = 1;
+            else
+                self.immutable = 0;
+        }
+
         function setup_proxy_class(var target_class, var proxy_class)
         {
             using Rosella.Proxy.add_proxy_class_private_attr;
             using Rosella.Proxy.add_proxy_class_public_attr;
 
             // This should transparently pass through all other vtables.
-            // TODO: Doing this creates all sorts of problems. Find a better
-            //       way.
             proxy_class.add_parent(target_class);
 
             add_proxy_class_private_attr(proxy_class, "methods");
@@ -17,11 +25,21 @@ namespace Rosella { namespace Decorator
             add_proxy_class_private_attr(proxy_class, "target");
 
             using Rosella.Decorator.Builder.intercept_find_method;
-            using Rosella.Decorator.Builder.intercept_get_attr_str;
-            using Rosella.Decorator.Builder.intercept_set_attr_str;
             proxy_class.add_vtable_override("find_method", intercept_find_method);
+
+            using Rosella.Decorator.Builder.intercept_get_attr_str;
             proxy_class.add_vtable_override("get_attr_str", intercept_get_attr_str);
-            proxy_class.add_vtable_override("set_attr_str", intercept_set_attr_str);
+
+            say("immutable: " + string(self.immutable));
+            if (self.immutable) {
+                say("setting immutable accessor");
+                using Rosella.Decorator.Builder.intercept_immutable;
+                proxy_class.add_vtable_override("set_attr_str", intercept_immutable);
+            } else {
+                say("setting mutable accessor");
+                using Rosella.Decorator.Builder.intercept_set_attr_str;
+                proxy_class.add_vtable_override("set_attr_str", intercept_set_attr_str);
+            }
         }
 
         function intercept_find_method[nsentry](string name)
@@ -55,6 +73,7 @@ namespace Rosella { namespace Decorator
 
         function intercept_set_attr_str[nsentry](string name, var value)
         {
+            say("set_attr_str. oops");
             using Rosella.Proxy.get_proxy_private_attr;
             var attrs = get_proxy_private_attr(self, "attributes");
             if (exists attrs[name])
@@ -63,6 +82,12 @@ namespace Rosella { namespace Decorator
                 var target = get_proxy_private_attr(self, "target");
                 ${ setattribute target, name, value };
             }
+        }
+
+        function intercept_immutable[nsentry](var args [slurpy])
+        {
+            say("Test");
+            die("Cannot modify values of an immutable object");
         }
     }
 }}
