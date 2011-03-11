@@ -122,11 +122,11 @@ namespace Rosella
     // failure.
     function find_named_method(var object, string meth_name)
     {
-        var method = null;
-        try {
-            ${ find_method method, object, meth_name };
-        } catch() { }
-        return method;
+        int can_do = 0;
+        ${ can can_do, object, meth_name };
+        if (!can_do)
+            return null;
+        return find_method(object, meth_name);
     }
 }
 
