@@ -46,32 +46,13 @@ invoke them at a later time.
 
 A dependency injection (DI) and inversion of control (IoC) container library.
 
-### xUnit Tests (rosella/xunit.pbc)
+### Test (rosella/test.pbc)
 
-A unit testing library in the spirit of xUnit.
+A unit testing library in the spirit of xUnit and Test::Builder
 
 ### TAP Harness (rosella/tap_harness.pbc)
 
 A library for quickly and easily building TAP testing harnesses.
-
-## Libraries in Development
-
-### Event (rosella/event.pbc)
-
-A multicast event system. Objects can subscribe to events by name, and can
-receive notifications later when those events are triggered.
-
-### Test (rosella/test.pbc)
-
-A simple TAP test library modeled on Test::Builder and Test::More
-
-### Prototype (rosella/prototype.pbc)
-
-A system for managing object prototypes.
-
-### Query (rosella/query.pbc)
-
-A library with query/search routines for working with aggregate objects.
 
 ### Proxy (rosella/proxy.pbc)
 
@@ -81,6 +62,23 @@ behaviors.
 ### Mock Object (rosella/mockobject.pbc)
 
 A library with mock objects for use in unit testing.
+
+## Libraries in Development
+
+### Event (rosella/event.pbc)
+
+A multicast event system. Objects can subscribe to events by name, and can
+receive notifications later when those events are triggered.
+
+### Prototype (rosella/prototype.pbc)
+
+A system for managing object prototypes.
+
+### Query (rosella/query.pbc)
+
+A library with query/search routines for working with aggregate objects.
+
+
 
 # Influences
 
