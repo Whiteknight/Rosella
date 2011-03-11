@@ -1,7 +1,10 @@
 namespace Rosella { namespace Action
 {
+    /* An Action to execute a method on the given object.
+    */
     class Method : Rosella.Action
     {
+        // Execute the method on the object, passing the parameters
         function execute_initializer(var obj, var pos, var named)
         {
             var method = self.method;

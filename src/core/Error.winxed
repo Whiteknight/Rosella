@@ -1,5 +1,8 @@
-namespace Rosella {
-    namespace Error {
+namespace Rosella
+{
+    /* Common error routines */
+    namespace Error
+    {
         function must_subclass(string name)
         {
             throw_error("(" + name + ") : You must use a subclass instead");

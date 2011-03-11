@@ -22,9 +22,9 @@ namespace Rosella
     function alloc(var proto)
     {
         var object;
-        if (proto instanceof 'P6protoobject') {
+        if (proto instanceof 'P6protoobject')
             object = proto.new();
-        } else {
+        else {
             var obj_class = get_type_class(proto);
             ${ new object, obj_class };
         }
@@ -37,9 +37,8 @@ namespace Rosella
     {
         var object = alloc(proto);
         var method = find_named_method(object, "BUILD");
-        if (method != null) {
+        if (method != null)
             object.*method(pos:[flat], named:[flat,named]);
-        }
         return object;
     }
 

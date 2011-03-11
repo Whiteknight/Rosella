@@ -1,5 +1,14 @@
 namespace Rosella
 {
+    /* An Action is a bundled command which can be packed up and executed
+       later. Actions are used to prepare commands or sequences of commands
+       for use in deferred execution.
+
+       Every Action takes an object and possibly some additional arguments.
+       The action is performed on the object. Argument objects can be used
+       to dynamically create a list of arguments for each invocation of the
+       Action.
+    */
     class Action
     {
         var method;
@@ -15,6 +24,10 @@ namespace Rosella
                 self.args = [];
         }
 
+        // Convert the list of Argument objects into an array of positional
+        // arguments and a hash of named arguments. In addition to the
+        // pre-defined Argument objects, take an optional list of Argument
+        // overrides.
         function prepare_args(var pos, var named,
                 var overrides [optional], int has_overrides [opt_flag])
         {
@@ -26,6 +39,8 @@ namespace Rosella
             }
         }
 
+        // Execute the action on the given object. Take an optional list of
+        // Argument overrides to change the default behavior.
         function execute(var obj,
                 var overrides [optional], int has_overrides [opt_flag])
         {
@@ -37,10 +52,11 @@ namespace Rosella
             self.execute_initializer(obj, pos, named);
         }
 
+        // Perform the actual action. This must be done in a subclass.
         function execute_initializer(var obj, var pos, var named)
         {
             using Rosella.Error.must_subclass;
-            must_subclass("execute_initializer");
+            must_subclass("Rosella.Action");
         }
     }
 }

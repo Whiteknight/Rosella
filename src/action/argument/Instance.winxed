@@ -1,5 +1,7 @@
 namespace Rosella { namespace Action { namespace Argument
 {
+    // A single object instance. This Argument type passes a single instance
+    // of an object as its value.
     class Instance : Rosella.Action.Argument
     {
         var instance;
@@ -10,6 +12,7 @@ namespace Rosella { namespace Action { namespace Argument
             self.setup_positioning(args:[flat,named]);
         }
 
+        // Return the instance
         function resolve_value()
         {
             return self.instance;

@@ -13,18 +13,24 @@ namespace Rosella { namespace Action
         var position;
         var name;
 
+        // Set the name of the Argument. It is now a named argument, not a
+        // positional one.
         function name(string name)
         {
             self.name = name;
             self.position = -9999;
         }
 
+        // Set the position of the Argument. It is now a positional argument,
+        // not a named one.
         function position(int pos)
         {
             self.position = pos;
             self.name = null;
         }
 
+        // Setup the type and location of the argument. It can be either
+        // positional or named
         function setup_positioning(
                 int position [named,optional], int have_pos [opt_flag],
                 string name [named,optional], int have_name [opt_flag])
@@ -35,15 +41,8 @@ namespace Rosella { namespace Action
                 self.name(name);
         }
 
-        function type()
-        {
-            if (self.name != null)
-                return "Named";
-            if (self.position != -9999)
-                return "Positional";
-            return "Unknown";
-        }
-
+        // Take an array and a hash of arguments. Insert the value or values
+        // from this argument into the appropriate places.
         function resolve_to(var pos, var named)
         {
             var value = self.resolve_value();
@@ -59,6 +58,7 @@ namespace Rosella { namespace Action
                 die("Method argument must be Named or Positional");
         }
 
+        // Get the actual value. This happens in a subclass.
         function resolve_value()
         {
             using Rosella.Error.must_subclass;

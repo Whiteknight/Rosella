@@ -1,7 +1,12 @@
 namespace Rosella { namespace Action
 {
+    /* Action class to execute a predefined subroutine taking the object and
+       a list of other parameters.
+    */
     class Sub : Rosella.Action
     {
+        // Execute a predefined subroutine, with the object as the first
+        // argument
         function execute_initializer(var obj, var pos, var named)
         {
             var sub = self.method;

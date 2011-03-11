@@ -4,7 +4,9 @@ namespace Rosella
        factory types. A factory must provide a "create" method, which returns
        an object of the type which the factory is responsible for. Also, the
        factory should provide a "create_typed" method, to attempt creating
-       an object of a different type (such as a subclass)
+       an object of a different type (such as a subclass).
+
+       This is the base class for other factory-like classes in Rosella.
     */
     class ObjectFactory
     {
