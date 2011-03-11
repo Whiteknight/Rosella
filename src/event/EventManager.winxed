@@ -1,10 +1,10 @@
-namespace Rosella
+namespace Rosella { namespace Event
 {
-    /* EventManager acts like a single point of access for storing and firing
+    /* Event.Manager acts like a single point of access for storing and firing
        an entire set of Events. Events can be used without the EventManager,
        although the interface isn't as friendly.
     */
-    class EventManager
+    class Manager
     {
         var events;
 
@@ -118,4 +118,4 @@ namespace Rosella
             return event;
         }
     }
-}
+}}

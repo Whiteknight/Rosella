@@ -7,11 +7,11 @@ Rosella::Test::test(EventManagerTest);
 
 class EventManagerTest is Rosella::Test::Testcase {
     method test_BUILD() {
-        my $em := Rosella::build(Rosella::EventManager);
+        my $em := Rosella::build(Rosella::Event::Manager);
     }
 
     method test_register_event() {
-        my $em := Rosella::build(Rosella::EventManager);
+        my $em := Rosella::build(Rosella::Event::Manager);
         my $count := 0;
         $em.register_event("Test",
             Rosella::build(Rosella::Event, 0,
@@ -32,7 +32,7 @@ class EventManagerTest is Rosella::Test::Testcase {
     }
 
     method test_register_event_multi() {
-        my $em := Rosella::build(Rosella::EventManager);
+        my $em := Rosella::build(Rosella::Event::Manager);
         my $count := 0;
         $em.register_event("Test",
             Rosella::build(Rosella::Event, 0,
@@ -65,7 +65,7 @@ class EventManagerTest is Rosella::Test::Testcase {
     }
 
     method test_register_event_payload() {
-        my $em := Rosella::build(Rosella::EventManager);
+        my $em := Rosella::build(Rosella::Event::Manager);
         my $data := "Hello";
         $em.register_event("Test2",
             Rosella::build(Rosella::Event, 0,
@@ -84,7 +84,7 @@ class EventManagerTest is Rosella::Test::Testcase {
     }
 
     method test_register_event_namedpayload() {
-        my $em := Rosella::build(Rosella::EventManager);
+        my $em := Rosella::build(Rosella::Event::Manager);
         my $data := "Hello";
         $em.register_event("Test2",
             Rosella::build(Rosella::Event, 0,
