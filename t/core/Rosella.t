@@ -13,22 +13,16 @@ class My::Test::Class {
 class My::Test::With::BUILD {
     has $!value;
     method BUILD($num) { $!value := $num + 5; }
-    method value() { $!value // -1; }
+    method value() { $!value // -1; } #/
 }
 
 class My::Test::With::Constructor {
     has $!value;
     method Constructor($num) { $!value := $num + 7; }
-    method value() { $!value // -2; }
+    method value() { $!value // -2; } #/
 }
 
 class RosellaTest is Rosella::Test::Testcase {
-    method test_call_parrot_method() {
-        my $item := My::Test::Class.new();
-        my $sum := Rosella::call_parrot_method($item, "sum", [4, 5], {});
-        Assert::equal($sum, 9);
-    }
-
     method test_build() {
         my $item := Rosella::build(My::Test::Class);
         Assert::instance_of($item, My::Test::Class);

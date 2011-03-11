@@ -4,8 +4,10 @@ namespace Rosella { namespace Action
     {
         function execute_initializer(var obj, var pos, var named)
         {
-            using Rosella.call_parrot_method;
-            call_parrot_method(obj, self.method, pos, named);
+            var method = self.method;
+            if (method instanceof 'String')
+                method = find_method(obj, method);
+            obj.*method(pos:[flat], named:[flat,named]);
         }
     }
 }}

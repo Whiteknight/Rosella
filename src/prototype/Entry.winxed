@@ -32,13 +32,12 @@ namespace Rosella { namespace Prototype
                 pos = [];
             if (!has_named)
                 named = {};
-            using Rosella.call_parrot_method;
-            call_parrot_method(item, self.constructor, pos, named);
+            var constructor = self.constructor;
+            item.*constructor(pos:[flat], named:[flat,named]);
         }
 
         function prototype() {
             return self.prototype;
         }
     }
-}
-}
+}}

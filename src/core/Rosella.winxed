@@ -118,14 +118,6 @@ namespace Rosella
         These functions will disappear when they are no longer needed
     */
 
-    // Call the method on the object with all the given parameters.
-    function call_parrot_method(var object, var method, var pos, var named)
-    {
-        if (method instanceof "String")
-            method = find_method(object, method);
-        return object.*method(pos:[flat], named:[flat,named]);
-    }
-
     // find a method PMC on the given object without throwing an exception on
     // failure.
     function find_named_method(var object, string meth_name)
