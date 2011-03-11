@@ -78,7 +78,13 @@ A system for managing object prototypes.
 
 A library with query/search routines for working with aggregate objects.
 
+### Decorate (rosella/decorate.pbc)
 
+A library for making inexpensive decorator objects. Decorators are proxies
+which transparently pass through all vtable calls to a target object but able
+to intercept a specific list of decorator methods and attributes. Also, this
+library provides an immutability pattern proxy object which is able to make
+other objects immutable.
 
 # Influences
 

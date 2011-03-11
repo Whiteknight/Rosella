@@ -33,6 +33,8 @@ namespace Rosella { namespace Decorator
             if (self.immutable) {
                 using Rosella.Decorator.Builder.intercept_immutable;
                 proxy_class.add_vtable_override("set_attr_str", intercept_immutable);
+                // TODO: For real immutability we should intercept set_string_native,
+                //       set_integer_native, set_number_native, etc.
             } else {
                 using Rosella.Decorator.Builder.intercept_set_attr_str;
                 proxy_class.add_vtable_override("set_attr_str", intercept_set_attr_str);
