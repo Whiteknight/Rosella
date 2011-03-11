@@ -1,0 +1,36 @@
+namespace Rosella { namespace Decorator
+{
+    class Factory : Rosella.ObjectFactory
+    {
+        var proxy_factory;
+        var methods;
+        var attributes;
+
+        function BUILD(var target_type, var methods, var attrs)
+        {
+            using Rosella.build;
+            self.methods = methods;
+            self.attributes = attrs;
+            var builders = [
+                build(class Rosella.Decorator.Builder)
+            ];
+            self.proxy_factory = build(class Rosella.Proxy.Factory, target_type, builders);
+        }
+
+        function create(var target, var p [slurpy], var n [slurpy,named])
+        {
+            using Rosella.Proxy.set_proxy_private_attr;
+
+            var proxy = self.proxy_factory.create(null);
+            set_proxy_private_attr(proxy, "methods", self.methods);
+            set_proxy_private_attr(proxy, "attributes", self.attributes);
+            set_proxy_private_attr(proxy, "target", target);
+            return proxy;
+        }
+
+        function create_typed(var type, var p [slurpy], var n [slurpy,named])
+        {
+            die("Cannot create_typed with a Decorator.Factory. Create a new factory");
+        }
+    }
+}}

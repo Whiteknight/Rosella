@@ -149,6 +149,12 @@ function main[main](argv) {
         "tap_harness/testfile/Winxed"
     );
 
+    setup_winxed_lib(rosella, "decorate",
+        "include/Proxy",
+        "decorate/Builder",
+        "decorate/Factory"
+    );
+
 
     using WinxedDistutils.winxed_setup;
     argv.shift();
