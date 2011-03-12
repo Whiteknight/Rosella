@@ -8,6 +8,8 @@ namespace Rosella { namespace Proxy { namespace Builder
     {
         function setup_proxy_class(var target_class, var proxy_class)
         {
+            using Rosella.Proxy.add_proxy_class_private_attr;
+
             // This should transparently pass through all other vtables.
             proxy_class.add_parent(target_class);
             add_proxy_class_private_attr(proxy_class, "target");
