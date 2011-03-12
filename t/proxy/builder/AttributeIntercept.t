@@ -46,4 +46,34 @@ class AttributeInterceptTest is Rosella::Test::Testcase {
         my $result := pir::getattribute__PPS($p, '$!test');
         Assert::equal($result, 'fake: $!test - fake hello');
     }
+
+    # Test that we can do intercepts on PMCProxy types. The logic is different
+    # so we have to do extra tests
+    method test_get_attribute_pmcproxy() {
+        # We need the Passthough builder here to force other vtables to
+        # redirect to the target
+        my $f := Rosella::build(Rosella::Proxy::Factory, 'String', [
+            Rosella::build(Rosella::Proxy::Builder::Passthrough),
+            Rosella::build(Rosella::Proxy::Builder::AttributeIntercept)
+        ]);
+        my $null := pir::null__P();
+        my $target := pir::box__PS("Hello world!");
+        my $p := $f.create($null, $target);
+        Assert::equal($p, "Hello world!");
+        $p.replace("world", "rosella");
+        Assert::equal($p, "Hello rosella!");
+    }
+
+    method test_set_attribute_pmcproxy() {
+        my $f := Rosella::build(Rosella::Proxy::Factory, 'Exception', [
+            Rosella::build(Rosella::Proxy::Builder::AttributeIntercept)
+        ]);
+        my $null := pir::null__P();
+        my $target := pir::new__PS("Exception");
+        pir::setattribute__vPSP($target, "payload", pir::box__PS("I'm an exception"));
+        my $p := $f.create($null, $target);
+        Assert::equal(pir::getattribute__PPS($p, "payload"), "I'm an exception");
+        pir::setattribute__vPSP($target, "payload", pir::box__PS("Now I'm a proxy"));
+        Assert::equal(pir::getattribute__PPS($p, "payload"), "Now I'm a proxy");
+    }
 }

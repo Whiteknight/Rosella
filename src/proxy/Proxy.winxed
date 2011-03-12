@@ -32,5 +32,13 @@ namespace Rosella
             var class_obj = typeof(proxy);
             ${ setattribute proxy, class_obj, attr, value };
         }
+
+        function add_vtable_override(var proxy_class, string name, var override)
+        {
+            var overrides = null;
+            ${ inspect overrides, proxy_class, "vtable_overrides" };
+            say("setting vtable override " + name);
+            overrides[name] = override;
+        }
     }
 }

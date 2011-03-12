@@ -13,13 +13,13 @@ namespace Rosella { namespace Proxy { namespace Builder
         {
             if (target_class instanceof "PMCProxy") {
                 using Rosella.Proxy.Builder.AttributeIntercept.intercept_get_attr_str_proxy;
-                using Rosella.Proxy.Builder.AttributeIntercept.intercept_set_attr_str_proxy;
                 proxy_class.add_vtable_override("get_attr_str", intercept_get_attr_str_proxy);
+                using Rosella.Proxy.Builder.AttributeIntercept.intercept_set_attr_str_proxy;
                 proxy_class.add_vtable_override("set_attr_str", intercept_set_attr_str_proxy);
             } else {
                 using Rosella.Proxy.Builder.AttributeIntercept.intercept_get_attr_str;
-                using Rosella.Proxy.Builder.AttributeIntercept.intercept_set_attr_str;
                 proxy_class.add_vtable_override("get_attr_str", intercept_get_attr_str);
+                using Rosella.Proxy.Builder.AttributeIntercept.intercept_set_attr_str;
                 proxy_class.add_vtable_override("set_attr_str", intercept_set_attr_str);
             }
         }
@@ -28,9 +28,13 @@ namespace Rosella { namespace Proxy { namespace Builder
         {
             using Rosella.Proxy.get_proxy_private_attr;
             var controller = get_proxy_private_attr(self, "proxy_controller");
-            if (controller != null)
+            if (controller != null) {
                 controller.set_attr_str(self, name, value);
-            return null;
+                return;
+            }
+            var target = get_proxy_private_attr(self, "target_object");
+            if (target != null)
+                ${ setattribute target, name, value };
         }
 
         function intercept_get_attr_str[nsentry](string name)
@@ -39,7 +43,12 @@ namespace Rosella { namespace Proxy { namespace Builder
             var controller = get_proxy_private_attr(self, "proxy_controller");
             if (controller != null)
                 return controller.get_attr_str(self, name);
-            return null;
+            var target = get_proxy_private_attr(self, "target_object");
+            if (target != null) {
+                var value = null;
+                ${ getattribute value, target, name };
+                return value;
+            }
         }
 
         function intercept_set_attr_str_proxy[nsentry](string name, value)
@@ -47,10 +56,8 @@ namespace Rosella { namespace Proxy { namespace Builder
             using Rosella.Proxy.get_proxy_private_attr;
             if (name == "proxy")
                 die("ProxyAttributeIntercept: Can't handle setting an attribute named 'proxy'");
-            var controller = get_proxy_private_attr(self, "proxy_controller");
-            if (controller != null)
-                controller.set_attr_str(self, name, value);
-            return null;
+            using Rosella.Proxy.Builder.AttributeIntercept.intercept_set_attr_str;
+            self.*intercept_set_attr_str(name, value);
         }
 
         function intercept_get_attr_str_proxy[nsentry](string name)
@@ -61,10 +68,8 @@ namespace Rosella { namespace Proxy { namespace Builder
                 if (proxy != null)
                     return proxy;
             }
-            var controller = get_proxy_private_attr(self, "proxy_controller");
-            if (controller != null)
-                return controller.get_attr_str(self, name);
-            return null;
+            using Rosella.Proxy.Builder.AttributeIntercept.intercept_get_attr_str;
+            return self.*intercept_get_attr_str(name);
         }
     }
 }}}

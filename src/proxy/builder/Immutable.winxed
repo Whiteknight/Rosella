@@ -4,8 +4,10 @@ namespace Rosella { namespace Proxy { namespace Builder
     {
         function setup_proxy_class(var target_class, var proxy_class)
         {
+            using Rosella.Proxy.add_vtable_override;
             using Rosella.Proxy.Builder.Immutable.intercept_immutable;
-            proxy_class.add_vtable_override("set_attr_str", intercept_immutable);
+            add_vtable_override(proxy_class, "set_attr_str", intercept_immutable);
+
             proxy_class.add_vtable_override("set_integer_native", intercept_immutable);
             proxy_class.add_vtable_override("set_string_native", intercept_immutable);
             proxy_class.add_vtable_override("set_number_native", intercept_immutable);

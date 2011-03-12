@@ -16,7 +16,7 @@ class My::Foo {
 }
 
 class MethodInterceptTest is Rosella::Test::Testcase {
-    method test_method_intercept() {
+    method test_method_intercept_controller() {
         my $f := My::Foo.new();
         my $result := $f.bar("test");
         Assert::equal($result, "real test");
@@ -28,5 +28,19 @@ class MethodInterceptTest is Rosella::Test::Testcase {
         my $p := $factory.create(FooController.new());
         $result := $p.bar("next test");
         Assert::equal($result, "fake next test");
+    }
+
+    # If we have a target and not a controller, the proxy passes through
+    # find_method requests to the target
+    method test_method_intercept_target() {
+        my $f := My::Foo.new();
+
+        my $factory := Rosella::build(Rosella::Proxy::Factory, My::Foo, [
+            Rosella::build(Rosella::Proxy::Builder::MethodIntercept)
+        ]);
+        my $null := pir::null__P();
+        my $p := $factory.create($null, $f);
+        my $result := $p.bar("next test");
+        Assert::equal($result, "real next test");
     }
 }

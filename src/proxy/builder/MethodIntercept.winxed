@@ -8,8 +8,6 @@ namespace Rosella { namespace Proxy { namespace Builder
     {
         function setup_proxy_class(var target_class, var proxy_class)
         {
-            // TODO: Find the old VTABLE_find_method entry, and add that to
-            //       the fallback logic
             using Rosella.Proxy.Builder.MethodIntercept.intercept_find_method;
             proxy_class.add_vtable_override("find_method", intercept_find_method);
         }
@@ -23,6 +21,9 @@ namespace Rosella { namespace Proxy { namespace Builder
             var controller = get_proxy_private_attr(self, "proxy_controller");
             if (controller != null)
                 return controller.find_method(self, name);
+            var target = get_proxy_private_attr(self, "target_object");
+            if (target != null)
+                return find_method(target, name);
             return null;
         }
     }
