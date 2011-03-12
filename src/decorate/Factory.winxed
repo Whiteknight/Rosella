@@ -6,17 +6,14 @@ namespace Rosella { namespace Decorator
         var methods;
         var attributes;
 
-        function BUILD(var target_type, var methods, var attrs,
-            int is_immutable [optional,named], int has_is_i [opt_flag])
+        function BUILD(var target_type, var methods, var attrs)
         {
             using Rosella.build;
             self.methods = methods;
             self.attributes = attrs;
-            int immutable = 0;
-            if (has_is_i && is_immutable)
-                immutable = 1;
             var builders = [
-                build(class Rosella.Decorator.Builder, immutable)
+                build(class Rosella.Proxy.Builder.Passthrough),
+                build(class Rosella.Decorator.Builder)
             ];
             self.proxy_factory = build(class Rosella.Proxy.Factory, target_type, builders);
         }
@@ -25,10 +22,9 @@ namespace Rosella { namespace Decorator
         {
             using Rosella.Proxy.set_proxy_private_attr;
 
-            var proxy = self.proxy_factory.create(null);
-            set_proxy_private_attr(proxy, "methods", self.methods);
-            set_proxy_private_attr(proxy, "attributes", self.attributes);
-            set_proxy_private_attr(proxy, "target", target);
+            var proxy = self.proxy_factory.create(null, target);
+            set_proxy_private_attr(proxy, "decorator_methods", self.methods);
+            set_proxy_private_attr(proxy, "decorator_attributes", self.attributes);
             return proxy;
         }
 

@@ -103,7 +103,8 @@ function main[main](argv) {
         "proxy/builder/Array",
         "proxy/builder/PMCKeyedHash",
         "proxy/builder/StringKeyedHash",
-        "proxy/builder/Passthrough"
+        "proxy/builder/Passthrough",
+        "proxy/builder/Immutable"
     );
 
     // A testing library for writing and running unit tests.

@@ -1,0 +1,21 @@
+namespace Rosella { namespace Proxy { namespace Builder
+{
+    class Immutable : Rosella.Proxy.Builder
+    {
+        function setup_proxy_class(var target_class, var proxy_class)
+        {
+            using Rosella.Proxy.Builder.Immutable.intercept_immutable;
+            proxy_class.add_vtable_override("set_attr_str", intercept_immutable);
+            proxy_class.add_vtable_override("set_integer_native", intercept_immutable);
+            proxy_class.add_vtable_override("set_string_native", intercept_immutable);
+            proxy_class.add_vtable_override("set_number_native", intercept_immutable);
+            proxy_class.add_vtable_override("set_pmc", intercept_immutable);
+            proxy_class.add_vtable_override("assign_pmc", intercept_immutable);
+        }
+
+        function intercept_immutable[nsentry](var args [slurpy])
+        {
+            die("Cannot modify values of an immutable object");
+        }
+    }
+}}}
