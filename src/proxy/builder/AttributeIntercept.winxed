@@ -2,15 +2,26 @@ namespace Rosella { namespace Proxy { namespace Builder
 {
     /* Proxy Builder class to intercept attribute get/set requests and forward
        them to the controller. We can not (and do not want to) intercept
-       accesses for the private attributes used by the proxing system */
+       accesses for the private attributes used by the proxing system.
+
+       Due to limitations of Parrot's object system, if the target_class is
+       a built-in PMCProxy type, the attribute named "proxy" is reserved.
+    */
     class AttributeIntercept : Rosella.Proxy.Builder
     {
         function setup_proxy_class(var target_class, var proxy_class)
         {
-            using Rosella.Proxy.Builder.AttributeIntercept.intercept_get_attr_str;
-            using Rosella.Proxy.Builder.AttributeIntercept.intercept_set_attr_str;
-            proxy_class.add_vtable_override("get_attr_str", intercept_get_attr_str);
-            proxy_class.add_vtable_override("set_attr_str", intercept_set_attr_str);
+            if (target_class instanceof "PMCProxy") {
+                using Rosella.Proxy.Builder.AttributeIntercept.intercept_get_attr_str_proxy;
+                using Rosella.Proxy.Builder.AttributeIntercept.intercept_set_attr_str_proxy;
+                proxy_class.add_vtable_override("get_attr_str", intercept_get_attr_str_proxy);
+                proxy_class.add_vtable_override("set_attr_str", intercept_set_attr_str_proxy);
+            } else {
+                using Rosella.Proxy.Builder.AttributeIntercept.intercept_get_attr_str;
+                using Rosella.Proxy.Builder.AttributeIntercept.intercept_set_attr_str;
+                proxy_class.add_vtable_override("get_attr_str", intercept_get_attr_str);
+                proxy_class.add_vtable_override("set_attr_str", intercept_set_attr_str);
+            }
         }
 
         function intercept_set_attr_str[nsentry](string name, value)
@@ -25,6 +36,31 @@ namespace Rosella { namespace Proxy { namespace Builder
         function intercept_get_attr_str[nsentry](string name)
         {
             using Rosella.Proxy.get_proxy_private_attr;
+            var controller = get_proxy_private_attr(self, "proxy_controller");
+            if (controller != null)
+                return controller.get_attr_str(self, name);
+            return null;
+        }
+
+        function intercept_set_attr_str_proxy[nsentry](string name, value)
+        {
+            using Rosella.Proxy.get_proxy_private_attr;
+            if (name == "proxy")
+                die("ProxyAttributeIntercept: Can't handle setting an attribute named 'proxy'");
+            var controller = get_proxy_private_attr(self, "proxy_controller");
+            if (controller != null)
+                controller.set_attr_str(self, name, value);
+            return null;
+        }
+
+        function intercept_get_attr_str_proxy[nsentry](string name)
+        {
+            using Rosella.Proxy.get_proxy_private_attr;
+            if (name == "proxy") {
+                var proxy = get_proxy_private_attr(self, "target_object");
+                if (proxy != null)
+                    return proxy;
+            }
             var controller = get_proxy_private_attr(self, "proxy_controller");
             if (controller != null)
                 return controller.get_attr_str(self, name);

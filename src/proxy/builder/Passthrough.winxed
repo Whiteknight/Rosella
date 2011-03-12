@@ -1,0 +1,16 @@
+namespace Rosella { namespace Proxy { namespace Builder
+{
+    /* Builder class to set up the target class as a parent of the proxy
+       class. This helps to automatically forward most vtable requests on to
+       the parent class.
+    */
+    class Passthrough : Rosella.Proxy.Builder
+    {
+        function setup_proxy_class(var target_class, var proxy_class)
+        {
+            // This should transparently pass through all other vtables.
+            proxy_class.add_parent(target_class);
+            add_proxy_class_private_attr(proxy_class, "target");
+        }
+    }
+}}}

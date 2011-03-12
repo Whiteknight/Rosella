@@ -102,7 +102,8 @@ function main[main](argv) {
         "proxy/builder/InvokeIntercept",
         "proxy/builder/Array",
         "proxy/builder/PMCKeyedHash",
-        "proxy/builder/StringKeyedHash"
+        "proxy/builder/StringKeyedHash",
+        "proxy/builder/Passthrough"
     );
 
     // A testing library for writing and running unit tests.

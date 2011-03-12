@@ -66,8 +66,9 @@ namespace Rosella { namespace Proxy
         {
             using Rosella.Proxy.get_proxy_private_attr;
             var class_obj = get_proxy_private_attr(proxy, "target_class");
-            if (class_obj != null)
-                return class_obj.find_method(name);
+            if (class_obj == null)
+                return null;
+            var method = class_obj.find_method(name);
             return null;
         }
 
@@ -95,9 +96,7 @@ namespace Rosella { namespace Proxy
             return null;
         }
 
-        function set_keyed(var proxy, string val_type, string key_type, var key, var value)
-        {
-        }
+        function set_keyed(var proxy, string val_type, string key_type, var key, var value) { }
 
         // "delete", "exists", "defined"
         function op_keyed(var proxy, string op_type, string key_type, var key)
@@ -108,8 +107,6 @@ namespace Rosella { namespace Proxy
         /* Invoke
         */
 
-        function invoke(var proxy, var pos, var named)
-        {
-        }
+        function invoke(var proxy, var pos, var named) { }
     }
 }}
