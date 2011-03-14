@@ -63,7 +63,117 @@
             these tools and components available in a portable, usable way,
             programmers should be empowered to create high quality,
             maintainable software faster.
+
+            The Rosella project is actually a collection of individual
+            libraries, each of which implements a single pattern or best
+            practice. Rosella is intended to be used piece-wise. Use only the
+            parts you want and ignore the parts you do not want. Rosella
+            libraries tend not to be interdependent, although some of the more
+            advanced libraries rely on some of the more basic ones.
         </p>
+
+        <h3>Rosella Stable Libraries</h3>
+
+        <p>
+            Here is a list of Rosella's libraries which are currently
+            considered to be "stable" enough for general use:
+        </p>
+
+        <h4>Core</h4>
+        <p>
+            Rosella's Core library provides a handful of routines used by
+            the other Rosella libraries. This library provides basic behavior
+            for working with an assortment of "type" meta-objects, and for
+            implementing a standard system of object constructor behavior.
+        </p>
+
+        <h4>Action</h4>
+        <p>
+            The Action library implements the Command pattern. Sequences of
+            instructions can be bundled together into an Action object, and
+            can be invoked later.
+        </p>
+
+        <h4>Container</h4>
+        <p>
+            The Container library implements a Dependency Injection, Inversion
+            of Control container type which can be used to help decouple
+            modules in a program. The Container utilizes the Action library
+            to setup constructor injection and method injection behaviors
+            on registered types.
+        </p>
+
+        <h4>Test</h4>
+        <p>
+            Inspired by testing libraries such as xUnit and Test::More,
+            The Rosella Test library provides the tools and utilities to
+            quickly write unit tests for your software. Rosella's own test
+            suite is written using this library.
+        </p>
+
+        <h4>TAP Harness</h4>
+        <p>
+            A companion to the Test library, The TAP Harness library
+            implements the logic necessary to quickly construct a TAP harness
+            for executing unit tests and reporting the results. Rosella's own
+            test harness is written using this library.
+        </p>
+
+        <h4>Proxy</h4>
+        <p>
+            The Proxy library provides the tools necessary to create a wide
+            array of proxy objects.
+        </p>
+
+        <h4>Mock Objects</h4>
+        <p>
+            The MockObject library uses the Rosella Proxy library to implement
+            full-featured mock objects for use in testing with the Test
+            library. Several tests in the Rosella test suite are implemented
+            using this library.
+        </p>
+
+        <h3>Rosella Development Libraries</h3>
+
+        <p>
+            This is a list of libraries which are still in design or
+            development phases:
+        </p>
+
+        <h4>Event</h4>
+        <p>
+            The Event library provides a subscribe/observe interface over the
+            Action library. Multiple parts of a program can anonymously
+            subscribe to or publish named events. This library is inspired,
+            in part, by the event aggregation portions of the PRISM practices
+            library.
+        </p>
+
+        <h4>Prototype</h4>
+        <p>
+            The Prototype library provides facilities for implementing a
+            prototype-based object model system. Prototypes and object
+            constructors/initializers can be registered with the library. New
+            instances can be cloned from the prototype on demand.
+        </p>
+
+        <h4>Query</h4>
+        <p>
+            The Query library provides interfaces for interacting with
+            aggregate objects. This library provides a series of higher-order
+            utilities inspired by the .Net LINQ library.
+        </p>
+
+        <h4>Decorate</h4>
+        <p>
+            The Decorate library uses the Proxy library to implement a system
+            of cheap, efficient type decorators. A decorator allows
+            transparent passthrough of normal method calls, attribute
+            accesses, and primitive value operations while allowing the
+            programmer to inject additional methods and attributes on a
+            per-object (not per-class) basis.
+        </p>
+
 
         <h2>Dependencies</h2>
         <ul>
