@@ -1,0 +1,58 @@
+namespace Rosella { namespace Contract
+{
+    /* Contract class to inject pre- and post-conditions into individual
+       method calls.
+    */
+    class Method
+    {
+        var type;
+        var type_class;
+        var type_methods;
+
+        function BUILD(var type)
+        {
+            using Rosella.get_type_class;
+
+            self.type = type;
+            var type_class = get_type_class(type);
+            var methods = type_class.methods();
+            self.type_class = type_class;
+            self.type_methods = methods;
+        }
+
+        function inject(string meth_name, var precond_list, var postcond_list)
+        {
+            using Rosella.Contract.active;
+            if (!active())
+                return;
+            var old_method = self.type_methods[meth_name];
+            var new_method = self.get_method_wrapper(meth_name, old_method, precond_list, postcond_list);
+            //self.type_methods[meth_name] = new_method;
+            self.type_class.remove_method(meth_name);
+            self.type_class.add_method(meth_name, new_method);
+        }
+
+        function get_method_wrapper(string meth_name_str, var method, var pre, var post)
+        {
+            var preconditions = pre;
+            var postconditions = post;
+            var meth_name = meth_name_str;
+            var meth = method;
+            return function(var p [slurpy], var n [slurpy,named]) {
+                var invocant = null;
+                ${ shift invocant, p };
+                for (string pre_name in preconditions) {
+                    if (!preconditions[pre_name](p:[flat], n:[flat,named]))
+                        die("Failed precondition " + pre_name + " for method " + string(meth_name));
+                }
+                var result = invocant.*meth(p:[flat], n:[flat,named]);
+                for (string post_name in postconditions) {
+                    if (!postconditions[post_name](result))
+                        die("Failed postcondition " + post_name + " for method " + string(meth_name));
+                }
+                return result;
+            };
+        }
+    }
+}}
+

@@ -1,0 +1,22 @@
+namespace Rosella
+{
+    namespace Contract
+    {
+        function active(int is_active [optional], int has_is_active [opt_flag])
+        {
+            if (!has_is_active)
+                is_active = 0;
+          next:
+            yield is_active;
+            goto next;
+        }
+
+        function assert(int cond, string text)
+        {
+            if (!active())
+                return;
+            if (!cond)
+                die("Assertion '" + text + "' failed");
+        }
+    }
+}

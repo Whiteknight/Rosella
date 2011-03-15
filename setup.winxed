@@ -1,6 +1,7 @@
 using extern "io_ops";
 
-function main[main](argv) {
+function main[main](argv)
+{
     setup_distutils();
     var rosella = {
         "name"             : 'Rosella',
@@ -24,6 +25,16 @@ function main[main](argv) {
     if (argv[1] == "test")
         do_test();
 
+    setup_stable_libraries(rosella);
+    setup_experimental_libraries(rosella);
+
+    using WinxedDistutils.winxed_setup;
+    argv.shift();
+    winxed_setup(argv, rosella);
+}
+
+function setup_stable_libraries(var rosella)
+{
     // A distutils wrapper library which adds winxed functionality.
     // A bootstrapped version is included in the repo because we need it
     // to run setup.winxed (this script). This is the only rosella library
@@ -61,32 +72,6 @@ function main[main](argv) {
         "container/itemfactory/FactoryMethod",
         "container/itemfactory/Instance",
         "container/action_argument/ContainerResolver"
-    );
-
-    // Event library. Subscript to, receive, and publish event notifications.
-    setup_winxed_lib(rosella, "event",
-        "include/Core",
-        "include/Action",
-        "event/Event",
-        "event/EventManager"
-    );
-
-    // A prototype library for managing a prototype-based object system
-    setup_winxed_lib(rosella, "prototype",
-        "include/Core",
-        "prototype/Entry",
-        "prototype/Manager",
-        "prototype/ObjectCloner"
-    );
-
-    // A library for working with aggregates
-    setup_winxed_lib(rosella, "query",
-        "include/Core",
-        "query/Query",
-        "query/Provider",
-        "query/provider/Array",
-        "query/provider/Hash",
-        "query/Path"
     );
 
     // A proxying library for building and managing proxies
@@ -150,20 +135,52 @@ function main[main](argv) {
         "tap_harness/testfile/PIR",
         "tap_harness/testfile/Winxed"
     );
+}
 
+function setup_experimental_libraries(var rosella)
+{
+    // Event library. Subscript to, receive, and publish event notifications.
+    setup_winxed_lib(rosella, "event",
+        "include/Core",
+        "include/Action",
+        "event/Event",
+        "event/EventManager"
+    );
+
+    // A prototype library for managing a prototype-based object system
+    setup_winxed_lib(rosella, "prototype",
+        "include/Core",
+        "prototype/Entry",
+        "prototype/Manager",
+        "prototype/ObjectCloner"
+    );
+
+    // A library for working with aggregates
+    setup_winxed_lib(rosella, "query",
+        "include/Core",
+        "query/Query",
+        "query/Provider",
+        "query/provider/Array",
+        "query/provider/Hash",
+        "query/Path"
+    );
+
+    // A library for creating and using cheap, transparent decorator
     setup_winxed_lib(rosella, "decorate",
         "include/Proxy",
         "decorate/Builder",
         "decorate/Factory"
     );
 
-
-    using WinxedDistutils.winxed_setup;
-    argv.shift();
-    winxed_setup(argv, rosella);
+    setup_winxed_lib(rosella, "contract",
+        "contract/Contract",
+        "contract/Method",
+        "contract/Interface"
+    );
 }
 
-function setup_winxed_lib(var rosella, string name, var files [slurpy]) {
+function setup_winxed_lib(var rosella, string name, var files [slurpy])
+{
     var pbc_files = [];
     var pir_files = [];
     for (string p_path in files) {
@@ -186,7 +203,8 @@ function setup_winxed_lib(var rosella, string name, var files [slurpy]) {
 // Load in the distutils library, which we are also responsible for
 // building. If we don't have a version handy, load in the bootstrapping
 // version. If we do have one built, use that instead
-function setup_distutils() {
+function setup_distutils()
+{
     int e = 0;
     string distutils = "src/winxed/Distutils.pir";
     ${ stat e, distutils, 0 };
@@ -196,7 +214,9 @@ function setup_distutils() {
         load_bytecode("src/winxed/DistutilsSt1.pir");
 }
 
-function do_test() {
+// TODO: "build" first, before we test.
+function do_test()
+{
     using get_nqp;
     string nqp = "parrot-nqp"; //get_nqp();
     string cmd = nqp + " t/harness";

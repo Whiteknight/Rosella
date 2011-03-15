@@ -1,0 +1,65 @@
+namespace Rosella { namespace Contract
+{
+    /* Contract class to verify that the given type satisfies the public
+       interface of a base class.
+    */
+    class Interface
+    {
+        var base_type_class;
+        var base_type_methods;
+        var base_type_name;
+
+        // TODO: Allow to specify optional inclusion/exclusion criteria
+        function BUILD(var base_type)
+        {
+            using Rosella.get_type_class;
+            using Rosella.get_type_name;
+
+            var base_type_class = get_type_class(base_type);
+            var methods = base_type_class.methods();
+            self.base_type_class = base_type_class;
+            self.base_type_methods = methods;
+            self.base_type_name = get_type_name(base_type);
+        }
+
+        // Verify that the given type object satisfies the interface
+        // TODO: Optionally verify attributes too.
+        function verify_type(var type)
+        {
+            using Rosella.Contract.active;
+            if (!active())
+                return;
+
+            using Rosella.get_type_class;
+            using Rosella.get_type_name;
+            var type_class = get_type_class(type);
+            string type_name = get_type_name(type);
+            var methods = type_class.methods();
+            self.verify_methods_internal(self.base_type_name, type_name,
+                self.base_type_methods, methods);
+        }
+
+        // Verify that the given object satisfies the interface.
+        function verify_object(var object)
+        {
+            using Rosella.Contract.active;
+            if (!active())
+                return;
+
+            var type = typeof(object);
+            self.verify_type(type);
+        }
+
+        function verify_methods_internal(string base_type_name,
+                string type_name, var base_methods, var methods)
+        {
+            for (string meth_name in base_methods) {
+                if (!(exists methods[meth_name])) {
+                    string msg = sprintf("Interface method %s.%s not found in type %s",
+                        [base_type_name, meth_name, type_name]);
+                    die (msg);
+                }
+            }
+        }
+    }
+}}
