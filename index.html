@@ -171,31 +171,29 @@
             per-object (not per-class) basis.
         </p>
 
+        <h2>Install</h2>
 
-        <h2>Dependencies</h2>
+        <h3>Dependencies</h3>
         <ul>
             <li><a href="http://github.com/parrot/parrot">Parrot</a></li>
             <li><a href="http://code.google.com/p/winxed">Winxed</a></li>
         </ul>
 
-        <h2>Install</h2>
-        <p> With <a href="http://github.com/parrot/plumage">Plumage</a>:</p>
+        <h3>Installing With Plumage</h3>
+        <p>
+            <a href="http://github.com/parrot/plumage">Plumage</a> is a
+            package-management program for Parrot. If you have Plumage
+            and Winxed already installed getting Rosella is a breeze:
+        </p>
         <pre>
 $ plumage install rosella</pre>
+        <p>
+            That's all there is to it! You now have Rosella. If you don't have
+            Plumage on your system you'll need to follow the rest of the
+            instructions below.
+        </p>
 
-        <p> Without plumage: </p>
-        <pre>
-$ winxed setup.winxed build
-$ winxed setup.winxed test
-$ winxed setup.wixned install</pre>
-
-        <h2>License</h2>
-        <p>Artistic 2.0</p>
-
-        <h2>Authors</h2>
-        <p>Whiteknight (wknight8111@gmail.com)</p>
-
-        <h2>Download</h2>
+        <h3>Get the Source</h3>
         <p>
             You can download this project in either
             <a href="http://github.com/Whiteknight/Rosella/zipball/master">zip</a> or
@@ -205,6 +203,31 @@ $ winxed setup.wixned install</pre>
             You can also clone the project with <a href="http://git-scm.com">Git</a>
             by running:
             <pre>$ git clone git://github.com/Whiteknight/Rosella</pre>
+        </p>
+
+        <h3>Installing Manually</h3>
+        <p>
+            Once you have a copy of the source and all the necessary
+            dependencies you can build, test and install Rosella:
+        </p>
+        <pre>
+$ winxed setup.winxed build
+$ winxed setup.winxed test
+$ winxed setup.wixned install</pre>
+
+        <h2>Project Info</h2>
+
+        <h3>License</h3>
+        <p>
+            Rosella is released under the terms of the Artistic 2.0 license.
+            See the LICENSE file in the repo for more details.
+        </p>
+
+        <h3>Authors</h3>
+        <p>
+            Rosella is written by Whiteknight (wknight8111@gmail.com). See the
+            CREDITS file in the repo for more details about contributors and
+            the people and projects which have inspired Rosella.
         </p>
 
         <div class="footer">
