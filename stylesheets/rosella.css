@@ -35,13 +35,15 @@ a {
 
 .description {
     font-size: 1.2em;
-    margin-bottom: 30px;
     font-style: italic;
 }
 
 .download { float: right; }
 
-.libraries { text-align: center; }
+.libraries {
+    text-align: center;
+    font-size: larger;
+}
 
 pre {
     background: #000;
