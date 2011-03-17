@@ -16,15 +16,13 @@ basic functionality required by all the other libraries.
 Type keys are objects which either are, or can refer unambiguously to, a
 Parrot Class. Anywhere Rosella accepts a "type", it can be one of:
 
-<ul>
-    <li>A Class PMC</li>
-    <li>A Namespace PMC</li>
-    <li>A Key PMC</li>
-    <li>A ResizableStringArray PMC</li>
-    <li>A string or String PMC</li>
-    <li>A P6protoobject Object</li>
-    <li>A P6metaclass Object</li>
-</ul>
+* A Class PMC
+* A Namespace PMC
+* A Key PMC
+* A ResizableStringArray PMC
+* A string or String PMC
+* A P6protoobject Object
+* A P6metaclass Object
 
 Any other PMC passed will be stringified to get the name, and that name will
 be treated like a String.
@@ -38,8 +36,8 @@ new object can be initialized with a set of default or invariant data.
 Rosella provides this mechanism, and allows constructors to be defined in
 classes using one of two different formats:
 
-1) A method named BUILD (The "Perl6 Style")
-2) A method with the same short name as the class (The "Normal Style")
+1. A method named BUILD (The "Perl6 Style")
+2. A method with the same short name as the class (The "Normal Style")
 
 The Rosella library itself uses the Perl6 Style of constructors internally,
 but mechanisms are provided for user code to do differently if needed.
@@ -51,17 +49,15 @@ but mechanisms are provided for user code to do differently if needed.
 The Rosella namespace provides a number of mechanisms for working with type
 keys.
 
-<ul>
-    <li>`alloc`: Instantiate a new object from the type key</li>
-    <li>`build`: Instantiate and BUILD (Perl6 Style) a new object from the
-        type key, with arguments</li>
-    <li>`construct`: Instantiate and initialize (Normal Style) a new object
-        from the type key, with arguments</li>
-    <li>`get_type_name`: Get a string which represents the name of the type</li>
-    <li>`get_type_class`: Get the Parrot Class PMC associated with the type</li>
-    <li>`isa`: Determine if a given object belongs to a type</li>
-    <li>`find_named_method`: Find a method on an object by name, null if not found</li>
-</ul>
+* `alloc`: Instantiate a new object from the type key
+* `build`: Instantiate and BUILD (Perl6 Style) a new object from the
+        type key, with arguments
+* `construct`: Instantiate and initialize (Normal Style) a new object
+        from the type key, with arguments
+* `get_type_name`: Get a string which represents the name of the type
+* `get_type_class`: Get the Parrot Class PMC associated with the type
+* `isa`: Determine if a given object belongs to a type
+* `find_named_method`: Find a method on an object by name, null if not found
 
 ### Rosella.Error
 
