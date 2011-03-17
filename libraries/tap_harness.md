@@ -1,6 +1,6 @@
 ---
 layout: rosella
-title: Rosella TAP Harness Library
+title: Rosella TAP Harness
 ---
 
 ## Overview

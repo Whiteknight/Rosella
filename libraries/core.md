@@ -9,6 +9,17 @@ The Rosella Core library is the central component library of Rosella. It is
 a dependency of all other Rosella libraries and provides a small amount of
 basic functionality required by all the other libraries.
 
+The Rosella Core library is mostly concerned with creating and initializing
+new objects in a standard way. These mechanisms are used throughout the
+Rosella codebase, and are expected to be used by user code creating objects
+from the Rosella library.
+
+The Core library is automatically included in all other Rosella libraries.
+When using a Rosella library you do not need to include Core, the other
+libraries will include it for you automatically. You only need to explicitly
+include Core in your project if you aren't using any other Rosella libraries
+and you want the features from the Core library.
+
 ## Concepts
 
 ### Type Keys
