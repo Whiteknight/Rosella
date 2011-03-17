@@ -43,6 +43,11 @@ a {
 .libraries {
     text-align: center;
     font-size: larger;
+    font-weight: bold;
+}
+
+.libraries a {
+    color: #28396F;
 }
 
 pre {
