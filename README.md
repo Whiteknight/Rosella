@@ -86,6 +86,22 @@ to intercept a specific list of decorator methods and attributes. Also, this
 library provides an immutability pattern proxy object which is able to make
 other objects immutable.
 
+# Hacking
+
+Rosella is open source software, and is always open to new contributors and
+contributions.
+
+# Using Rosella
+
+functions prefixed with "private_", "protected_" or "internal_" are intended
+for use by Rosella only, and should not be used in by external code. These
+functions are not part of the external interface, are explicitly not tested,
+and no guarantees are made about their performance or their continued
+existance.
+
+If you need a feature which is not exposed by the current public API, you can
+request a feature addition or put together a patch to add it.
+
 # Influences
 
 Rosella is influenced by a number of other libraries and technologies. A list
