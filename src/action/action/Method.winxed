@@ -14,6 +14,7 @@ namespace Rosella { namespace Action
                     using Rosella.Error.invalid;
                     invalid("Action.Method", "Cannot find method '" + string(method) + "'");
                 }
+                method = real_method;
             }
             obj.*method(pos:[flat], named:[flat,named]);
         }

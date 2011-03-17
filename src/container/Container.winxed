@@ -103,7 +103,7 @@ namespace Rosella
                 init_pmc = new 'Undef';
             if (!have_inits)
                 meth_inits = [];
-            var item = self.get_generator_item(type, init_pmc, meth_inits);
+            var item = self.private_get_generator_item(type, init_pmc, meth_inits);
             self.library[name] = item;
         }
 
@@ -116,7 +116,7 @@ namespace Rosella
             string name = get_type_name(type);
             if (!have_inits)
                 meth_inits = [];
-            var item = self.get_prototype_item(prototype, meth_inits);
+            var item = self.private_get_prototype_item(prototype, meth_inits);
             self.library[name] = item;
         }
 
@@ -140,7 +140,7 @@ namespace Rosella
             string name = get_type_name(type);
             if (!have_inits)
                 meth_inits = [];
-            var item = self.get_instance_item(instance, meth_inits);
+            var item = self.private_get_instance_item(instance, meth_inits);
             self.library[name] = item;
         }
 
@@ -159,7 +159,9 @@ namespace Rosella
                 meth_inits = [];
             if (!have_args)
                 arg_inits = [];
-            var item = self.get_factory_method_item(factory, meth_inits, arg_inits);
+            var item = self.private_get_factory_method_item(factory,
+                meth_inits, arg_inits
+            );
             self.library[name] = item;
         }
 
@@ -220,7 +222,7 @@ namespace Rosella
         */
 
         // Get an ItemFactory for handling instance registrations
-        function get_instance_item(var instance, var meth_inits)
+        function private_get_instance_item(var instance, var meth_inits)
         {
             using Rosella.build;
             var class_obj = class Rosella.Container.ItemFactory.Instance;
@@ -230,7 +232,7 @@ namespace Rosella
         }
 
         // Get an ItemFactory for handling prototype registrations
-        function get_prototype_item(var proto, var meth_inits)
+        function private_get_prototype_item(var proto, var meth_inits)
         {
             using Rosella.build;
             var class_obj = class Rosella.Container.ItemFactory.Prototype;
@@ -240,7 +242,7 @@ namespace Rosella
 
         // Get an ItemFactory for handling a Class or P6protoobject
         // registration.
-        function get_generator_item(var type, var init_pmc, var meth_inits)
+        function private_get_generator_item(var type, var init_pmc, var meth_inits)
         {
             var item;
             using Rosella.build;
@@ -261,7 +263,8 @@ namespace Rosella
         }
 
         // Get an ItemFactory for a factory method registration
-        function get_factory_method_item(var sub, var meth_inits, var arg_inits)
+        function private_get_factory_method_item(var sub, var meth_inits,
+                var arg_inits)
         {
             using Rosella.build;
             var class_obj = class Rosella.Container.ItemFactory.FactoryMethod;
