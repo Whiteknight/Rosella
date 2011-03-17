@@ -134,4 +134,43 @@ Container object to resolve an argument.
 
 ### NQP-rx
 
+Register the type "String" to return a string. This string will have an
+initial value, and will then be modified:
+
+    my $c := Rosella::build(Rosella::Container);
+    $c.register_type("String",
+        :meth_inits([
+            Rosella::build(Rosella::Action::Sub,
+                sub ($obj) {
+                    pir::set__vPS($obj, "FooBarBaz");
+                }, []
+            ),
+            Rosella::build(Rosella::Action::Method,
+                "replace", [
+                    Rosella::build(Rosella::Action::Argument::Instance, "B", :position(0)),
+                    Rosella::build(Rosella::Action::Argument::Instance, "C", :position(1))
+                ]
+            )
+        ]
+    ));
+    my $bar := $c.resolve("String");    # "FooCarCaz"
+
+Register an entry which returns a unique ID integer every time it is resolved:
+
+    my $c := Rosella::build(Rosella::Container);
+    my $seed := pir::box__PI(5);
+    $c.register_instance("UniqueID",
+        $seed
+        :meth_inits([
+            Rosella::build(Rosella::Action::Sub,
+                sub ($obj) {
+                    pir::inc__vP($obj);
+                }, []
+            ),
+        ]
+    ));
+    my $a := $c.resolve("UniqueID");    # 6
+    my $b := $c.resolve("UniqueID");    # 7
+    my $c := $c.resolve("UniqueID");    # 8
+
 ## Users

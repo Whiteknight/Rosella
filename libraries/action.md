@@ -93,6 +93,50 @@ be passed every time the Action is invoked.
 
 ### NQP-rx
 
+Use an Action.Sub to create a replace operation which we can use on multiple
+strings:
+
+    my $action := Rosella::build(Rosella::Action::Sub,
+        sub($item) {
+            $item.replace("This", "That");
+        }, []
+    );
+    my $data_a := "This is a test";
+    $action.execute($data_a);
+    pir::say($data_a);      # "That is a test"
+    my $data_b := "I Like This";
+    $action.execute($data_b);
+    pir::say($data_b);      # "I Like That"
+
+A similar example, showing the use of Arguments:
+
+    my $action := Rosella::build(Rosella::Action::Sub,
+        sub($item, $a, $b) {
+            $item.replace($a, $b);
+        }, [
+            Rosella::build(Rosella::Action::Argument::Instance, "a", :position(0)),
+            Rosella::build(Rosella::Action::Argument::Instance, "b", :position(1))
+        ]
+    );
+    my $data := "This is a test";
+    $action.execute($data);     # "This is b test"
+
+And another similar example, showing the use of overrides during execution
+
+    my $data := "This is a test";
+    my $action := Rosella::build(Rosella::Action::Sub,
+        sub($item, $a, $b) {
+            $item.replace($a, $b);
+        }, [
+            Rosella::build(Rosella::Action::Argument::Instance, "a", :position(0)),
+            Rosella::build(Rosella::Action::Argument::Instance, "b", :position(1))
+        ]
+    );
+    $action.execute($data, [
+        Rosella::build(Rosella::Action::Argument::Instance, "i", :position(0)),
+    ]);
+    pir::say($data);    # "Thbs bs a test"
+
 ## Users
 
 * The Rosella Container library uses Action
