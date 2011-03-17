@@ -1,6 +1,6 @@
 ---
 layout: rosella
-title: Rosella
+title: Rosella Library
 ---
 
 Rosella is a library of patterns and practices for use with the
@@ -118,13 +118,13 @@ be disabled once the software has been tested and deployed.
 
 ### Dependencies
 <ul>
-    <li><a href="http://github.com/parrot/parrot">Parrot</a></li>
-    <li><a href="http://code.google.com/p/winxed">Winxed</a></li>
+    <li>[Parrot](http://github.com/parrot/parrot)</li>
+    <li>[Winxed](http://code.google.com/p/winxed)</li>
 </ul>
 
 ### Installing With Plumage
 
-<a href="http://github.com/parrot/plumage">Plumage</a> is a
+[Plumage](http://github.com/parrot/plumage) is a
 package-management program for Parrot. If you have Plumage
 and Winxed already installed getting Rosella is a breeze:
 
@@ -137,10 +137,10 @@ instructions below.
 ### Get the Source
 
 You can download this project in either
-<a href="http://github.com/Whiteknight/Rosella/zipball/master">zip</a> or
-<a href="http://github.com/Whiteknight/Rosella/tarball/master">tar</a> formats.
+[zip](http://github.com/Whiteknight/Rosella/zipball/master) or
+[tar](http://github.com/Whiteknight/Rosella/tarball/master) formats.
 
-You can also clone the project with <a href="http://git-scm.com">Git</a>
+You can also clone the project with [Git](http://git-scm.com)
 by running:
 
     $ git clone git://github.com/Whiteknight/Rosella
@@ -158,14 +158,14 @@ dependencies you can build, test and install Rosella:
 
 ### License
 
-    Rosella is released under the terms of the Artistic 2.0 license.
-    See the LICENSE file in the repo for more details.
+Rosella is released under the terms of the Artistic 2.0 license.
+See the LICENSE file in the repo for more details.
 
 ### Authors
 
-    Rosella is written by Whiteknight (wknight8111@gmail.com). See the
-    CREDITS file in the repo for more details about contributors and
-    the people and projects which have inspired Rosella.
+Rosella is written by [Whiteknight](http://whiteknight.github.com)
+(wknight8111@gmail.com). See the CREDITS file in the repo for more details
+about contributors and the people and projects which have inspired Rosella.
 
 <div class="footer">
     get the source code on GitHub :
