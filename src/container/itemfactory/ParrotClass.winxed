@@ -9,9 +9,15 @@ namespace Rosella { namespace Container { namespace ItemFactory
 
         function BUILD(var class_obj, var init, var inits)
         {
+            if (class_obj == null) {
+                using Rosella.Error.invalid;
+                invalid("Container.ItemFactory.ParrotClass",
+                    "class_obj may not be null"
+                );
+            }
             self.class_obj = class_obj;
             self.init_pmc = init;
-            self.method_initializers(inits);
+            self.protected_method_initializers(inits);
         }
 
         // Instantiate the class, using the various data
