@@ -138,3 +138,9 @@ expectations may not use None.
 ### Winxed
 
 ### NQP-rx
+
+## Users
+
+* Rosella uses the MockObject library to implement some of its own unit tests
+* [Parrot-Linear-Algebra](http://github.com/Whiteknight/parrot-linear-algebra)
+uses the MockObject library for certain unit tests

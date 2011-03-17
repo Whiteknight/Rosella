@@ -143,3 +143,8 @@ controllers instead.
 ### Winxed
 
 ### NQP-rx
+
+## Users
+
+* The Rosella MockObject library uses Proxy to implement its access intercept
+logic

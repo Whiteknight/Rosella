@@ -34,3 +34,9 @@ title: Rosella TAP Harness
 ### Winxed
 
 ### NQP-rx
+
+## Users
+
+* Rosella uses the Harness library to implement its own unit test harness
+* [Parrot-Linear-Algebra](http://github.com/Whiteknight/parrot-linear-algebra)
+uses the Harness library for its test harness

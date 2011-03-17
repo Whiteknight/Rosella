@@ -1,6 +1,6 @@
 ---
 layout: rosella
-title: Rosella Test Library
+title: Rosella Test
 ---
 
 ## Overview
@@ -37,3 +37,9 @@ title: Rosella Test Library
 ### Winxed
 
 ### NQP-rx
+
+## Users
+
+* Rosella uses the Test library to implement its own unit tests
+* [Parrot-Linear-Algebra](http://github.com/Whiteknight/parrot-linear-algebra)
+uses the Test library for unit tests

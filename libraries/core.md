@@ -1,6 +1,6 @@
 ---
 layout: rosella
-title: Rosella Core Library
+title: Rosella Core
 ---
 
 ## Overview
@@ -114,3 +114,7 @@ interface for other, more advanced, factory types.
 
     # Calls $obj.Type($arg)
     my $obj := Rosella::construct(My::Normal::Type, $arg);
+
+## Users
+
+* All Rosella libraries use the Core library functionality
