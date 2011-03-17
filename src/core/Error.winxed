@@ -3,24 +3,40 @@ namespace Rosella
     /* Common error routines */
     namespace Error
     {
-        function must_subclass(string name)
+        // Error that we are using an abstract parent method or class when we
+        // are expected to be using a subclass
+        function must_subclass(string caller)
         {
-            throw_error("(" + name + ") : You must use a subclass instead");
+            throw_error("(%s) : You must use a subclass instead", caller);
         }
 
+        // Error that we are attempting to use a feature which is not
+        // implemented yet.
         function not_implemented(string class_name, string func)
         {
-            throw_error("(" + class_name + "." + func + ") : Not implemented");
+            throw_error("(%s.%s) : Not implemented", class_name, func);
         }
 
-        function throw_error(string msg)
+        // Error when we are attempting an invalid operation
+        function invalid(string caller, string msg)
         {
-            die("Rosella " + msg);
+            throw_error("Invalid Operation in %s: %s", caller, msg);
         }
 
-        function invalid(string msg)
+        // Error when we are using an invalid type in an operation
+        function invalid_type(string caller, var wanted_type, var type)
         {
-            throw_error("Invalid Operation: " + msg);
+            using Rosella.get_type_name;
+            throw_error("Invalid Type in %s: Expected %s, have %s",
+                caller, get_type_name(wanted_type), get_type_name(type)
+            );
+        }
+
+        // Thow a rosella error
+        function throw_error(string msg, var args [slurpy])
+        {
+            string real_msg = sprintf(msg, args);
+            die("Rosella " + real_msg);
         }
     }
 }

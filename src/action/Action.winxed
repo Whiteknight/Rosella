@@ -14,15 +14,27 @@ namespace Rosella
         var method;
         var args;
 
+        /* Constructor
+        */
+
         function BUILD(var method,
                 var args [optional], int has_args [opt_flag])
         {
+            if (method == null) {
+                using Rosella.Error.invalid;
+                invalid("Action", "Subroutine is null");
+            }
             self.method = method;
-            if (has_args)
+            if (has_args) {
+                using Rosella.Action.Argument.verify_all_arguments;
+                verify_all_arguments("Action", args);
                 self.args = args;
-            else
+            } else
                 self.args = [];
         }
+
+        /* Public Functions
+        */
 
         // Convert the list of Argument objects into an array of positional
         // arguments and a hash of named arguments. In addition to the
@@ -34,6 +46,8 @@ namespace Rosella
             for (var arg in self.args)
                 arg.resolve_to(pos, named);
             if (has_overrides) {
+                using Rosella.Action.Argument.verify_all_arguments;
+                verify_all_arguments("Action.prepare_args", overrides);
                 for (var override in overrides)
                     override.resolve_to(pos, named);
             }
