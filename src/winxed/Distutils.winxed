@@ -1,74 +1,76 @@
 using extern "io_ops";
-
-namespace WinxedDistutils
+namespace Rosella { namespace Winxed
 {
-    // winxed wrapper for distutils setup() routine
-    function winxed_setup()
+    namespace Distutils
     {
-        load_bytecode("distutils.pbc");
-        using setup;
-        using register_step_before;
+        // winxed wrapper for distutils setup() routine
+        function winxed_setup()
+        {
+            load_bytecode("distutils.pbc");
+            using setup;
+            using register_step_before;
 
-        using static build_winxed;
-        using static clean_winxed;
-        register_step_before("build", build_winxed);
-        register_step_before("clean", clean_winxed);
-    }
-
-    // Build a winxed file into a .pir file
-    function build_winxed(var args [slurpy,named])
-    {
-        var winxed_files = args["pir_winxed"];
-        if (winxed_files == null)
-            return;
-        using newer;
-        for (string pir_file in winxed_files) {
-            string winxed_file = winxed_files[pir_file];
-            int e = 0;
-            ${ stat e, pir_file, 0 };
-            if (!e || newer(winxed_file, pir_file))
-                compile_to_pir(winxed_file, pir_file);
+            using static build_winxed;
+            using static clean_winxed;
+            register_step_before("build", build_winxed);
+            register_step_before("clean", clean_winxed);
         }
-    }
 
-    // Clean up all the .pir files generated from winxed files
-    function clean_winxed(var args [slurpy,named])
-    {
-        var winxed_files = args["pir_winxed"];
-        if (winxed_files == null)
-            return;
-        int num_files = elements(winxed_files);
-        using unlink;
-        for (string file in winxed_files) {
-            int e = 0;
-            ${ stat e, file, 0 };
-            if (e) {
-                say("unlink " + file);
-                unlink(file);
+        // Build a winxed file into a .pir file
+        function build_winxed(var args [slurpy,named])
+        {
+            var winxed_files = args["pir_winxed"];
+            if (winxed_files == null)
+                return;
+            using newer;
+            for (string pir_file in winxed_files) {
+                string winxed_file = winxed_files[pir_file];
+                int e = 0;
+                ${ stat e, pir_file, 0 };
+                if (!e || newer(winxed_file, pir_file))
+                    compile_to_pir(winxed_file, pir_file);
             }
         }
-    }
 
-    // Get the .pir filename corresponding to the given winxed file
-    function get_pir_file_name(string winxed_file)
-    {
-        int index;
-        ${ index index, winxed_file, ".winxed" };
-        if (index == -1)
-            die(winxed_file + " is not a winxed file");
-        string pir_file;
-        ${ substr pir_file, winxed_file, 0, index };
-        return pir_file + ".pir";
-    }
+        // Clean up all the .pir files generated from winxed files
+        function clean_winxed(var args [slurpy,named])
+        {
+            var winxed_files = args["pir_winxed"];
+            if (winxed_files == null)
+                return;
+            int num_files = elements(winxed_files);
+            using unlink;
+            for (string file in winxed_files) {
+                int e = 0;
+                ${ stat e, file, 0 };
+                if (e) {
+                    say("unlink " + file);
+                    unlink(file);
+                }
+            }
+        }
 
-    // Compile a winxed file to a .pir file
-    function compile_to_pir(string winxed_file, string pir_file)
-    {
-        string cmd = "winxed -o " + pir_file + " -c " + winxed_file;
-        int result;
-        say(cmd);
-        ${ spawnw result, cmd };
-        if (result != 0)
-            die("exit status: " + result + "\ncommand: " + cmd);
+        // Get the .pir filename corresponding to the given winxed file
+        function get_pir_file_name(string winxed_file)
+        {
+            int index;
+            ${ index index, winxed_file, ".winxed" };
+            if (index == -1)
+                die(winxed_file + " is not a winxed file");
+            string pir_file;
+            ${ substr pir_file, winxed_file, 0, index };
+            return pir_file + ".pir";
+        }
+
+        // Compile a winxed file to a .pir file
+        function compile_to_pir(string winxed_file, string pir_file)
+        {
+            string cmd = "winxed -o " + pir_file + " -c " + winxed_file;
+            int result;
+            say(cmd);
+            ${ spawnw result, cmd };
+            if (result != 0)
+                die("exit status: " + result + "\ncommand: " + cmd);
+        }
     }
-}
+}}

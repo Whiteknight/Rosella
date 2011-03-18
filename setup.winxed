@@ -210,9 +210,9 @@ function setup_distutils()
     if (e)
         load_bytecode(distutils);
     else
-        load_bytecode("src/winxed/DistutilsSt1.pir");
+        load_bytecode("src/winxed/Distutils.bootstrap.pir");
 
-    using WinxedDistutils.winxed_setup;
+    using Rosella.Winxed.Distutils.winxed_setup;
     winxed_setup();
 }
 
