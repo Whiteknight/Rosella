@@ -209,8 +209,10 @@ function setup_distutils()
     ${ stat e, distutils, 0 };
     if (e)
         load_bytecode(distutils);
-    else
+    else {
+        say("Bootstrapping build with existing distutils library");
         load_bytecode("src/winxed/Distutils.bootstrap.pir");
+    }
 
     using Rosella.Winxed.Distutils.winxed_setup;
     winxed_setup();
