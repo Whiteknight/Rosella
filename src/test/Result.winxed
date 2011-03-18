@@ -27,29 +27,29 @@ namespace Rosella { namespace Test
         }
 
         // Start a test
-        function start_test(var test)
+        function start_test(var test, var context)
         {
-            self.notify_listeners("start_test", test);
+            self.notify_listeners("start_test", test, context);
         }
 
         // Add an error test
-        function add_error(test, error)
+        function add_error(var test, var context, var error)
         {
             self.was_success = 0;
-            self.notify_listeners("add_error", test, error);
+            self.notify_listeners("add_error", test, context, error);
         }
 
         // Add a failure test
-        function add_failure(test, failure)
+        function add_failure(var test, var context, var failure)
         {
             self.was_success = 0;
-            self.notify_listeners("add_failure", test, failure);
+            self.notify_listeners("add_failure", test, context, failure);
         }
 
         // End the test, presuming success
-        function end_test(var test)
+        function end_test(var test, var context)
         {
-            self.notify_listeners("end_test", test);
+            self.notify_listeners("end_test", test, context);
         }
 
         // Boolean whether the whole run was successfull

@@ -1,0 +1,80 @@
+namespace Rosella { namespace Test
+{
+    /* SuiteFactory Class. This class takes a reference to a test type and
+       and a suite type, and creates a new Suite with all the tests from that
+       test type. Once created, the suite can be further configured and run.
+    */
+    // TODO: Should be able to support loading several test classes
+    //       into a single Suite. The Suite can use nested TAP to handle them.
+    class SuiteFactory : Rosella.ObjectFactory
+    {
+        var test_prefix;  // prefix for valid tests
+        var test_context;
+        var test_type;
+
+        // Constructor. Take the test proto object and a few other options
+        function BUILD(var suite_type, var test_type, var context,
+                string test_prefix [named,optional], int has_prefix [opt_flag])
+        {
+            self.target_type = suite_type;
+            self.test_type = test_type;
+            self.test_context = context;
+            if (has_prefix)
+                self.test_prefix = test_prefix;
+            else
+                self.test_prefix = "";
+        }
+
+        function create(var p [slurpy], var n [slurpy,named])
+        {
+            return self.create_typed(self.target_type, p:[flat], n:[flat,named]);
+        }
+
+        function create_typed(var type, var p [slurpy], var n [slurpy,named])
+        {
+            using Rosella.build;
+            var testfactory = build(class Rosella.Test.TestFactory,
+                    self.test_type, self.test_context, self.test_prefix);
+            var test_methods = self.get_test_methods();
+            var tests = {};
+            for (var test in test_methods) {
+                var testcase = testfactory.create(test, test_methods[test]);
+                tests[test] = testcase;
+            }
+            var suite = build(type, tests, self.test_context);
+            return suite;
+        }
+
+        // Get a list of all test methods, searching up the MRO for any
+        // methods which match the prefix.
+        function get_test_methods()
+        {
+            var class_obj = get_type_class(self.targe
+            var mro = self.class_obj.inspect("all_parents");
+            var test_methods = [];
+            for (var parent in mro) {
+                var methods = parent.inspect("methods");
+                for (var method in methods) {
+                    if (self.is_test_method(method) && !(exists self.seen_methods[method])) {
+                        self.seen_methods[method] = 1;
+                        test_methods.push(method);
+                    }
+                }
+            }
+            return test_methods;
+        }
+
+        // Determine if this is a test method or not. There are a handful of
+        // utility methods in Testcase, and others which the user can add too.
+        function is_test_method(string name)
+        {
+            int is_test = 0;
+            int prefix_length = length(self.test_prefix);
+            if (length(name) > prefix_length &&
+                substr(name, 0, prefix_length) == self.test_prefix) {
+                is_test = 1;
+            }
+            return is_test;
+        }
+    }
+}}

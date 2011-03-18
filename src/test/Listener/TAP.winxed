@@ -12,15 +12,15 @@ namespace Rosella { namespace Test { namespace Listener
             self.test_builder = build(class Rosella.Test.Builder);
         }
 
-        function add_error(var test, var error)
+        function add_error(var test, var context, var error)
         {
-            self.add_failure(test, error); // Same, as far as we care
+            self.add_failure(test, context, error); // Same, as far as we care
         }
 
-        function add_failure(var test, var error)
+        function add_failure(var test, var context, var error)
         {
-            string label = self.get_test_label(test);
-            string todo = test.todo;
+            string label = context.test_name;
+            string todo = context.todo;
             if (todo != null)
                 self.test_builder.todo(0, label, todo);
             else
@@ -30,24 +30,15 @@ namespace Rosella { namespace Test { namespace Listener
             return self;
         }
 
-        function end_test(var test)
+        function end_test(var test, var context)
         {
-            string label = self.get_test_label(test);
-            string todo = test.todo;
+            string label = context.test_name;
+            string todo = context.todo;
             if (todo != null)
                 self.test_builder.todo(1, label, todo);
             else
                 self.test_builder.ok(1, label);
             return self;
-        }
-
-        function get_test_label(var test)
-        {
-            if (test.verify != null)
-                return test.verify;
-            if (test.name != null)
-                return test.name;
-            return "";
         }
 
         function plan_tests(int num_tests)

@@ -1,0 +1,61 @@
+namespace Rosella { namespace Test
+{
+    class TestContext
+    {
+        var suite;
+        var current_test;
+        var data;
+        var test_name;
+        var test_todo;
+
+        function BUILD(var data [slurpy,named])
+        {
+            self.data = data;
+        }
+
+        function prepare(var suite, string test_name, var test)
+        {
+            self.suite = suite;
+            self.current_test = test;
+            self.test_name = test_name;
+            self.test_todo = null;
+        }
+
+        function current_test()
+        {
+            return self.current_test;
+        }
+
+        function suite()
+        {
+            return self.suite;
+        }
+
+        function get_data(string n)
+        {
+            return self.data[n];
+        }
+
+        function set_data(string n, var value)
+        {
+            self.data[n] = value;
+        }
+
+        function todo(string msg)
+        {
+            self.test_todo = msg;
+        }
+
+        function verify(string msg)
+        {
+            self.test_name = msg;
+        }
+
+        function unimplemented(string msg)
+        {
+            self.test_todo = msg;
+            using Assert.fail;
+            fail("Unimplemented: " + msg);
+        }
+    }
+}}

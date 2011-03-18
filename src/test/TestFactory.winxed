@@ -1,0 +1,36 @@
+namespace Rosella { namespace Test
+{
+    class TestFactory : Rosella.ObjectFactory
+    {
+        var seen_methods; // A list of methods we've already seen, so we don't duplicate
+        var test_context;
+
+        function BUILD(var type, var context)
+        {
+            self.target_type = null;
+            self.test_context = context;
+            self.seen_methods = {};
+        }
+
+        function create(var p [slurpy], var n [slurpy,named])
+        {
+            return self.create_typed(class Rosella.Test.TestCase, p:[flat], n:[flat,named]);
+        }
+
+        function create_typed(var type, string test_name, var test_method,
+                var p [slurpy], var n [slurpy,named])
+        {
+            using Rosella.build;
+            using Rosella.get_type_class;
+
+            var test_class = get_type_class(type);
+            var testcase_class = class Rosella.Test.TestCase;
+            var test = build(testcase_class, test_method);
+            var context = self.test_context;
+            ${ setattribute test, testcase_class, "test_context", context };
+            ${ setattribute test, testcase_class, "test_method", test_method };
+
+            return test;
+        }
+    }
+}}

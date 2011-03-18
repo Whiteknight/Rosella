@@ -1,19 +1,18 @@
 namespace Rosella { namespace Test
 {
-    /* The test Suite object. The Suite takes a list of tests (probably from
-       a Loader) and runs it. As tests are run, events are passed to the
-       Result object.
+    /* The test Suite object. The Suite takes a list of tests and runs it. As
+       tests are run, events are passed to the Result object.
     */
     class Suite
     {
-        var members; // List of tests to run
-        var name;    // Name of the suite
+        var tests;      // Hash of tests to run
+        var context;
 
         // Set up the suite with the given name and list of tests
-        function BUILD(var tests, string name)
+        function BUILD(var tests, var context)
         {
-            self.members = tests;
-            self.name = name;
+            self.tests = tests;
+            self.context = context;
         }
 
         // Get the default Result object to use. In this case, it's a
@@ -32,55 +31,49 @@ namespace Rosella { namespace Test
         {
             if (!has_result)
                 result = self.default_result();
-            result.plan_tests(int(self.members));
-            for (var member in self.members)
-                self.run_test(member, result);
+            result.plan_tests(int(self.tests));
+            for (var test_name in self.tests) {
+                var test = self.tests[test_name];
+                self.context.prepare(self, test_name, test);
+                self.run_test(test_name, test, result);
+            }
             return result;
         }
 
         // Run a single test
-        function run_test(var test, var result)
+        function run_test(var test_name, var test, var result)
         {
             var exception = null;
-            result.start_test(test);
+            result.start_test(test, self.context);
             try {
-                test.__set_up();
                 self.run_test_method(test);
             } catch (e) {
                 exception = e;
             }
-            try {
-                test.__tear_down();
-            } catch (e) {
-                string type = null;
-                ${ typeof type, test };
-                say("Caught exception while tearing down test " + type);
-                say(e);
-            }
             if (exception == null) {
-                result.end_test(test);
-                return result;
+                result.end_test(test, self.context);
+                return;
             }
 
             var payload = exception.payload;
             if (payload == null) {
-                result.add_error(test, exception);
+                result.add_error(test, self.context, exception);
                 return result;
             }
             var failure_class = class Rosella.Test.Failure;
             int isa_failure = 0;
             ${ isa isa_failure, payload, failure_class };
             if (isa_failure)
-                result.add_failure(test, exception);
+                result.add_failure(test, self.context, exception);
             else
-                result.add_error(test, exception);
+                result.add_error(test, self.context, exception);
             return result;
         }
 
         // Execute the actual test method
         function run_test_method(var test)
         {
-            string method = test.name;
+            var method = test.method;
             test.*method();
         }
     }

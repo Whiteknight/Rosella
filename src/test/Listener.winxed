@@ -11,15 +11,15 @@ namespace Rosella { namespace Test
     class Listener
     {
         // Start the test
-        function start_test(var test) { }
+        function start_test(var test, var context) { }
 
         // End the test successfully
-        function end_test(var test) { }
+        function end_test(var test, var context) { }
 
         // An error condition, such as an unhandled runtime exception
-        function add_error(var test, var fault) { }
+        function add_error(var test, var context, var fault) { }
 
         // A test failure, typically caused by an Assertion
-        function add_failure(var test, var fault) { }
+        function add_failure(var test, var context, var fault) { }
     }
 }}

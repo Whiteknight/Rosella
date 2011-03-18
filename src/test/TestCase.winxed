@@ -1,0 +1,26 @@
+namespace Rosella { namespace Test
+{
+    class TestCase
+    {
+        var test_method;
+        var test_context;
+
+        function set_attr_str[vtable](string attr, var value)
+        {
+            die("Cannot modify the details of the TestCase");
+        }
+
+        function get_attr_str[vtable](string attr)
+        {
+            var myclass = class Rosella.Test.TestCase;
+            var value = null;
+            if (attr == 'context' || attr == '$!context')
+                ${ getattribute value, self, myclass, "test_context" };
+            else if (attr == 'method' || attr == '$!method')
+                ${ getattribute value, self, myclass, "test_method" };
+            else
+                die("TestCase has attributes 'context' and 'method'. Not " + attr);
+            return value;
+        }
+    }
+}}

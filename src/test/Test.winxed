@@ -7,33 +7,28 @@ namespace Rosella
     */
     namespace Test
     {
-        // Setup and run a test using Testcase-based tests.
-        function test(var testproto,
-                var loaderproto [named,optional], int has_lp [opt_flag], // the type of Loader to use
-                var loaderopts [named,optional], int has_lo [opt_flag],  // hash of options for the Loader
-                var suiteproto [named,optional], int has_sp [opt_flag])  // the type of Suite to use)
+        // Setup and run a test using Testcase-based tests. This is basically
+        // a thin facade over SuiteFactory and Suite with some defaults thrown
+        // in. Returns 1 if the test was a success, 0 otherwise.
+        function test(var test_type,
+                var suite_type [named,optional],  int has_sp [opt_flag],
+                var testcase_type [named,optional], int has_tc [opt_flag],
+                var context [named,optional], int has_c [opt_flag])
         {
             using Rosella.build;
-            using Rosella.get_type_name;
-            using Rosella.Test.Loader.load;
 
-            string test_type_name = get_type_name(testproto);
-
-            // Get the Loader. If nothing else is specified, use the default
-            // Rosella::Test::Loader
-            if (!has_lo)
-                loaderopts = {};
-            if (!has_lp)
-                loaderproto = class Rosella.Test.Loader;
-            // TODO: Move the load logic here, and don't use a separate func.
-            var tests = load(loaderproto, testproto, loaderopts);
-
-            // Get the Suite. If nothing else is specified use the default
-            // Rosella::Test::Suite
             if (!has_sp)
-                suiteproto = class Rosella.Test.Suite;
-            var suite = build(suiteproto, tests, "Suite for " + test_type_name);
-            suite.run();
+                suite_type = class Rosella.Test.Suite;
+            if (!has_tc)
+                testcase_type = class Rosella.Test.TestCase;
+            if (!has_c)
+                context = build(class Rosella.Test.TestContext);
+
+            var suitefactory = build(class Rosella.Test.SuiteFactory,
+                    suite_type, test_type, context);
+            var suite = suitefactory.create();
+            var result = suite.run();
+            return result.was_successful();
         }
     }
 }
