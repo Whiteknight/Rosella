@@ -6,7 +6,7 @@ INIT {
 
 Rosella::Test::test(ActionArgContainerResolverTest);
 
-class ActionArgContainerResolverTest is Rosella::Test::Testcase {
+class ActionArgContainerResolverTest {
     method test_BUILD() {
         my $c := Rosella::build(Rosella::Container);
         my $arg := Rosella::build(Rosella::Action::Argument::ContainerResolver, $c, "String");

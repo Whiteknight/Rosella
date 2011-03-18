@@ -5,7 +5,7 @@ INIT {
 
 Rosella::Test::test(EventManagerTest);
 
-class EventManagerTest is Rosella::Test::Testcase {
+class EventManagerTest {
     method test_BUILD() {
         my $em := Rosella::build(Rosella::Event::Manager);
     }

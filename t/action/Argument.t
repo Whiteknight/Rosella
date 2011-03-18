@@ -5,7 +5,7 @@ INIT {
 
 Rosella::Test::test(Action::Argument::Test);
 
-class Action::Argument::Test is Rosella::Test::Testcase {
+class Action::Argument::Test {
     method test_BUILD() {
         my $arg := Rosella::build(Rosella::Action::Argument);
     }

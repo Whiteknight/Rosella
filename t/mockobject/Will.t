@@ -6,7 +6,7 @@ INIT {
 class MyClass { }
 
 Rosella::Test::test(MockObject::Expectation::Will::Test);
-class MockObject::Expectation::Will::Test is Rosella::Test::Testcase {
+class MockObject::Expectation::Will::Test {
     sub get_controller() {
         my $f := Rosella::build(Rosella::MockObject::Factory);
         my $c := $f.create_typed(MyClass);

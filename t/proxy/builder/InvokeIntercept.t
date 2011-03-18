@@ -14,7 +14,7 @@ class FooController is Rosella::Proxy::Controller {
 
 class My::Foo { }
 
-class InvokeInterceptTest is Rosella::Test::Testcase {
+class InvokeInterceptTest {
     method test_method_intercept() {
         my $factory := Rosella::build(Rosella::Proxy::Factory, My::Foo, [
             Rosella::build(Rosella::Proxy::Builder::InvokeIntercept)

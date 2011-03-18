@@ -4,7 +4,7 @@ INIT {
 
 Rosella::Test::test(AssertionTest);
 
-class AssertionTest is Rosella::Test::Testcase {
+class AssertionTest {
     method test_pass_pass() {
         Assert::expect_pass(sub() {
             Assert::equal(0, 0);

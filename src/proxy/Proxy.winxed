@@ -11,6 +11,7 @@ namespace Rosella
 
         function add_proxy_class_private_attr(var proxy_class, string attr)
         {
+            say("Proxy: " + string(typeof(proxy_class)));
             attr = get_private_attr_name(attr);
             proxy_class.add_attribute(attr);
         }

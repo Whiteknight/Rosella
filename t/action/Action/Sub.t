@@ -5,7 +5,7 @@ INIT {
 
 Rosella::Test::test(ActionSubTest);
 
-class ActionSubTest is Rosella::Test::Testcase {
+class ActionSubTest {
     method test_BUILD() {
         my $action := Rosella::build(Rosella::Action::Sub, sub($item){}, []);
         Assert::instance_of($action, Rosella::Action::Sub, "Is not an Action");

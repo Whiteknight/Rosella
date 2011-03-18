@@ -6,7 +6,7 @@ INIT {
 class MyClass { }
 
 Rosella::Test::test(Mocking::Methods::Test);
-class Mocking::Methods::Test is Rosella::Test::Testcase {
+class Mocking::Methods::Test {
     method test_one_method_pos_args_pass() {
         Assert::expect_pass(sub() {
             my $f := Rosella::build(Rosella::MockObject::Factory);

@@ -5,5 +5,5 @@ INIT {
 
 Rosella::Test::test(ErrorTest);
 
-class ErrorTest is Rosella::Test::Testcase {
+class ErrorTest {
 }

@@ -22,7 +22,7 @@ class My::Test::With::Constructor {
     method value() { $!value // -2; } #/
 }
 
-class RosellaTest is Rosella::Test::Testcase {
+class RosellaTest {
     method test_build() {
         my $item := Rosella::build(My::Test::Class);
         Assert::instance_of($item, My::Test::Class);

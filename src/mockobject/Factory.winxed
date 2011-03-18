@@ -30,6 +30,9 @@ namespace Rosella { namespace MockObject
                 controller = self.ordered_controller_factory.create();
             else
                 controller = self.controller_factory.create();
+            using Rosella.get_type_name;
+            say("MockObject.create_typed: " + string(typeof(type_to_mock)));
+            say("\t" + string(get_type_name(type_to_mock)));
             var mock_factory = self.get_mock_factory_internal(type_to_mock, opts);
             controller.mock = mock_factory.create(controller, null);
             return controller;
@@ -41,14 +44,21 @@ namespace Rosella { namespace MockObject
             using Rosella.build;
             using Rosella.get_type_name;
 
+            say("MockObject.get_mock_internal: " + string(typeof(type_to_mock)));
+
             string type_name = get_type_name(type_to_mock);
-            if (exists self.proxy_factories[type_name])
+            say("\ttype_name: " + type_name);
+            if (exists self.proxy_factories[type_name]) {
+                say("\tHave proxy factory");
                 return self.proxy_factories[type_name];
+            }
+            say("HERE");
 
             var builders = self.get_builder_types(opts);
 
             var factory = build(class Rosella.Proxy.Factory, type_to_mock, builders);
             self.proxy_factories[type_name] = factory;
+            say("\tAdding factory for " + type_name);
             return factory;
         }
 

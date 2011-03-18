@@ -20,7 +20,7 @@ class My::Foo {
     has $!test;
 }
 
-class AttributeInterceptTest is Rosella::Test::Testcase {
+class AttributeInterceptTest {
     method test_get_attribute() {
         my $f := My::Foo.new();
         pir::setattribute__vPSP($f, '$!test', "hello");

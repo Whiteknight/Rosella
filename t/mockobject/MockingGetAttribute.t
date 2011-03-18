@@ -6,7 +6,7 @@ INIT {
 class MyClass { }
 
 Rosella::Test::test(Mocking::GetAttribute::Test);
-class Mocking::GetAttribute::Test is Rosella::Test::Testcase {
+class Mocking::GetAttribute::Test {
     method test_one_get_return_pass() {
         Assert::expect_pass(sub() {
             my $f := Rosella::build(Rosella::MockObject::Factory);

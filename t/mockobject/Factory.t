@@ -6,7 +6,7 @@ INIT {
 class MyClass { }
 
 Rosella::Test::test(MockObject::FactoryTest);
-class MockObject::FactoryTest is Rosella::Test::Testcase {
+class MockObject::FactoryTest {
     method test_build() {
         my $f := Rosella::build(Rosella::MockObject::Factory);
         Assert::not_null($f);

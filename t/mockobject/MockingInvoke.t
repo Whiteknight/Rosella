@@ -6,7 +6,7 @@ INIT {
 class MyClass { }
 
 Rosella::Test::test(Mocking::Invoke::Test);
-class Mocking::Invoke::Test is Rosella::Test::Testcase {
+class Mocking::Invoke::Test {
     method test_one_invoke_args_return_pass() {
         Assert::expect_pass(sub() {
             my $f := Rosella::build(Rosella::MockObject::Factory);

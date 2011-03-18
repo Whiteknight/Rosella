@@ -30,10 +30,12 @@ namespace Rosella { namespace Proxy
             using Rosella.get_type_name;
 
             string type_name = get_type_name(target_type);
+            say("Proxy.factory_build: " + type_name);
 
             self.target_type = target_type; // From ObjectFactory
             self.target_name = type_name;
             self.target_class = get_type_class(target_type);
+            say("\tclass: " + string(self.target_class));
             self.builders = builders;
 
             self.proxy_classes = {};
@@ -92,7 +94,12 @@ namespace Rosella { namespace Proxy
         {
             using Rosella.Proxy.add_proxy_class_private_attr;
 
-            var proxy_class = new 'Class';
+            say("Proxy.create_internal: " + string(target_class));
+            var proxy_class = null;
+            string proxy_class_name = "!!!PROXY_" + string(target_class);
+            say("\tproxy_class_name: " + proxy_class_name);
+            ${ newclass proxy_class, proxy_class_name };
+            say("\tproxy_class: " + string(typeof(proxy_class)));
             add_proxy_class_private_attr(proxy_class, "proxy_controller");
             add_proxy_class_private_attr(proxy_class, "proxy_factory");
             add_proxy_class_private_attr(proxy_class, "target_class");

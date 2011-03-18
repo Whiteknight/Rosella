@@ -6,7 +6,7 @@ INIT {
 class MyClass { }
 
 Rosella::Test::test(MockObject::Controller::Ordered::Test);
-class MockObject::Controller::Ordered::Test is Rosella::Test::Testcase {
+class MockObject::Controller::Ordered::Test {
     method test_one_method_pass() {
         my $f := Rosella::build(Rosella::MockObject::Factory);
         my $c := $f.create_typed(MyClass, :ordered(1));

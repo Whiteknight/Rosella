@@ -5,7 +5,7 @@ INIT {
 
 Rosella::Test::test(PathTest);
 
-class PathTest is Rosella::Test::Testcase {
+class PathTest {
 
     sub new_hash(*%h) { return %h; }
 

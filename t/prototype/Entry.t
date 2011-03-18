@@ -5,7 +5,7 @@ INIT {
 
 Rosella::Test::test(PrototypeItemTest);
 
-class PrototypeItemTest is Rosella::Test::Testcase {
+class PrototypeItemTest {
     method test_BUILD() {
         my $pmc := Rosella::build(Rosella::Prototype::Entry, 1);
     }

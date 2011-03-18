@@ -8,11 +8,11 @@ INIT {
 
 Rosella::Test::test(Test::Result::Test);
 
-class MyFakeTest is Rosella::Test::Testcase {
+class MyFakeTest {
     method test_one() {}
 }
 
-class Test::Result::Test is Rosella::Test::Testcase {
+class Test::Result::Test {
     sub get_listener_controller() {
         my $factory := Rosella::build(Rosella::MockObject::Factory);
         return $factory.create_typed(Rosella::Test::Listener);

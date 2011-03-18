@@ -11,7 +11,7 @@ class My::Foo {
 }
 
 Rosella::Test::test(Proxy::Builder::Passthrough::Test);
-class Proxy::Builder::Passthrough::Test is Rosella::Test::Testcase {
+class Proxy::Builder::Passthrough::Test {
     method test_passthrough() {
         my $f := Rosella::build(Rosella::Proxy::Factory, My::Foo, [
             Rosella::build(Rosella::Proxy::Builder::Passthrough),

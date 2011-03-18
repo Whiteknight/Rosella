@@ -6,7 +6,7 @@ INIT {
 
 Rosella::Test::test(PrototypeManagerTest);
 
-class PrototypeManagerTest is Rosella::Test::Testcase {
+class PrototypeManagerTest {
     method test_BUILD() {
         my $pm := Rosella::build(Rosella::Prototype::Manager);
     }

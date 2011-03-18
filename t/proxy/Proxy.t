@@ -5,7 +5,7 @@ INIT {
 
 Rosella::Test::test(ProxyTest);
 
-class ProxyTest is Rosella::Test::Testcase {
+class ProxyTest {
     method test_add_attribute() {
         my $class_obj := pir::new__PS('Class');
         Rosella::Proxy::add_proxy_class_private_attr($class_obj, "foo");

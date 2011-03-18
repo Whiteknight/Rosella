@@ -25,7 +25,7 @@ class My::Foo {
 }
 
 Rosella::Test::test(Proxy::Builder::PMCKeyedHash::Test);
-class Proxy::Builder::PMCKeyedHash::Test is Rosella::Test::Testcase {
+class Proxy::Builder::PMCKeyedHash::Test {
     method test_get_keyed_intercept() {
         my $factory := Rosella::build(Rosella::Proxy::Factory, My::Foo, [
             Rosella::build(Rosella::Proxy::Builder::PMCKeyedHash)

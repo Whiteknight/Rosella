@@ -15,7 +15,7 @@ class My::Foo {
     method bar($arg) { return "real $arg"; }
 }
 
-class MethodInterceptTest is Rosella::Test::Testcase {
+class MethodInterceptTest {
     method test_method_intercept_controller() {
         my $f := My::Foo.new();
         my $result := $f.bar("test");

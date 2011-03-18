@@ -5,5 +5,5 @@ INIT {
 
 Rosella::Test::test(ItemBuilderTest);
 
-class ItemBuilderTest is Rosella::Test::Testcase {
+class ItemBuilderTest {
 }

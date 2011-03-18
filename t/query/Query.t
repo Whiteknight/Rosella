@@ -5,7 +5,7 @@ INIT {
 
 Rosella::Test::test(QueryTest);
 
-class QueryTest is Rosella::Test::Testcase {
+class QueryTest {
     method test_map_hash() {
         my %data := {};
         %data{"foo"} := 1;

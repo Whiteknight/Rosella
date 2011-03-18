@@ -5,7 +5,7 @@ INIT {
 
 Rosella::Test::test(ContainerTest);
 
-class ContainerTest is Rosella::Test::Testcase {
+class ContainerTest {
     method test_BUILD() {
         my $container := Rosella::build(Rosella::Container);
     }

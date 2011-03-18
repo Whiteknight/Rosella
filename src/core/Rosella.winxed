@@ -75,9 +75,9 @@ namespace Rosella
             return type;
 
         if (type instanceof "P6protoobject")
-            type = type.HOW().get_parrotclass(type.HOW()).get_namespace();
+            type = type.HOW().get_parrotclass(type).get_namespace();
         else if (type instanceof "P6metaclass")
-            type = type.get_parrotclass().get_namespace();
+            type = type.get_parrotclass(type).get_namespace();
         else if (type instanceof "Class")
             type = type.get_namespace();
         else if (type instanceof "Key")
