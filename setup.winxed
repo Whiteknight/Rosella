@@ -28,9 +28,8 @@ function main[main](argv)
     setup_stable_libraries(rosella);
     setup_experimental_libraries(rosella);
 
-    using WinxedDistutils.winxed_setup;
     argv.shift();
-    winxed_setup(argv, rosella);
+    setup(argv, rosella);
 }
 
 function setup_stable_libraries(var rosella)
@@ -212,6 +211,9 @@ function setup_distutils()
         load_bytecode(distutils);
     else
         load_bytecode("src/winxed/DistutilsSt1.pir");
+
+    using WinxedDistutils.winxed_setup;
+    winxed_setup();
 }
 
 // TODO: "build" first, before we test.

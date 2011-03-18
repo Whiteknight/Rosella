@@ -3,7 +3,7 @@ using extern "io_ops";
 namespace WinxedDistutils
 {
     // winxed wrapper for distutils setup() routine
-    function winxed_setup(var cmds, var data)
+    function winxed_setup()
     {
         load_bytecode("distutils.pbc");
         using setup;
@@ -13,7 +13,6 @@ namespace WinxedDistutils
         using static clean_winxed;
         register_step_before("build", build_winxed);
         register_step_before("clean", clean_winxed);
-        setup(cmds, data);
     }
 
     // Build a winxed file into a .pir file
