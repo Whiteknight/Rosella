@@ -11,6 +11,7 @@ namespace Rosella { namespace Test
         var test_prefix;  // prefix for valid tests
         var test_context;
         var test_type;
+        var seen_methods;
 
         // Constructor. Take the test proto object and a few other options
         function BUILD(var suite_type, var test_type, var context,
@@ -19,6 +20,7 @@ namespace Rosella { namespace Test
             self.target_type = suite_type;
             self.test_type = test_type;
             self.test_context = context;
+            self.seen_methods = {};
             if (has_prefix)
                 self.test_prefix = test_prefix;
             else
@@ -34,7 +36,7 @@ namespace Rosella { namespace Test
         {
             using Rosella.build;
             var testfactory = build(class Rosella.Test.TestFactory,
-                    self.test_type, self.test_context, self.test_prefix);
+                    self.test_type, self.test_context);
             var test_methods = self.get_test_methods();
             var tests = {};
             for (var test in test_methods) {
@@ -49,15 +51,18 @@ namespace Rosella { namespace Test
         // methods which match the prefix.
         function get_test_methods()
         {
+            using Rosella.get_type_class;
             var class_obj = get_type_class(self.test_type);
             var mro = class_obj.inspect("all_parents");
-            var test_methods = [];
+            var test_methods = {};
             for (var parent in mro) {
+                if (string(parent) == "P6object")
+                    continue;
                 var methods = parent.inspect("methods");
                 for (var method in methods) {
                     if (self.is_test_method(method) && !(exists self.seen_methods[method])) {
                         self.seen_methods[method] = 1;
-                        test_methods.push(method);
+                        test_methods[method] = methods[method];
                     }
                 }
             }

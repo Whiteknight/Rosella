@@ -18,7 +18,7 @@ namespace Rosella { namespace Test
         }
 
         function todo(int pass, string msg,
-                int todo [optional], int has_todo [opt_flag])
+                string todo [optional], int has_todo [opt_flag])
         {
             self.test_number = self.test_number + 1;
             string output = self._get_result_text(self.test_number, pass, msg);

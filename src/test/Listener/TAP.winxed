@@ -20,7 +20,7 @@ namespace Rosella { namespace Test { namespace Listener
         function add_failure(var test, var context, var error)
         {
             string label = context.test_name;
-            string todo = context.todo;
+            string todo = context.test_todo;
             if (todo != null)
                 self.test_builder.todo(0, label, todo);
             else
@@ -33,7 +33,7 @@ namespace Rosella { namespace Test { namespace Listener
         function end_test(var test, var context)
         {
             string label = context.test_name;
-            string todo = context.todo;
+            string todo = context.test_todo;
             if (todo != null)
                 self.test_builder.todo(1, label, todo);
             else
