@@ -2,6 +2,7 @@ using extern "io_ops";
 
 namespace WinxedDistutils
 {
+    // winxed wrapper for distutils setup() routine
     function winxed_setup(var cmds, var data)
     {
         load_bytecode("distutils.pbc");
@@ -15,6 +16,7 @@ namespace WinxedDistutils
         setup(cmds, data);
     }
 
+    // Build a winxed file into a .pir file
     function build_winxed(var args [slurpy,named])
     {
         var winxed_files = args["pir_winxed"];
@@ -30,6 +32,7 @@ namespace WinxedDistutils
         }
     }
 
+    // Clean up all the .pir files generated from winxed files
     function clean_winxed(var args [slurpy,named])
     {
         var winxed_files = args["pir_winxed"];
@@ -47,6 +50,7 @@ namespace WinxedDistutils
         }
     }
 
+    // Get the .pir filename corresponding to the given winxed file
     function get_pir_file_name(string winxed_file)
     {
         int index;
@@ -58,6 +62,7 @@ namespace WinxedDistutils
         return pir_file + ".pir";
     }
 
+    // Compile a winxed file to a .pir file
     function compile_to_pir(string winxed_file, string pir_file)
     {
         string cmd = "winxed -o " + pir_file + " -c " + winxed_file;
