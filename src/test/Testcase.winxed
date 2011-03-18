@@ -6,7 +6,13 @@ namespace Rosella { namespace Test
 
        To add tests, you must subclass Testcase
     */
-
+    // TODO: Major Refactor. Testcase -> TestContext and TestCase. Tests
+    //       no longer need to inherit from Testcase. Instead the tests can be
+    //       any class. We extract the method objects from the test class and
+    //       execute them as a method on the TestCase. The TestCase will have
+    //       a TestContext object as a read-only attribute. TestContext will
+    //       contain metadata like todo, verify, name, status, persistant
+    //       data, etc.
     class Testcase
     {
         var todo;

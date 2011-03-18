@@ -2,6 +2,9 @@
 /* Functions for test assertions. These are in the ["Assert"] namespace, not
    ["Rosella";"Test";"Assert"], for brevity.
 */
+// TODO: We really should fully-qualify the namespace here, but we are going
+//       to need a tool to relocate namespace entries to preserve existing
+//       tests.
 namespace Assert
 {
     function default_message(string msg, int has_msg, string def)

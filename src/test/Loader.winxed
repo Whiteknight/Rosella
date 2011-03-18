@@ -20,6 +20,11 @@ namespace Rosella { namespace Test
        The Loader is created with a single test type. It extracts methods from
        that type and inserts them into a Suite.
     */
+    // TODO: Loader should become a SuiteFactory, and inherit from
+    //       ObjectFactory. create() returns a default Suite. create_typed()
+    //       returns a specific type of Suite.
+    // TODO: Loader should be able to support loading several test classes
+    //       into a single Suite. The Suite can use nested TAP to handle them.
     class Loader
     {
         var class_obj;    // The Parrot Class
@@ -37,11 +42,15 @@ namespace Rosella { namespace Test
             if (has_prefix)
                 self.test_prefix = test_prefix;
             else
+                // TODO: Don't use a prefix by default. All methods should be
+                //       treated as tests by default.
                 self.test_prefix = "test_";
             self.seen_methods = {};
         }
 
         // Load and return a list of tests
+        // TODO: Factor out some of this logic into a new TestFactory, which
+        //       will take the test type and return individual test objects
         function load_tests()
         {
             using Rosella.build;

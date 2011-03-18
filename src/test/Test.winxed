@@ -25,6 +25,7 @@ namespace Rosella
                 loaderopts = {};
             if (!has_lp)
                 loaderproto = class Rosella.Test.Loader;
+            // TODO: Move the load logic here, and don't use a separate func.
             var tests = load(loaderproto, testproto, loaderopts);
 
             // Get the Suite. If nothing else is specified use the default

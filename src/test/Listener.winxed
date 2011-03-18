@@ -6,7 +6,7 @@ namespace Rosella { namespace Test
        to the user.
 
        the default listener does nothing. Everything interesting must be done
-       in subclasses
+       in subclasses.
     */
     class Listener
     {
