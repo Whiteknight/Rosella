@@ -99,11 +99,13 @@ function setup_stable_libraries(var rosella)
         "test/Failure",
         "test/Listener",
         "test/Listener/TAP",
-        "test/Loader",
         "test/Result",
         "test/Suite",
+        "test/SuiteFactory",
         "test/Test",
-        "test/Testcase"
+        "test/TestCase",
+        "test/TestContext",
+        "test/TestFactory"
     );
 
     // A mock object library for advanced unit testing

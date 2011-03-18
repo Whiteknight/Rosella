@@ -49,8 +49,8 @@ namespace Rosella { namespace Test
         // methods which match the prefix.
         function get_test_methods()
         {
-            var class_obj = get_type_class(self.targe
-            var mro = self.class_obj.inspect("all_parents");
+            var class_obj = get_type_class(self.test_type);
+            var mro = class_obj.inspect("all_parents");
             var test_methods = [];
             for (var parent in mro) {
                 var methods = parent.inspect("methods");
