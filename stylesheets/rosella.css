@@ -41,12 +41,12 @@ a {
 .download { float: right; }
 
 .libraries {
-    text-align: center;
     font-size: larger;
-    font-weight: bold;
+    margin-left: 2em;
 }
 
 .libraries a {
+    font-weight: bold;
     color: #28396F;
 }
 
