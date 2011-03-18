@@ -12,7 +12,7 @@ namespace Rosella { namespace Container
     {
         var method_initializers; // A list of Action objects
 
-        /* ObjectFactory public interface
+        /* ObjectFactory Public Interface
         */
 
         // Create and initialize the object, according to the rules of this
@@ -20,7 +20,7 @@ namespace Rosella { namespace Container
         function create(var p [slurpy], var n [named,slurpy])
         {
             var item = self.resolve_instance();
-            self.initialize(item);
+            self.private_initialize(item);
             return item;
         }
 
@@ -31,21 +31,23 @@ namespace Rosella { namespace Container
         {
             using Rosella.build;
             var object = build(type, p:[flat], n:[flat,named]);
-            self.initialize(object);
+            self.private_initialize(object);
             return object;
         }
 
         /* Private Internal Routines
         */
 
-        function initialize(var object)
+        function private_initialize(var object)
         {
+            if (self.method_initializers == null)
+                return;
             for (var init in self.method_initializers)
                 init.execute(object);
         }
 
         // Set up the list of method initializers
-        function method_initializers(var inits)
+        function protected_method_initializers(var inits)
         {
             int have_inits = 0;
             ${ defined have_inits, inits };
@@ -59,7 +61,7 @@ namespace Rosella { namespace Container
         */
 
         // Get a fresh, uninitialized instance object. This must be subclassed
-        function resolve_instance()
+        function protected_resolve_instance()
         {
             using Rosella.Error.must_subclass;
             must_subclass("Rosella::ItemBuilder", "resolve_instance");

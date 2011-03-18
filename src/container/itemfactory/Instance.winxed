@@ -9,7 +9,7 @@ namespace Rosella { namespace Container { namespace ItemFactory
         function BUILD(var obj, var inits)
         {
             self.instance = obj;
-            self.method_initializers(inits);
+            self.protected_method_initializers(inits);
         }
 
         // Return the instance

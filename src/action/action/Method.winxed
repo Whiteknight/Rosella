@@ -8,8 +8,14 @@ namespace Rosella { namespace Action
         function execute_initializer(var obj, var pos, var named)
         {
             var method = self.method;
-            if (method instanceof 'String')
-                method = find_method(obj, method);
+            if (method instanceof 'String') {
+                var real_method = find_method(obj, method);
+                if (real_method == null) {
+                    using Rosella.Error.invalid;
+                    invalid("Action.Method", "Cannot find method '" + string(method) + "'");
+                }
+                method = real_method;
+            }
             obj.*method(pos:[flat], named:[flat,named]);
         }
     }

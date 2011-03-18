@@ -21,6 +21,10 @@ namespace Rosella
     // initialize it, or call any methods on it.
     function alloc(var proto)
     {
+        if (proto == null) {
+            using Rosella.Error.invalid;
+            invalid("Rosella.alloc", "type may not be null");
+        }
         var object;
         if (proto instanceof 'P6protoobject')
             object = proto.new();
@@ -63,6 +67,10 @@ namespace Rosella
     // Get the fully-qualified string name of the type
     function get_type_name(var type)
     {
+        if (type == null) {
+            using Rosella.Error.invalid;
+            invalid("Rosella.get_type_name", "type may not be null");
+        }
         if (type instanceof "String")
             return type;
 
@@ -87,6 +95,10 @@ namespace Rosella
     // Get the Parrot Class PMC associated with the type.
     function get_type_class(var type)
     {
+        if (type == null) {
+            using Rosella.Error.invalid;
+            invalid("Rosella.get_type_class", "type may not be null");
+        }
         if (type instanceof "P6metaclass")
             return type.get_parrotclass(type);
         if (type instanceof "P6protoobject")
@@ -104,6 +116,10 @@ namespace Rosella
     // Determine if the given object is an instance of the given type.
     function isa(var type, var object)
     {
+        if (type == null) {
+            using Rosella.Error.invalid;
+            invalid("Rosella.isa", "type may not be null");
+        }
         int is_type = 0;
         var class_test = get_type_class(type);
         ${ isa is_type, object, class_test };
@@ -121,6 +137,12 @@ namespace Rosella
     // failure.
     function find_named_method(var object, string meth_name)
     {
+        if (object == null || meth_name == null) {
+            using Rosella.Error.invalid;
+            invalid("Rosella.find_named_method",
+                "object and meth_name may not be null"
+            );
+        }
         int can_do = 0;
         ${ can can_do, object, meth_name };
         if (!can_do)

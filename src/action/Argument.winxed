@@ -1,5 +1,22 @@
 namespace Rosella { namespace Action
 {
+    namespace Argument
+    {
+        // Verify that the given list of args are all either valid Argument
+        // objects, or that they can be used to resolve arguments
+        function verify_all_arguments(string caller, var args)
+        {
+            for (var arg in args) {
+                int is_argument = 0;
+                ${ can is_argument, arg, "resolve_to" };
+                if (!is_argument) {
+                    using Rosella.Error.invalid_type;
+                    invalid_type(caller, "Argument", typeof(arg));
+                }
+            }
+        }
+    }
+
     /* An argument object for Actions.
         Each Argument object may create one or more actual arguments for a
         function or method call. These arguments may be cached or generated
@@ -54,15 +71,19 @@ namespace Rosella { namespace Action
                 else
                     ${ push pos, value };
             }
-            else
-                die("Method argument must be Named or Positional");
+            else {
+                using Rosella.Error.invalid;
+                invalid("Rosella.Action.Argument.resolve_to",
+                    "Method argument must be Named or Positional"
+                );
+            }
         }
 
         // Get the actual value. This happens in a subclass.
         function resolve_value()
         {
             using Rosella.Error.must_subclass;
-            must_subclass("resolve_value");
+            must_subclass("Rosella.Action.Argument");
         }
     }
 }}

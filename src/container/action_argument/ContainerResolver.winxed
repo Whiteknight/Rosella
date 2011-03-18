@@ -9,6 +9,20 @@ namespace Rosella { namespace Action { namespace Argument
 
         function BUILD(var container, var type, var args [slurpy,named])
         {
+            if (type == null || container == null) {
+                using Rosella.Error.invalid;
+                invalid("(Container)Action.Argument.ContainerResolver",
+                    "container and type may not be null"
+                );
+            }
+            int is_container = 0;
+            ${ can is_container, container, "resolve" };
+            if (!is_container) {
+                using Rosella.Error.invalid;
+                invalid("(Container)Action.Argument.ContainerResolver",
+                    "container argument is not a valid Container"
+                );
+            }
             self.container = container;
             self.type = type;
             self.setup_positioning(args:[flat,named]);

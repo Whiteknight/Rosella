@@ -8,8 +8,14 @@ namespace Rosella { namespace Container { namespace ItemFactory
 
         function BUILD(var proto, var inits)
         {
+            if (proto == null) {
+                using Rosella.Error.invalid;
+                invalid("Container.ItemFactory.P6protoobject",
+                    "proto object may not be null"
+                );
+            }
             self.proto = proto;
-            self.method_initializers(inits);
+            self.protected_method_initializers(inits);
         }
 
         // Get a new instance from the P6protoobject

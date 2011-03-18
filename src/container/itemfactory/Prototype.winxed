@@ -9,12 +9,18 @@ namespace Rosella { namespace Container { namespace ItemFactory
 
         function BUILD(var proto, var inits)
         {
+            if (proto == null) {
+                using Rosella.Error.invalid;
+                invalid("Container.ItemFactory.Prototype",
+                    "Prototype object may not be null"
+                );
+            }
             self.prototype = proto;
-            self.method_initializers(inits);
+            self.protected_method_initializers(inits);
         }
 
         // Clone the prototype and return the clone
-        function resolve_instance()
+        function protected_resolve_instance()
         {
             var object = null;
             var prototype = self.prototype;
