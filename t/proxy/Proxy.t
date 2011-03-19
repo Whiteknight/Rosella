@@ -13,6 +13,7 @@ class ProxyTest {
 
     method test_set_attribute() {
         my $class_obj := pir::new__PS('Class');
+        pir::say($class_obj);
         Rosella::Proxy::add_proxy_class_private_attr($class_obj, "foo");
         my $foo := pir::new__PP($class_obj);
         Rosella::Proxy::set_proxy_private_attr($foo, "foo", "hello");
@@ -20,6 +21,7 @@ class ProxyTest {
 
     method test_get_attribute() {
         my $class_obj := pir::new__PS('Class');
+        pir::say($class_obj);
         Rosella::Proxy::add_proxy_class_private_attr($class_obj, "foo");
         my $foo := pir::new__PP($class_obj);
         Rosella::Proxy::set_proxy_private_attr($foo, "foo", "hello");
