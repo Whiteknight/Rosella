@@ -149,5 +149,14 @@ namespace Rosella
             return null;
         return find_method(object, meth_name);
     }
+
+    function get_unique_count()
+    {
+        int i = 0;
+      loop_top:
+        i = i + 1;
+        yield i;
+        goto loop_top;
+    }
 }
 

@@ -96,7 +96,9 @@ namespace Rosella { namespace Proxy
 
             say("Proxy.create_internal: " + string(target_class));
             var proxy_class = null;
-            string proxy_class_name = "!!!PROXY_" + string(target_class);
+            using Rosella.get_unique_count;
+            int id = get_unique_count();
+            string proxy_class_name = sprintf("!!!PROXY_%s_%d", [string(target_class), id]);
             say("\tproxy_class_name: " + proxy_class_name);
             ${ newclass proxy_class, proxy_class_name };
             say("\tproxy_class: " + string(typeof(proxy_class)));

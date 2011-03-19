@@ -30,39 +30,4 @@ class Test::Suite::Test {
 
     method test_run() {
     }
-
-    method test_run_test() {
-        my $factory := Rosella::build(Rosella::MockObject::Factory);
-
-        # verify that we call all the right methods on the test.
-        # TODO: These expectations are ordered
-        #my $ctest := $factory.create_typed(MyFakeTest);
-        #$ctest.expect_get("name").once.will_return("test_one");
-        #$ctest.expect_method("__set_up").once.with_no_args;
-        #$ctest.expect_method("test_one").once.with_no_args;
-        #$ctest.expect_method("__tear_down").once.with_no_args;
-
-        # Verify that the result gets the correct details.
-        #my $cresult := $factory.create_typed(Rosella::Test::Result);
-        #$cresult.expect_method("start_test").once.with_any_args;
-        #$cresult.expect_method("end_test").once.with_any_args;
-
-        #my $test := $ctest.mock();
-        #my $result := $cresult.mock();
-        #my $suite := Rosella::build(Rosella::Test::Suite, [$test], "suite");
-        #$suite.run_test($test, $result);
-        #$ctest.verify();
-    }
-
-    method test_run_test_method() {
-        my $factory := Rosella::build(Rosella::MockObject::Factory);
-        pir::say(pir::typeof__SP(MyFakeTest));
-        my $controller := $factory.create_typed(MyFakeTest);
-        $controller.expect_get("name").once.will_return("test_one");
-        $controller.expect_method("test_one").once.with_no_args();
-        my $m := $controller.mock();
-        my $suite := Rosella::build(Rosella::Test::Suite, [$m], "suite");
-        $suite.run_test_method($m);
-        $controller.verify();
-    }
 }

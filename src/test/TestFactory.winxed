@@ -12,8 +12,7 @@ namespace Rosella { namespace Test
 
         function create(var p [slurpy], var n [slurpy,named])
         {
-            say(int(p));
-            return self.create_typed(class Rosella.Test.FooBar, p:[flat], n:[flat,named]);
+            return self.create_typed(class Rosella.Test.TestCase, p:[flat], n:[flat,named]);
         }
 
         function create_typed(var type, var test_name, var test_method,
@@ -23,14 +22,11 @@ namespace Rosella { namespace Test
             using Rosella.get_type_class;
 
             var test_class = get_type_class(type);
-            var testcase_class = class Rosella.Test.FooBar;
+            var testcase_class = class Rosella.Test.TestCase;
             var test = build(testcase_class, test_method);
             var context = self.test_context;
-            say("building test " + string(test_name));
-            say("\tbuilding test for " + string(test_method));
-            say("\tbuilding test type " + string(typeof(type)));
-            ${ setattribute test, testcase_class, "context", context };
-            ${ setattribute test, testcase_class, "method", test_method };
+            ${ setattribute test, testcase_class, "test_context", context };
+            ${ setattribute test, testcase_class, "test_method", test_method };
 
             return test;
         }

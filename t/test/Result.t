@@ -34,13 +34,14 @@ class Test::Result::Test {
     }
 
     method test_start_test() {
-        my $c := get_listener_controller();
+        my $clistener := get_listener_controller();
+        $clistener.expect_method("start_test").once.with_any_args;
+        my $mlistener := $clistener.mock();
+        my $testcontext := "dummy";
+        my $result := Rosella::build(Rosella::Test::Result, [$mlistener]);
         my $faketest := MyFakeTest.new();
-        $c.expect_method("start_test").once.with_any_args;
-        my $m := $c.mock();
-        my $result := Rosella::build(Rosella::Test::Result, [$m]);
-        $result.start_test($faketest);
-        $c.verify();
+        $result.start_test($faketest, $testcontext);
+        $clistener.verify();
     }
 
     method test_end_test() {
@@ -48,8 +49,9 @@ class Test::Result::Test {
         my $faketest := MyFakeTest.new();
         $c.expect_method("end_test").once.with_any_args;
         my $m := $c.mock();
+        my $testcontext := "dummy";
         my $result := Rosella::build(Rosella::Test::Result, [$m]);
-        $result.end_test($faketest);
+        $result.end_test($faketest, $testcontext);
         $c.verify();
     }
 
@@ -60,7 +62,7 @@ class Test::Result::Test {
         my $m := $c.mock();
         my $result := Rosella::build(Rosella::Test::Result, [$m]);
         Assert::equal($result.was_successful, 1);
-        $result.add_error($faketest, "oops");
+        $result.add_error($faketest, "context", "oops");
         $c.verify();
         Assert::equal($result.was_successful, 0);
     }
@@ -72,7 +74,7 @@ class Test::Result::Test {
         my $m := $c.mock();
         my $result := Rosella::build(Rosella::Test::Result, [$m]);
         Assert::equal($result.was_successful, 1);
-        $result.add_failure($faketest, "oops");
+        $result.add_failure($faketest, "context", "oops");
         $c.verify();
         Assert::equal($result.was_successful, 0);
     }
