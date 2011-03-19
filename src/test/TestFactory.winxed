@@ -1,15 +1,25 @@
 namespace Rosella { namespace Test
 {
+    /* TestFactory, factory for building TestCases
+        TestCase has read-only attributes so they can't be played with during
+        test execution. Initializing the values of those attributes takes a
+        little bit of work and we do that here.
+    */
     class TestFactory : Rosella.ObjectFactory
     {
         var test_context;
 
+        // Set up the factory with the type to create (TestCase or look-alike)
+        // and the TestContext object to use.
         function BUILD(var type, var context)
         {
             self.target_type = type;
             self.test_context = context;
         }
 
+        // Create the TestCase object with the given test method and test
+        // method name. Use the existing context object. TestFactory.create
+        // calls this method with the type passed in the constructor.
         function create_typed(var type, var test_name, var test_method,
                 var p [slurpy], var n [slurpy,named])
         {
