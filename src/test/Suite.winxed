@@ -64,9 +64,12 @@ namespace Rosella { namespace Test
             var failure_class = class Rosella.Test.Failure;
             int isa_failure = 0;
             ${ isa isa_failure, payload, failure_class };
-            if (isa_failure)
-                result.add_failure(test, self.context, exception);
-            else
+            if (isa_failure) {
+                if (payload.is_internal)
+                    result.add_failure(test, self.context, exception.message);
+                else
+                    result.add_failure(test, self.context, exception);
+            } else
                 result.add_error(test, self.context, exception);
             return result;
         }

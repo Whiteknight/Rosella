@@ -14,12 +14,14 @@ namespace Assert
         return def;
     }
 
-    function fail(string why [optional], int has_why [opt_flag])
+    function fail(string why, int is_internal [optional], int has_is_i [opt_flag])
     {
         using Rosella.build;
 
-        why = default_message(why, has_why, "Unknown failure");
-        var ex = build(class Rosella.Test.Failure, why);
+        if (!has_is_i)
+            is_internal = 0;
+
+        var ex = build(class Rosella.Test.Failure, why, is_internal);
         ex.throw();
     }
 

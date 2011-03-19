@@ -74,7 +74,7 @@ namespace Rosella { namespace Test
         {
             self.test_todo = msg;
             using Assert.fail;
-            fail("Unimplemented: " + msg);
+            fail("Unimplemented: " + msg, 1);
         }
     }
 }}
