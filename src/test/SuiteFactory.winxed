@@ -27,11 +27,7 @@ namespace Rosella { namespace Test
                 self.test_prefix = "";
         }
 
-        function create(var p [slurpy], var n [slurpy,named])
-        {
-            return self.create_typed(self.target_type, p:[flat], n:[flat,named]);
-        }
-
+        // Create a Suite of the given type
         function create_typed(var type, var p [slurpy], var n [slurpy,named])
         {
             using Rosella.build;

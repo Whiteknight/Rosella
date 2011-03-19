@@ -46,7 +46,8 @@ namespace Rosella { namespace Test
             var exception = null;
             result.start_test(test, self.context);
             try {
-                self.run_test_method(test);
+                var method = test.method;
+                test.*method();
             } catch (e) {
                 exception = e;
             }
@@ -68,13 +69,6 @@ namespace Rosella { namespace Test
             else
                 result.add_error(test, self.context, exception);
             return result;
-        }
-
-        // Execute the actual test method
-        function run_test_method(var test)
-        {
-            var method = test.method;
-            test.*method();
         }
     }
 }}

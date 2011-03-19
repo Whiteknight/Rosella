@@ -6,13 +6,8 @@ namespace Rosella { namespace Test
 
         function BUILD(var type, var context)
         {
-            self.target_type = null;
+            self.target_type = type;
             self.test_context = context;
-        }
-
-        function create(var p [slurpy], var n [slurpy,named])
-        {
-            return self.create_typed(class Rosella.Test.TestCase, p:[flat], n:[flat,named]);
         }
 
         function create_typed(var type, var test_name, var test_method,

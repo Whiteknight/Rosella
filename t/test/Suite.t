@@ -29,5 +29,10 @@ class Test::Suite::Test {
     }
 
     method test_run() {
+        $!context.unimplemented("Find a way to test Suite.run()");
+    }
+
+    method test_run_test() {
+        $!context.unimplemented("Find a way to test Suite.run_test()");
     }
 }

@@ -1,5 +1,11 @@
 namespace Rosella { namespace Test
 {
+    /* TestContext object
+        The TestContext is a data object which is persistant across all test
+        methods in the test class. It can be used to store data between tests,
+        and also provides access to data about the running test suite and
+        holds information about the currently-executing test.
+    */
     class TestContext
     {
         var suite;
@@ -8,11 +14,15 @@ namespace Rosella { namespace Test
         var test_name;
         var test_todo;
 
+        // Create the TestContext, initializing the data store with any named
+        // values
         function BUILD(var data [slurpy,named])
         {
             self.data = data;
         }
 
+        // Prepare the next test to execute. Set the current Suite and
+        // TestCase
         function prepare(var suite, string test_name, var test)
         {
             self.suite = suite;
@@ -21,36 +31,45 @@ namespace Rosella { namespace Test
             self.test_todo = null;
         }
 
+        // Get the currently executing TestCase object
         function current_test()
         {
             return self.current_test;
         }
 
+        // Get the currently executing Suite object
         function suite()
         {
             return self.suite;
         }
 
+        // Get a named data value
         function get_data(string n)
         {
-            return self.data[n];
+            if (exists self.data[n])
+                return self.data[n];
+            return null;
         }
 
+        // Set a named data value, to share between test methods
         function set_data(string n, var value)
         {
             self.data[n] = value;
         }
 
+        // Mark the currently-executing test as TODOd
         function todo(string msg)
         {
             self.test_todo = msg;
         }
 
+        // Change the displayed name of the test
         function verify(string msg)
         {
             self.test_name = msg;
         }
 
+        // Mark the test as being incomplete or unimplemented
         function unimplemented(string msg)
         {
             self.test_todo = msg;
