@@ -3,16 +3,13 @@ namespace Rosella
     /* TAP Harness class. Contains a list of TestFile objects and executes
        each in a loop. The Harness keeps statistics about the test run, and
        passes them off to other routines for display and analysis.
+
+       Harness is the Controller object in the MVC system. Harness::View is
+       the view which displays to the user, and Harness::Results is the model.
     */
     class Harness
     {
-        var total_passed;
-        var total_failed;
-        var total_files;
-        var todo_passed_tests;
-        var todo_passed_files;
-        var results;
-        var tests;
+        var test_collection;
         var loaders;
 
         // Constructor. Set up a basic set of loaders.
@@ -25,7 +22,7 @@ namespace Rosella
             self.loaders["NQP"] = build(loader_class, class Rosella.Harness.TestFile.NQP);
             self.loaders["PIR"] = build(loader_class, class Rosella.Harness.TestFile.PIR);
             self.loaders["Winxed"] = build(loader_class, class Rosella.Harness.TestFile.Winxed);
-            self.reset_counts();
+            self.test_collection = build(Rosella::Test::TestCollection);
             self.setup_next_run();
         }
 
@@ -40,7 +37,7 @@ namespace Rosella
             if (!has_recurse)
                 recurse = 0;
             var tests = self.loaders[loader].get_tests_from_dirs(dirs, recurse);
-            self.add_test_objects(tests);
+            self.test_collection.add_range(tests);
         }
 
         // Add an individual test file
@@ -61,100 +58,35 @@ namespace Rosella
         */
 
         // Run the harness
-        function run (int run_inline [named,optional], int has_ri [opt_flag],
+        function run (
+                var view [named,optional],        int has_view [opt_flag],
+                int run_inline [named,optional],  int has_ri [opt_flag],
                 int line_length [named,optional], int has_ll [opt_flag])
         {
+            using Rosella.build;
+
             if (!has_ri)
                 run_inline = 0;
             if (!has_ll)
                 line_length = 0;
-            self.total_files = self.total_files + int(self.tests);
-            int max_length = self.find_max_file_length(line_length);
-            for (var test in self.tests) {
-                test.print_filename(max_length);
+            if (!has_view)
+                view = build(Rosella::Test::View);
+            var result = build(Rosella::Test::Results);
+            int max_length = self.test_collection.max_file_length();
+            view.prepare_run(result, max_length);
+            return self.run_internal(view, result, run_inline);
+        }
+
+        function run_internal(var view, var result, int line_length)
+        {
+            for (var test in self.test_collection.tests()) {
+                view.start_test(test, max_length);
                 test.run(run_inline);
-                test.print_result();
-                string status = test.status();
-                push(self.results[status], test);
-                if (status != "ABORTED") {
-                    self.total_passed = self.total_passed + test.passed_tests();
-                    self.total_failed = self.total_failed + test.failed_tests();
-                    int todo_passed = test.todo_passed_tests();
-                    if (todo_passed) {
-                        self.todo_passed_files = self.todo_passed_files + 1;
-                        self.todo_passed_tests = self.todo_passed_tests + todo_passed;
-                    }
-                }
+                result.add_test_result(test);
+                view.end_test(test);
             }
-            self.setup_next_run();
+            view.show_results();
+            return result.run_was_success();
         }
-
-        // Returns 1 if the run was a success, 0 otherwise
-        function run_was_success()
-        {
-            int aborted = int(self.results["ABORTED"]);
-            if (aborted || int(self.total_failed))
-                return 0;
-            return 1;
-        }
-
-        /* Reporting Functions
-            These routines are used to read statistics and count information
-            from the harness after a run.
-        */
-
-        function aborted_test_files() { return self.results["ABORTED"]; }
-        function failed_test_files() { return self.results["FAILED"]; }
-        function passed_test_files() { return self.results["PASSED"]; }
-        function num_failed_tests() { return self.total_failed; }
-        function num_passed_tests() { return self.total_passed; }
-        function num_test_files() { return self.total_files; }
-        function num_todo_passed_tests() { return self.todo_passed_tests; }
-        function num_todo_passed_files() { return self.todo_passed_files; }
-
-        /* Internal Helper Routines
-        */
-
-        // Prepare the harness to run a new set of tests.
-        function setup_next_run()
-        {
-            self.tests = [];
-            for (var loader in self.loaders)
-                self.loaders[loader].prepare_new_run();
-        }
-
-        // Reset the various counts and statistics.
-        function reset_counts()
-        {
-            self.total_passed = 0;
-            self.total_failed = 0;
-            self.total_files = 0;
-            self.todo_passed_tests = 0;
-            self.todo_passed_files = 0;
-
-            self.results = {};
-            self.results["PASSED"] = [];
-            self.results["FAILED"] = [];
-            self.results["ABORTED"] = [];
-            self.results["EMPTY"] = [];
-        }
-
-        function add_test_objects(var tests)
-        {
-            for (var test in tests)
-                push(self.tests, test);
-        }
-
-        function find_max_file_length(int start_length)
-        {
-            int max = start_length;
-            for (var loader in self.loaders) {
-                int len = self.loaders[loader].max_filename_length();
-                if (len > max)
-                    max = len;
-            }
-            return max;
-        }
-
     }
 }

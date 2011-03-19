@@ -14,22 +14,6 @@ namespace Rosella { namespace Harness
             self.os = new 'OS';
         }
 
-        function max_filename_length()
-        {
-            int max = 0;
-            for (string file in self.files) {
-                int len = length(file);
-                if (len > max)
-                    max = len;
-            }
-            return max;
-        }
-
-        function prepare_new_run()
-        {
-            self.files = [];
-        }
-
         function get_dir_contents(string path, int recurse, var contents)
         {
             int STAT_ISREG = 0x8000;

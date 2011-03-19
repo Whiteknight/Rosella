@@ -1,8 +1,31 @@
 namespace Rosella { namespace Harness
 {
-    class Output
+    // View class for the harness. Displays information from the Results
+    // object to the user.
+    class View
     {
+        var result;
+        var line_length;
+
         function debug(string line) { say("# " + string(line)); }
+
+        function prepare_run(var result, int line_length)
+        {
+            self.result = result;
+            self.line_length = line_length;
+        }
+
+        function start_test(var test)
+        {
+        }
+
+        function end_test(var test)
+        {
+        }
+
+        function show_results()
+        {
+        }
 
         function show_results_summary(var harness)
         {

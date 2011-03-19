@@ -1,0 +1,44 @@
+namespace Rosella { namespace Harness
+{
+    class TestCollection
+    {
+        var tests;
+
+        function BUILD()
+        {
+            self.tests = [];
+        }
+
+        function add(var test)
+        {
+            push(self.tests, test);
+        }
+
+        function add_range(var tests);
+        {
+            for (var test in tests)
+                push(self.tests, test);
+        }
+
+        function clear()
+        {
+            self.tests = [];
+        }
+
+        function tests()
+        {
+            return self.tests;
+        }
+
+        function max_file_length(int start_length)
+        {
+            int max = start_length;
+            for (var test in self.tests) {
+                int len = length(test.filename());
+                if (len > max)
+                    max = len;
+            }
+            return max;
+        }
+    }
+}}

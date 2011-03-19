@@ -1,0 +1,65 @@
+namespace Rosella { namespace Harness
+{
+    // Model for the test harness, stores information about running tests and
+    // results for previously ran tests.
+    class Results
+    {
+        var total_passed;
+        var total_failed;
+        var todo_passed_tests;
+        var todo_passed_files;
+        var results;
+
+        function BUILD()
+        {
+            self.reset();
+        }
+
+        function reset()
+        {
+            self.results = {};
+            self.results["PASSED"] = [];
+            self.results["FAILED"] = [];
+            self.results["ABORTED"] = [];
+            self.results["EMPTY"] = [];
+            self.total_passed = 0;
+            self.total_failed = 0;
+            self.todo_passed_tests = 0;
+            self.todo_passed_files = 0;
+        }
+
+        function add_test_result(var test)
+        {
+            string status = test.status();
+            push(self.results[status], test);
+            if (status != "ABORTED") {
+                self.total_passed = self.total_passed + test.passed_tests();
+                self.total_failed = self.total_failed + test.failed_tests();
+                int todo_passed = test.todo_passed_tests();
+                if (todo_passed) {
+                    self.todo_passed_files = self.todo_passed_files + 1;
+                    self.todo_passed_tests = self.todo_passed_tests + todo_passed;
+                }
+            }
+        }
+
+        // Returns 1 if the run was a success, 0 otherwise
+        function run_was_success()
+        {
+            int aborted = int(self.results["ABORTED"]);
+            if (aborted || int(self.total_failed))
+                return 0;
+            return 1;
+        }
+
+        function aborted_test_files() { return self.results["ABORTED"]; }
+        function failed_test_files() { return self.results["FAILED"]; }
+        function passed_test_files() { return self.results["PASSED"]; }
+        function num_failed_tests() { return self.total_failed; }
+        function num_passed_tests() { return self.total_passed; }
+        function num_test_files() { return self.total_files; }
+        function num_todo_passed_tests() { return self.todo_passed_tests; }
+        function num_todo_passed_files() { return self.todo_passed_files; }
+
+    }
+}}
