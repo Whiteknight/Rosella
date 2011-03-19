@@ -32,11 +32,9 @@ namespace Rosella { namespace Harness
                 say("not ok (" + string(test.result) + ")");
             else
                 say("ok");
-            //if (self.errdetails != null)
-            //{
-                // TODO: Break this out into a separate reporting class
-            //    say("# " + string(self.errdetails));
-            //}
+            string error_details = test.error_details();
+            if (error_details != null)
+                say("# " + error_details);
         }
 
         function show_results()

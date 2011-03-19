@@ -113,6 +113,11 @@ namespace Rosella { namespace Harness
             must_subclass("Rosella::Harness::TestFile");
         }
 
+        function error_details()
+        {
+            return self.errdetails;
+        }
+
         function mark_test_abort(var err)
         {
             self.result = "aborted prematurely";
