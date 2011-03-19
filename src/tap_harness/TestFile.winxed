@@ -60,34 +60,9 @@ namespace Rosella { namespace Harness
             return string(self.filename);
         }
 
-        function print_result()
-        {
-            if (self.result != null)
-                say("not ok (" + string(self.result) + ")");
-            else
-                say("ok");
-            if (self.errdetails != null)
-            {
-                // TODO: Break this out into a separate reporting class
-                say("# " + string(self.errdetails));
-            }
-        }
-
         function status()
         {
             return string(self.status);
-        }
-
-        // TODO: Break this out into a separate reporting class
-        function print_filename(int max_length [optional], int has_max [opt_flag])
-        {
-            int len = length(self.filename);
-            if (!has_max || max_length < len)
-                max_length = len;
-            int diff = max_length - len + 3;
-            string elipses = "";
-            ${ repeat elipses, '.', diff };
-            print(string(self.filename) + " " + elipses + " ");
         }
 
         // TODO: Move into a utils class

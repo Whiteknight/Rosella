@@ -17,24 +17,43 @@ namespace Rosella { namespace Harness
 
         function start_test(var test)
         {
+            string filename = test.filename();
+            int len = length(filename);
+            int line_length = self.line_length;
+            int diff = line_length - len + 3;
+            string elipses = "";
+            ${ repeat elipses, '.', diff };
+            print(sprintf("%s %s ", [filename, elipses]));
         }
 
         function end_test(var test)
         {
+            if (test.result != null)
+                say("not ok (" + string(test.result) + ")");
+            else
+                say("ok");
+            //if (self.errdetails != null)
+            //{
+                // TODO: Break this out into a separate reporting class
+            //    say("# " + string(self.errdetails));
+            //}
         }
 
         function show_results()
         {
+            self.show_results_summary();
+            self.show_error_detail();
+            self.show_failure_detail();
         }
 
-        function show_results_summary(var harness)
+        function show_results_summary()
         {
-            var aborted_files = harness.aborted_test_files();
-            int num_aborted = int(aborted_files);
-            int total_files = harness.num_test_files();
-            int passed_tests = harness.num_passed_tests();
-            int failed_tests = harness.num_failed_tests();
-            var failed_files = harness.failed_test_files();
+            var aborted_files = self.result.aborted_test_files();
+            int num_aborted   = int(aborted_files);
+            int total_files   = self.result.num_test_files();
+            int passed_tests  = self.result.num_passed_tests();
+            int failed_tests  = self.result.num_failed_tests();
+            var failed_files  = self.result.failed_test_files();
             int num_failed_files = int(failed_files);
 
             if (num_aborted || failed_tests) {
@@ -51,13 +70,13 @@ namespace Rosella { namespace Harness
             }
         }
 
-        function show_error_detail(var harness)
+        function show_error_detail()
         {
-            int failed_tests = harness.num_failed_tests();
+            int failed_tests = self.result.num_failed_tests();
             if (failed_tests == 0)
                 return;
 
-            var failed_files = harness.failed_test_files();
+            var failed_files = self.result.failed_test_files();
             int num_failed_files = int(failed_files);
             say("\tList of failed tests by file:");
             for (var test in failed_files) {
@@ -67,26 +86,18 @@ namespace Rosella { namespace Harness
             }
         }
 
-        function show_failure_detail(var harness)
+        function show_failure_detail()
         {
-            var aborted_files = harness.aborted_test_files();
+            var aborted_files = self.result.aborted_test_files();
             int num_aborted = int(aborted_files);
             if (num_aborted) {
                 say("\tList of files with premature exits:");
                 for (var file in aborted_files) {
-                    # TODO: Should record and output error codes or other
-                    #       error info. Display some diagnostics here
+                    // TODO: Should record and output error codes or other
+                    //       error info. Display some diagnostics here
                     say("\t\t" + string(file.filename()));
                 }
             }
-        }
-
-        function show_todo_pass_details(var harness)
-        {
-        }
-
-        function show_passed_detail(var harness)
-        {
         }
     }
 }}

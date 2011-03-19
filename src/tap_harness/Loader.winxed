@@ -38,10 +38,10 @@ namespace Rosella { namespace Harness
             }
         }
 
-        # Determine if the file is a valid test. Probably best to override this in
-        # a subclass if you need different behaviors.
-        # TODO: Maybe read the shebang preamble to make sure we have the
-        #       correct type of file.
+        // Determine if the file is a valid test. Probably best to override this in
+        // a subclass if you need different behaviors.
+        // TODO: Maybe read the shebang preamble to make sure we have the
+        //       correct type of file.
         function is_test(string filename)
         {
             if (indexof(filename, ".t") == -1)

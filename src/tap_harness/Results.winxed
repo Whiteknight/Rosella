@@ -9,10 +9,12 @@ namespace Rosella { namespace Harness
         var todo_passed_tests;
         var todo_passed_files;
         var results;
+        var total_files;
 
         function BUILD()
         {
             self.reset();
+            self.total_files = 0;
         }
 
         function reset()
@@ -30,6 +32,7 @@ namespace Rosella { namespace Harness
 
         function add_test_result(var test)
         {
+            self.total_files = self.total_files + 1;
             string status = test.status();
             push(self.results[status], test);
             if (status != "ABORTED") {

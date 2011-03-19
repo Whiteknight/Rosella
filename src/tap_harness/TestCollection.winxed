@@ -14,7 +14,7 @@ namespace Rosella { namespace Harness
             push(self.tests, test);
         }
 
-        function add_range(var tests);
+        function add_range(var tests)
         {
             for (var test in tests)
                 push(self.tests, test);
