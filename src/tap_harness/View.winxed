@@ -76,7 +76,7 @@ namespace Rosella { namespace Harness
             if (num_failed_tests == 0)
                 return;
 
-            var failed_files = self.test_run.files_by_status("FAILED");
+            var failed_files     = self.test_run.files_by_status("FAILED");
             int num_failed_files = self.test_run.num_files_by_status("FAILED");
 
             say("\tList of failed tests by file:");

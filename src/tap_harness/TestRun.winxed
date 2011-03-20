@@ -1,5 +1,11 @@
 namespace Rosella { namespace Harness
 {
+    /* The Harness "model" in MVC-speak.
+        This class contains the data from the test run. It contains the list
+        of tests to execute, and keeps track of their statistics. This model
+        class is used in the harness during the run, and then passed to the
+        View to display to the user.
+    */
     class TestRun
     {
         var tests;
