@@ -15,7 +15,7 @@ namespace Rosella { namespace Harness
         {
             using Rosella.build;
             self.tests = [];
-            var test_results_class = class Rosella.Harness.ResultSet;
+            var test_results_class = class Rosella.Harness.TestRun.ResultSet;
             self.results = {
                 "ABORTED"    : build(test_results_class),
                 "PASSED"     : build(test_results_class),

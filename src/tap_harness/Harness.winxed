@@ -48,9 +48,15 @@ namespace Rosella
 
         // Add a new loader. If a loader exists with the same name, it is
         // overwritten
-        function add_test_loader(string name, var loader)
+        function add_loader(string name, var loader)
         {
             self.loaders[name] = loader;
+        }
+
+        function add_loader_for_type(string name, var testfile_type)
+        {
+            using Rosella.build;
+            self.loaders[name] = build(class Rosella.Harness.Loader, testfile_type);
         }
 
         /* Routines for Running the Harness

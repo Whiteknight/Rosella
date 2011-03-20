@@ -1,4 +1,4 @@
-namespace Rosella { namespace Harness
+namespace Rosella { namespace Harness { namespace TestRun
 {
     class ResultSet
     {
@@ -21,4 +21,4 @@ namespace Rosella { namespace Harness
             self.num_tests = self.num_tests + num;
         }
     }
-}}
+}}}

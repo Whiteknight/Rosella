@@ -1,19 +1,59 @@
 namespace Rosella { namespace Harness
 {
+    /* Test Loader Class
+        Load TestFile objects from a list of files or a list of directories.
+        The exact type of TestFile object to load is selectable.
+    */
     class Loader
     {
         var os;
-        var files;
-        var test_proto;
+        var testfile_type;
 
-        function BUILD(var proto)
+        /* Public API Functions
+        */
+
+        function BUILD(var testfile_type)
         {
-            self.test_proto = proto;
-            self.files = [];
+            self.testfile_type = testfile_type;
             loadlib("os");
             self.os = new 'OS';
         }
 
+        // Return a list of TestFile objects from a list of directories.
+        // Search through those directories, possibly recursively, for a list
+        // of files which appear to be tests.
+        function get_tests_from_dirs(var dirs, int recurse)
+        {
+            var tests = [];
+            for (string dir in dirs) {
+                var rawfiles = [];
+                self.get_dir_contents(dir, recurse, rawfiles);
+                for (string filename in rawfiles) {
+                    var testobj = self.make_test_obj(filename);
+                    push(tests, testobj);
+                }
+            }
+            return tests;
+        }
+
+        // Return a list of TetsFile objects from a list of files. Do not do
+        // any detection or sanity checking, all files in the list are
+        // assumed to be valid test files for this loader.
+        function get_tests_from_files(var filenames)
+        {
+            var tests = [];
+            for (string filename in filenames) {
+                var testobj = self.make_test_obj(filename);
+                push(tests, testobj);
+            }
+            return tests;
+        }
+
+        /* Internal Routines
+        */
+
+        // Get a list of test files from a directory. Allow recursion into
+        // subdirectories, if requested.
         function get_dir_contents(string path, int recurse, var contents)
         {
             int STAT_ISREG = 0x8000;
@@ -51,37 +91,11 @@ namespace Rosella { namespace Harness
             return 1;
         }
 
-        function get_tests_from_dirs(var dirs, int recurse)
-        {
-            var tests = [];
-            for (string dir in dirs) {
-                var rawfiles = [];
-                self.get_dir_contents(dir, recurse, rawfiles);
-                for (string filename in rawfiles) {
-                    var testobj = self.make_test_obj(filename);
-                    push(tests, testobj);
-                    push(self.files, filename);
-                }
-            }
-            return tests;
-        }
-
-        function get_tests_from_files(var filenames)
-        {
-            var tests = [];
-            for (string filename in filenames) {
-                var testobj = self.make_test_obj(filename);
-                push(tests, testobj);
-                push(self.files, filename);
-            }
-            return tests;
-        }
-
-
+        // Make a suitable TestFile object for the given file.
         function make_test_obj(string filename)
         {
             using Rosella.build;
-            return build(self.test_proto, filename);
+            return build(self.testfile_type, filename);
         }
     }
 }}
