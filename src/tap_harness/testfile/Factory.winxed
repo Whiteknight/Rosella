@@ -1,35 +1,41 @@
-namespace Rosella { namespace Harness
+namespace Rosella { namespace Harness { namespace TestFile
 {
-    /* Test Loader Class
+    /* TestFile Factory Class
         Load TestFile objects from a list of files or a list of directories.
         The exact type of TestFile object to load is selectable.
     */
-    class Loader
+    class Factory : Rosella.ObjectFactory
     {
         var os;
-        var testfile_type;
 
         /* Public API Functions
         */
 
         function BUILD(var testfile_type)
         {
-            self.testfile_type = testfile_type;
+            self.target_type = testfile_type;
             loadlib("os");
             self.os = new 'OS';
+        }
+
+        // Make a suitable TestFile object for the given file.
+        function create_typed(var type, string filename)
+        {
+            using Rosella.build;
+            return build(type, filename);
         }
 
         // Return a list of TestFile objects from a list of directories.
         // Search through those directories, possibly recursively, for a list
         // of files which appear to be tests.
-        function get_tests_from_dirs(var dirs, int recurse)
+        function create_tests_from_dirs(var test_type, var dirs, int recurse)
         {
             var tests = [];
             for (string dir in dirs) {
                 var rawfiles = [];
                 self.get_dir_contents(dir, recurse, rawfiles);
                 for (string filename in rawfiles) {
-                    var testobj = self.make_test_obj(filename);
+                    var testobj = self.create_typed(test_type, filename);
                     push(tests, testobj);
                 }
             }
@@ -39,11 +45,11 @@ namespace Rosella { namespace Harness
         // Return a list of TetsFile objects from a list of files. Do not do
         // any detection or sanity checking, all files in the list are
         // assumed to be valid test files for this loader.
-        function get_tests_from_files(var filenames)
+        function create_tests_from_files(var test_type, var filenames)
         {
             var tests = [];
             for (string filename in filenames) {
-                var testobj = self.make_test_obj(filename);
+                var testobj = self.create_typed(test_type, filename);
                 push(tests, testobj);
             }
             return tests;
@@ -90,13 +96,6 @@ namespace Rosella { namespace Harness
                 return 0;
             return 1;
         }
-
-        // Make a suitable TestFile object for the given file.
-        function make_test_obj(string filename)
-        {
-            using Rosella.build;
-            return build(self.testfile_type, filename);
-        }
     }
-}}
+}}}
 

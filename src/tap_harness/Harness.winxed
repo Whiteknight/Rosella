@@ -9,8 +9,6 @@ namespace Rosella
     */
     class Harness
     {
-        var loaders;
-
         // Constructor. Set up a basic set of loaders.
         function BUILD()
         {

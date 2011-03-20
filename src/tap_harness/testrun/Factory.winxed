@@ -1,0 +1,66 @@
+namespace Rosella { namespace Harness { namespace TestRun
+{
+    class Factory : Rosella.ObjectFactory
+    {
+        var testfile_factory;
+        var testfile_types;
+        var tests;
+
+        function BUILD()
+        {
+            using Rosella.build;
+            self.tests = [];
+            self.target_type = class Rosella.Harness.TestRun;
+            // We need a default type for the testfile factory. NQP is as good a default as any, for now
+            self.testfile_factory         = build(class Rosella.Harness.TestFile.Factory, class Rosella.Harness.TestFile.NQP);
+            self.testfile_types = {};
+            self.testfile_types["NQP"]    = class Rosella.Harness.TestFile.NQP;
+            self.testfile_types["PIR"]    = class Rosella.Harness.TestFile.PIR;
+            self.testfile_types["Winxed"] = class Rosella.Harness.TestFile.Winxed;
+        }
+
+        function create_typed(var testrun_type, var p [slurpy], var n [slurpy,named])
+        {
+            using Rosella.build;
+            var testrun = build(testrun_type, self.tests);
+            self.tests = [];
+            return testrun;
+        }
+
+        /* Routines for Adding and Managing Tests and Loaders
+        */
+
+        // Add a list of directories. Directories are searched, possibly
+        // recursively, for a list of test files to run.
+        function add_test_dirs(string testfile_type_s, var dirs [slurpy],
+                int recurse [named,optional], int has_recurse [opt_flag])
+        {
+            if (!has_recurse)
+                recurse = 0;
+            var testfile_type = self.testfile_types[testfile_type_s];
+            var tests = self.testfile_factory.create_tests_from_dirs(testfile_type, dirs, recurse);
+            self.add_tests(tests);
+        }
+
+        // Add an individual test file
+        function add_test_files(string loader, var files [slurpy])
+        {
+            var testfile_type = self.testfile_types[testfile_type];
+            var tests = self.testfile_factory.create_tests_from_files(testfile_type, files);
+            self.add_tests(tests);
+        }
+
+        function add_tests(var tests)
+        {
+            for (var test in tests)
+                push(self.tests, test);
+        }
+
+        // Add a new loader. If a loader exists with the same name, it is
+        // overwritten
+        function add_testfile_type(string name, var testfile_type)
+        {
+            self.testfile_types[name] = testfile_type;
+        }
+    }
+}}}

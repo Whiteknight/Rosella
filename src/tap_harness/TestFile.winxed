@@ -1,5 +1,7 @@
 namespace Rosella { namespace Harness
 {
+    // TODO: Can we break the post-run status information out into a separate
+    //       data type?
     class TestFile
     {
         var filename;

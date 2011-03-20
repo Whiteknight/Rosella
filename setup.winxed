@@ -129,14 +129,14 @@ function setup_stable_libraries(var rosella)
         "include/Core",
         "tap_harness/Harness",
         "tap_harness/Line",
-        "tap_harness/Loader",
         "tap_harness/TestFile",
+        "tap_harness/testfile/Factory",
         "tap_harness/testfile/NQP",
         "tap_harness/testfile/PIR",
         "tap_harness/testfile/Winxed",
         "tap_harness/TestRun",
         "tap_harness/testrun/ResultSet",
-        "tap_harness/TestRunFactory",
+        "tap_harness/testrun/Factory",
         "tap_harness/View"
     );
 }

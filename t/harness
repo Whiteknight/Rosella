@@ -3,7 +3,7 @@ INIT {
     pir::load_bytecode("rosella/tap_harness.pbc");
 }
 
-my $factory := Rosella::build(Rosella::Harness::TestRunFactory);
+my $factory := Rosella::build(Rosella::Harness::TestRun::Factory);
 $factory.add_test_dirs("NQP",
     "t/core"
 );
@@ -26,6 +26,7 @@ my $harness := Rosella::build(Rosella::Harness);
 my $testview := $harness.default_view();
 $testview.add_run($corerun, 0);
 $testview.add_run($librun, 0);
+
 
 my $result := $harness.run($corerun, $testview);
 if ($result) {
