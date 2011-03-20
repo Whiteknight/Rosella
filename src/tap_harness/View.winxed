@@ -17,6 +17,12 @@ namespace Rosella { namespace Harness
         {
             self.test_runs = [];
             self.line_length = 0;
+            self.total_files = 0;
+            self.num_passed_files = 0;
+            self.num_passed_tests = 0;
+            self.num_failed_files = 0;
+            self.num_failed_tests = 0;
+            self.num_aborted_files = 0;
         }
 
         function add_run(var test_run, int line_length)
@@ -54,12 +60,12 @@ namespace Rosella { namespace Harness
 
         function test_run_complete(var test_run)
         {
-            self.total_files       = test_run.num_files();
-            self.num_passed_files  = test_run.num_files_by_status("PASSED");
-            self.num_passed_tests  = test_run.num_tests_by_status("PASSED");
-            self.num_failed_files  = test_run.num_files_by_status("FAILED");
-            self.num_failed_tests  = test_run.num_tests_by_status("FAILED");
-            self.num_aborted_files = test_run.num_files_by_status("ABORTED");
+            self.total_files       += test_run.num_files();
+            self.num_passed_files  += test_run.num_files_by_status("PASSED");
+            self.num_passed_tests  += test_run.num_tests_by_status("PASSED");
+            self.num_failed_files  += test_run.num_files_by_status("FAILED");
+            self.num_failed_tests  += test_run.num_tests_by_status("FAILED");
+            self.num_aborted_files += test_run.num_files_by_status("ABORTED");
         }
 
         function show_results()
