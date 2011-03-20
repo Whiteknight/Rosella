@@ -78,9 +78,9 @@ namespace Rosella { namespace Harness
             int num_failed_files = int(failed_files);
             say("\tList of failed tests by file:");
             for (var test in failed_files) {
-                say("\t\t" + test.filename());
+                say("\t\t" + string(test.filename()));
                 for (var failure in test.list_of_failures())
-                    say("\t\t\t" + failure);
+                    say("\t\t\t" + string(failure));
             }
         }
 

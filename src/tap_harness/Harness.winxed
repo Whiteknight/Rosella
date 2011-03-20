@@ -9,7 +9,7 @@ namespace Rosella
     */
     class Harness
     {
-        var test_collection;
+        var test_run;
         var loaders;
 
         // Constructor. Set up a basic set of loaders.
@@ -22,7 +22,7 @@ namespace Rosella
             self.loaders["NQP"] = build(loader_class, class Rosella.Harness.TestFile.NQP);
             self.loaders["PIR"] = build(loader_class, class Rosella.Harness.TestFile.PIR);
             self.loaders["Winxed"] = build(loader_class, class Rosella.Harness.TestFile.Winxed);
-            self.test_collection = build(class Rosella.Harness.TestCollection);
+            self.test_run = build(class Rosella.Harness.TestRun);
         }
 
         /* Routines for Adding and Managing Tests and Loaders
@@ -36,14 +36,14 @@ namespace Rosella
             if (!has_recurse)
                 recurse = 0;
             var tests = self.loaders[loader].get_tests_from_dirs(dirs, recurse);
-            self.test_collection.add_range(tests);
+            self.test_run.add_range(tests);
         }
 
         // Add an individual test file
         function add_test_files(string loader, var files [slurpy])
         {
             var tests = self.loaders[loader].get_tests_from_files(files);
-            self.add_test_objects(tests);
+            self.test_run.add_range(tests);
         }
 
         // Add a new loader. If a loader exists with the same name, it is
@@ -70,22 +70,20 @@ namespace Rosella
                 line_length = 0;
             if (!has_view)
                 view = build(class Rosella.Harness.View);
-            var result = build(class Rosella.Harness.Results);
-            int max_length = self.test_collection.max_file_length(line_length);
-            view.prepare_run(result, max_length);
-            return self.run_internal(view, result, run_inline);
+            int max_length = self.test_run.max_file_length(line_length);
+            view.prepare_run(self.test_run, max_length);
+            return self.run_internal(view, run_inline);
         }
 
-        function run_internal(var view, var result, int run_inline)
+        function run_internal(var view, int run_inline)
         {
-            for (var test in self.test_collection.tests()) {
+            for (var test in self.test_run.tests()) {
                 view.start_test(test);
-                test.run(run_inline);
-                result.add_test_result(test);
+                self.test_run.run(test, run_inline);
                 view.end_test(test);
             }
             view.show_results();
-            return result.run_was_success();
+            return self.test_run.run_was_success();
         }
     }
 }

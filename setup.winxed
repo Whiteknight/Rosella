@@ -136,6 +136,7 @@ function setup_stable_libraries(var rosella)
         "tap_harness/testfile/NQP",
         "tap_harness/testfile/PIR",
         "tap_harness/testfile/Winxed",
+        "tap_harness/TestResult",
         "tap_harness/View"
     );
 }
