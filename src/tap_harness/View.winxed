@@ -4,14 +4,14 @@ namespace Rosella { namespace Harness
     // object to the user.
     class View
     {
-        var result;
+        var test_run;
         var line_length;
 
         function debug(string line) { say("# " + string(line)); }
 
-        function prepare_run(var result, int line_length)
+        function prepare_run(var test_run, int line_length)
         {
-            self.result = result;
+            self.test_run = test_run;
             self.line_length = line_length;
         }
 
@@ -46,54 +46,58 @@ namespace Rosella { namespace Harness
 
         function show_results_summary()
         {
-            var aborted_files = self.result.aborted_test_files();
-            int num_aborted   = int(aborted_files);
-            int total_files   = self.result.num_test_files();
-            int passed_tests  = self.result.num_passed_tests();
-            int failed_tests  = self.result.num_failed_tests();
-            var failed_files  = self.result.failed_test_files();
-            int num_failed_files = int(failed_files);
+            int total_files         = self.test_run.num_files();
+            int num_passed_files    = self.test_run.num_files_by_status("PASSED");
+            int num_passed_tests    = self.test_run.num_tests_by_status("PASSED");
+            int num_failed_files    = self.test_run.num_files_by_status("FAILED");
+            int num_aborted_files   = self.test_run.num_files_by_status("ABORTED");
 
-            if (num_aborted || failed_tests) {
+            if (num_aborted_files || num_failed_files) {
                 say("Result: FAILED");
-                say("\tPassed " + passed_tests + " tests in " + total_files + " files");
-                if (num_aborted)
-                    say("\tFailed " + num_aborted + " files due to premature exit");
-                if (failed_tests)
-                    say("\tFailed " + failed_tests + " tests in " + num_failed_files + " files");
+                say(sprintf("\tPassed %d tests in %d files", [num_passed_tests, total_files]));
+
+                var failed_files  = self.test_run.files_by_status("FAILED");
+                int num_failed_tests = self.test_run.num_tests_by_status("FAILED");
+
+                if (num_aborted_files)
+                    say(sprintf("\tFailed %d files due to premature exit", [num_aborted_files]));
+                if (num_failed_tests)
+                    say(sprintf("\tFailed %d tests in %d files", [num_failed_tests, num_failed_files]));
                 say("");
             } else {
                 say("Result: PASSED");
-                say("\tPassed " + passed_tests + " tests in " + total_files + " files");
+                say(sprintf("\tPassed %d tests in %d files", [num_passed_tests, total_files]));
             }
         }
 
         function show_error_detail()
         {
-            int failed_tests = self.result.num_failed_tests();
-            if (failed_tests == 0)
+            int num_failed_tests = self.test_run.num_tests_by_status("FAILED");
+            if (num_failed_tests == 0)
                 return;
 
-            var failed_files = self.result.failed_test_files();
-            int num_failed_files = int(failed_files);
+            var failed_files = self.test_run.files_by_status("FAILED");
+            int num_failed_files = self.test_run.num_files_by_status("FAILED");
+
             say("\tList of failed tests by file:");
             for (var test in failed_files) {
-                say("\t\t" + string(test.filename()));
+                say(sprintf("\t\t%s", [test.filename()]));
                 for (var failure in test.list_of_failures())
-                    say(sprintf("\t\t\t%s", [string(failure)]));
+                    say(sprintf("\t\t\t%s", [failure]));
             }
         }
 
         function show_failure_detail()
         {
-            var aborted_files = self.result.aborted_test_files();
-            int num_aborted = int(aborted_files);
-            if (num_aborted) {
+            int num_aborted_files = self.test_run.num_files_by_status("ABORTED");
+            var aborted_files     = self.test_run.files_by_status("ABORTED");
+
+            if (num_aborted_files) {
                 say("\tList of files with premature exits:");
                 for (var file in aborted_files) {
                     // TODO: Should record and output error codes or other
                     //       error info. Display some diagnostics here
-                    say("\t\t" + string(file.filename()));
+                    say(sprintf("\t\t%s", [file.filename()]));
                 }
             }
         }

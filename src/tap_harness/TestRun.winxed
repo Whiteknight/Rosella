@@ -68,19 +68,11 @@ namespace Rosella { namespace Harness
         // Returns 1 if the run was a success, 0 otherwise
         function run_was_success()
         {
-            if (self.aborted_test_files() == 0 && self.failed_test_files() == 0)
+            int num_aborted_files = self.num_files_by_status("ABORTED");
+            int num_failed_files = self.num_files_by_status("FAILED");
+            if (num_aborted_files == 0 && num_failed_files == 0)
                 return 1;
             return 0;
-        }
-
-        function aborted_test_files()
-        {
-            return self.files_by_status("ABORTED");
-        }
-
-        function failed_test_files()
-        {
-            return self.files_by_status("FAILED");
         }
 
         function files_by_status(string status)
@@ -93,34 +85,19 @@ namespace Rosella { namespace Harness
             return files;
         }
 
-        function passed_test_files()
+        function num_files_by_status(string status)
         {
-            return self.results["PASSED"].num_files;
+            return self.results[status].num_files;
         }
 
-        function num_failed_tests()
+        function num_tests_by_status(string status)
         {
-            return self.results["FAILED"].num_tests;
+            return self.results[status].num_tests;
         }
 
-        function num_passed_tests()
-        {
-            return self.results["PASSED"].num_tests;
-        }
-
-        function num_test_files()
+        function num_files()
         {
             return int(self.tests);
-        }
-
-        function num_todo_passed_tests()
-        {
-            return self.results["TODOPASSED"].num_tests;
-        }
-
-        function num_todo_passed_files()
-        {
-            return self.results["TODOPASSED"].num_files;
         }
     }
 }}
