@@ -1,0 +1,24 @@
+namespace Rosella { namespace Harness
+{
+    class ResultSet
+    {
+        var num_files;
+        var num_tests;
+
+        function BUILD()
+        {
+            self.num_files = 0;
+            self.num_tests = 0;
+        }
+
+        function add_file()
+        {
+            self.num_files = self.num_files + 1;
+        }
+
+        function add_tests(int num)
+        {
+            self.num_tests = self.num_tests + num;
+        }
+    }
+}}
