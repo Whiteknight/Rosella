@@ -6,7 +6,6 @@ INIT {
 Rosella::Test::test(ErrorTest);
 
 class ErrorTest {
-    method test_foo() {
-        Assert::equal(0,1);
+    method test_fail() {
     }
 }

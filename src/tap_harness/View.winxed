@@ -4,15 +4,30 @@ namespace Rosella { namespace Harness
     // object to the user.
     class View
     {
-        var test_run;
+        var test_runs;
         var line_length;
+        var total_files;
+        var num_passed_files;
+        var num_failed_files;
+        var num_passed_tests;
+        var num_failed_tests;
+        var num_aborted_files;
 
-        function debug(string line) { say("# " + string(line)); }
-
-        function prepare_run(var test_run, int line_length)
+        function BUILD()
         {
-            self.test_run = test_run;
-            self.line_length = line_length;
+            self.test_runs = [];
+            self.line_length = 0;
+        }
+
+        function add_run(var test_run, int line_length)
+        {
+            push(self.test_runs, test_run);
+            int maxlength = test_run.max_file_length(line_length);
+            if (self.line_length > maxlength)
+                maxlength = self.line_length;
+            if (line_length > maxlength)
+                maxlength = line_length;
+            self.line_length = maxlength;
         }
 
         function start_test(var test)
@@ -37,6 +52,16 @@ namespace Rosella { namespace Harness
                 say("# " + error_details);
         }
 
+        function test_run_complete(var test_run)
+        {
+            self.total_files       = test_run.num_files();
+            self.num_passed_files  = test_run.num_files_by_status("PASSED");
+            self.num_passed_tests  = test_run.num_tests_by_status("PASSED");
+            self.num_failed_files  = test_run.num_files_by_status("FAILED");
+            self.num_failed_tests  = test_run.num_tests_by_status("FAILED");
+            self.num_aborted_files = test_run.num_files_by_status("ABORTED");
+        }
+
         function show_results()
         {
             self.show_results_summary();
@@ -46,38 +71,41 @@ namespace Rosella { namespace Harness
 
         function show_results_summary()
         {
-            int total_files         = self.test_run.num_files();
-            int num_passed_files    = self.test_run.num_files_by_status("PASSED");
-            int num_passed_tests    = self.test_run.num_tests_by_status("PASSED");
-            int num_failed_files    = self.test_run.num_files_by_status("FAILED");
-            int num_aborted_files   = self.test_run.num_files_by_status("ABORTED");
-
-            if (num_aborted_files || num_failed_files) {
+            if (int(self.num_aborted_files) || int(self.num_failed_files)) {
                 say("Result: FAILED");
-                say(sprintf("\tPassed %d tests in %d files", [num_passed_tests, total_files]));
+                say(sprintf("\tPassed %d tests in %d files", [self.num_passed_tests, self.total_files]));
 
-                var failed_files  = self.test_run.files_by_status("FAILED");
-                int num_failed_tests = self.test_run.num_tests_by_status("FAILED");
-
-                if (num_aborted_files)
-                    say(sprintf("\tFailed %d files due to premature exit", [num_aborted_files]));
-                if (num_failed_tests)
-                    say(sprintf("\tFailed %d tests in %d files", [num_failed_tests, num_failed_files]));
+                var failed_files  = self.get_all_files_by_status("FAILED");
+                if (self.num_aborted_files)
+                    say(sprintf("\tFailed %d files due to premature exit", [self.num_aborted_files]));
+                if (self.num_failed_tests)
+                    say(sprintf("\tFailed %d tests in %d files", [self.num_failed_tests, self.num_failed_files]));
                 say("");
             } else {
                 say("Result: PASSED");
-                say(sprintf("\tPassed %d tests in %d files", [num_passed_tests, total_files]));
+                say(sprintf("\tPassed %d tests in %d files", [self.num_passed_tests, self.total_files]));
             }
+        }
+
+        function get_all_files_by_status(string status)
+        {
+            var files_with_status = [];
+            for (var testrun in self.test_runs) {
+                if (testrun.is_complete() == 0)
+                    continue;
+                var failed_tests = testrun.files_by_status(status);
+                for (var failed_test in failed_tests)
+                    push(files_with_status, failed_test);
+            }
+            return files_with_status;
         }
 
         function show_error_detail()
         {
-            int num_failed_tests = self.test_run.num_tests_by_status("FAILED");
-            if (num_failed_tests == 0)
+            if (self.num_failed_tests == 0)
                 return;
 
-            var failed_files     = self.test_run.files_by_status("FAILED");
-            int num_failed_files = self.test_run.num_files_by_status("FAILED");
+            var failed_files = self.get_all_failed_files();
 
             say("\tList of failed tests by file:");
             for (var test in failed_files) {
@@ -89,10 +117,9 @@ namespace Rosella { namespace Harness
 
         function show_failure_detail()
         {
-            int num_aborted_files = self.test_run.num_files_by_status("ABORTED");
-            var aborted_files     = self.test_run.files_by_status("ABORTED");
+            var aborted_files = self.get_all_files_by_status("ABORTED");
 
-            if (num_aborted_files) {
+            if (self.num_aborted_files) {
                 say("\tList of files with premature exits:");
                 for (var file in aborted_files) {
                     // TODO: Should record and output error codes or other

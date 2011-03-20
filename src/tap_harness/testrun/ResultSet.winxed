@@ -1,5 +1,8 @@
 namespace Rosella { namespace Harness { namespace TestRun
 {
+    /* ResultSet is used to keep counts of files and individual tests which
+       meet certain requirements in the TestRun object.
+    */
     class ResultSet
     {
         var num_files;
@@ -11,11 +14,13 @@ namespace Rosella { namespace Harness { namespace TestRun
             self.num_tests = 0;
         }
 
+        // Increment the number of matching test files
         function add_file()
         {
             self.num_files = self.num_files + 1;
         }
 
+        // Increment the number of matching tests
         function add_tests(int num)
         {
             self.num_tests = self.num_tests + num;

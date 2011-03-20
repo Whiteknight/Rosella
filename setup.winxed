@@ -136,6 +136,7 @@ function setup_stable_libraries(var rosella)
         "tap_harness/testfile/Winxed",
         "tap_harness/TestRun",
         "tap_harness/testrun/ResultSet",
+        "tap_harness/TestRunFactory",
         "tap_harness/View"
     );
 }

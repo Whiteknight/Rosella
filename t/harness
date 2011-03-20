@@ -3,18 +3,34 @@ INIT {
     pir::load_bytecode("rosella/tap_harness.pbc");
 }
 
-my $harness := Rosella::build(Rosella::Harness);
-$harness.add_test_dirs("NQP",
-    "t/core",
-#    "t/test",
-#    "t/action",
-#    "t/container",
-#    "t/event",
-#    "t/prototype",
-#    "t/query",
-#    "t/proxy",
-#    "t/mockobject",
+my $factory := Rosella::build(Rosella::Harness::TestRunFactory);
+$factory.add_test_dirs("NQP",
+    "t/core"
+);
+my $corerun := $factory.create();
+
+$factory.add_test_dirs("NQP",
+    "t/test",
+    "t/action",
+    "t/container",
+    "t/event",
+    "t/prototype",
+    "t/query",
+    "t/proxy",
+    "t/mockobject",
     :recurse(1)
 );
-$harness.run();
+my $librun := $factory.create();
+
+my $harness := Rosella::build(Rosella::Harness);
+my $testview := $harness.default_view();
+$testview.add_run($corerun, 0);
+$testview.add_run($librun, 0);
+
+my $result := $harness.run($corerun, $testview);
+if ($result) {
+    $harness.run($librun, $testview);
+}
+$testview.show_results();
+
 

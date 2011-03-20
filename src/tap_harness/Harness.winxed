@@ -9,62 +9,26 @@ namespace Rosella
     */
     class Harness
     {
-        var test_run;
         var loaders;
 
         // Constructor. Set up a basic set of loaders.
         function BUILD()
         {
             using Rosella.build;
-
-            self.loaders = {};
-            var loader_class = class Rosella.Harness.Loader;
-            self.loaders["NQP"] = build(loader_class, class Rosella.Harness.TestFile.NQP);
-            self.loaders["PIR"] = build(loader_class, class Rosella.Harness.TestFile.PIR);
-            self.loaders["Winxed"] = build(loader_class, class Rosella.Harness.TestFile.Winxed);
-            self.test_run = build(class Rosella.Harness.TestRun);
-        }
-
-        /* Routines for Adding and Managing Tests and Loaders
-        */
-
-        // Add a list of directories. Directories are searched, possibly
-        // recursively, for a list of test files to run.
-        function add_test_dirs(string loader, var dirs [slurpy],
-                int recurse [named,optional], int has_recurse [opt_flag])
-        {
-            if (!has_recurse)
-                recurse = 0;
-            var tests = self.loaders[loader].get_tests_from_dirs(dirs, recurse);
-            self.test_run.add_range(tests);
-        }
-
-        // Add an individual test file
-        function add_test_files(string loader, var files [slurpy])
-        {
-            var tests = self.loaders[loader].get_tests_from_files(files);
-            self.test_run.add_range(tests);
-        }
-
-        // Add a new loader. If a loader exists with the same name, it is
-        // overwritten
-        function add_loader(string name, var loader)
-        {
-            self.loaders[name] = loader;
-        }
-
-        function add_loader_for_type(string name, var testfile_type)
-        {
-            using Rosella.build;
-            self.loaders[name] = build(class Rosella.Harness.Loader, testfile_type);
         }
 
         /* Routines for Running the Harness
         */
 
-        // Run the harness
-        function run(
-                var view [named,optional],        int has_view [opt_flag],
+        function default_view()
+        {
+            using Rosella.build;
+            return build(class Rosella.Harness.View);
+        }
+
+        // Run the harness. Optionally take a custom view, and a handful of
+        // other named options.
+        function run(var test_run, var view,
                 int run_inline [named,optional],  int has_ri [opt_flag],
                 int line_length [named,optional], int has_ll [opt_flag])
         {
@@ -74,22 +38,27 @@ namespace Rosella
                 run_inline = 0;
             if (!has_ll)
                 line_length = 0;
-            if (!has_view)
-                view = build(class Rosella.Harness.View);
-            int max_length = self.test_run.max_file_length(line_length);
-            view.prepare_run(self.test_run, max_length);
-            return self.run_internal(view, run_inline);
+            return self.run_internal(test_run, view, run_inline);
         }
 
-        function run_internal(var view, int run_inline)
+        // Interal routine to run the harness
+        function run_internal(var test_run, var view, int run_inline)
         {
-            for (var test in self.test_run.tests()) {
+
+            for (var test in test_run.tests()) {
                 view.start_test(test);
-                self.test_run.run(test, run_inline);
+                test.run(run_inline);
+                test_run.update_test_stats(test);
                 view.end_test(test);
             }
-            view.show_results();
-            return self.test_run.run_was_success();
+            test_run.mark_completed();
+            view.test_run_complete(test_run);
+            return test_run.run_was_success();
+        }
+
+        function reset()
+        {
+            self.test_run = build(class Rosella.Harness.TestRun);
         }
     }
 }
