@@ -211,7 +211,7 @@ namespace Rosella { namespace Harness
             var lineobj = build(class Rosella.Harness.Line, line);
             if (lineobj.ignore())
                 return;
-            string msg = "test " + lineobj.number() + " - " + lineobj.name();
+            string msg = sprintf("test %d - %s", [lineobj.number(), lineobj.name()]);
 
             if (lineobj.success()) {
                 self.passed_tests = self.passed_tests + 1;

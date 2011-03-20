@@ -80,7 +80,7 @@ namespace Rosella { namespace Harness
             for (var test in failed_files) {
                 say("\t\t" + string(test.filename()));
                 for (var failure in test.list_of_failures())
-                    say("\t\t\t" + string(failure));
+                    say(sprintf("\t\t\t%s", [string(failure)]));
             }
         }
 

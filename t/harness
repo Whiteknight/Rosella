@@ -6,14 +6,14 @@ INIT {
 my $harness := Rosella::build(Rosella::Harness);
 $harness.add_test_dirs("NQP",
     "t/core",
-    "t/test",
-    "t/action",
-    "t/container",
-    "t/event",
-    "t/prototype",
-    "t/query",
-    "t/proxy",
-    "t/mockobject",
+#    "t/test",
+#    "t/action",
+#    "t/container",
+#    "t/event",
+#    "t/prototype",
+#    "t/query",
+#    "t/proxy",
+#    "t/mockobject",
     :recurse(1)
 );
 $harness.run();
