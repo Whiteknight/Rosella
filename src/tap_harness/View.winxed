@@ -1,5 +1,18 @@
 namespace Rosella { namespace Harness
 {
+    namespace View
+    {
+        function sayf(string fmt, var args [slurpy])
+        {
+            say(sprintf(fmt, args));
+        }
+
+        function printf(string fmt, var args [slurpy])
+        {
+            print(sprintf(fmt, args));
+        }
+    }
+
     // View class for the harness. Displays information from the Results
     // object to the user.
     class View
@@ -38,24 +51,26 @@ namespace Rosella { namespace Harness
 
         function start_test(var test)
         {
+            using Rosella.Harness.View.printf;
             string filename = test.filename();
             int len = length(filename);
             int line_length = self.line_length;
             int diff = line_length - len + 3;
             string elipses = "";
             ${ repeat elipses, '.', diff };
-            print(sprintf("%s %s ", [filename, elipses]));
+            printf("%s %s ", filename, elipses);
         }
 
         function end_test(var test)
         {
+            using Rosella.Harness.View.sayf;
             if (test.result != null)
-                say("not ok (" + string(test.result) + ")");
+                sayf("not ok (%s)", test.result);
             else
                 say("ok");
             string error_details = test.error_details();
             if (error_details != null)
-                say("# " + error_details);
+                sayf("# %s", error_details);
         }
 
         function test_run_complete(var test_run)
@@ -77,20 +92,27 @@ namespace Rosella { namespace Harness
 
         function show_results_summary()
         {
+            using Rosella.Harness.View.sayf;
             if (int(self.num_aborted_files) || int(self.num_failed_files)) {
-                say("Result: FAILED");
-                say(sprintf("\tPassed %d tests in %d files", [self.num_passed_tests, self.total_files]));
+                self.show_result_headline("FAILED");
 
                 var failed_files  = self.get_all_files_by_status("FAILED");
                 if (self.num_aborted_files)
-                    say(sprintf("\tFailed %d files due to premature exit", [self.num_aborted_files]));
+                    sayf("\tFailed %d files due to premature exit", self.num_aborted_files);
                 if (self.num_failed_tests)
-                    say(sprintf("\tFailed %d tests in %d files", [self.num_failed_tests, self.num_failed_files]));
+                    sayf("\tFailed %d tests in %d files", self.num_failed_tests, self.num_failed_files);
                 say("");
-            } else {
-                say("Result: PASSED");
-                say(sprintf("\tPassed %d tests in %d files", [self.num_passed_tests, self.total_files]));
-            }
+            } else
+                self.show_result_headline("PASSED");
+        }
+
+        function show_result_headline(string result)
+        {
+            using Rosella.Harness.View.sayf;
+            sayf("Result: %s", result);
+            sayf("\tPassed %d tests in %d files (%d test runs)",
+                self.num_passed_tests, self.total_files, int(self.test_runs)
+            );
         }
 
         function get_all_files_by_status(string status)
@@ -111,18 +133,20 @@ namespace Rosella { namespace Harness
             if (self.num_failed_tests == 0)
                 return;
 
-            var failed_files = self.get_all_failed_files();
+            using Rosella.Harness.View.sayf;
+            var failed_files = self.get_all_files_by_status("FAILED");
 
             say("\tList of failed tests by file:");
             for (var test in failed_files) {
-                say(sprintf("\t\t%s", [test.filename()]));
+                sayf("\t\t%s", test.filename());
                 for (var failure in test.list_of_failures())
-                    say(sprintf("\t\t\t%s", [failure]));
+                    sayf("\t\t\t%s", failure);
             }
         }
 
         function show_failure_detail()
         {
+            using Rosella.Harness.View.sayf;
             var aborted_files = self.get_all_files_by_status("ABORTED");
 
             if (self.num_aborted_files) {
@@ -130,7 +154,7 @@ namespace Rosella { namespace Harness
                 for (var file in aborted_files) {
                     // TODO: Should record and output error codes or other
                     //       error info. Display some diagnostics here
-                    say(sprintf("\t\t%s", [file.filename()]));
+                    sayf("\t\t%s", file.filename());
                 }
             }
         }
