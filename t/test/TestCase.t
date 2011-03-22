@@ -20,4 +20,40 @@ class Test::TestCase::Test {
         Assert::equal(pir::getattribute__PPS($testcase, 'context'), "Foo");
         Assert::equal(pir::getattribute__PPS($testcase, '$!context'), "Foo");
     }
+
+    method cant_set_method() {
+        Assert::throws({
+            my $factory := Rosella::build(Rosella::Test::TestFactory, Rosella::Test::TestCase, "Foo");
+            my $testcase := $factory.create("Bar", "Baz");
+            pir::setattribute__vPSP($testcase, "method", "Fie");
+        });
+        Assert::throws({
+            my $factory := Rosella::build(Rosella::Test::TestFactory, Rosella::Test::TestCase, "Foo");
+            my $testcase := $factory.create("Bar", "Baz");
+            pir::setattribute__vPSP($testcase, '$!method', "Fie");
+        });
+        Assert::throws({
+            my $factory := Rosella::build(Rosella::Test::TestFactory, Rosella::Test::TestCase, "Foo");
+            my $testcase := $factory.create("Bar", "Baz");
+            pir::setattribute__vPSP($testcase, 'test_method', "Fie");
+        });
+    }
+
+    method cant_set_context() {
+        Assert::throws({
+            my $factory := Rosella::build(Rosella::Test::TestFactory, Rosella::Test::TestCase, "Foo");
+            my $testcase := $factory.create("Bar", "Baz");
+            pir::setattribute__vPSP($testcase, "context", "Fie");
+        });
+        Assert::throws({
+            my $factory := Rosella::build(Rosella::Test::TestFactory, Rosella::Test::TestCase, "Foo");
+            my $testcase := $factory.create("Bar", "Baz");
+            pir::setattribute__vPSP($testcase, '$!context', "Fie");
+        });
+        Assert::throws({
+            my $factory := Rosella::build(Rosella::Test::TestFactory, Rosella::Test::TestCase, "Foo");
+            my $testcase := $factory.create("Bar", "Baz");
+            pir::setattribute__vPSP($testcase, 'test_context', "Fie");
+        });
+    }
 }
