@@ -25,7 +25,7 @@ namespace Rosella
                 context = build(class Rosella.Test.TestContext);
 
             var suitefactory = build(class Rosella.Test.SuiteFactory,
-                    suite_type, test_type, context);
+                    suite_type, test_type, testcase_type, context);
             var suite = suitefactory.create();
             var result = suite.run();
             return result.was_successful();

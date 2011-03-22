@@ -4,6 +4,10 @@ INIT {
 
 Rosella::Test::test(Test::TestFactory::Test);
 
+class MyTestCaseSubclass is Rosella::Test::TestCase {
+}
+
+
 class Test::TestFactory::Test {
     method test_BUILD() {
         my $factory := Rosella::build(Rosella::Test::TestFactory, Rosella::Test::TestCase, "context");
@@ -16,7 +20,9 @@ class Test::TestFactory::Test {
     }
 
     method test_create_custom_subclass() {
-        $!context.unimplemented("TestFactory should be able to return a subclass of TestCase");
+        my $factory := Rosella::build(Rosella::Test::TestFactory, MyTestCaseSubclass, "context");
+        my $testcase := $factory.create("Foo", "Bar");
+        Assert::instance_of($testcase, MyTestCaseSubclass);
     }
 
     method test_create_typed_TestCase() {
@@ -26,6 +32,8 @@ class Test::TestFactory::Test {
     }
 
     method test_create_typed_custom_subclass() {
-        $!context.unimplemented("TestFactory should be able to return a subclass of TestCase");
+        my $factory := Rosella::build(Rosella::Test::TestFactory, Rosella::Test::TestCase, "context");
+        my $testcase := $factory.create_typed(MyTestCaseSubclass, "Foo", "Bar");
+        Assert::instance_of($testcase, MyTestCaseSubclass);
     }
 }

@@ -5,4 +5,5 @@ INIT {
 Rosella::Test::test(Test::Test);
 
 class Test::Test {
+    # TODO: How to test this effectively?
 }

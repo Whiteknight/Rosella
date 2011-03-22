@@ -8,17 +8,19 @@ namespace Rosella { namespace Test
     //       into a single Suite. The Suite can use nested TAP to handle them.
     class SuiteFactory : Rosella.ObjectFactory
     {
-        var test_prefix;  // prefix for valid tests
+        var test_prefix;    // prefix for valid tests
         var test_context;
-        var test_type;
+        var testcase_type;  // The type of testcase objects to build
+        var test_type;      // The type to extract tests from
         var seen_methods;
 
         // Constructor. Take the test proto object and a few other options
-        function BUILD(var suite_type, var test_type, var context,
+        function BUILD(var suite_type, var test_type, var testcase_type, var context,
                 string test_prefix [named,optional], int has_prefix [opt_flag])
         {
             self.target_type = suite_type;
             self.test_type = test_type;
+            self.testcase_type = testcase_type;
             self.test_context = context;
             self.seen_methods = {};
             if (has_prefix)
@@ -32,7 +34,7 @@ namespace Rosella { namespace Test
         {
             using Rosella.build;
             var testfactory = build(class Rosella.Test.TestFactory,
-                    self.test_type, self.test_context);
+                    self.testcase_type, self.test_context);
             var test_methods = self.get_test_methods();
             var tests = {};
             for (var test in test_methods) {
