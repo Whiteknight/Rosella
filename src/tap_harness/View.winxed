@@ -2,19 +2,22 @@ namespace Rosella { namespace Harness
 {
     namespace View
     {
+        // Helper function to add formatting to say
         function sayf(string fmt, var args [slurpy])
         {
             say(sprintf(fmt, args));
         }
 
+        // Helper function to implement a basic printf
         function printf(string fmt, var args [slurpy])
         {
             print(sprintf(fmt, args));
         }
     }
 
-    // View class for the harness. Displays information from the Results
-    // object to the user.
+    /* View class for the Harness. Displays running status and result
+       information to the user on the commandline.
+    */
     class View
     {
         var test_runs;
@@ -38,6 +41,12 @@ namespace Rosella { namespace Harness
             self.num_aborted_files = 0;
         }
 
+        /* View API.
+            These are the functions that a View should implement to be used
+            with the Harness.
+        */
+
+        // Add in a TestRun object to the view
         function add_run(var test_run, int line_length)
         {
             push(self.test_runs, test_run);
@@ -49,6 +58,7 @@ namespace Rosella { namespace Harness
             self.line_length = maxlength;
         }
 
+        // Start an individual test
         function start_test(var test)
         {
             using Rosella.Harness.View.printf;
@@ -61,6 +71,7 @@ namespace Rosella { namespace Harness
             printf("%s %s ", filename, elipses);
         }
 
+        // End a test
         function end_test(var test)
         {
             using Rosella.Harness.View.sayf;
@@ -73,6 +84,7 @@ namespace Rosella { namespace Harness
                 sayf("# %s", error_details);
         }
 
+        // Mark the TestRun as being complete
         function test_run_complete(var test_run)
         {
             self.total_files       += test_run.num_files();
@@ -83,6 +95,7 @@ namespace Rosella { namespace Harness
             self.num_aborted_files += test_run.num_files_by_status("ABORTED");
         }
 
+        // Show the results to the user
         function show_results()
         {
             self.show_results_summary();
@@ -90,6 +103,11 @@ namespace Rosella { namespace Harness
             self.show_failure_detail();
         }
 
+        /* Results Displaying Routines
+            These routines are used internally to display result information.
+        */
+
+        // A quick summary showing whether the test run passed or failed
         function show_results_summary()
         {
             using Rosella.Harness.View.sayf;
@@ -104,28 +122,6 @@ namespace Rosella { namespace Harness
                 say("");
             } else
                 self.show_result_headline("PASSED");
-        }
-
-        function show_result_headline(string result)
-        {
-            using Rosella.Harness.View.sayf;
-            sayf("Result: %s", result);
-            sayf("\tPassed %d tests in %d files (%d test runs)",
-                self.num_passed_tests, self.total_files, int(self.test_runs)
-            );
-        }
-
-        function get_all_files_by_status(string status)
-        {
-            var files_with_status = [];
-            for (var testrun in self.test_runs) {
-                if (testrun.is_complete() == 0)
-                    continue;
-                var failed_tests = testrun.files_by_status(status);
-                for (var failed_test in failed_tests)
-                    push(files_with_status, failed_test);
-            }
-            return files_with_status;
         }
 
         function show_error_detail()
@@ -157,6 +153,35 @@ namespace Rosella { namespace Harness
                     sayf("\t\t%s", file.filename());
                 }
             }
+        }
+
+        /* Internal Helper Routines
+        */
+
+        // Helper routine to show a PASSED/FAILED headline message, and
+        // a count of how many tests passed.
+        function show_result_headline(string result)
+        {
+            using Rosella.Harness.View.sayf;
+            sayf("Result: %s", result);
+            sayf("\tPassed %d tests in %d files (%d test runs)",
+                self.num_passed_tests, self.total_files, int(self.test_runs)
+            );
+        }
+
+        // Get a list of all executed files from all runs with the given
+        // status
+        function get_all_files_by_status(string status)
+        {
+            var files_with_status = [];
+            for (var testrun in self.test_runs) {
+                if (testrun.is_complete() == 0)
+                    continue;
+                var failed_tests = testrun.files_by_status(status);
+                for (var failed_test in failed_tests)
+                    push(files_with_status, failed_test);
+            }
+            return files_with_status;
         }
     }
 }}

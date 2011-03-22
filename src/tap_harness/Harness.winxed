@@ -12,7 +12,6 @@ namespace Rosella
         // Constructor. Set up a basic set of loaders.
         function BUILD()
         {
-            using Rosella.build;
         }
 
         /* Routines for Running the Harness
@@ -52,11 +51,6 @@ namespace Rosella
             test_run.mark_completed();
             view.test_run_complete(test_run);
             return test_run.run_was_success();
-        }
-
-        function reset()
-        {
-            self.test_run = build(class Rosella.Harness.TestRun);
         }
     }
 }

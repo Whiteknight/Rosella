@@ -2,7 +2,7 @@ namespace Rosella { namespace Harness
 {
     /* The Harness "model" in MVC-speak.
         This class contains the data from the test run. It contains the list
-        of tests to execute, and keeps track of their statistics. This model
+        of tests to execute, and keeps track of the run statistics. This model
         class is used in the harness during the run, and then passed to the
         View to display to the user.
     */
@@ -29,18 +29,18 @@ namespace Rosella { namespace Harness
             self.executed = 0;
         }
 
+        /* Public API
+            The model must implement these routines in order to be used with
+            the harness.
+        */
+
         // Return the raw list of tests.
         function tests()
         {
             return self.tests;
         }
 
-        /* Harness Interface Routines
-            These methods are called from the Harness while the tests are
-            running.
-        */
-
-        // Run the given test. Update
+        // Update statistics about the test, after the test has been run.
         function update_test_stats(var test)
         {
             string status = test.status();
@@ -107,11 +107,13 @@ namespace Rosella { namespace Harness
             return int(self.tests);
         }
 
+        // Mark the run as being complete
         function mark_completed()
         {
             self.executed = 1;
         }
 
+        // Determine if the run is complete
         function is_complete()
         {
             return self.executed;

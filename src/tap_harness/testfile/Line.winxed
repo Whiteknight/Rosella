@@ -1,4 +1,4 @@
-namespace Rosella { namespace Harness
+namespace Rosella { namespace Harness { namespace TestFile
 {
     class Line
     {
@@ -73,4 +73,4 @@ namespace Rosella { namespace Harness
 
         function todo() { return self.todo; }
     }
-}}
+}}}
