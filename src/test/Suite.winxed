@@ -41,6 +41,8 @@ namespace Rosella { namespace Test
         }
 
         // Run a single test
+        // TODO: Refactor this out into several functions, so subclasses can
+        //       modify only small parts of the algorithm
         function run_test(var test_name, var test, var result)
         {
             var exception = null;

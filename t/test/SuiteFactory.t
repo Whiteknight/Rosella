@@ -29,4 +29,12 @@ class Test::SuiteFactory::Test {
         my $suite := $factory.create_typed(Rosella::Test::Suite);
         Assert::instance_of($suite, Rosella::Test::Suite);
     }
+
+    method test_testcase_subclass() {
+        $!context.unimplemented("Test using SuiteFactory with a subclass of TestCase");
+    }
+
+    method test_context() {
+        $!context.unimplemented("Test using a custom TestContext object. Show that it is passed to all tests in the Suite");
+    }
 }
