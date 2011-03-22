@@ -210,7 +210,7 @@ namespace Rosella { namespace Harness
         function parse_line(string line)
         {
             using Rosella.build;
-            var lineobj = build(class Rosella.Harness.Line, line);
+            var lineobj = build(class Rosella.Harness.TestFile.Line, line);
             if (lineobj.ignore())
                 return;
             string msg = sprintf("test %d - %s", [lineobj.number(), lineobj.name()]);

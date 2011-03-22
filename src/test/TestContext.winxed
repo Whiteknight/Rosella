@@ -21,6 +21,13 @@ namespace Rosella { namespace Test
             self.data = data;
         }
 
+        /* TestCase API
+            These routines are used by the Suite to control running of tests
+            and reporting of status. TestContext, user-defined subclasses, and
+            any custom stand-in objects MUST provide these API routines to be
+            used as a context for the tests.
+        */
+
         // Prepare the next test to execute. Set the current Suite and
         // TestCase
         function prepare(var suite, string test_name, var test)
@@ -30,6 +37,26 @@ namespace Rosella { namespace Test
             self.test_name = test_name;
             self.test_todo = null;
         }
+
+        // Get the displayable name of the test. Should not be null.
+        function display_name()
+        {
+            return self.test_name;
+        }
+
+        // Displayable text showing a todo note. Should be null if the test
+        // is not todo'd
+        function test_todo()
+        {
+            return self.test_todo;
+        }
+
+        /* Test Helpers
+            These routines are provided by the default TestContext as an aide
+            for running tests. These are not required for normal running of
+            the Suite, and can be optionally disallowed or overridden in
+            custom Context objects.
+        */
 
         // Get the currently executing TestCase object
         function current_test()
