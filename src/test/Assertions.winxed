@@ -7,6 +7,7 @@
 //       tests.
 namespace Assert
 {
+    // Routine to get a default message, if none is provided
     function default_message(string msg, int has_msg, string def)
     {
         if (has_msg)
@@ -14,6 +15,7 @@ namespace Assert
         return def;
     }
 
+    // Unconditional fail. Throws a Rosella.Test.Failure
     function fail(string why, int is_internal [optional], int has_is_i [opt_flag])
     {
         using Rosella.build;
@@ -24,6 +26,11 @@ namespace Assert
         var ex = build(class Rosella.Test.Failure, why, is_internal);
         ex.throw();
     }
+
+    /* Assertion Functions
+        Each of these functions asserts some condition. If the condition
+        holds, nothing happens. If the condition fails, we call fail().
+    */
 
     function block(string message, var block)
     {
