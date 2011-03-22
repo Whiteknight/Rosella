@@ -24,10 +24,7 @@ namespace Rosella { namespace Test
                 var p [slurpy], var n [slurpy,named])
         {
             using Rosella.build;
-            using Rosella.get_type_class;
 
-
-            var type_class = get_type_class(type);
             var test = build(type);
             var context = self.test_context;
             //test.test_context = context;
