@@ -42,7 +42,7 @@ namespace Rosella { namespace Harness { namespace TestFile
             return tests;
         }
 
-        // Return a list of TetsFile objects from a list of files. Do not do
+        // Return a list of TestFile objects from a list of files. Do not do
         // any detection or sanity checking, all files in the list are
         // assumed to be valid test files for this loader.
         function create_tests_from_files(var test_type, var filenames)

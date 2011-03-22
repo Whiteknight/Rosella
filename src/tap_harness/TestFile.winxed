@@ -2,6 +2,8 @@ namespace Rosella { namespace Harness
 {
     // TODO: Can we break the post-run status information out into a separate
     //       data type?
+    // TODO: This needs a major refactor. Break out unrelated bits of logic
+    //       into subclasses or delegate classes
     class TestFile
     {
         var filename;

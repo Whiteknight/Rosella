@@ -6,4 +6,5 @@ INIT {
 Rosella::Test::test(Harness::TestFile::Test);
 
 class Harness::TestFile::Test {
+
 }
