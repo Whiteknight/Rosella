@@ -7,11 +7,17 @@ class MyFakeTestClass {}
 Rosella::Test::test(Test::SuiteFactory::Test);
 class Test::SuiteFactory::Test {
     method basic_BUILD() {
-        my $factory := Rosella::build(Rosella::Test::SuiteFactory, Rosella::Test::Suite, MyFakeTestClass, "Context");
+        my $factory := Rosella::build(Rosella::Test::SuiteFactory,
+            Rosella::Test::Suite, MyFakeTestClass, Rosella::Test::TestCase,
+            "Context"
+        );
     }
 
     method test_create_Suite() {
-        my $factory := Rosella::build(Rosella::Test::SuiteFactory, Rosella::Test::Suite, MyFakeTestClass, "Context");
+        my $factory := Rosella::build(Rosella::Test::SuiteFactory,
+            Rosella::Test::Suite, MyFakeTestClass, Rosella::Test::TestCase,
+            "Context"
+        );
         my $suite := $factory.create();
         Assert::instance_of($suite, Rosella::Test::Suite);
     }
@@ -25,7 +31,10 @@ class Test::SuiteFactory::Test {
     }
 
     method test_create_typed_Suite() {
-        my $factory := Rosella::build(Rosella::Test::SuiteFactory, Rosella::Test::Suite, MyFakeTestClass, "Context");
+        my $factory := Rosella::build(Rosella::Test::SuiteFactory,
+            Rosella::Test::Suite, MyFakeTestClass, Rosella::Test::TestCase,
+            "Context"
+        );
         my $suite := $factory.create_typed(Rosella::Test::Suite);
         Assert::instance_of($suite, Rosella::Test::Suite);
     }
