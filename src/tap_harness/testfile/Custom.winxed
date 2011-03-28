@@ -1,0 +1,24 @@
+namespace Rosella { namespace Harness { namespace TestFile
+{
+    class Custom : Rosella.Harness.TestFile
+    {
+        var cmd_fmt;
+
+        function BUILD(string cmd)
+        {
+            self.cmd_fmt = cmd;
+        }
+
+        function compile_test()
+        {
+            // TODO: Is there a way we can add this?
+            using Rosella.Error.invalid;
+            invalid("Harness.TestFile.Custom", "Cannot be used for inline testing");
+        }
+
+        function get_spawn_command()
+        {
+            return sprintf(self.cmd_fmt, [self.filename]);
+        }
+    }
+}}}
