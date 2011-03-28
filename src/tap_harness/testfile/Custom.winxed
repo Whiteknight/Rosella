@@ -24,7 +24,7 @@ namespace Rosella { namespace Harness { namespace TestFile
             string code = handle.readall();
             handle.close();
 
-            var result = compiler.compile(code);
+            var result = self.compiler.compile(code);
             return result[0];
         }
 

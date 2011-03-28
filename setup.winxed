@@ -131,6 +131,7 @@ function setup_stable_libraries(var rosella)
         "tap_harness/TestFile",
         "tap_harness/testfile/Factory",
         "tap_harness/testfile/Line",
+        "tap_harness/testfile/Custom",
         "tap_harness/testfile/NQP",
         "tap_harness/testfile/PIR",
         "tap_harness/testfile/Winxed",
