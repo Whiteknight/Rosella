@@ -3,21 +3,38 @@ namespace Rosella { namespace Harness { namespace TestFile
     class Custom : Rosella.Harness.TestFile
     {
         var cmd_fmt;
+        var compiler;
 
-        function BUILD(string cmd)
+        function BUILD(var compiler, string cmd)
         {
             self.cmd_fmt = cmd;
+            self.compiler = compiler;
         }
 
         function compile_test()
         {
-            // TODO: Is there a way we can add this?
-            using Rosella.Error.invalid;
-            invalid("Harness.TestFile.Custom", "Cannot be used for inline testing");
+            if (self.compiler == null) {
+                using Rosella.Error.invalid;
+                invalid("Harness.TestFile.Custom", "No compiler provided");
+            }
+
+            var handle = new "FileHandle";
+            handle.open(self.filename, 'r');
+
+            string code = handle.readall();
+            handle.close();
+
+            var result = compiler.compile(code);
+            return result[0];
         }
 
         function get_spawn_command()
         {
+            if (self.cmd_fmt == null) {
+                using Rosella.Error.invalid;
+                invalid("Harness.TestFile.Custom", "No command provided");
+            }
+
             return sprintf(self.cmd_fmt, [self.filename]);
         }
     }
