@@ -51,9 +51,10 @@ namespace Rosella { namespace Proxy
         {
             using Rosella.Proxy.get_proxy_private_attr;
             var class_obj = get_proxy_private_attr(proxy, "target_class");
+            int isa_type = 0;
             if (class_obj != null)
-                return class_obj.isa(type);
-            return 0;
+                ${ isa isa_type, class_obj, type };
+            return isa_type;
         }
 
         /* Method Intercept Methods

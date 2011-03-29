@@ -9,14 +9,14 @@ namespace Rosella { namespace Proxy { namespace Builder
     {
         function setup_proxy_class(var target_class, var proxy_class)
         {
-            using Rosella.Proxy.Builder.intercept_does;
+            using Rosella.Proxy.Builder.Imitate.intercept_does;
             proxy_class.add_vtable_override("does", intercept_does);
 
-            // TODO: Un-comment these when Parrot supports overriding these
-            //       vtables;
-            //proxy_class.add_vtable_override("isa", intercept_isa);
-            //proxy_class.add_vtable_override("isa_pmc", intercept_isa_pmc);
-            //proxy_class.add_vtable_override("can", intercept_can);
+            using Rosella.Proxy.Builder.Imitate.intercept_isa;
+            proxy_class.add_vtable_override("isa", intercept_isa);
+
+            using Rosella.Proxy.Builder.Imitate.intercept_isa_pmc;
+            proxy_class.add_vtable_override("isa_pmc", intercept_isa_pmc);
         }
 
         function intercept_does[nsentry](string role)
@@ -43,15 +43,6 @@ namespace Rosella { namespace Proxy { namespace Builder
             var controller = get_proxy_private_attr(self, "proxy_controller");
             if (controller != null)
                 return controller.isa_pmc(self, parent);
-            return 0;
-        }
-
-        function intercept_can[nsentry](string capability)
-        {
-            using Rosella.Proxy.get_proxy_private_attr;
-            var controller = get_proxy_private_attr(self, "proxy_controller");
-            if (controller != null)
-                return controller.can(self, capability);
             return 0;
         }
     }
