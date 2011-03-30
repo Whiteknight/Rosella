@@ -16,14 +16,19 @@ namespace Assert
     }
 
     // Unconditional fail. Throws a Rosella.Test.Failure
-    function fail(string why, int is_internal [optional], int has_is_i [opt_flag])
+    function fail(string why,
+        int is_internal [optional,named], int has_is_i [opt_flag],
+        var exception [optional,named], int has_ex [opt_flag]
+        )
     {
         using Rosella.build;
 
         if (!has_is_i)
             is_internal = 0;
+        if (!has_ex)
+            exception = null;
 
-        var ex = build(class Rosella.Test.Failure, why, is_internal);
+        var ex = build(class Rosella.Test.Failure, why, exception, is_internal);
         ex.throw();
     }
 
@@ -280,6 +285,43 @@ namespace Assert
             exception = e;
         }
         if (exception != null)
+            fail(message);
+    }
+
+    // Run the test, show that the output (and maybe the error output) matches
+    // the values expected
+    function output_is(var block, string output,
+            string message [optional], int has_msg [opt_flag],
+            string erroutput [named,optional], int has_erroutput [opt_flag])
+    {
+        using Rosella.IO.swap_handles;
+        message = default_message(message, has_msg, "output did not match");
+        var stdout = new "StringHandle";
+        var stderr = new "StringHandle";
+        var save_handles = swap_handles({"stdout": stdout, "stderr": stderr});
+        var exception = null;
+        try {
+            block();
+        } catch (e) {
+            exception = e;
+        }
+        swap_handles(save_handles);
+
+        if (exception != null) {
+            fail("Block threw exception before output received",
+                exception:[named("exception")]
+            );
+        }
+
+        string out_str = string(stdout);
+        if (out_str != output)
+            fail(message);
+
+        if (!has_erroutput)
+            return;
+
+        string errout_str = string(stderr);
+        if (errout_str != erroutput)
             fail(message);
     }
 }

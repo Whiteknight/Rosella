@@ -7,16 +7,18 @@ namespace Rosella { namespace Test
     class Failure
     {
         var exception;
+        var inner_ex;
         var is_internal;
 
         // Build the exception object. If the exception is_internal, we won't
         // show a backtrace.
-        function BUILD(string msg, int is_internal)
+        function BUILD(string msg, var inner_ex, int is_internal)
         {
             self.is_internal = is_internal;
             self.exception = new 'Exception';
             self.exception.message = msg;
             self.exception.payload = self;
+            self.inner_ex = inner_ex;
         }
 
         function throw()

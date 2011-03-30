@@ -69,32 +69,10 @@ namespace Rosella { namespace Harness
             return string(self.status);
         }
 
-        // TODO: Move into a utils class
-        function swap_handles(var handles)
-        {
-            var save_handles = {};
-            var interp = getinterp();
-
-            if (exists handles["stderr"]) {
-                save_handles["stderr"] = interp.stderr_handle();
-                interp.stderr_handle(handles["stderr"]);
-            }
-
-            if (exists handles["stdin"]) {
-                save_handles["stdin"] = interp.stdin_handle();
-                interp.stdin_handle(handles["stdin"]);
-            }
-
-            if (exists handles["stdout"]) {
-                save_handles["stdout"] = interp.stdout_handle();
-                interp.stdout_handle(handles["stdout"]);
-            }
-
-            return save_handles;
-        }
-
         function compile_and_execute()
         {
+            using Rosella.IO.swap_handles;
+
             var sub = self.compile_test();
             var stdout = new "StringHandle";
             stdout.open("blah", "rw");

@@ -104,9 +104,10 @@ namespace Rosella { namespace Test
         // Mark the test as being incomplete or unimplemented
         function unimplemented(string msg)
         {
-            self.test_todo = msg;
             using Assert.fail;
-            fail("Unimplemented: " + msg, 1);
+
+            self.test_todo = msg;
+            fail("Unimplemented: " + msg, 1:[named("is_internal")]);
         }
     }
 }}
