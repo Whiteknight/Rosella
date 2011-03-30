@@ -24,20 +24,20 @@ advanced libraries rely on some of the more basic ones.
 Here is a list of Rosella's libraries which are currently
 considered to be "stable" enough for general use:
 
-#### Core
+#### [Core](/Rosella/libraries/core.html)
 
 Rosella's Core library provides a handful of routines used by
 the other Rosella libraries. This library provides basic behavior
 for working with an assortment of "type" meta-objects, and for
 implementing a standard system of object constructor behavior.
 
-#### Action
+#### [Action](/Rosella/libraries/action.html)
 
 The Action library implements the Command pattern. Sequences of
 instructions can be bundled together into an Action object, and
 can be invoked later.
 
-#### Container
+#### [Container](/Rosella/libraries/container.html)
 
 The Container library implements a Dependency Injection, Inversion
 of Control container type which can be used to help decouple
@@ -45,26 +45,26 @@ modules in a program. The Container utilizes the Action library
 to setup constructor injection and method injection behaviors
 on registered types.
 
-#### Test
+#### [Test](/Rosella/libraries/test.html)
 
 Inspired by testing libraries such as xUnit and Test::More,
 The Rosella Test library provides the tools and utilities to
 quickly write unit tests for your software. Rosella's own test
 suite is written using this library.
 
-#### TAP Harness
+#### [TAP Harness](/Rosella/libraries/tap_harness.html)
 
 A companion to the Test library, The TAP Harness library
 implements the logic necessary to quickly construct a TAP harness
 for executing unit tests and reporting the results. Rosella's own
 test harness is written using this library.
 
-#### Proxy
+#### [Proxy](/Rosella/libraries/proxy.html)
 
 The Proxy library provides the tools necessary to create a wide
 array of proxy objects.
 
-#### Mock Objects
+#### [Mock Object](/Rosella/libraries/mockobject.html)
 
 The MockObject library uses the Rosella Proxy library to implement
 full-featured mock objects for use in testing with the Test
