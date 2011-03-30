@@ -45,11 +45,7 @@ namespace Rosella { namespace Test
                 return;
             }
 
-            var payload = ex.payload;
-            if (payload != null && isa_type(class Rosella.Test.Failure, payload))
-                self.notify_listeners("add_test_failure", test, context, payload, ex);
-            else
-                self.notify_listeners("add_exception", test, context, ex);
+            self.notify_listeners("add_exception", test, context, ex);
         }
 
         // End the test, presuming success

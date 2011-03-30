@@ -1,5 +1,22 @@
 namespace Rosella { namespace Test
 {
+    namespace Failure
+    {
+        // Extract a Failure object from an Exception, if available. If the
+        // exception is not a Failure, return null
+        function get_exception_failure(var ex)
+        {
+            using Rosella.isa_type;
+
+            var payload = ex.payload;
+            if (payload == null)
+                return null;
+            if (isa_type(class Rosella.Test.Failure, payload))
+                return payload;
+            return null;
+        }
+    }
+
     /* A test failure. Set up and throw an exception with this object as a
        payload to signal an assertion failure (as opposed to other kind of
        runtime error).
@@ -15,7 +32,6 @@ namespace Rosella { namespace Test
         function BUILD(string msg, var inner_ex, int is_internal)
         {
             self.is_internal = is_internal;
-            say("Failure.is_internal: " + string(is_internal));
             self.exception = new 'Exception';
             self.exception.message = msg;
             self.exception.payload = self;

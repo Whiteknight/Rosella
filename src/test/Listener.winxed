@@ -20,8 +20,5 @@ namespace Rosella { namespace Test
         function add_exception(var test, var context, var ex) { }
 
         function add_failure_msg(var test, var context, string msg) { }
-
-        // A test failure, typically caused by an Assertion
-        function add_test_failure(var test, var context, var failure, var ex) { }
     }
 }}
