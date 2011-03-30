@@ -114,7 +114,7 @@ namespace Rosella
     }
 
     // Determine if the given object is an instance of the given type.
-    function isa(var type, var object)
+    function isa_type(var type, var object)
     {
         if (type == null) {
             using Rosella.Error.invalid;

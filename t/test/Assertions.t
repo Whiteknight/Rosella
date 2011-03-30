@@ -38,9 +38,9 @@ class AssertionTest {
         });
     }
 
-    # TESTS FOR ASSERTIONS
-    # These tests use the meta-tests defined above to test individual
-    # assertions.
+    # TESTS FOR output_is
+    # These tests use the meta-tests defined above to test the
+    # Assert::output_is assertion
 
     method test_output_is_pass() {
         Assert::expect_pass({

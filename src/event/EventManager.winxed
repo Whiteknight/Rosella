@@ -26,9 +26,9 @@ namespace Rosella { namespace Event
         // event, overwriting any existing actions with duplicate ids.
         function register_event(string event_name, var event, int merge)
         {
-            using Rosella.isa;
+            using Rosella.isa_type;
 
-            if (!isa(class Rosella.Event, event)) {
+            if (!isa_type(class Rosella.Event, event)) {
                 using Rosella.Error.invalid;
                 invalid("not a valid event");
             }
@@ -71,8 +71,8 @@ namespace Rosella { namespace Event
         // Subscribe to an event with a pre-made Action.
         function subscribe_action(string event_name, var action)
         {
-            using Rosella.isa;
-            if (!isa(class Rosella.Action, action)) {
+            using Rosella.isa_type;
+            if (!isa_type(class Rosella.Action, action)) {
                 using Rosella.Error.invalid;
                 invalid("not a valid action");
             }

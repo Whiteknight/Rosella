@@ -12,12 +12,29 @@ namespace Rosella { namespace Test { namespace Listener
             self.test_builder = build(class Rosella.Test.Builder);
         }
 
-        function add_error(var test, var context, var error)
+        function add_exception(var test, var context, var ex)
         {
-            self.add_failure(test, context, error); // Same, as far as we care
+            string label = context.display_name();
+            string todo = context.test_todo();
+            if (todo != null)
+                self.test_builder.todo(0, label, todo);
+            else
+                self.test_builder.ok(0, label);
+            self.test_builder.diag(ex);
         }
 
-        function add_failure(var test, var context, var error)
+        function add_failure_msg(var test, var context, string msg)
+        {
+            string label = context.display_name();
+            string todo = context.test_todo();
+            if (todo != null)
+                self.test_builder.todo(0, label, todo);
+            else
+                self.test_builder.ok(0, label);
+            self.test_builder.diag(msg);
+        }
+
+        function add_test_failure(var test, var context, var failure, var ex)
         {
             string label = context.display_name();
             string todo = context.test_todo();
@@ -26,7 +43,22 @@ namespace Rosella { namespace Test { namespace Listener
             else
                 self.test_builder.ok(0, label);
 
-            self.test_builder.diag(error);
+            say("Is internal: " + string(failure.is_internal));
+            if (failure.is_internal)
+                self.test_builder.diag(ex.message);
+            else
+                self.test_builder.diag(ex);
+
+            if (failure.inner_ex != null) {
+                int is_defined = 0;
+                var inner_ex = failure.inner_ex;
+                ${ defined is_defined, inner_ex };
+                if (is_defined) {
+                    self.test_builder.diag("Inner Exception:");
+                    self.test_builder.diag(failure.inner_ex);
+                }
+            }
+
             return self;
         }
 

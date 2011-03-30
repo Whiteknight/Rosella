@@ -162,12 +162,12 @@ namespace Rosella { namespace MockObject
         // inside find_method instead of after we invoke the method.
         function have_method_expectations(string name)
         {
-            using Rosella.isa;
+            using Rosella.isa_type;
             var expect_method = class Rosella.MockObject.Expectation.Method;
             int count = 0;
 
             for (var expect in self.expectations) {
-                if (isa(expect_method, expect) && expect.name == name && expect.__available())
+                if (isa_type(expect_method, expect) && expect.name == name && expect.__available())
                     return 1;
             }
             return 0;

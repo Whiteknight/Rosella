@@ -17,9 +17,11 @@ namespace Rosella { namespace Test
         function end_test(var test, var context) { }
 
         // An error condition, such as an unhandled runtime exception
-        function add_error(var test, var context, var fault) { }
+        function add_exception(var test, var context, var ex) { }
+
+        function add_failure_msg(var test, var context, string msg) { }
 
         // A test failure, typically caused by an Assertion
-        function add_failure(var test, var context, var fault) { }
+        function add_test_failure(var test, var context, var failure, var ex) { }
     }
 }}

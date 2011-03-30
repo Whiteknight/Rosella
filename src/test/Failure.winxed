@@ -15,6 +15,7 @@ namespace Rosella { namespace Test
         function BUILD(string msg, var inner_ex, int is_internal)
         {
             self.is_internal = is_internal;
+            say("Failure.is_internal: " + string(is_internal));
             self.exception = new 'Exception';
             self.exception.message = msg;
             self.exception.payload = self;
