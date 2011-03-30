@@ -52,7 +52,7 @@ The Rosella Test library provides the tools and utilities to
 quickly write unit tests for your software. Rosella's own test
 suite is written using this library.
 
-#### [TAP Harness](/Rosella/libraries/tap_harness.html)
+#### [Harness](/Rosella/libraries/harness.html)
 
 A companion to the Test library, The TAP Harness library
 implements the logic necessary to quickly construct a TAP harness
