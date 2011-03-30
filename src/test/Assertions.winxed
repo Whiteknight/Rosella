@@ -215,8 +215,8 @@ namespace Assert
         message = default_message(message, has_msg, "block throws");
         try {
             block();
-        } catch() {
-            fail(message);
+        } catch(e) {
+            fail(message, e:[named("exception")]);
         }
     }
 
@@ -263,15 +263,15 @@ namespace Assert
         }
         if (exception == null)
             fail(message);
+
         var payload = exception.payload;
+        if (payload == null)
+            fail(message, exception:[named("exception")]);
 
-        // Work around weirdness in winxed's instanceof operator.
-        var failure_class = class Rosella.Test.Failure;
-        int isa_failure = 0;
-        ${ isa isa_failure, payload, failure_class };
-
-        if (payload == null || !isa_failure)
-            fail(message);
+        using Rosella.isa_type;
+        int isa_failure = isa_type(class Rosella.Test.Failure, payload);
+        if (!isa_failure)
+            fail(message, exception:[named("exception")]);
     }
 
     // meta-test. Runs the block as a test, and expects a pass
@@ -285,7 +285,7 @@ namespace Assert
             exception = e;
         }
         if (exception != null)
-            fail(message);
+            fail(message, exception:[named("exception")]);
     }
 
     // Run the test, show that the output (and maybe the error output) matches

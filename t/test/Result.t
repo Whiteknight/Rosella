@@ -56,13 +56,15 @@ class Test::Result::Test {
     }
 
     method test_add_failure_string() {
-        Assert::Fail(
+        $!context.unimplemented("Add a test for this new behavior");
     }
 
     method test_add_failure_ex() {
+        $!context.unimplemented("Add a test for this new behavior");
     }
 
     method test_add_failure_Failure() {
+        $!context.unimplemented("Add a test for this new behavior");
     }
 
     method test_add_error() {
