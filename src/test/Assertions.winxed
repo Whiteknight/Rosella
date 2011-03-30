@@ -297,7 +297,9 @@ namespace Assert
         using Rosella.IO.swap_handles;
         message = default_message(message, has_msg, "output did not match");
         var stdout = new "StringHandle";
+        stdout.open("Rosella.Test.Assert.stdout", "rw");
         var stderr = new "StringHandle";
+        stderr.open("Rosella.Test.Assert.stderr", "rw");
         var save_handles = swap_handles({"stdout": stdout, "stderr": stderr});
         var exception = null;
         try {
@@ -308,19 +310,22 @@ namespace Assert
         swap_handles(save_handles);
 
         if (exception != null) {
+            say(exception);
             fail("Block threw exception before output received",
                 exception:[named("exception")]
             );
         }
 
-        string out_str = string(stdout);
+        // TODO: We should trim leading/trailing whitespace
+
+        string out_str = stdout.readall();
         if (out_str != output)
             fail(message);
 
         if (!has_erroutput)
             return;
 
-        string errout_str = string(stderr);
+        string errout_str = stderr.readall();
         if (errout_str != erroutput)
             fail(message);
     }

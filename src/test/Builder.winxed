@@ -63,6 +63,8 @@ namespace Rosella { namespace Test
                     for (string frame in frames)
                         say("# " + frame);
                 }
+
+
             } else
                 say("# " + string(error));
         }
