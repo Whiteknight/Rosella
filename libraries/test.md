@@ -12,6 +12,12 @@ substituted.
 
 ## Concepts
 
+### Library Architecture
+
+### Method Extraction
+
+### Method Execution
+
 ## Namespaces
 
 ### Test
@@ -19,6 +25,33 @@ substituted.
 The `Rosella.Test` namespace contains the `test` function, which is a facade
 over some of the more complex and configurable portions of the library. For
 most general-case usages, use the `test` function to execute a test class.
+
+Most test files will start with something similar to the following preamble:
+
+    Rosella::Test::test(My::Test::Class);
+    class My::Test::Class {
+        ...
+    }
+
+The first argument to the `test` function is the type from which to extract
+methods. This is the only required parameter. There are a number of optional
+named parameters which can be provided to change certain aspects of the
+library.
+
+* `context`: The object to use as the TestContext for the tests. This value
+   will be available in the `context` or `$!context` attributes from inside
+   the running test. If this parameter is not provided, this will be an
+   instance of `Rosella.Test.TestContext`.
+* `testcase_type`: The type of object to use for each individual test. By
+  default this will be `Rosella.Test.TestCase`. This can be changed,
+  although it is not recommended for most usages. If you do need to make
+  something different, you should use a subclass of TestCase (not an arbitrary
+  stand-in) and should read the special notes about TestCase and its
+  peculiarities.
+* `suite_type`: You can specify a different type of object to use as the
+  Suite. By default this is `Rosella.Test.Suite`. Suites control the running
+  of tests. A common reason to provide a custom subclass of Suite would be
+  to introduce a specific test ordering (or shuffling).
 
 ### Assert
 
@@ -45,6 +78,19 @@ output.
 In the normal sequence, Builder is invoked from `Test.Listener.TAP`. This
 sequence may change in the future.
 
+Builder can be used similarly to how `Test::Builder` works in the Parrot
+repo, except it is object/method based and not just a list of subroutines
+available in the current namespace.
+
+    using Rosella.build;
+    var test_builder = build(Rosella.Test.Builder);
+    test_builder.ok(1, "The test is ok");
+
+At the moment test_builder provides only a small subset of the utility and
+test functions provided by `Test::Builder`. More things could be added if
+there is a demand by users to have this available as a complete substitute
+for `Test::Builder`.
+
 ### Test.Listener
 
 This is an empty parent class which implements the Listener interface.
@@ -52,7 +98,9 @@ Any number of Listener objects can be inserted into `Rosella.Test.Result` to
 broadcast results to a number of possible receivers.
 
 This class should not be used directly. You should subclass this class to get
-interesting or custom behaviors.
+interesting or custom behaviors. In the future, this class may be merged with
+`Rosella.Test.Listener.TAP` since that is the primary and most commonly used
+default implementation.
 
 ### Test.Listener.TAP
 
@@ -81,6 +129,35 @@ A TestCase object is an insulated execution environment for a test method.
 Methods are extracted from the target type and are executed on TestCase
 objects.
 
+TestCase uses a special system for attributes. This is because TestCase is
+intended to be used from languages with different requirements with respect
+to attribute use and naming conventions. For instance, In NQP or Perl6 it
+would be customary to refer to an attribute with a sigil, such as `$!context`.
+In Winxed or other similar languages, the sigil is not required (and in some
+cases, not permitted).
+
+Also, attributes in TestCase should not be modified. The context attribute
+holds important information about the test run, and holds data which can be
+used by other tests in the sequence. This attribute should not be modified nor
+overwritten during test execution. Because of this requirement, attributes in
+TestCase are read-only.
+
+This mechanism is implemented by having an attribute internally called
+`test_context`. TestCase intercepts `set_attr_str` vtable calls at the Parrot
+level and throws an exception. It also intercepts `get_attr_str` vtable calls
+and translates attribute names in a language-agnostic way. Attribute accesses
+to "`$!context`" and "`context`" are both translated to an access for
+"`test_context`". Subclasses of TestCase will inherit this behavior and will
+need to design their interfaces accordingly. `Rosella.Test.TestFactory` uses
+an internal mechanism for setting these attributes to default values without
+running afoul of the prohibition on writing values to attributes.
+
+In addition to the `test_context` attribute, the default TestCase type
+provides a `test_method` attribute ("`$!method`" / "`method`") for accessing
+the actual method object being invoked for the test. This is used internally
+by the test system and probably has limited utility from inside a running
+Test.
+
 TestCase objects are difficult to work with because of the special insulation
 which they have been designed with. In order to create and initialize a
 TestCase object you must use a TestFactory.
@@ -92,10 +169,20 @@ shared among all TestCase objects in the Suite. TestContext is used to
 provide behaviors and persistant data to tests in the Suite which are not
 available in an insulated TestCase environment.
 
+As described above, the TestContext object is provided in the "`context`"
+attribute ("`$!context`", in NQP) of the TestCase.
+
 ### Test.TestFactory
 
 `Rosella.Test.TestFactory` is used, primarily by the SuiteFactory, to create
-TestCase objects for the Suite.
+TestCase objects for the Suite. TestFactory uses internal mechanisms to write
+data to the TestCase attributes which are normally read-only.
+
+The same mechanism could be used from within a running test to overwrite
+values in the TestCase attributes. This is strongly *not recommended*, and
+may create problems within the running test Suite, and will certainly run
+afoul of future changes and refactors in this library. Don't do it. If you
+really need to store data you can do so in the TestContext instead.
 
 ## Private Classes
 
