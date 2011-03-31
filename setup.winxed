@@ -106,7 +106,8 @@ function setup_stable_libraries(var rosella)
         "test/Test",
         "test/TestCase",
         "test/TestContext",
-        "test/TestFactory"
+        "test/TestFactory",
+        "test/TestStatus"
     );
 
     // A mock object library for advanced unit testing

@@ -36,6 +36,7 @@ namespace Rosella { namespace Test
     {
         var test_method;    // The method object to execute
         var test_context;   // The TestContext
+        var test_status;    // The TestStatus
 
         // Lock attribute access to be read-only
         function set_attr_str[vtable](string attr, var value)

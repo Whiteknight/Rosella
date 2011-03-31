@@ -23,11 +23,11 @@ class Test::SuiteFactory::Test {
     }
 
     method test_create_custom_suite() {
-        $!context.unimplemented("test .create() with a custom type");
+        $!status.unimplemented("test .create() with a custom type");
     }
 
     method test_create_typed_custom_suite() {
-        $!context.unimplemented("test .create_typed() with a custom type");
+        $!status.unimplemented("test .create_typed() with a custom type");
     }
 
     method test_create_typed_Suite() {
@@ -40,10 +40,10 @@ class Test::SuiteFactory::Test {
     }
 
     method test_testcase_subclass() {
-        $!context.unimplemented("Test using SuiteFactory with a subclass of TestCase");
+        $!status.unimplemented("Test using SuiteFactory with a subclass of TestCase");
     }
 
     method test_context() {
-        $!context.unimplemented("Test using a custom TestContext object. Show that it is passed to all tests in the Suite");
+        $!status.unimplemented("Test using a custom TestContext object. Show that it is passed to all tests in the Suite");
     }
 }

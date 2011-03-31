@@ -36,18 +36,18 @@ class Harness::TestFile::Factory::Test {
     }
 
     method test_create_tests_from_dirs() {
-        $!context.unimplemented("Find a way to test this");
+        $!status.unimplemented("Find a way to test this");
     }
 
     method test_create_tests_from_files() {
-        $!context.unimplemented("Test this");
+        $!status.unimplemented("Test this");
     }
 
     method get_dir_contents() {
-        $!context.unimplemented("Test this");
+        $!status.unimplemented("Test this");
     }
 
     method is_test() {
-        $!context.unimplemented("Test this");
+        $!status.unimplemented("Test this");
     }
 }

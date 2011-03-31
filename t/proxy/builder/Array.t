@@ -61,7 +61,7 @@ class Proxy::Builder::Array::Test {
         ]);
 
         my $p := $factory.create(FooController.new());
-        $!context.unimplemented("test_delete_keyed_intercept");
+        $!status.unimplemented("test_delete_keyed_intercept");
     }
 
     method test_defined_keyed_intercept() {
@@ -70,7 +70,7 @@ class Proxy::Builder::Array::Test {
         ]);
 
         my $p := $factory.create(FooController.new());
-        $!context.unimplemented("test_defined_keyed_intercept");
+        $!status.unimplemented("test_defined_keyed_intercept");
     }
 
     method test_exists_keyed_intercept() {
@@ -79,6 +79,6 @@ class Proxy::Builder::Array::Test {
         ]);
 
         my $p := $factory.create(FooController.new());
-        $!context.unimplemented("test_exists_keyed_intercept");
+        $!status.unimplemented("test_exists_keyed_intercept");
     }
 }

@@ -56,15 +56,15 @@ class Test::Result::Test {
     }
 
     method test_add_failure_string() {
-        $!context.unimplemented("Add a test for this new behavior");
+        $!status.unimplemented("Add a test for this new behavior");
     }
 
     method test_add_failure_ex() {
-        $!context.unimplemented("Add a test for this new behavior");
+        $!status.unimplemented("Add a test for this new behavior");
     }
 
     method test_add_failure_Failure() {
-        $!context.unimplemented("Add a test for this new behavior");
+        $!status.unimplemented("Add a test for this new behavior");
     }
 
     method test_add_error() {
@@ -77,7 +77,7 @@ class Test::Result::Test {
         #$result.add_error($faketest, "context", "oops");
         #$c.verify();
         #Assert::equal($result.was_successful, 0);
-        $!context.unimplemented("This logic path has changed. Update the test");
+        $!status.unimplemented("This logic path has changed. Update the test");
     }
 
     method test_add_failure() {
@@ -90,6 +90,6 @@ class Test::Result::Test {
         #$result.add_failure($faketest, "context", "oops");
         #$c.verify();
         #Assert::equal($result.was_successful, 0);
-        $!context.unimplemented("This logic path has changed. Update the test");
+        $!status.unimplemented("This logic path has changed. Update the test");
     }
 }

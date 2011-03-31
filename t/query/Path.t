@@ -46,7 +46,7 @@ class PathTest {
     }
 
     method test_attr_hash_search() {
-        $!context.unimplemented("Implement this");
+        $!status.unimplemented("Implement this");
     }
 
     method test_longest_key_hash_search() {

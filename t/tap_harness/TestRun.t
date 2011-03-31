@@ -12,15 +12,15 @@ class Harness::TestRun::Test {
     }
 
     method test_tests() {
-        $!context.unimplemented("This!");
+        $!status.unimplemented("This!");
     }
 
     method max_file_length() {
-        $!context.unimplemented("This!");
+        $!status.unimplemented("This!");
     }
 
     method run_was_success() {
-        $!context.unimplemented("This!");
+        $!status.unimplemented("This!");
     }
 
     method run_was_success_default() {
@@ -29,11 +29,11 @@ class Harness::TestRun::Test {
     }
 
     method files_by_status() {
-        $!context.unimplemented("This!");
+        $!status.unimplemented("This!");
     }
 
     method num_files_by_status() {
-        $!context.unimplemented("This!");
+        $!status.unimplemented("This!");
     }
 
     method num_files_empty() {

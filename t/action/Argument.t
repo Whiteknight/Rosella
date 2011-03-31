@@ -11,22 +11,22 @@ class Action::Argument::Test {
     }
 
     method test_name() {
-        $!context.unimplemented("This");
+        $!status.unimplemented("This");
     }
 
     method test_position() {
-        $!context.unimplemented("This");
+        $!status.unimplemented("This");
     }
 
     method test_set_positioning() {
-        $!context.unimplemented("This");
+        $!status.unimplemented("This");
     }
 
     method test_type() {
-        $!context.unimplemented("This");
+        $!status.unimplemented("This");
     }
 
     method test_resolve_to() {
-        $!context.unimplemented("This");
+        $!status.unimplemented("This");
     }
 }

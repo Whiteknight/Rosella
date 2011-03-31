@@ -15,23 +15,6 @@ class Test::TestContext::Test {
         Assert::instance_of($testcontext, Rosella::Test::TestContext);
     }
 
-    method test_prepare() {
-        my $testcontext := Rosella::build(Rosella::Test::TestContext);
-        $testcontext.prepare("Suite", "TestName", "Test");
-    }
-
-    method test_current_test() {
-        my $testcontext := Rosella::build(Rosella::Test::TestContext);
-        $testcontext.prepare("Suite", "TestName", "Test");
-        Assert::equal($testcontext.current_test(), "Test");
-    }
-
-    method test_suite() {
-        my $testcontext := Rosella::build(Rosella::Test::TestContext);
-        $testcontext.prepare("Suite", "TestName", "Test");
-        Assert::equal($testcontext.suite(), "Suite");
-    }
-
     method test_get_data_null() {
         my $testcontext := Rosella::build(Rosella::Test::TestContext);
         my $data := $testcontext.get_data("Foo");
@@ -56,17 +39,5 @@ class Test::TestContext::Test {
         $testcontext.set_data("Foo", "Baz");
         my $data := $testcontext.get_data("Foo");
         Assert::equal($data, "Baz");
-    }
-
-    method test_todo() {
-        $!context.unimplemented("Find a way to test TestContext.todo()");
-    }
-
-    method test_verify() {
-        $!context.unimplemented("Find a way to test TestContext.verify()");
-    }
-
-    method test_unimplemented() {
-        $!context.unimplemented("Find a way to test TestContext.unimplemented()");
     }
 }

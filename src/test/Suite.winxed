@@ -34,7 +34,6 @@ namespace Rosella { namespace Test
             result.plan_tests(int(self.tests));
             for (var test_name in self.tests) {
                 var test = self.tests[test_name];
-                self.context.prepare(self, test_name, test);
                 self.run_test(test_name, test, result);
             }
             return result;
@@ -54,9 +53,9 @@ namespace Rosella { namespace Test
                 exception = e;
             }
             if (exception == null)
-                result.end_test(test, self.context);
+                result.end_test(test, test.status);
             else
-                result.add_failure(test, self.context, exception);
+                result.add_failure(test, test.status, exception);
             return result;
         }
     }

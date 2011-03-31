@@ -13,7 +13,7 @@ class ActionTest {
     }
 
     method test_prepare_args_empty() {
-        $!context.todo("Oh noes!");
+        $!status.todo("Oh noes!");
         my $action := Rosella::build(Rosella::Action, "foo", []);
         my @pos := [];
         my %named := {};

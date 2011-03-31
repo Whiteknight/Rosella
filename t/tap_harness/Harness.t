@@ -13,10 +13,10 @@ class Harness::Test {
     }
 
     method run() {
-        $!context.unimplemented("Test Harness.run()");
+        $!status.unimplemented("Test Harness.run()");
     }
 
     method run_internal() {
-        $!context.unimplemented("Test Harness.run_internal()");
+        $!status.unimplemented("Test Harness.run_internal()");
     }
 }

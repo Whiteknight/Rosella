@@ -7,14 +7,14 @@ namespace Rosella { namespace Test
     */
     class TestFactory : Rosella.ObjectFactory
     {
-        var test_context;
+        var context;
 
         // Set up the factory with the type to create (TestCase or look-alike)
         // and the TestContext object to use.
         function BUILD(var type, var context)
         {
             self.target_type = type;
-            self.test_context = context;
+            self.context = context;
         }
 
         // Create the TestCase object with the given test method and test
@@ -24,13 +24,18 @@ namespace Rosella { namespace Test
                 var p [slurpy], var n [slurpy,named])
         {
             using Rosella.build;
-
             var test = build(type);
-            var context = self.test_context;
-            //test.test_context = context;
+            var status = build(class Rosella.Test.TestStatus, test_name, test_method);
+            var context = self.context;
+
+            // setattribute_p_p_s_p sets attributes through a different
+            // mechanism and does not get routed through VTABLE_set_attr_str.
+            // This is important, because TestCase is locked down so that
+            // normal accesses through VTABLE_set_attr_str are blocked.
             var testcase_class = class Rosella.Test.TestCase;
             ${ setattribute test, testcase_class, "test_method", test_method };
             ${ setattribute test, testcase_class, "test_context", context };
+            ${ setattribute test, testcase_class, "test_status", status };
 
             return test;
         }

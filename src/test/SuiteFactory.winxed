@@ -9,7 +9,7 @@ namespace Rosella { namespace Test
     class SuiteFactory : Rosella.ObjectFactory
     {
         var test_prefix;    // prefix for valid tests
-        var test_context;
+        var test_context;   // The TestContext
         var testcase_type;  // The type of testcase objects to build
         var test_type;      // The type to extract tests from
         var seen_methods;
