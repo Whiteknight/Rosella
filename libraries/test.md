@@ -12,8 +12,6 @@ substituted.
 
 ## Concepts
 
-### Library Architecture
-
 ### Method Extraction
 
 The basic method of executing a sequence of tests is to use the

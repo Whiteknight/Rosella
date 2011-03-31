@@ -9,6 +9,10 @@ The Rosella Winxed library provides some basic functionality, especially with
 respect to the Parrot distutils library, to build and manage projects written
 in Winxed.
 
+This library may expand to include additional abilities, if glaring feature
+ommissions are found in the Winxed language or in other toolsets and libraries
+which are not natively compatible with Winxed.
+
 ## Concepts
 
 ### Distutils

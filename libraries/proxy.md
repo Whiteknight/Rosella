@@ -56,30 +56,49 @@ the individual proxy object when it is created.
 
 ### Proxy.Builder.Array
 
-`Rosella.Proxy.Builder.Array` sets up the proxy to intercept array-liked
+`Rosella.Proxy.Builder.Array` sets up the proxy to intercept array-like
 integer keyed accesses. If you do not use this Builder, and treat the proxy
 like an array, you will probably get an error about not having the necessary
-vtables.
+vtables defined. There is no default fallback behavior for proxies for integer
+keyed access without this builder.
+
+    using Rosella.build;
+    var factory = build(class Rosella.Proxy.Factory, class My.Test.Class, [
+        build(Rosella.Proxy.Builder.Array)
+    ]);
+    var proxy = factory.create(controller);
+    proxy[5] = "hello";
+    var value = proxy[6];
 
 ### Proxy.Builder.AttributeIntercept
 
 `Rosella.Proxy.Builder.AttributeIntercept` is used to intercept accesses for
 getting and setting attributes.
 
+    using Rosella.build;
+    var factory = build(class Rosella.Proxy.Factory, class My.Test.Class, [
+        build(Rosella.Proxy.Builder.AttributeIntercept)
+    ]);
+    var proxy = factory.create(controller);
+    proxy.foo = "whatever";
+    var value = proxy.bar;
+
 Notice that Parrot's object model does funny things if you try to proxy a
 built-in PMC type. In these cases, Parrot's object model uses an attribute
 misfortunately named "proxy" to store an instance of the lower-level type
-to fallback to under certain situations. AttributeIntercept is set up to
+to fall back to under certain situations. AttributeIntercept is set up to
 automatically redirect accesses for the "proxy" attribute to the proxy target
 object if the type being proxied is a built-in type. If you are proxying a
 built-in PMC type, you *must* use AttributeIntercept to provide this behavior.
+More details about this will be found in the section about the Passthrough
+builder.
 
 ### Proxy.Builder.Imitate
 
 `Rosella.Proxy.Builder.Imitate` causes the proxy to look like it is from a
-different type by overriding the "does" vtable. Parrot does not currently
-allow "isa" to be overridden by subclasses, so calls to isa will fail if you
-use a proxy.
+different type by overriding the "does", "isa" and "isa_pmc" vtables. By using
+this builder, the proxy should be able to pass runtime checks and pretend to
+be a member of a type or types which it otherwise would not appear to be.
 
 Notice that the "can" vtable is tied to the find_method vtable. If you want to
 override the behavior of "can", you should use MethodIntercept.
@@ -110,6 +129,18 @@ the target type. This forces all unintercepted vtable calls to fallback to the
 implementations on the target object. This is useful if we only want to
 intercept certain interfaces and let all other accesses fallback to the
 object.
+
+In this example, we are trying to proxy the built-in PMC type "String". To do
+this, we must also use the AttributeIntercept builder to prevent a variety of
+errors.
+
+    using Rosella.build;
+    var factory = build(class Rosella.Proxy.Factory, "String", [
+        build(Rosella.Proxy.Builder.AttributeIntercept),
+        build(Rosella.Proxy.Builder.Passthrough)
+    ]);
+    var proxy = factory.create(controller);
+    proxy.replace("foo", "bar");
 
 ### Proxy.Builder.PMCKeyedHash
 
