@@ -1,13 +1,16 @@
 body {
     margin-top: 1.0em;
-    background-color: #ffffff;
+    background-color: #888888;
     font-family: Helvetica, Arial, FreeSans, san-serif;
     color: #000000;
 }
 
-#container {
+#main-content-container {
     margin: 0 auto;
+    padding: 10px;
     width: 700px;
+    border: 2px solid #555555;
+    background-color: #FFFFFF;
 }
 
 h1 {
@@ -66,6 +69,7 @@ hr {
     text-align:center;
     padding-top:30px;
     font-style: italic;
+    font-size: smaller;
 }
 
 img { border: 0px; }
