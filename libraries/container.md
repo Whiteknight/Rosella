@@ -75,13 +75,15 @@ is actually returned.
 
 ### Container
 
-## Classes
+## Public Classes
 
 ### Container
 
 The `Rosella.Container` class implements the dependency-injection container.
 The Container class provides two basic sets of public methods: Register and
 Resolve.
+
+## Private Classes
 
 ### Container.ItemFactory
 

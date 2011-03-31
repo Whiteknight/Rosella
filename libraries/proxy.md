@@ -79,7 +79,8 @@ getting and setting attributes.
     var factory = build(class Rosella.Proxy.Factory, class My.Test.Class, [
         build(Rosella.Proxy.Builder.AttributeIntercept)
     ]);
-    var proxy = factory.create(controller);
+    var target = "This will be a String PMC"
+    var proxy = factory.create(controller, target);
     proxy.foo = "whatever";
     var value = proxy.bar;
 
@@ -110,17 +111,42 @@ blocks access to set_attribute, set_x_native, and other "set_" vtables. If
 one of these vtables is invoked, an exception will be thrown. If used with
 other Builders which also implement these vtables, Immutable should be
 specified last to ensure that the set vtables are locked and not overridden
-by other Builders.
+by other Builders. Immutable should typically be accompanied by the
+Passthrough builder, so that other non-write accesses are allowed to pass
+through to the target type transparently.
+
+    using Rosella.build;
+    var factory = build(class Rosella.Proxy.Factory, class My.Test.Class, [
+        build(Rosella.Proxy.Builder.Passthrough),
+        build(Rosella.Proxy.Builder.Immutable)
+    ]);
+    var target = build(class My.Test.Class);
+    var proxy = factory.create(controller, target);
+    target.foo = "oopsie!";     // Throws exception.
 
 ### Proxy.Builder.InvokeIntercept
 
 `Rosella.Proxy.Builder.InvokeIntercept` is used to intercept the invoke vtable
 for types like Sub which can be invoked.
 
+    using Rosella.build;
+    var factory = build(class Rosella.Proxy.Factory, class My.Test.Class, [
+        build(Rosella.Proxy.Builder.InvokeIntercept)
+    ]);
+    var proxy = factory.create(controller);
+    proxy("args");
+
 ### Proxy.Builder.MethodIntercept
 
 `Rosella.Proxy.Builder.MethodIntercept` is used to intercept find_method
 vtable calls.
+
+    using Rosella.build;
+    var factory = build(class Rosella.Proxy.Factory, class My.Test.Class, [
+        build(Rosella.Proxy.Builder.MethodIntercept)
+    ]);
+    var proxy = factory.create(controller);
+    proxy.foo("args");
 
 ### Proxy.Builder.Passthrough
 
@@ -139,15 +165,31 @@ errors.
         build(Rosella.Proxy.Builder.AttributeIntercept),
         build(Rosella.Proxy.Builder.Passthrough)
     ]);
-    var proxy = factory.create(controller);
-    proxy.replace("foo", "bar");
+    var target = "This will be a String PMC"
+    var proxy = factory.create(controller, target);
+    proxy.replace("will be", "is");
+    say(proxy);
 
 ### Proxy.Builder.PMCKeyedHash
 
 `Rosella.Proxy.Builder.PMCKeyedHash` intercepts hash-like keyed accesses on
 the object.
 
+    using Rosella.build;
+    var factory = build(class Rosella.Proxy.Factory, class My.Test.Class, [
+        build(Rosella.Proxy.Builder.PMCKeyedHash)
+    ]);
+    var proxy = factory.create(controller);
+    proxy["test"] = "foo";
+
 ### Proxy.Builder.StringKeyedHash
+
+`Rosella.Proxy.Builder.StringKeyedHash` is similar to the PMCKeyedHash except
+it overrides the string-keyed access functions. There is currently no way to
+use string-keyed access vtables from PIR (or, by extension, any language
+which compiles down to pure PIR). These routines are accessible only through
+internal access in Parrot. This proxy builder should allow you to intercept
+and override these behaviors, though its usefulness is obviously limited.
 
 ### Proxy.Controller
 
@@ -158,8 +200,16 @@ method calls on the Controller. Consult the individual Builder objects to see
 which Controller methods are invoked by the intercepted accesses.
 
 The default Controller type does very little except to attempt to pass through
-most accesses to the target object or target class, if those are set. For
-more interesting behaviors you should provide your own Constroller subclass.
+most accesses to the target object or target class, if those are set. Notice
+that it only attempts to pass through vtable accesses which most common
+builders would be overriding. The Controller does not attempt to pass through
+all vtable accesses. For that, use the Passthrough builder instead.
+
+For more interesting behaviors you should provide your own Constroller
+subclass and override the methods you want. Look at the source code for the
+Controller type and the various Builder types to figure out which methods
+would need to be provided or overridden by your Controller type to provide the
+types of behavior you are interested in.
 
 ### Proxy.Factory
 

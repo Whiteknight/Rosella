@@ -31,6 +31,8 @@ to use them and how to make proper use of them in your tests.
 
 ## Namespaces
 
+None.
+
 ## Classes
 
 ### MockObject.Controller
@@ -51,6 +53,9 @@ To set an expectation on the mock, use one of the expectation methods.
 expectation respectively. `.expect_invoke()` creates an Invoke expectation.
 Using these methods, the created expectations are automatically added to the
 list of expectations for the Controller and cannot be removed once created.
+
+To create and use your own custom Expectation, you can use the `.expect()`
+method instead.
 
 ### MockObject.Controller.Ordered
 
