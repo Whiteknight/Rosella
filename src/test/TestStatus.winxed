@@ -1,0 +1,63 @@
+namespace Rosella { namespace Test
+{
+    class TestStatus
+    {
+        var current_test;
+        var test_name;
+        var test_todo;
+        var suite;
+
+        function BUILD(string test_name, var test)
+        {
+            self.current_test = test;
+            self.test_name = test_name;
+            self.test_todo = null;
+        }
+
+        // Get the displayable name of the test. Should not be null.
+        function display_name()
+        {
+            return self.test_name;
+        }
+
+        // Displayable text showing a todo note. Should be null if the test
+        // is not todo'd
+        function test_todo()
+        {
+            return self.test_todo;
+        }
+
+        // Get the currently executing TestCase object
+        function current_test()
+        {
+            return self.current_test;
+        }
+
+        // Get the currently executing Suite object
+        function suite()
+        {
+            return self.suite;
+        }
+
+                // Mark the currently-executing test as TODOd
+        function todo(string msg)
+        {
+            self.test_todo = msg;
+        }
+
+        // Change the displayed name of the test
+        function verify(string msg)
+        {
+            self.test_name = msg;
+        }
+
+        // Mark the test as being incomplete or unimplemented
+        function unimplemented(string msg)
+        {
+            using Assert.fail;
+
+            self.test_todo = msg;
+            fail("Unimplemented: " + msg, 1:[named("is_internal")]);
+        }
+    }
+}}
