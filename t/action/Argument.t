@@ -13,8 +13,8 @@ class Action::Argument::Test {
     method test_setup_positioning_name() {
         my $arg := Rosella::build(Rosella::Action::Argument);
         $arg.setup_positioning(:name("Foo"));
-        my $name := $arg.name();
-        my $pos := $arg.position();
+        my $name := pir::getattribute__PPS($arg, 'name');
+        my $pos := pir::getattribute__PPS($arg, 'position');
         Assert::equal($name, "Foo");
         Assert::equal($pos, -1);
     }
@@ -22,8 +22,8 @@ class Action::Argument::Test {
     method test_setup_positioning_position() {
         my $arg := Rosella::build(Rosella::Action::Argument);
         $arg.setup_positioning(:position(7));
-        my $name := $arg.name();
-        my $pos := $arg.position();
+        my $name := pir::getattribute__PPS($arg, 'name');
+        my $pos := pir::getattribute__PPS($arg, 'position');
         Assert::is_null($name);
         Assert::equal($pos, 7);
     }
