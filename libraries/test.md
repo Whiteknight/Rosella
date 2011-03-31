@@ -16,7 +16,39 @@ substituted.
 
 ### Method Extraction
 
+The basic method of executing a sequence of tests is to use the
+`Rosella.Test.test()` function. This function sets up all the necessary
+objects, creates the testing environment, executes the tests, and reports
+the results to the user.
+
+The one required argument to this function is a type object for the test. The
+type class must contain a sequence of test methods. Every method in the type
+is considered to be a test.
+
+During Suite construction, all method objects are extracted from the target
+type, and each one is wrapped in a TestCase object. This extraction happens
+through method calls on the Parrot Class PMC associated with that type. A test
+type which overrides VTABLE_find_method will not be able to use that mechanism
+to override or dynamically generate the list of test methods to execute.
+
+Currently no other mechanism exists to manually specify a list of methods to
+execute as tests. Such a mechanism is planned to be added in later versions of
+Rosella Test.
+
 ### Method Execution
+
+Method objects are extracted from the target type. During Suite execution,
+each method is invoked on a TestCase object instead of the type where it was
+defined. This is an important distinction to make. Because of this insulation,
+a test method during execution does not have:
+
+* Access to any attributes of the target type, or attributes inherited by the
+target type from its parents
+* Access to any other test methods or other methods in the target type.
+
+Because of this mechanism if you need to have access to shared data, or helper
+methods, those should be added to the TestContext object prior to test
+execution.
 
 ## Namespaces
 
@@ -84,7 +116,10 @@ available in the current namespace.
 
     using Rosella.build;
     var test_builder = build(Rosella.Test.Builder);
+    test_builder.plan(2);
     test_builder.ok(1, "The test is ok");
+    test_builder.todo(0, "Whoopsie! It's okay, it's marked TODO");
+    test_builder.diag("This is an error message");
 
 At the moment test_builder provides only a small subset of the utility and
 test functions provided by `Test::Builder`. More things could be added if
@@ -152,6 +187,13 @@ need to design their interfaces accordingly. `Rosella.Test.TestFactory` uses
 an internal mechanism for setting these attributes to default values without
 running afoul of the prohibition on writing values to attributes.
 
+The context object is used to provide a shared data context between tests, so
+that tests can access the same data. The `status` attribute contains a
+`Rosella.Test.TestStatus` object, which is used to control the execution of
+the test and communicates information about its status back to the Suite. The
+TestContext can and, for all but the most trivial uses, be replaced or
+subclassed as necessary. The TestStatus object cannot be.
+
 In addition to the `test_context` attribute, the default TestCase type
 provides a `test_method` attribute ("`$!method`" / "`method`") for accessing
 the actual method object being invoked for the test. This is used internally
@@ -161,6 +203,35 @@ Test.
 TestCase objects are difficult to work with because of the special insulation
 which they have been designed with. In order to create and initialize a
 TestCase object you must use a TestFactory.
+
+Here are some examples of test methods written in NQP using these features:
+
+    method test_empty() {
+        # Empty body, passes by default
+    }
+
+    method test_unimplemented() {
+        $!status.unimplemented("This test has no logic! Fix this");
+    }
+
+    method test_todo() {
+        $!status.todo("Something is wrong here...");
+        Assert::equal(0, 1);
+    }
+
+    method test_verify() {
+        $!status.verify("Basic Sanity Test (BST)");
+        Assert::equal(1, 1);
+    }
+
+    method test_set_data() {
+        $!context.set_data("Number", 7);
+    }
+
+    method test_get_data() {
+        my $value := $!context.get_data("Number");
+        Assert::equal($value, 7);
+    }
 
 ### Test.TestContext
 
@@ -183,6 +254,14 @@ values in the TestCase attributes. This is strongly *not recommended*, and
 may create problems within the running test Suite, and will certainly run
 afoul of future changes and refactors in this library. Don't do it. If you
 really need to store data you can do so in the TestContext instead.
+
+### Test.TestStatus
+
+Every TestCase object has a `Rosella.Test.TestStatus` object. The TestStatus
+object is used to control the test, provide information about the test to the
+Suite, and contain information about result status which is communicated to
+the Result object. Every TestCase has a TestStatus available. This class
+cannot be modified, subclassed, or replaced.
 
 ## Private Classes
 
