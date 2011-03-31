@@ -35,7 +35,7 @@ namespace Rosella { namespace Action
         function name(string name)
         {
             self.name = name;
-            self.position = -9999;
+            self.position = -1;
         }
 
         // Set the position of the Argument. It is now a positional argument,
@@ -65,18 +65,10 @@ namespace Rosella { namespace Action
             var value = self.resolve_value();
             if (self.name != null)
                 named[self.name] = value;
-            else if (self.position != -9999) {
-                if (self.position >= 0)
-                     pos[self.position] = value;
-                else
-                    ${ push pos, value };
-            }
-            else {
-                using Rosella.Error.invalid;
-                invalid("Rosella.Action.Argument.resolve_to",
-                    "Method argument must be Named or Positional"
-                );
-            }
+            else if (self.position >= 0)
+                pos[self.position] = value;
+            else
+                ${ push pos, value };
         }
 
         // Get the actual value. This happens in a subclass.

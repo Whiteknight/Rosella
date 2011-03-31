@@ -40,7 +40,7 @@ namespace Rosella { namespace MockObject { namespace Expectation
                 for (string name in named) {
                     if (!(exists self.named_args[name]))
                         return 0;
-                    if (named[name] != self.named_args[named])
+                    if (named[name] != self.named_args[name])
                         return 0;
                 }
                 return 1;
