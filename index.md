@@ -3,19 +3,38 @@ layout: rosella
 title: Rosella Library
 ---
 
-Rosella is a library of patterns and practices for use with the
-Parrot Virtual Machine. The goal of Rosella is to provide a
-library of building blocks for programmers on Parrot. By having
-these tools and components available in a portable, usable way,
-programmers should be empowered to create high quality,
-maintainable software faster.
+Rosella is a library of patterns and practices for use with the Parrot Virtual
+Machine. The Rosella project is actually a collection of several individual
+libraries, each of which implements a single pattern, best practice or
+toolset. Rosella is intended to be used piece-wise. Use only the parts you
+want and ignore the parts you do not want. Rosella libraries tend not to be
+interdependent, although some of the more advanced libraries rely on some of
+the more basic ones.
 
-The Rosella project is actually a collection of individual
-libraries, each of which implements a single pattern or best
-practice. Rosella is intended to be used piece-wise. Use only the
-parts you want and ignore the parts you do not want. Rosella
-libraries tend not to be interdependent, although some of the more
-advanced libraries rely on some of the more basic ones.
+## Project Goals
+
+The Rosella project has a number of driving goals which influence both the
+types of libraries which are provided and the way those libraries are
+implemented:
+
+* **Portability**. Rosella is pure-parrot, and has no components written in C.
+  It has no runtime dependencies besides a minimally-configured Parrot.
+  Rosella can go anywhere Parrot can go.
+* **Complete language agnosticism**. Rosella intends to be usable from
+  programs written in any language running on Parrot.
+* **Encapsulate low-level details**. Parrot provides lots of tools, though
+  many are too low-level. Rosella attempts to encapsulate some ugly details
+  behind nice, friendly, and usable interfaces.
+* **Extensibility**. Rosella aims to provide good defaults, but also to allow
+  aggressive modifications, configurations, and subclassing behaviors to those
+  who need something different.
+* **Provide well-known tools**. Rosella isn't an experimental research
+  project. It aims to provide Parrot implementations of well-known patterns,
+  practices, architectures, and tools. Rosella borrows good ideas from
+  well-known and high-quality sources.
+* **Focus on the user**. Rosella is interested in making things easier for
+  other coders. It wants to provide things that other coders will actually use
+  and appreciate. Rosella is a set of tools for coders, not for end users.
 
 ## Rosella Components
 
@@ -73,54 +92,20 @@ using this library.
 
 ### Rosella Development Libraries
 
-This is a list of libraries which are still in design or
-development phases:
-
-#### Event
-
-The Event library provides a subscribe/observe interface over the
-Action library. Multiple parts of a program can anonymously
-subscribe to or publish named events. This library is inspired,
-in part, by the event aggregation portions of the PRISM practices
-library.
-
-#### Prototype
-
-The Prototype library provides facilities for implementing a
-prototype-based object model system. Prototypes and object
-constructors/initializers can be registered with the library. New
-instances can be cloned from the prototype on demand.
-
-#### Query
-
-The Query library provides interfaces for interacting with
-aggregate objects. This library provides a series of higher-order
-utilities inspired by the .Net LINQ library.
-
-#### Decorate
-
-The Decorate library uses the Proxy library to implement a system
-of cheap, efficient type decorators. A decorator allows
-transparent passthrough of normal method calls, attribute
-accesses, and primitive value operations while allowing the
-programmer to inject additional methods and attributes on a
-per-object (not per-class) basis.
-
-#### Contract
-
-The Contract library implements logic for "design by contract"
-programming mechanisms. You can set up runtime checks for pre-
-and post-conditions on method calls, and you can set up assertions
-to verify invariant conditions. All the logic in the library can
-be disabled once the software has been tested and deployed.
+Rosella has a number of other libraries in planning and development. These
+libraries are not yet considered mature enough to include as part of a
+regular release. For the complete list with descriptions and ideas, see the
+[future libraries page](/Rosella/libraries/future.html).
 
 ## Install
 
-### Dependencies
-<ul>
-    <li>[Parrot](http://github.com/parrot/parrot)</li>
-    <li>[Winxed](http://code.google.com/p/winxed)</li>
-</ul>
+### Build Dependencies
+
+* [Parrot](http://github.com/parrot/parrot) : Rosella runs on top of the
+  Parrot VM. You cannot build, run, or use Rosella in any way without Parrot.
+* [Winxed](http://code.google.com/p/winxed) : Rosella is written in the
+  Winxed language. You need Winxed to build Rosella, but you do not need
+  Winxed to run it. Winxed has no runtime libraries of its own.
 
 ### Installing With Plumage
 
