@@ -168,7 +168,7 @@ function setup_experimental_libraries(var rosella)
         "query/Query",
         "query/Provider",
         "query/provider/Array",
-        "query/provider/Hash",
+        "query/provider/Hash"
     );
 
     setup_winxed_lib(rosella, "path",

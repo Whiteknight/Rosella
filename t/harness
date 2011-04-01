@@ -17,6 +17,7 @@ $factory.add_test_dirs("NQP",
     "t/event",
     "t/prototype",
     "t/query",
+    "t/path",
     "t/proxy",
     "t/mockobject",
     :recurse(1)

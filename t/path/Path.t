@@ -1,6 +1,6 @@
 INIT {
     pir::load_bytecode("rosella/test.pbc");
-    pir::load_bytecode("rosella/query.pbc");
+    pir::load_bytecode("rosella/path.pbc");
 }
 
 Rosella::Test::test(PathTest);
