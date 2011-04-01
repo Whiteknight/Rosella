@@ -1,0 +1,45 @@
+
+// Here's one idea for a memoizer which doesn't use Proxy as a base. We don't
+// have as much flexibility here as we might with Proxy.
+// TODO: Implement a new version using Proxy. Benchmark them to see if there
+//       is an appreciable difference in runtime. If Proxy is slower, we might
+//       want to offer both, with this version listed as "simple". If the
+//       times are nearly the same, scrap this simplistic version and use
+//       proxy only.
+namespace Rosella { namespace Memoize
+{
+    function memoize(var func, var keygen [optional], int has_keygen [opt_flag])
+    {
+        var cache = {};
+        var generator;
+        if (has_keygen)
+            generator = keygen;
+        else {
+            using Rosella.build;
+            generator = build(class Rosella.Memoize.StringKeygen);
+        }
+        var f = func;
+        var memfunc = function(var p [slurpy], var n [named,slurpy]) {
+            string key = generator.key(p, n);
+            if (exists cache[key])
+                return cache[key];
+            var value = f(p:[flat], n:[flat,named]);
+            cache[key] = value;
+            return value;
+        };
+        // TODO: If we are going to be using getprop/setprop to attach
+        //       metadata for the library, we should probably add helper
+        //       methods somewhere.
+        // TODO: Use this to attach a reference to the original function, so
+        //       we can get it back later if we want.
+        //${ setprop memfunc, "!!!Rosella.Memoize!!!orig_func", f };
+
+        // TODO: Use this so we can keep a reference to the cache and clear or
+        //       modify it.
+        //${ setprop memfunc, "!!!Rosella.Memoize!!!cache", cache };
+        return memfunc;
+    }
+
+    // TODO: Method to memorize a method in-place (open the Class, replace the
+    //       method object). Ability to undo.
+}}

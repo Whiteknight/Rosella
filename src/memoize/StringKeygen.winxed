@@ -1,0 +1,18 @@
+namespace Rosella { namespace Memoize
+{
+    class StringKeygen
+    {
+        function key(var p, var n)
+        {
+            var sb = new "StringBuilder"
+            for (string ip in p)
+                ${ push sb, ip };
+            for (string key in n) {
+                ${ push sp, key };
+                string val = n[key];
+                ${ push sb, key };
+            }
+            return string(sb);
+        }
+    }
+}}
