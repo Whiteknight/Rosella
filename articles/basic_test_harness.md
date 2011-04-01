@@ -1,6 +1,6 @@
 ---
 layout: rosella
-title: Rosella Test
+title: Harness Examples
 ---
 
 Here's basic code to create a test harness using Rosella Harness with NQP:

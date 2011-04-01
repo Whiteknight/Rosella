@@ -1,6 +1,6 @@
 ---
 layout: rosella
-title: Rosella Test
+title: Articles and Examples
 ---
 
 List of articles about Rosella:
