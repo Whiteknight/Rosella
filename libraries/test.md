@@ -63,15 +63,24 @@ Most test files will start with something similar to the following preamble:
         ...
     }
 
+The code is slightly more verbose in Winxed:
+
+    using Rosella.Test.test;
+    test(class MyTestClass);
+
+    class MyTestClass {
+        ...
+    }
+
 The first argument to the `test` function is the type from which to extract
 methods. This is the only required parameter. There are a number of optional
 named parameters which can be provided to change certain aspects of the
 library.
 
 * `context`: The object to use as the TestContext for the tests. This value
-   will be available in the `context` or `$!context` attributes from inside
-   the running test. If this parameter is not provided, this will be an
-   instance of `Rosella.Test.TestContext`.
+  will be available in the `context` or `$!context` attributes from inside
+  the running test. If this parameter is not provided, this will be an
+  instance of `Rosella.Test.TestContext`.
 * `testcase_type`: The type of object to use for each individual test. By
   default this will be `Rosella.Test.TestCase`. This can be changed,
   although it is not recommended for most usages. If you do need to make
@@ -90,6 +99,46 @@ functions for performing assertions and verifications within a test. For
 brevity this namespace is not located under the `Rosella` namespace.
 Mechanisms may be provided to relocate these routines if there are conflicts
 with user-defined namespaces.
+
+Here are some examples of common assertions in NQP. Winxed examples are
+similar but more verbose:
+
+    Assert::fail("whoops!");        # Unconditional failure
+    Assert::equal("A", "A");        # Test for equality
+    Assert::not_equal("A", "B");
+    Assert::is_null($foo);          # Assert that the value is null
+    Assert::not_null($foo);
+    Assert::is_true($foo);          # Test for boolean truth.
+    Assert::is_false($foo);
+    Assert::defined($foo);          # Test that it is not Undef
+    Assert::not_defined($foo);
+    Assert::output_is({
+        pir::say("Test!");
+    }, "Test!\n");                  # Collect and test console output
+    Assert::throws({
+        pir::die("Whoopsies!");
+    })                              # Prove that we throw an exception
+    Assert::throws_nothing({
+        say("No problem!");
+    });
+
+There are some assertions which are used to prove the value of the test. These
+are meta-assertions, and are used primarily to prove the correct behavior of
+test infrastructure. If you are writing your own test infrastructure, or your
+own extensions to the Rosella test system, these tests can help to provide a
+little bit of sanity. These can also be combined with other tests to invert
+sequences of assertions, or used internally by new assertions to prove the
+inverse of an existing assertion.
+
+    Assert::expect_pass({
+        Assert::equal(0, 0);
+    });                             # Expect the test to pass. This is default.
+    Assert::expect_fail({
+        Assert::not_equal(0, 0);
+    });                             # Expect failure. Can invert other assertions.
+
+This is not a comprehensive list of all available assertions, and the list can
+be easily expanded at any time to include new functionality.
 
 ## Public Classes
 
