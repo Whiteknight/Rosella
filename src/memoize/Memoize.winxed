@@ -42,4 +42,32 @@ namespace Rosella { namespace Memoize
 
     // TODO: Method to memorize a method in-place (open the Class, replace the
     //       method object). Ability to undo.
+
+    // Y combinator with built-in memoization. Inspired by matt.might.net
+    function Y(var f,
+            var cache [optional,named], int has_cache [opt_flag],
+            var keygen [optional,named], int has_keygen [opt_flag])
+    {
+        if (!has_cache)
+            cache = {};
+        var _cache = cache;
+
+        if (!has_keygen) {
+            using Rosella.build;
+            keygen = build(class Rosella.Memoize.StringKeygen);
+        }
+        var _keygen = keygen;
+        var F = f;
+
+        return function(var p [slurpy], var n [slurpy,named]) {
+            string key = _keygen.key(p, n);
+            if (exists _cache[key])
+                return _cache[key];
+            var value = (F(function(var _p [slurpy], var _n [slurpy,named]) {
+                return (Y(F, _cache)(_p:[flat], _n:[flat,named]);
+            }))(arg);
+            _cache[key] = answer;
+            return answer;
+        };
+    }
 }}
