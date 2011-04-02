@@ -46,6 +46,12 @@ multiple components can subscribe to be notified of events without knowning
 where they were raised, and multiple components are able to publish events
 without knowing what (if anything) will be notified.
 
+### Memoize
+
+The Memoize library adds in functionality to add memoization and caching to
+subroutines. There is a simple version and a version which uses proxies to add
+more features, but is slower.
+
 ### Path
 
 The Path library allows searching of nested aggregates by using path strings.
