@@ -17,6 +17,17 @@ stable and will be listed elsewhere in the documentation.
 If *you* are interested in either using or helping to bring them to maturity,
 let me know. I'm always interested in new ideas, feedback, and contributions.
 
+## How To Become Stable
+
+To be listed as a stable library, a Rosella library must have:
+
+1. Ample in-code documentation and comments
+2. A webpage describing the capabilities and usages of the library
+3. Significant test coverage
+
+The library should also be well-designed, have a good and maintainable
+architecture, be extendable and configurable, and follow all coding standards.
+
 ## Development Libraries
 
 These libraries exist, but are either incomplete, not tested, not documented,
