@@ -1,0 +1,48 @@
+namespace Rosella { namespace Memoize { namespace Cache
+{
+    class SimpleString : Rosella.Memoize.Cache
+    {
+        var cache;
+
+        function BUILD()
+        {
+            self.cache = {};
+        }
+
+        function get_item(var p, var n)
+        {
+            string key = self.key(p, n);
+            if (exists self.cache[key])
+                return self.cache[key];
+            using Rosella.build;
+            var item = build(class Rosella.Memoize.Cache.Item, key);
+            self.cache[key] = item;
+            return item;
+        }
+
+        function remove_item(var p, var n)
+        {
+            string key = self.key(p, n);
+            if (exists self.cache[key])
+                delete self.cache[key];
+        }
+
+        function clear()
+        {
+            self.cache = {};
+        }
+
+        function key(var p, var n)
+        {
+            var sb = new "StringBuilder";
+            for (string ip in p)
+                ${ push sb, ip };
+            for (string key in n) {
+                ${ push sb, key };
+                string val = n[key];
+                ${ push sb, key };
+            }
+            return string(sb);
+        }
+    }
+}}}

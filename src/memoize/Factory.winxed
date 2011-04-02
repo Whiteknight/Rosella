@@ -1,0 +1,39 @@
+namespace Rosella { namespace Memoize
+{
+    class Factory : Rosella.ObjectFactory
+    {
+        var proxy_factory;
+        var controller;
+
+        function BUILD()
+        {
+            using Rosella.build;
+
+            self.proxy_factory = build(class Rosella.Proxy.Factory, "Sub", [
+                build(class Rosella.Proxy.Builder.InvokeIntercept),
+                build(class Rosella.Proxy.Builder.ProxyData, "memoize_cache")
+            ]);
+            self.controller = build(class Rosella.Memoize.Controller);
+        }
+
+        function create(var func,
+                var cache [named,optional], int has_cache [opt_flag])
+        {
+            using Rosella.Proxy.set_proxy_private_attr;
+
+            if (!has_cache) {
+                using Rosella.build;
+                cache = build(class Rosella.Memoize.Cache.SimpleString);
+            }
+            var proxy = self.proxy_factory.create(self.controller, func);
+            set_proxy_private_attr(proxy, "memoize_cache", cache);
+            return proxy;
+        }
+
+        function create_typed(var type, var p [slurpy], var n [slurpy,named])
+        {
+            using Rosella.Error.invalid;
+            invalid("Rosella.Memoize.Factory", "Cannot create_typed with Memoize.Factory");
+        }
+    }
+}}

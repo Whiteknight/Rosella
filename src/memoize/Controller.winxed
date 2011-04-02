@@ -1,0 +1,24 @@
+namespace Rosella { namespace Memoize
+{
+    class Controller : Rosella.Proxy.Controller
+    {
+        function invoke(var proxy, var p, var n)
+        {
+            using Rosella.Proxy.get_proxy_private_attr;
+            var cache = get_proxy_private_attr(proxy, "memoize_cache");
+            var func = get_proxy_private_attr(proxy, "target_object");
+
+            if (cache == null) {
+                using Rosella.Error.invalid;
+                invalid("Memoize.Controller", "no cache in memoize proxy");
+            }
+
+            var cache_item = cache.get_item(p, n);
+            if (cache_item.valid)
+                return cache_item.value;
+            var answer = func(p:[flat], n:[flat,named]);
+            cache_item.update_value(answer);
+            return answer;
+        }
+    }
+}}

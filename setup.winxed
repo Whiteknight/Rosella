@@ -81,15 +81,16 @@ function setup_stable_libraries(var rosella)
         "proxy/Controller",
         "proxy/Factory",
         "proxy/Proxy",
-        "proxy/builder/MethodIntercept",
+        "proxy/builder/Array",
         "proxy/builder/AttributeIntercept",
         "proxy/builder/Imitate",
+        "proxy/builder/Immutable",
         "proxy/builder/InvokeIntercept",
-        "proxy/builder/Array",
-        "proxy/builder/PMCKeyedHash",
-        "proxy/builder/StringKeyedHash",
+        "proxy/builder/MethodIntercept",
         "proxy/builder/Passthrough",
-        "proxy/builder/Immutable"
+        "proxy/builder/PMCKeyedHash",
+        "proxy/builder/ProxyData",
+        "proxy/builder/StringKeyedHash"
     );
 
     // A testing library for writing and running unit tests.
@@ -193,8 +194,13 @@ function setup_experimental_libraries(var rosella)
 
     setup_winxed_lib(rosella, "memoize",
         "include/Core",
+        "include/Proxy",
         "memoize/Memoize",
-        "memoize/StringKeygen"
+        "memoize/Cache",
+        "memoize/cache/Item",
+        "memoize/cache/SimpleString",
+        "memoize/Controller",
+        "memoize/Factory"
     );
 }
 

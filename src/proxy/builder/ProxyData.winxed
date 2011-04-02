@@ -1,0 +1,19 @@
+namespace Rosella { namespace Proxy { namespace Builder
+{
+    class ProxyData : Rosella.Proxy.Builder
+    {
+        var extra_fields;
+
+        function BUILD(var fields [slurpy])
+        {
+            self.extra_fields = fields;
+        }
+
+        function setup_proxy_class(var target_class, var proxy_class)
+        {
+            using Rosella.Proxy.add_proxy_class_private_attr;
+            for (string field in self.extra_fields)
+                add_proxy_class_private_attr(proxy_class, field);
+        }
+    }
+}}}

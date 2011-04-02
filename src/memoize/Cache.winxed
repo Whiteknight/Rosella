@@ -1,0 +1,19 @@
+namespace Rosella { namespace Memoize
+{
+    class Cache
+    {
+        function get_item(var p, var n)
+        {
+            using Rosella.build;
+            return build(class Rosella.Memoize.Cache.Item, null);
+        }
+
+        function remove_item(var p, var n)
+        {
+        }
+
+        function clear()
+        {
+        }
+    }
+}}
