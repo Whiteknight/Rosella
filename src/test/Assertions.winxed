@@ -320,7 +320,7 @@ namespace Assert
 
         string out_str = stdout.readall();
         if (out_str != output)
-            fail(message);
+            fail(sprintf("%s\nExpected: '%s'\nReceived:'%s'", [message, output, out_str]));
 
         if (!has_erroutput)
             return;
