@@ -1,0 +1,75 @@
+body {
+    margin-top: 1.0em;
+    background-color: #4C5574;
+    font-family: Helvetica, Arial, FreeSans, san-serif;
+    color: #000000;
+}
+
+#main-content-container {
+    margin: 0 auto;
+    padding: 10px;
+    width: 700px;
+    border: 5px solid #2B2B37;
+    background-color: #FFFFFF;
+}
+
+h1 {
+    font-size: 3.8em;
+    color: #000000;
+    margin-bottom: 3px;
+}
+
+h2 {
+    text-align: center;
+    font-size: 1.5em;
+    color: #FFFFFF;
+    background-color: #9F1320;
+}
+
+h3 {
+    text-align: center;
+    color: #FFFFFF;
+    background-color: #28396F;
+}
+
+a {
+    color: #000000;
+}
+
+.description {
+    font-size: 1.2em;
+    font-style: italic;
+}
+
+.download { float: right; }
+
+.libraries {
+    font-size: larger;
+    margin-left: 2em;
+}
+
+.libraries a {
+    font-weight: bold;
+    color: #28396F;
+}
+
+pre {
+    background: #000;
+    color: #fff;
+    padding: 15px;
+}
+
+hr {
+    border: 0;
+    width: 80%;
+    border-bottom: 1px solid #aaa
+}
+
+.footer {
+    text-align:center;
+    padding-top:30px;
+    font-style: italic;
+    font-size: smaller;
+}
+
+img { border: 0px; }
