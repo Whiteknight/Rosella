@@ -178,15 +178,23 @@ function setup_experimental_libraries(var rosella)
 
     // A library for creating and using cheap, transparent decorator
     setup_winxed_lib(rosella, "decorate",
+        "include/Core",
         "include/Proxy",
         "decorate/Builder",
         "decorate/Factory"
     );
 
     setup_winxed_lib(rosella, "contract",
+        "include/Core",
         "contract/Contract",
         "contract/Method",
         "contract/Interface"
+    );
+
+    setup_winxed_lib(rosella, "memoize",
+        "include/Core",
+        "memoize/Memoize",
+        "memoize/StringKeygen"
     );
 }
 

@@ -21,9 +21,13 @@ namespace Rosella { namespace Memoize
         var f = func;
         var memfunc = function(var p [slurpy], var n [named,slurpy]) {
             string key = generator.key(p, n);
-            if (exists cache[key])
+            say("memoizing key: " + key);
+            if (exists cache[key]) {
+                say("found in cache");
                 return cache[key];
+            }
             var value = f(p:[flat], n:[flat,named]);
+            say("Adding key to cache: " + key);
             cache[key] = value;
             return value;
         };
@@ -61,13 +65,18 @@ namespace Rosella { namespace Memoize
 
         return function(var p [slurpy], var n [slurpy,named]) {
             string key = _keygen.key(p, n);
-            if (exists _cache[key])
+            if (exists _cache[key]) {
                 return _cache[key];
-            var value = (F(function(var _p [slurpy], var _n [slurpy,named]) {
-                return (Y(F, _cache)(_p:[flat], _n:[flat,named]);
-            }))(arg);
-            _cache[key] = answer;
-            return answer;
+            }
+            var value = (
+                F(
+                    function(var _p [slurpy], var _n [slurpy,named]) {
+                        return (Y(F, _cache))(_p:[flat], _n:[flat,named]);
+                    }
+                )
+            )(p:[flat], n:[flat,named]);
+            _cache[key] = value;
+            return value;
         };
     }
 }}

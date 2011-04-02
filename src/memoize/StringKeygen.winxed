@@ -4,11 +4,11 @@ namespace Rosella { namespace Memoize
     {
         function key(var p, var n)
         {
-            var sb = new "StringBuilder"
+            var sb = new "StringBuilder";
             for (string ip in p)
                 ${ push sb, ip };
             for (string key in n) {
-                ${ push sp, key };
+                ${ push sb, key };
                 string val = n[key];
                 ${ push sb, key };
             }

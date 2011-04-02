@@ -1,0 +1,36 @@
+function main[main]()
+{
+    count_time("fib(30) unmemoized", function() {
+        say(sprintf("fib(30) = %f", [fib_standard(30)]));
+    });
+
+    count_time("fib(30) with memoization", function() {
+        load_bytecode("rosella/memoize.pbc");
+        using Rosella.Memoize.Y;
+        var answer = (Y(function(g) {
+            var _g = g;
+            return function(int n) {
+                if (n <= 1)
+                    return n;
+                return _g(n - 1) + _g(n - 2);
+            };
+        }))(30);
+        say(sprintf("fib(30) = %f", [answer]));
+    });
+}
+
+function count_time(string description, var code)
+{
+    say(sprintf("Starting %s", [description]));
+    float starttime = floattime();
+    code();
+    float endtime = floattime();
+    say(sprintf("Total time: %fs", [endtime - starttime]));
+}
+
+function fib_standard(int i)
+{
+    if (i <= 1)
+        return i;
+    return fib_standard(i - 1) + fib_standard(i - 2);
+}
