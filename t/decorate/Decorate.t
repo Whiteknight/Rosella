@@ -3,18 +3,22 @@ INIT {
     pir::load_bytecode("rosella/decorate.pbc");
 }
 
-Rosella::Test::test(Decorate::Factory::Test);
+Rosella::Test::test(Decorate::Test);
 
-class Decorate::Factory::Test {
-    method test_BUILD() {
+class Decorate::Test {
+    method test_add_methods() {
         $!status.unimplemented("Write tests for this");
     }
 
-    method create() {
+    method test_add_methods_override() {
         $!status.unimplemented("Write tests for this");
     }
 
-    method create_typed() {
+    method test_add_attributes() {
+        $!status.unimplemented("Write tests for this");
+    }
+
+    method test_add_attributes_override() {
         $!status.unimplemented("Write tests for this");
     }
 }

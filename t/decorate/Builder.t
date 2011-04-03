@@ -6,4 +6,7 @@ INIT {
 Rosella::Test::test(Decorate::Builder::Test);
 
 class Decorate::Builder::Test {
+    method test_BUILD() {
+        $!status.unimplemented("Write tests for this");
+    }
 }
