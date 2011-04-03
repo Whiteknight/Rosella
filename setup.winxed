@@ -182,6 +182,7 @@ function setup_experimental_libraries(var rosella)
         "include/Core",
         "include/Proxy",
         "decorate/Builder",
+        "decorate/Decorator",
         "decorate/Factory"
     );
 

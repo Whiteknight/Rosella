@@ -1,0 +1,64 @@
+namespace Rosella { namespace Decorate
+{
+    namespace Decorator
+    {
+
+
+        function create_decorator(var target)
+        {
+            using Rosella.build;
+            var decorator = build(class Rosella.Decorate.Decorator);
+            decorator.method_cache = {};
+            decorator.target = target;
+            return decorator;
+        }
+    }
+
+    class Decorator
+    {
+        var target;
+        var method_cache;
+
+        function __setup_decorator(var target)
+        {
+            self.target = target;
+        }
+
+        function find_method[vtable](string name)
+        {
+            if (self.method_cache == null)
+                self.method_cache = {};
+            else if (exists self.method_cache[name])
+                return self.method_cache[name];
+            var method = null;
+            var self_class;
+            ${ typeof self_class, self };
+            var self_parents = self_class.inspect("all_parents");
+            for (var parent in self_parents) {
+                var methods = parent.inspect("methods");
+                if (exists methods[name]) {
+                    method = methods[name];
+                    break;
+                }
+            }
+            if (method != null) {
+                self.method_cache[name] = method;
+                return method;
+            }
+
+            // find_method will throw an exception if the method is not found.
+            // Call it directly, and let what happens happen.
+            if (self.target != null) {
+                method = find_method(self.target, name);
+                if (method != null) {
+                    self.method_cache[name] = method;
+                    return method;
+                }
+            }
+
+            // Don't cache the null value. If somebody wants to keep calling
+            // the same non-existant method, let them do it.
+            return null;
+        }
+    }
+}}
