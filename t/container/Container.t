@@ -8,6 +8,8 @@ Rosella::Test::test(ContainerTest);
 class ContainerTest {
     method test_BUILD() {
         my $container := Rosella::build(Rosella::Container);
+        Assert::not_null($container);
+        Assert::instance_of($container, Rosella::Container);
     }
 
     method test_default_container() {
@@ -56,6 +58,22 @@ class ContainerTest {
         ));
         my $bar := $c.resolve("String");
         Assert::equal($bar, "FooCarCaz", "not equal");
+    }
+
+    method register_prototype() {
+        $!status.unimplemented("This");
+    }
+
+    method register_instance() {
+        $!status.unimplemented("This");
+    }
+
+    method register_instance_type() {
+        $!status.unimplemented("This");
+    }
+
+    method resolve() {
+        $!status.unimplemented("This");
     }
 
     method test_auto_register() {

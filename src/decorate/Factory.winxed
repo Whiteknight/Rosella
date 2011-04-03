@@ -1,4 +1,4 @@
-namespace Rosella { namespace Decorator
+namespace Rosella { namespace Decorate
 {
     class Factory : Rosella.ObjectFactory
     {
@@ -13,7 +13,7 @@ namespace Rosella { namespace Decorator
             self.attributes = attrs;
             var builders = [
                 build(class Rosella.Proxy.Builder.Passthrough),
-                build(class Rosella.Decorator.Builder)
+                build(class Rosella.Decorate.Builder)
             ];
             self.proxy_factory = build(class Rosella.Proxy.Factory, target_type, builders);
         }
@@ -30,7 +30,8 @@ namespace Rosella { namespace Decorator
 
         function create_typed(var type, var p [slurpy], var n [slurpy,named])
         {
-            die("Cannot create_typed with a Decorator.Factory. Create a new factory");
+            using Rosella.Error.invalid;
+            invalid("Rosella.Decorate.Factory", "Cannot create_typed with a Decorator.Factory. Create a new factory");
         }
     }
 }}
