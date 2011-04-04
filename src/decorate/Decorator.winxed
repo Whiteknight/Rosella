@@ -1,19 +1,5 @@
 namespace Rosella { namespace Decorate
 {
-    namespace Decorator
-    {
-
-
-        function create_decorator(var target)
-        {
-            using Rosella.build;
-            var decorator = build(class Rosella.Decorate.Decorator);
-            decorator.method_cache = {};
-            decorator.target = target;
-            return decorator;
-        }
-    }
-
     class Decorator
     {
         var target;
@@ -21,18 +7,44 @@ namespace Rosella { namespace Decorate
 
         function __setup_decorator(var target)
         {
-            self.target = target;
+            var self_class = class Rosella.Decorate.Decorator;
+            ${ setattribute self, self_class, "target", target };
+        }
+
+        function get_attr_str[vtable](string name)
+        {
+            var self_class = class Rosella.Decorate.Decorator;
+            var target;
+            ${ getattribute target, self, self_class, "target" };
+            var value = null;
+            ${ getattribute value, target, name };
+            return value;
+        }
+
+        function set_attr_str[vtable](string name, var value)
+        {
+            var self_class = class Rosella.Decorate.Decorator;
+            var target;
+            ${ getattribute target, self, self_class, "target" };
+            ${ setattribute target, name, value };
         }
 
         function find_method[vtable](string name)
         {
-            if (self.method_cache == null)
-                self.method_cache = {};
-            else if (exists self.method_cache[name])
-                return self.method_cache[name];
-            var method = null;
+            var decorator_class = class Rosella.Decorate.Decorator;
             var self_class;
             ${ typeof self_class, self };
+            var method_cache;
+            ${ getattribute method_cache, self, decorator_class, "method_cache" };
+
+            // First, check the cache
+            // TODO: I don't know if method_cache saves us anything. target
+            //       probably already caches, so we're just duplicating a
+            //       cache up one level.
+            if (method_cache != null && exists method_cache[name])
+                return method_cache[name];
+            var method = null;
+
             var self_parents = self_class.inspect("all_parents");
             for (var parent in self_parents) {
                 var methods = parent.inspect("methods");
@@ -41,24 +53,16 @@ namespace Rosella { namespace Decorate
                     break;
                 }
             }
-            if (method != null) {
-                self.method_cache[name] = method;
-                return method;
-            }
 
             // find_method will throw an exception if the method is not found.
             // Call it directly, and let what happens happen.
-            if (self.target != null) {
+            if (method == null && self.target != null)
                 method = find_method(self.target, name);
-                if (method != null) {
-                    self.method_cache[name] = method;
-                    return method;
-                }
-            }
-
-            // Don't cache the null value. If somebody wants to keep calling
-            // the same non-existant method, let them do it.
-            return null;
+            if (method == null)
+                return null;
+            if (method_cache != null)
+                method_cache[name] = method;
+            return method;
         }
     }
 }}
