@@ -35,6 +35,10 @@ implemented:
 * **Focus on the user**. Rosella is interested in making things easier for
   other coders. It wants to provide things that other coders will actually use
   and appreciate. Rosella is a set of tools for coders, not for end users.
+* **Future Proof**. Rosella provides interfaces, sometimes for very simple
+  features or algorithms. In the future when Parrot changes or adds new
+  features, Rosella will insulate the user from them. When Parrot adds proper
+  threading, Rosella will be updated to provide thread-safety where needed.
 
 ## Rosella Components
 
