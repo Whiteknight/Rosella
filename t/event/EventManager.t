@@ -3,11 +3,13 @@ INIT {
     pir::load_bytecode("rosella/event.pbc");
 }
 
-Rosella::Test::test(EventManagerTest);
+Rosella::Test::test(Event::EventManager::Test);
 
-class EventManagerTest {
+class Event::EventManager::Test {
     method test_BUILD() {
         my $em := Rosella::build(Rosella::Event::Manager);
+        Assert::not_null($em);
+        Assert::instance_of($em, Rosella::Event::Manager);
     }
 
     method test_register_event() {
@@ -100,5 +102,25 @@ class EventManagerTest {
         Assert::equal($data, "Hello", "not equal");
         $em.raise_event("Test2", :arg(" World!"));
         Assert::equal($data, "Hello World!", "not equal");
+    }
+
+    method remove_event() {
+        $!status.unimplemented("This");
+    }
+
+    method subscribe_object() {
+        $!status.unimplemented("This");
+    }
+
+    method subscribe_action() {
+        $!status.unimplemented("This");
+    }
+
+    method unsubscribe() {
+        $!status.unimplemented("This");
+    }
+
+    method raise_event() {
+        $!status.unimplemented("This");
     }
 }
