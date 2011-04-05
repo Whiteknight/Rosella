@@ -68,6 +68,9 @@ namespace Rosella
         // for generating non-overlapping action names
         function get_count() { return self.id_count; }
 
+        // Get the total number of subscribers to this event
+        function num_subscribers() { return int(self.actions); }
+
         /* Payload Routines
             The Event class provides read-only Hash- and Array-like access for
             payload values. Also, the payload properties can be accessed

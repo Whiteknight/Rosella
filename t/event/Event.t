@@ -5,6 +5,13 @@ INIT {
 
 Rosella::Test::test(Event::Test);
 
+class MyTestClass {
+    method test_method($event) { pir::say("test_method fired"); }
+    method test_method_pos_args($event) {
+        pir::say(pir::sprintf__SSP("%s,%s,%s", [$event[0], $event[1], $event[2]]));
+    }
+}
+
 class Event::Test {
     method test_BUILD() {
         my $m := Rosella::build(Rosella::Event, 0);
@@ -13,19 +20,42 @@ class Event::Test {
     }
 
     method add_subscriber_action() {
-        $!status.unimplemented("This");
+        my $m := Rosella::build(Rosella::Event, 0);
+        Assert::equal($m.num_subscribers, 0);
+        $m.add_subscriber_action("Foo",
+            Rosella::build(Rosella::Action::Sub, sub() {})
+        );
+        Assert::equal($m.num_subscribers, 1);
     }
 
     method add_subscriber_object() {
-        $!status.unimplemented("This");
+        my $m := Rosella::build(Rosella::Event, 0);
+        my $data := MyTestClass.new();
+        Assert::equal($m.num_subscribers, 0);
+        $m.add_subscriber_object("Foo", $data, "test_method");
+        Assert::equal($m.num_subscribers, 1);
     }
 
     method remove_subscriber() {
-        $!status.unimplemented("This");
+        my $m := Rosella::build(Rosella::Event, 0);
+        my $data := MyTestClass.new();
+        Assert::equal($m.num_subscribers, 0);
+        $m.add_subscriber_object("Foo", $data, "test_method");
+        Assert::equal($m.num_subscribers, 1);
+        $m.remove_subscriber("Foo");
+        Assert::equal($m.num_subscribers, 0);
+    }
+
+    method remove_subscriber_none() {
+        my $m := Rosella::build(Rosella::Event, 0);
+        Assert::equal($m.num_subscribers, 0);
+        $m.remove_subscriber("Foo");
+        Assert::equal($m.num_subscribers, 0);
     }
 
     method get_count() {
-        $!status.unimplemented("This");
+        my $m := Rosella::build(Rosella::Event, 0);
+        Assert::equal($m.get_count, 0);
     }
 
     method get_pmc_keyed() {
@@ -49,6 +79,20 @@ class Event::Test {
     }
 
     method raise() {
-        $!status.unimplemented("This");
+        my $m := Rosella::build(Rosella::Event, 0);
+        my $data := MyTestClass.new();
+        $m.add_subscriber_object("Foo", $data, "test_method");
+        Assert::output_is({
+            $m.raise();
+        }, "test_method fired\n");
+    }
+
+    method raise_args() {
+        my $m := Rosella::build(Rosella::Event, 0);
+        my $data := MyTestClass.new();
+        $m.add_subscriber_object("Foo", $data, "test_method_pos_args");
+        Assert::output_is({
+            $m.raise(1, 2, 3);
+        }, "1,2,3\n");
     }
 }
