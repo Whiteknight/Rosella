@@ -49,8 +49,14 @@ class RosellaTest {
     }
 
     method test_get_type_name() {
+        $!status.unimplemented("this");
     }
 
     method test_get_type_class() {
+        $!status.unimplemented("this");
+    }
+
+    method invoke_method() {
+        $!status.unimplemented("this");
     }
 }
