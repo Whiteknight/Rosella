@@ -68,6 +68,14 @@ modules in a program. The Container utilizes the Action library
 to setup constructor injection and method injection behaviors
 on registered types.
 
+#### [Event](/Rosella/libraries/event.html)
+
+The Event library provides a subscribe/publish system to aide in aggressive
+application decoupling. Event publishers can be unaware of the details of
+event subscribers, and vice-versa. Applications become easier to maintain
+because important communication pathways do not need to have hard-coded
+senders and receivers.
+
 #### [Test](/Rosella/libraries/test.html)
 
 Inspired by testing libraries such as xUnit and Test::More,
