@@ -50,7 +50,8 @@ namespace Rosella
             using Rosella.build;
             var action = build(class Rosella.Action.Sub,
                 function(var e) {
-                    object.*meth(e);
+                    using Rosella.invoke_method;
+                    invoke_method(object, meth, [e], {});
                 }
             );
             return self.add_subscriber_action(id, action);

@@ -150,6 +150,19 @@ namespace Rosella
         return find_method(object, meth_name);
     }
 
+    function invoke_method(var obj, var method, var p, var n)
+    {
+        if (method instanceof 'String') {
+            var real_method = find_method(obj, method);
+            if (real_method == null) {
+                using Rosella.Error.invalid;
+                invalid("invoke_method", "Cannot find method '" + string(method) + "'");
+            }
+            method = real_method;
+        }
+        return obj.*method(p:[flat], n:[flat,named]);
+    }
+
     function get_unique_count()
     {
         int i = 0;

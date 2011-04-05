@@ -49,6 +49,9 @@ namespace Rosella { namespace Event
                 delete self.events[event_name];
         }
 
+        // Get a count of the number of events in the manager.
+        function count_events() { return int(self.events); }
+
         /* Event Subscriber Management Routines
             Subscribe routines return a unique identifier which can be used
             to identify this specific subscription. The identifier is needed
@@ -113,7 +116,7 @@ namespace Rosella { namespace Event
 
             if (exists self.events[event_name])
                 return self.events[event_name];
-            var event = build(class Rosella.Event, 0, []);
+            var event = build(class Rosella.Event, 0);
             self.events[event_name] = event;
             return event;
         }
