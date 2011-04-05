@@ -49,14 +49,6 @@ creating cheap Decorators. A Decorator is an object which adds new
 attributes and methods to an object of an existing class, without violating
 encapsulation.
 
-### Event
-
-The Event library allows aggressive system decoupling by allowing components
-to communicate through events. Events have a subscribe/publish model, where
-multiple components can subscribe to be notified of events without knowning
-where they were raised, and multiple components are able to publish events
-without knowing what (if anything) will be notified.
-
 ### Memoize
 
 The Memoize library adds in functionality to add memoization and caching to
