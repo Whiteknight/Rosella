@@ -12,6 +12,7 @@ namespace Rosella { namespace Test { namespace Listener
             self.test_builder = build(class Rosella.Test.Builder);
         }
 
+        // Add a new exception result. This test is a failure, unless todo'd
         function add_exception(var test, var context, var ex)
         {
             string label = context.display_name();
@@ -23,6 +24,7 @@ namespace Rosella { namespace Test { namespace Listener
             self.display_failure(ex);
         }
 
+        // The test is a failure with an error message
         function add_failure_msg(var test, var context, string msg)
         {
             string label = context.display_name();
@@ -34,6 +36,7 @@ namespace Rosella { namespace Test { namespace Listener
             self.test_builder.diag(msg);
         }
 
+        // Pass information about a failure to the builder
         function display_failure(var ex)
         {
             using Rosella.Test.Failure.get_exception_failure;
@@ -53,6 +56,7 @@ namespace Rosella { namespace Test { namespace Listener
             }
         }
 
+        // End a test successfully
         function end_test(var test, var context)
         {
             string label = context.display_name();
@@ -64,11 +68,13 @@ namespace Rosella { namespace Test { namespace Listener
             return self;
         }
 
+        // Plan a number of tests
         function plan_tests(int num_tests)
         {
             self.test_builder.plan(num_tests);
         }
 
+        // Mark all tests complete, and show any summary information.
         function tests_complete(int total_tests, int num_failures)
         {
             if (num_failures == 0)
