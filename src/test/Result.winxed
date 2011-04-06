@@ -7,13 +7,15 @@ namespace Rosella { namespace Test
     */
     class Result
     {
-        var was_success;
+        var total_tests;
+        var num_failures;
         var listeners;
 
         // Constructor. Take a list of listeners and initialize the Result
         function BUILD(var listeners)
         {
-            self.was_success = 1;
+            self.total_tests = 0;
+            self.num_failures = 0;
             self.listeners = listeners;
         }
 
@@ -29,6 +31,7 @@ namespace Rosella { namespace Test
         // Start a test
         function start_test(var test, var context)
         {
+            self.total_tests = self.total_tests + 1;
             self.notify_listeners("start_test", test, context);
         }
 
@@ -38,7 +41,7 @@ namespace Rosella { namespace Test
         function add_failure(var test, var context, var ex)
         {
             using Rosella.isa_type;
-            self.was_success = 0;
+            self.num_failures = self.num_failures + 1;
 
             if (isa_type("String", ex)) {
                 self.notify_listeners("add_failure_msg", test, context, ex);
@@ -57,7 +60,13 @@ namespace Rosella { namespace Test
         // Boolean whether the whole run was successfull
         function was_successful()
         {
-            return self.was_success;
+            return (self.num_failures > 0);
+        }
+
+        // Tell the listeners that all tests have executed
+        function tests_complete()
+        {
+            self.notify_listeners("tests_complete", self.total_tests, self.num_failures);
         }
 
         /* Internal Routines

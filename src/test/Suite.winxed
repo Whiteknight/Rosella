@@ -36,6 +36,7 @@ namespace Rosella { namespace Test
                 var test = self.tests[test_name];
                 self.run_test(test_name, test, result);
             }
+            result.tests_complete();
             return result;
         }
 

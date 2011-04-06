@@ -68,6 +68,14 @@ namespace Rosella { namespace Test { namespace Listener
         {
             self.test_builder.plan(num_tests);
         }
+
+        function tests_complete(int total_tests, int num_failures)
+        {
+            if (num_failures == 0)
+                self.test_builder.diag(sprintf("You passed all %d tests", [total_tests]));
+            else
+                self.test_builder.diag(sprintf("Looks like you failed %d of %d tests", [num_failures, total_tests]));
+        }
     }
 }}}
 

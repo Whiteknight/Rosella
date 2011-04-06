@@ -20,5 +20,7 @@ namespace Rosella { namespace Test
         function add_exception(var test, var context, var ex) { }
 
         function add_failure_msg(var test, var context, string msg) { }
+
+        function tests_complete(int total_tests, int num_failures) { }
     }
 }}
