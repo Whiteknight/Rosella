@@ -21,7 +21,7 @@ class Test::Result::Test {
     method test_BUILD() {
         my $result := Rosella::build(Rosella::Test::Result, []);
         Assert::not_null($result);
-        Assert::equal($result.was_successful(), 1);
+        Assert::equal($result.was_successful(), 0);
     }
 
     method test_plan_tests() {
