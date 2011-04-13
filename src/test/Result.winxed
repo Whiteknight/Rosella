@@ -57,10 +57,10 @@ namespace Rosella { namespace Test
             self.notify_listeners("end_test", test, context);
         }
 
-        // Boolean whether the whole run was successfull
+        // Boolean whether the whole run was successful
         function was_successful()
         {
-            return (self.num_failures > 0);
+            return (self.num_failures == 0);
         }
 
         // Tell the listeners that all tests have executed
