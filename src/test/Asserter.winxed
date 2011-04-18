@@ -7,8 +7,11 @@ namespace Rosella { namespace Test
             var assert_name = name;
             return function(var obj, var p [slurpy], var n [slurpy,named]) {
                 var assert_ns = null;
-                ${ get_namespace assert_ns, "Assert" };
+                var assert_name_pmc = "Assert";
+                ${ get_hll_namespace assert_ns, assert_name_pmc };
+                say("assert_ns: " + string(assert_ns));
                 var assertion = assert_ns.find_sub(assert_name);
+                say("assertion: " + string(assertion));
                 assertion(p:[flat], n:[flat]);
             };
         }

@@ -8,13 +8,16 @@ namespace Rosella { namespace Test
     class TestFactory : Rosella.ObjectFactory
     {
         var context;
+        var asserter;
 
         // Set up the factory with the type to create (TestCase or look-alike)
         // and the TestContext object to use.
         function BUILD(var type, var context)
         {
+            using Rosella.build;
             self.target_type = type;
             self.context = context;
+            self.asserter = build(class Rosella.Test.Asserter);
         }
 
         // Create the TestCase object with the given test method and test
@@ -27,6 +30,7 @@ namespace Rosella { namespace Test
             var test = build(type);
             var status = build(class Rosella.Test.TestStatus, test_name, test_method);
             var context = self.context;
+            var asserter = self.asserter;
 
             // setattribute_p_p_s_p sets attributes through a different
             // mechanism and does not get routed through VTABLE_set_attr_str.
@@ -36,6 +40,7 @@ namespace Rosella { namespace Test
             ${ setattribute test, testcase_class, "test_method", test_method };
             ${ setattribute test, testcase_class, "test_context", context };
             ${ setattribute test, testcase_class, "test_status", status };
+            ${ setattribute test, testcase_class, "test_asserter", asserter };
 
             return test;
         }
