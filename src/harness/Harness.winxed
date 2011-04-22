@@ -22,7 +22,8 @@ namespace Rosella
         // other named options.
         function run(var test_run, var view,
                 int run_inline [named,optional],  int has_ri [opt_flag],
-                int line_length [named,optional], int has_ll [opt_flag])
+                int line_length [named,optional], int has_ll [opt_flag],
+                int debug [named,optional], int has_dbg [opt_flag])
         {
             using Rosella.build;
 
@@ -30,16 +31,18 @@ namespace Rosella
                 run_inline = 0;
             if (!has_ll)
                 line_length = 0;
-            return self.run_internal(test_run, view, run_inline);
+            if (!has_dbg)
+                debug = 0;
+            return self.run_internal(test_run, view, run_inline, debug);
         }
 
         // Interal routine to run the harness
-        function run_internal(var test_run, var view, int run_inline)
+        function run_internal(var test_run, var view, int run_inline, int debug)
         {
 
             for (var test in test_run.tests()) {
                 view.start_test(test);
-                test.run(run_inline);
+                test.run(view, debug, run_inline);
                 test_run.update_test_stats(test);
                 view.end_test(test);
             }

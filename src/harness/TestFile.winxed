@@ -69,7 +69,7 @@ namespace Rosella { namespace Harness
             return string(self.status);
         }
 
-        function compile_and_execute()
+        function compile_and_execute(var view, int debug)
         {
             using Rosella.IO.swap_handles;
 
@@ -83,6 +83,7 @@ namespace Rosella { namespace Harness
                 sub();
             } catch(e) {
                 self.mark_test_abort(e);
+                view.debug(debug, e["message"]);
             }
             string output = stdout.readall();
             swap_handles(save_handles);
@@ -113,7 +114,7 @@ namespace Rosella { namespace Harness
             self.status = "EMPTY";
         }
 
-        function spawn_and_execute()
+        function spawn_and_execute(var view, int debug)
         {
             var pipe = new "FileHandle";
             pipe.encoding('utf8');
@@ -133,14 +134,12 @@ namespace Rosella { namespace Harness
             must_subclass("Rosella::Harness::TestFile");
         }
 
-        function run(int run_inline [optional], int has_ri [opt_flag])
+        function run(var view, int debug, int run_inline)
         {
-            if (!has_ri)
-                run_inline = 0;
             if (run_inline)
-                self.compile_and_execute();
+                self.compile_and_execute(view, debug);
             else
-                self.spawn_and_execute();
+                self.spawn_and_execute(view, debug);
 
             if (self.status == null || self.status != "ABORTED") {
                 if (self.has_tap_output()) {

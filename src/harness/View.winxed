@@ -155,6 +155,11 @@ namespace Rosella { namespace Harness
             }
         }
 
+        function debug(int dbg, var msg)
+        {
+            say(sprintf("DEBUG: %s\n", [msg]));
+        }
+
         /* Internal Helper Routines
         */
 
