@@ -76,7 +76,7 @@ namespace Rosella { namespace Harness
             var sub = self.compile_test();
             var stdout = new "StringHandle";
             stdout.open("blah", "rw");
-            var save_handles = self.swap_handles(
+            var save_handles = swap_handles(
                 {"stdout" : stdout, "stderr" : stdout}
             );
             try {
@@ -85,7 +85,7 @@ namespace Rosella { namespace Harness
                 self.mark_test_abort(e);
             }
             string output = stdout.readall();
-            self.swap_handles(save_handles);
+            swap_handles(save_handles);
             self.lines = split("\n", output);
         }
 
