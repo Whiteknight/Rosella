@@ -1,5 +1,10 @@
 namespace Rosella { namespace Test
 {
+    /* Test Asserter to provide an OO-like interface to the functions defined
+       in the Assert namespace
+    */
+    // TODO: Delete Assert namespace and turn all functions there into methods
+    //       on this object.
     class Asserter
     {
         function find_method[vtable](string name)
