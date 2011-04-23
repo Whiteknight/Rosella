@@ -4,22 +4,23 @@ function main[main](argv)
 {
     setup_distutils();
     var rosella = {
-        "name"             : 'Rosella',
-        "abstract"         : 'Utilities Library for Parrot',
-        "authority"        : 'http://github.com/Whiteknight',
-        "copyright_holder" : 'Andrew Whitworth',
-        "keywords"         : ["test", "tap", "xunit", "event", "container", "dependency injection"],
-        "license_type"     : 'Artistic License 2.0',
-        "license_uri"      : 'http://www.perlfoundation.org/artistic_license_2_0',
-        "checkout_uri"     : 'git://github.com/Whiteknight/rosella.git',
-        "browser_uri"      : 'git://github.com/Whiteknight/rosella',
-        "project_uri"      : 'git://github.com/Whiteknight/rosella',
-        "pir_nqp-rx"       : {},
-        "pir_winxed"       : {},
-        "pbc_pbc"          : {},
-        "pbc_pir"          : {},
-        "pir_pir"          : {},
-        "inst_lib"         : []
+        "name"              : 'Rosella',
+        "abstract"          : 'Utilities Library for Parrot',
+        "authority"         : 'http://github.com/Whiteknight',
+        "copyright_holder"  : 'Andrew Whitworth',
+        "keywords"          : ["test", "tap", "xunit", "event", "container", "dependency injection"],
+        "license_type"      : 'Artistic License 2.0',
+        "license_uri"       : 'http://www.perlfoundation.org/artistic_license_2_0',
+        "checkout_uri"      : 'git://github.com/Whiteknight/rosella.git',
+        "browser_uri"       : 'git://github.com/Whiteknight/rosella',
+        "project_uri"       : 'git://github.com/Whiteknight/rosella',
+        "pir_nqp-rx"        : {},
+        "pir_winxed"        : {},
+        "pbc_pbc"           : {},
+        "pbc_pir"           : {},
+        "pir_pir"           : {},
+        "inst_lib"          : [],
+        "manifest_includes" : ["CREDITS", "README.md"]
     };
 
     if (argv[1] == "test")
@@ -28,6 +29,7 @@ function main[main](argv)
     setup_stable_libraries(rosella);
     setup_experimental_libraries(rosella);
 
+    get_all_tests(rosella, "t");
     argv.shift();
     setup(argv, rosella);
 }
@@ -224,6 +226,7 @@ function setup_winxed_lib(var rosella, string name, var files [slurpy])
     rosella["pbc_pbc"][pbc_lib_name] = pbc_files;
     rosella["pir_pir"][pir_lib_name] = pir_files;
     rosella["inst_lib"].push(pbc_lib_name);
+    rosella["manifest_includes"].push(pir_lib_name);
 }
 
 // Load in the distutils library, which we are also responsible for
@@ -254,5 +257,41 @@ function do_test()
     int result;
     ${ spawnw result, cmd };
     ${ exit result };
+}
+
+function get_all_tests(var rosella, string path)
+{
+    loadlib("os");
+    var os = new 'OS';
+    int STAT_ISREG = 0x8000;
+    int STAT_ISDIR = 0x4000;
+    var contents_raw = os.readdir(path);
+
+    for (string file in contents_raw) {
+        string entry = path + "/" + file;
+        var stat = os.stat(entry);
+        int mode = stat[2];
+        int isdir = 0;
+        ${ band isdir, mode, STAT_ISDIR };
+        int isfile = 0;
+        ${ band isfile, mode, STAT_ISREG };
+        if (file[0] == ".")
+            continue;
+        if (isfile == STAT_ISREG && is_test(entry))
+            rosella["manifest_includes"].push(entry);
+
+        if (isdir == STAT_ISDIR)
+            get_all_tests(rosella, entry);
+    }
+}
+
+function is_test(string path)
+{
+    int len = length(path);
+    string ext = substr(path, len - 2);
+    if (ext == ".t")
+        return 1;
+    else
+        return 0;
 }
 
