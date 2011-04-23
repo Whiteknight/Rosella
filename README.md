@@ -14,6 +14,10 @@ libraries, see the [Rosella website][rosella_website]
 
 [rosella_website]: http://whiteknight.github.com/Rosella
 
+## Version and Release History:
+
+Current Rosella Version: 1 (23 April 2011) For Parrot 3.3
+
 # Getting Rosella Source
 
 Get a copy of the latest Rosella code from the Git repository with the
