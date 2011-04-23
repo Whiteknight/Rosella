@@ -20,12 +20,13 @@ function main[main](argv)
         "pbc_pir"           : {},
         "pir_pir"           : {},
         "inst_lib"          : [],
-        "manifest_includes" : ["CREDITS", "README.md"]
+        "manifest_includes" : ["CREDITS", "README.md", "setup.winxed"]
     };
 
     if (argv[1] == "test")
         do_test();
 
+    setup_release(rosella);
     setup_stable_libraries(rosella);
     setup_experimental_libraries(rosella);
 
@@ -34,13 +35,19 @@ function main[main](argv)
     setup(argv, rosella);
 }
 
+function setup_release(var rosella)
+{
+    rosella["pir_winxed"]["setup.pir"] = "setup.winxed";
+    rosella["manifest_includes"].push("setup.pir");
+}
+
 function setup_stable_libraries(var rosella)
 {
     // A distutils wrapper library which adds winxed functionality.
     // A bootstrapped version is included in the repo because we need it
     // to run setup.winxed (this script). This is the only rosella library
     // which doesn't rely on Core.
-    setup_winxed_lib(rosella, "winxed_distutils", "winxed/Distutils");
+    setup_winxed_lib(rosella, "winxed", "winxed/Distutils");
 
     // The Rosella "core" library. Does very little on its own but is
     // required by other libraries in the sequence

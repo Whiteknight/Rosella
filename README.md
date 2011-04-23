@@ -9,11 +9,19 @@ collection of individual libraries with very few dependencies between them.
 The goal is to be able to provide small features to programmers who want them
 without burdening anybody with unwanted overhead.
 
-# Getting Rosella
+For complete details and documentation about Rosella and its component
+libraries, see the [Rosella website][rosella_website]
+
+[rosella_website]: http://whiteknight.github.com/Rosella
+
+# Getting Rosella Source
+
+Get a copy of the latest Rosella code from the Git repository with the
+following command:
 
     git clone https://github.com/Whiteknight/Rosella.git Rosella
 
-# Building Rosella
+## Building Rosella From Source
 
 To build Rosella you need to use Winxed:
 
@@ -25,71 +33,57 @@ Winxed is a language compiler for Parrot with a syntax similar to JavaScript.
 Rosella libraries are written in Winxed, although they should be usable by
 any software written in any language targetting Parrot.
 
+## Using Rosella Release
+
+The Rosella release tarball ships with all the `.pir` files from the
+development build, and all the necessary utilities to build and install
+Rosella with or without Winxed. With the release tarball extracted to a
+directory, you can use the following sequence to build, test and install
+Rosella:
+
+    parrot setup.pir build
+    parrot setup.pir test
+    parrot setup.pir install
+
 # Component Libraries
 
 Rosella is composed of several libraries. Some are relatively mature, stable,
-usable, and tested. Some are still young, in development, or unstable.
+usable, and tested. Some are still young, in development, or unstable. For
+details about all libraries, what they do, and how to use them, see the
+[Rosella website][rosella_website].
 
 ## Stable Libraries
 
-### Core (rosella/core.pbc)
+These libraries are considered stable enough for most uses. These are all
+tested and documented.
 
-A small core library that provides utilities for the other libraries. Not
-necessarily intended for public use (but nobody is stopping you!)
-
-### Action (rosella/action.pbc)
-
-A Command/Action pattern library. You can bundle actions up as objects and
-invoke them at a later time.
-
-### Container (rosella/container.pbc)
-
-A dependency injection (DI) and inversion of control (IoC) container library.
-
-### Test (rosella/test.pbc)
-
-A unit testing library in the spirit of xUnit and Test::Builder
-
-### TAP Harness (rosella/tap_harness.pbc)
-
-A library for quickly and easily building TAP testing harnesses.
-
-### Proxy (rosella/proxy.pbc)
-
-A library for building proxy objects with a variety of properties and
-behaviors.
-
-### Mock Object (rosella/mockobject.pbc)
-
-A library with mock objects for use in unit testing.
+1. Core (rosella/core.pbc)
+2. Action (rosella/action.pbc)
+3. Container (rosella/container.pbc)
+4. Test (rosella/test.pbc)
+5. TAP Harness (rosella/tap_harness.pbc)
+6. Proxy (rosella/proxy.pbc)
+7. Mock Object (rosella/mockobject.pbc)
+8. Event (rosella/event.pbc)
+9. Winxed (rosella/winxed.pbc)
 
 ## Libraries in Development
 
-### Event (rosella/event.pbc)
-
-A multicast event system. Objects can subscribe to events by name, and can
-receive notifications later when those events are triggered.
-
-### Prototype (rosella/prototype.pbc)
-
-A system for managing object prototypes.
-
-### Query (rosella/query.pbc)
-
-A library with query/search routines for working with aggregate objects.
-
-### Decorate (rosella/decorate.pbc)
-
-A library for making inexpensive decorator objects. Decorators are proxies
-which transparently pass through all vtable calls to a target object but able
-to intercept a specific list of decorator methods and attributes. Also, this
-library provides an immutability pattern proxy object which is able to make
-other objects immutable.
+1. Prototype (rosella/prototype.pbc)
+2. Query (rosella/query.pbc)
+3. Decorate (rosella/decorate.pbc)
+4. Path (rosella/path.pbc)
+5. Contract (rosella/contract.pbc)
+6. Memoize (rosella/memoize.pbc)
 
 # Hacking
 
 Rosella is open source software, and is always open to new contributors and
-contributions.
+contributions. You can report bugs or request new features at the
+[Rosella Issue Tracker][issues]. You can also create forks and submit pull
+requests on Github.
+
+[issues]: https://github.com/Whiteknight/Rosella/issues
 
 # Using Rosella
 
