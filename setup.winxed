@@ -55,7 +55,8 @@ function setup_stable_libraries(var rosella)
         "core/Rosella",
         "core/Error",
         "core/IO",
-        "core/ObjectFactory"
+        "core/ObjectFactory",
+        "core/Version"
     );
 
     // The action library. Allows creating Action/Command objects for
