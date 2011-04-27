@@ -1,0 +1,7 @@
+_site
+*.winxed
+*.pir
+*.nqp
+*.pbc
+src
+rosella
