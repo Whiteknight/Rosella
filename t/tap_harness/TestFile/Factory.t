@@ -8,31 +8,31 @@ Rosella::Test::test(Harness::TestFile::Factory::Test);
 class Harness::TestFile::Factory::Test {
     method test_BUILD() {
         my $factory := Rosella::build(Rosella::Harness::TestFile::Factory, Rosella::Harness::TestFile);
-        Assert::instance_of($factory, Rosella::Harness::TestFile::Factory);
+        $!assert.instance_of($factory, Rosella::Harness::TestFile::Factory);
     }
 
     method test_create() {
         my $factory := Rosella::build(Rosella::Harness::TestFile::Factory, Rosella::Harness::TestFile);
         my $testfile := $factory.create("Foo.t");
-        Assert::instance_of($testfile, Rosella::Harness::TestFile);
+        $!assert.instance_of($testfile, Rosella::Harness::TestFile);
     }
 
     method test_create_subclass() {
         my $factory := Rosella::build(Rosella::Harness::TestFile::Factory, Rosella::Harness::TestFile::Winxed);
         my $testfile := $factory.create("Foo.t");
-        Assert::instance_of($testfile, Rosella::Harness::TestFile::Winxed);
+        $!assert.instance_of($testfile, Rosella::Harness::TestFile::Winxed);
     }
 
     method test_create_typed() {
         my $factory := Rosella::build(Rosella::Harness::TestFile::Factory, Rosella::Harness::TestFile);
         my $testfile := $factory.create_typed(Rosella::Harness::TestFile, "Foo.t");
-        Assert::instance_of($testfile, Rosella::Harness::TestFile);
+        $!assert.instance_of($testfile, Rosella::Harness::TestFile);
     }
 
     method test_create_typed_subclass() {
         my $factory := Rosella::build(Rosella::Harness::TestFile::Factory, Rosella::Harness::TestFile);
         my $testfile := $factory.create_typed(Rosella::Harness::TestFile::NQP, "Foo.t");
-        Assert::instance_of($testfile, Rosella::Harness::TestFile::NQP);
+        $!assert.instance_of($testfile, Rosella::Harness::TestFile::NQP);
     }
 
     method test_create_tests_from_dirs() {

@@ -7,5 +7,6 @@ Rosella::Test::test(ErrorTest);
 
 class ErrorTest {
     method test_fail() {
+        $!status.unimplemented("Test this");
     }
 }

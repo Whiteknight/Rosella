@@ -11,7 +11,7 @@ class MyTargetType { method test() { } }
 class ActionMethodTest {
     method test_BUILD() {
         my $action := Rosella::build(Rosella::Action::Method, "test");
-        Assert::instance_of($action, Rosella::Action::Method, "Is not a Method");
+        $!assert.instance_of($action, Rosella::Action::Method, "Is not a Method");
     }
 
     method execute() {

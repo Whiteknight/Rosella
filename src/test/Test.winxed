@@ -7,28 +7,45 @@ namespace Rosella
     */
     namespace Test
     {
+        /* Test options:
+            suite_type: The type of Suite object to use.
+            testcase_type: The type of TestCase object to use.
+            context: The TestContext object instance to use. Stored in $!context
+            test_prefix: A prefix string that all test methods must have.
+            asserter: The assertion object. Stored in $!assert
+        */
         // Setup and run a test using Testcase-based tests. This is basically
         // a thin facade over SuiteFactory and Suite with some defaults thrown
         // in. Returns 1 if the test was a success, 0 otherwise.
-        function test(var test_type,
-                var suite_type [named,optional],  int has_sp [opt_flag],
-                var testcase_type [named,optional], int has_tc [opt_flag],
-                var context [named,optional], int has_c [opt_flag])
+        function test(var test_type, var options [slurpy,named])
         {
             using Rosella.build;
 
-            if (!has_sp)
-                suite_type = class Rosella.Test.Suite;
-            if (!has_tc)
-                testcase_type = class Rosella.Test.TestCase;
-            if (!has_c)
-                context = build(class Rosella.Test.TestContext);
+            if (!(exists options["suite_type"]))
+                options["suite_type"] = class Rosella.Test.Suite;
+            if (!(exists options["testcase_type"]))
+                options["testcase_type"] = class Rosella.Test.TestCase;
+            if (!(exists options["context"]))
+                options["context"] = build(class Rosella.Test.TestContext);
+            if (!(exists options["test_prefix"]))
+                options["test_prefix"] = "";
+            if (!(exists options["asserter"]))
+                options["asserter"] = new Rosella.Test.Asserter;
 
-            var suitefactory = build(class Rosella.Test.SuiteFactory,
-                    suite_type, test_type, testcase_type, context);
+            var suitefactory = build(class Rosella.Test.SuiteFactory, test_type, options);
             var suite = suitefactory.create();
             var result = suite.run();
             return result.was_successful();
+        }
+
+        // Unconditional fail. Throws a Rosella.Test.Failure
+        // This is for internal use only. You probably want Asserter.fail
+        // instead.
+        function internal_fail(string why, int is_internal, var exception)
+        {
+            using Rosella.build;
+            var ex = build(class Rosella.Test.Failure, why, exception, is_internal);
+            ex.throw();
         }
     }
 }

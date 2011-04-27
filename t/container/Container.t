@@ -8,26 +8,26 @@ Rosella::Test::test(ContainerTest);
 class ContainerTest {
     method test_BUILD() {
         my $container := Rosella::build(Rosella::Container);
-        Assert::not_null($container);
-        Assert::instance_of($container, Rosella::Container);
+        $!assert.not_null($container);
+        $!assert.instance_of($container, Rosella::Container);
     }
 
     method test_default_container() {
         my $c := Rosella::Container::default_container();
-        Assert::instance_of($c, Rosella::Container, "no default");
+        $!assert.instance_of($c, Rosella::Container, "no default");
     }
 
     method test_resolve_default_factory() {
         my $c := Rosella::build(Rosella::Container);
         # No previous registration, falls back to the default object factory
         my $item := $c.resolve("String");
-        Assert::instance_of($item, "String");
+        $!assert.instance_of($item, "String");
     }
 
     method test_resolve_create() {
         my $c := Rosella::build(Rosella::Container);
         my $item := $c.resolve_create("String");
-        Assert::instance_of($item, "String");
+        $!assert.instance_of($item, "String");
     }
 
     method test_register_factory_method() {
@@ -36,7 +36,7 @@ class ContainerTest {
             return pir::box__PI(7);
         });
         my $i := $c.resolve("Foobar");
-        Assert::equal($i, 7, "not equal");
+        $!assert.equal($i, 7, "not equal");
     }
 
     method test_register_type_withactions() {
@@ -57,7 +57,7 @@ class ContainerTest {
             ]
         ));
         my $bar := $c.resolve("String");
-        Assert::equal($bar, "FooCarCaz", "not equal");
+        $!assert.equal($bar, "FooCarCaz", "not equal");
     }
 
     method register_prototype() {
@@ -80,13 +80,13 @@ class ContainerTest {
         my $c := Rosella::build(Rosella::Container, :auto_register(1));
         my $a := $c.resolve("String");
         my $b := $c.resolve("String");
-        Assert::same($a, $b);
+        $!assert.same($a, $b);
     }
 
     method test_auto_register_disabled() {
         my $c := Rosella::build(Rosella::Container, :auto_register(0));
         my $a := $c.resolve("String");
         my $b := $c.resolve("String");
-        Assert::not_same($a, $b);
+        $!assert.not_same($a, $b);
     }
 }

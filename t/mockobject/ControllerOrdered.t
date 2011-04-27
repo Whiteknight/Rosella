@@ -28,7 +28,7 @@ class MockObject::Controller::Ordered::Test {
     }
 
     method test_two_method_fail_unordered() {
-        Assert::expect_fail(sub() {
+        $!assert.expect_fail(sub() {
             my $f := Rosella::build(Rosella::MockObject::Factory);
             my $c := $f.create_typed(MyClass, :ordered(1));
             $c.expect_method("test").once.with_args(1, 2, 3);
@@ -69,7 +69,7 @@ class MockObject::Controller::Ordered::Test {
     }
 
     method test_repeat_method_fail_unordered() {
-        Assert::expect_fail(sub() {
+        $!assert.expect_fail(sub() {
             my $f := Rosella::build(Rosella::MockObject::Factory);
             my $c := $f.create_typed(MyClass, :ordered(1));
             $c.expect_method("test").at_least(2).with_args(1, 2, 3);
@@ -83,7 +83,7 @@ class MockObject::Controller::Ordered::Test {
     }
 
     method test_repeat_method_fail_extra() {
-        Assert::expect_fail(sub() {
+        $!assert.expect_fail(sub() {
             my $f := Rosella::build(Rosella::MockObject::Factory);
             my $c := $f.create_typed(MyClass, :ordered(1));
             $c.expect_method("test").at_least(2).with_args(1, 2, 3);

@@ -17,7 +17,7 @@ sub foo($a) {
 class Test::Memoize {
     method test_memoize() {
         # First, set up the comparison
-        Assert::output_is({
+        $!assert.output_is({
             test_foo(foo, 3);
             test_foo(foo, 3);
             test_foo(foo, 4);
@@ -25,7 +25,7 @@ class Test::Memoize {
         }, "in foo\nfoo(3) : 5\nin foo\nfoo(3) : 5\nin foo\nfoo(4) : 6\nin foo\nfoo(4) : 6\n");
 
         # Now show that we get the same results, but without calling foo as much
-        Assert::output_is({
+        $!assert.output_is({
             my &mem := Rosella::Memoize::memoize(foo);
 
             test_foo(&mem, 3);
@@ -46,6 +46,6 @@ class Test::Memoize {
                 return $g(+$n - 1) + $g(+$n - 2);
             };
         }))(50);
-        Assert::equal($answer, 12586269025);
+        $!assert.equal($answer, 12586269025);
     }
 }

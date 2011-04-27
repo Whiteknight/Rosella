@@ -8,7 +8,7 @@ class MyClass { }
 Rosella::Test::test(Mocking::Methods::Test);
 class Mocking::Methods::Test {
     method test_one_method_pos_args_pass() {
-        Assert::expect_pass(sub() {
+        $!assert.expect_pass(sub() {
             my $f := Rosella::build(Rosella::MockObject::Factory);
             my $c := $f.create_typed(MyClass);
             $c.expect_method("test").once.with_args(1, 2, 3);
@@ -19,7 +19,7 @@ class Mocking::Methods::Test {
     }
 
     method test_one_method_pos_args_fail_args_bad_values() {
-        Assert::expect_fail(sub() {
+        $!assert.expect_fail(sub() {
             my $f := Rosella::build(Rosella::MockObject::Factory);
             my $c := $f.create_typed(MyClass);
             $c.expect_method("test").once.with_args(1, 2, 4);
@@ -30,7 +30,7 @@ class Mocking::Methods::Test {
     }
 
     method test_one_method_pos_args_fail_args_bad_arity() {
-        Assert::expect_fail(sub() {
+        $!assert.expect_fail(sub() {
             my $f := Rosella::build(Rosella::MockObject::Factory);
             my $c := $f.create_typed(MyClass);
             $c.expect_method("test").once.with_args(1, 2, 3, 4);
@@ -41,7 +41,7 @@ class Mocking::Methods::Test {
     }
 
     method test_one_method_no_args_pass() {
-        Assert::expect_pass(sub() {
+        $!assert.expect_pass(sub() {
             my $f := Rosella::build(Rosella::MockObject::Factory);
             my $c := $f.create_typed(MyClass);
             $c.expect_method("test").once.with_no_args;
@@ -52,7 +52,7 @@ class Mocking::Methods::Test {
     }
 
     method test_one_method_no_args_fail_with_pos_args() {
-        Assert::expect_fail(sub() {
+        $!assert.expect_fail(sub() {
             my $f := Rosella::build(Rosella::MockObject::Factory);
             my $c := $f.create_typed(MyClass);
             $c.expect_method("test").once.with_no_args;
@@ -63,7 +63,7 @@ class Mocking::Methods::Test {
     }
 
     #method test_one_method_no_args_fail_with_named_args() {
-    #    Assert::expect_fail(sub() {
+    #    $!assert.expect_fail(sub() {
     #        my $f := Rosella::build(Rosella::MockObject::Factory, MyClass);
     #        my $c := $f.create_typed();
     #        $c.expect().once().method("test").with_no_args();
@@ -74,31 +74,31 @@ class Mocking::Methods::Test {
     #}
 
     method test_one_method_args_return_pass() {
-        Assert::expect_pass(sub() {
+        $!assert.expect_pass(sub() {
             my $f := Rosella::build(Rosella::MockObject::Factory);
             my $c := $f.create_typed(MyClass);
             $c.expect_method("test").once.with_args(1, 2, 3).will_return(4);
             my $m := $c.mock();
             my $r := $m.test(1, 2, 3);
-            Assert::equal($r, 4);
+            $!assert.equal($r, 4);
             $c.verify();
         });
     }
 
     method test_one_method_args_return_pass() {
-        Assert::expect_pass(sub() {
+        $!assert.expect_pass(sub() {
             my $f := Rosella::build(Rosella::MockObject::Factory);
             my $c := $f.create_typed(MyClass);
             $c.expect_method("test").once.with_args(1, 2, 3).will_return(4);
             my $m := $c.mock();
             my $r := $m.test(1, 2, 3);
-            Assert::equal($r, 4);
+            $!assert.equal($r, 4);
             $c.verify();
         });
     }
 
     method test_one_method_args_will_throw() {
-        Assert::throws(sub() {
+        $!assert.throws(sub() {
             my $f := Rosella::build(Rosella::MockObject::Factory);
             my $c := $f.create_typed(MyClass);
             $c.expect_method("test").once.with_args(1, 2, 3).will_throw("whoops");
@@ -108,7 +108,7 @@ class Mocking::Methods::Test {
     }
 
     method test_none_methods_pass() {
-        Assert::expect_pass(sub() {
+        $!assert.expect_pass(sub() {
             my $f := Rosella::build(Rosella::MockObject::Factory);
             my $c := $f.create_typed(MyClass);
             $c.expect_method("test").none;
@@ -118,7 +118,7 @@ class Mocking::Methods::Test {
     }
 
     method test_none_methods_fail() {
-        Assert::expect_fail(sub() {
+        $!assert.expect_fail(sub() {
             my $f := Rosella::build(Rosella::MockObject::Factory);
             my $c := $f.create_typed(MyClass);
             $c.expect_method("test").none;
@@ -128,7 +128,7 @@ class Mocking::Methods::Test {
     }
 
     method test_atleast_method_pass_equal() {
-        Assert::expect_pass(sub() {
+        $!assert.expect_pass(sub() {
             my $f := Rosella::build(Rosella::MockObject::Factory);
             my $c := $f.create_typed(MyClass);
             $c.expect_method("test").at_least(3).with_any_args;
@@ -141,7 +141,7 @@ class Mocking::Methods::Test {
     }
 
     method test_atleast_method_pass_greater() {
-        Assert::expect_pass(sub() {
+        $!assert.expect_pass(sub() {
             my $f := Rosella::build(Rosella::MockObject::Factory);
             my $c := $f.create_typed(MyClass);
             $c.expect_method("test").at_least(3).with_any_args;
@@ -155,7 +155,7 @@ class Mocking::Methods::Test {
     }
 
     method test_atleast_method_fail() {
-        Assert::expect_fail(sub() {
+        $!assert.expect_fail(sub() {
             my $f := Rosella::build(Rosella::MockObject::Factory);
             my $c := $f.create_typed(MyClass);
             $c.expect_method("test").at_least(3).with_any_args;
@@ -167,7 +167,7 @@ class Mocking::Methods::Test {
     }
 
     method test_atmost_method_pass_equal() {
-        Assert::expect_pass(sub() {
+        $!assert.expect_pass(sub() {
             my $f := Rosella::build(Rosella::MockObject::Factory);
             my $c := $f.create_typed(MyClass);
             $c.expect_method("test").at_most(3).with_any_args;
@@ -180,7 +180,7 @@ class Mocking::Methods::Test {
     }
 
     method test_atmost_method_pass_less() {
-        Assert::expect_pass(sub() {
+        $!assert.expect_pass(sub() {
             my $f := Rosella::build(Rosella::MockObject::Factory);
             my $c := $f.create_typed(MyClass);
             $c.expect_method("test").at_most(3).with_any_args;
@@ -191,7 +191,7 @@ class Mocking::Methods::Test {
     }
 
     method test_atmost_method_fail() {
-        Assert::expect_fail(sub() {
+        $!assert.expect_fail(sub() {
             my $f := Rosella::build(Rosella::MockObject::Factory);
             my $c := $f.create_typed(MyClass);
             $c.expect_method("test").at_most(3).with_any_args;

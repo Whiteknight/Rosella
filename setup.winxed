@@ -106,7 +106,7 @@ function setup_stable_libraries(var rosella)
     setup_winxed_lib(rosella, "test",
         "include/Core",
         "test/Builder",
-        "test/Assertions",
+        "test/Asserter",
         "test/Failure",
         "test/Listener",
         "test/Listener/TAP",

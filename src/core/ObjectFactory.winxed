@@ -29,7 +29,7 @@ namespace Rosella
             using Rosella.Error.invalid;
             invalid("ObjectFactory.create",
                 "ObjectFactory: Cannot create an object without at type.\n" +
-                "You must provide a type to create_typed, pass one to the" +
+                "You must provide a type to create_typed, pass one to the " +
                 "BUILD method of ObjectFactory"
             );
         }

@@ -15,8 +15,8 @@ class Action::Argument::Test {
         $arg.setup_positioning(:name("Foo"));
         my $name := pir::getattribute__PPS($arg, 'name');
         my $pos := pir::getattribute__PPS($arg, 'position');
-        Assert::equal($name, "Foo");
-        Assert::equal($pos, -1);
+        $!assert.equal($name, "Foo");
+        $!assert.equal($pos, -1);
     }
 
     method test_setup_positioning_position() {
@@ -24,8 +24,8 @@ class Action::Argument::Test {
         $arg.setup_positioning(:position(7));
         my $name := pir::getattribute__PPS($arg, 'name');
         my $pos := pir::getattribute__PPS($arg, 'position');
-        Assert::is_null($name);
-        Assert::equal($pos, 7);
+        $!assert.is_null($name);
+        $!assert.equal($pos, 7);
     }
 
     method test_verify_all_arguments() {

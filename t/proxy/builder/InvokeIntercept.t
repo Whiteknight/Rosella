@@ -22,6 +22,6 @@ class InvokeInterceptTest {
 
         my $p := $factory.create(FooController.new());
         my $result := $p("first");
-        Assert::equal($result, "invoked: first");
+        $!assert.equal($result, "invoked: first");
     }
 }

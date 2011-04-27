@@ -21,13 +21,13 @@ class PathTest {
             :d("h")
         );
         my $result := $q.get(%a, 'b.foo');
-        Assert::equal($result, "bar");
+        $!assert.equal($result, "bar");
     }
 
     method test_attr_search() {
         my $q := Rosella::build(Rosella::Query::Path);
         my $result := $q.get($q, 'separator');
-        Assert::equal($result, ".");
+        $!assert.equal($result, ".");
     }
 
     method test_hash_attr_search() {
@@ -42,7 +42,7 @@ class PathTest {
             :d("h")
         );
         my $result := $q.get(%a, 'b.foo.separator');
-        Assert::equal($result, ".");
+        $!assert.equal($result, ".");
     }
 
     method test_attr_hash_search() {
@@ -57,7 +57,7 @@ class PathTest {
         %a{"d.e"} := new_hash(:f("g"));
 
         my $result := $q.get(%a, 'd.e.f');
-        Assert::equal($result, "g");
+        $!assert.equal($result, "g");
     }
 
     method test_longest_key_hash_search_2() {
@@ -72,8 +72,8 @@ class PathTest {
         %a{"d.e"} := new_hash(:f("g"));
 
         my $result := $q.get(%a, 'd.e.f');
-        Assert::equal($result, "g");
+        $!assert.equal($result, "g");
         $result := $q.get(%a, 'd.e.h');
-        Assert::equal($result, 'i');
+        $!assert.equal($result, 'i');
     }
 }

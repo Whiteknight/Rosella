@@ -17,12 +17,12 @@ class MockObject::Expectation::Will::Test {
         $c.expect_method("test").once.will_return("foo");
         my $m := $c.mock;
         my $result := $m.test();
-        Assert::equal($result, "foo");
+        $!assert.equal($result, "foo");
         $c.verify;
     }
 
     method test_will_throw() {
-        Assert::throws(sub() {
+        $!assert.throws(sub() {
             my $c := get_controller();
             $c.expect_method("test").once.will_throw("oopsies");
             my $m := $c.mock;
@@ -40,8 +40,8 @@ class MockObject::Expectation::Will::Test {
         });
         my $m := $c.mock;
         my $result := $m.test();
-        Assert::equal($result, 4);
-        Assert::equal($value, 12);
+        $!assert.equal($result, 4);
+        $!assert.equal($value, 12);
         $c.verify;
     }
 }

@@ -19,11 +19,11 @@ class Proxy::Builder::Passthrough::Test {
         my $target := My::Foo.new();
         $target.test_a(5);
         my $result := $target.test_b();
-        Assert::equal($result, 5);
+        $!assert.equal($result, 5);
         my $null := pir::null__P();
         my $p := $f.create($null, $target);
         $p.test_a(7);
         $result := $p.test_b();
-        Assert::equal($result, 7);
+        $!assert.equal($result, 7);
     }
 }
