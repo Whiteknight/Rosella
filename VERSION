@@ -1,0 +1,15 @@
+action: 1
+container: 1
+contract: 0(Alpha)
+core: 1
+decorate: 0(Beta)
+event: 1
+harness: 1
+memoize: 0(Beta)
+mockobject: 1
+path: 0(Alpha)
+prototype: 0(Alpha)
+proxy: 1
+query: 0(Alpha)
+test: 1
+winxed: 1
