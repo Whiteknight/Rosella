@@ -1,11 +1,5 @@
 namespace Rosella
 {
-    function private_set_core_version[load]()
-    {
-        const int core_version = 1;
-        internal_set_version("core", core_version);
-    }
-
     function private_get_version_hash()
     {
         var version_hash = {};
@@ -22,7 +16,7 @@ namespace Rosella
         return -1;
     }
 
-    function internal_set_version(string lib, int version)
+    function internal_set_version(string lib, var version)
     {
         var version_hash = private_get_version_hash();
         version_hash[lib] = version;
