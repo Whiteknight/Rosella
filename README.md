@@ -18,6 +18,9 @@ libraries, see the [Rosella website][rosella_website]
 
 Current Rosella Version: 1 (23 April 2011) For Parrot 3.3
 
+See the file VERSION for detailed version information about each individual
+library.
+
 # Getting Rosella Source
 
 Get a copy of the latest Rosella code from the Git repository with the
