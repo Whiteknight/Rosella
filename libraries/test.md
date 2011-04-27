@@ -91,34 +91,54 @@ library.
   Suite. By default this is `Rosella.Test.Suite`. Suites control the running
   of tests. A common reason to provide a custom subclass of Suite would be
   to introduce a specific test ordering (or shuffling).
+* `asserter`: The object which provides conditionals and assertions. By
+  default this is a `Rosella.Test.Asserter`, although you can replace this
+  with an object of a custom type or a subclass. Notice that if you remove
+  certain functionality from the asserter, you won't be able to use a full
+  range of conditionals and assertions in your tests.
+* `test_prefix`: The prefix string that identifies test methods. By default
+  the prefix is empty and all methods are tests. If you add a prefix, methods
+  without the prefix will be ignored (and will not be available for use in
+  the test).
 
-### Assert
+## Public Classes
 
-The `Assert` namespace (NOT `Rosella.Assert`) namespace contains a number of
-functions for performing assertions and verifications within a test. For
-brevity this namespace is not located under the `Rosella` namespace.
-Mechanisms may be provided to relocate these routines if there are conflicts
-with user-defined namespaces.
+### Test.Asserter
+
+`Rosella.Test.Asserter` is the mechanism you use from inside your tests to
+check conditions and assert various things. From a running test method, the
+Asserter is available in the `assert` or `$!assert` attribute.
+
+You can override the default Asserter type and provide your own object or your
+own custom subclass by passing in the "asserter" option to the
+`Rosella.Test.test` function. In NQP:
+
+    Rosella::Test::test(My::Test::Class, :asserter($myAsserter));
+
+Whatever you pass as the "asserter" argument will be passed directly to the
+`assert` (`$!assert`) attribute of the TestCase object. If you create a custom
+subclass which either overrides any of the default methods or avoids them
+entirely, your tests will not be able to use the features discussed below.
 
 Here are some examples of common assertions in NQP. Winxed examples are
-similar but more verbose:
+similar
 
-    Assert::fail("whoops!");        # Unconditional failure
-    Assert::equal("A", "A");        # Test for equality
-    Assert::not_equal("A", "B");
-    Assert::is_null($foo);          # Assert that the value is null
-    Assert::not_null($foo);
-    Assert::is_true($foo);          # Test for boolean truth.
-    Assert::is_false($foo);
-    Assert::defined($foo);          # Test that it is not Undef
-    Assert::not_defined($foo);
-    Assert::output_is({
+    $!assert.fail("whoops!");        # Unconditional failure
+    $!assert.equal("A", "A");        # Test for equality
+    $!assert.not_equal("A", "B");
+    $!assert.is_null($foo);          # Assert that the value is null
+    $!assert.not_null($foo);
+    $!assert.is_true($foo);          # Test for boolean truth.
+    $!assert.is_false($foo);
+    $!assert.defined($foo);          # Test that it is not Undef
+    $!assert.not_defined($foo);
+    $!assert.output_is({
         pir::say("Test!");
     }, "Test!\n");                  # Collect and test console output
-    Assert::throws({
+    $!assert.throws({
         pir::die("Whoopsies!");
     })                              # Prove that we throw an exception
-    Assert::throws_nothing({
+    $!assert.throws_nothing({
         say("No problem!");
     });
 
@@ -130,17 +150,16 @@ little bit of sanity. These can also be combined with other tests to invert
 sequences of assertions, or used internally by new assertions to prove the
 inverse of an existing assertion.
 
-    Assert::expect_pass({
-        Assert::equal(0, 0);
+    $!assert.expect_pass({
+        $!assert.equal(0, 0);
     });                             # Expect the test to pass. This is default.
-    Assert::expect_fail({
-        Assert::not_equal(0, 0);
+    $!assert.expect_fail({
+        $!assert.not_equal(0, 0);
     });                             # Expect failure. Can invert other assertions.
 
 This is not a comprehensive list of all available assertions, and the list can
 be easily expanded at any time to include new functionality.
 
-## Public Classes
 
 ### Test.Builder
 
@@ -263,12 +282,12 @@ Here are some examples of test methods written in NQP using these features:
 
     method test_todo() {
         $!status.todo("Something is wrong here...");
-        Assert::equal(0, 1);
+        $!assert.equal(0, 1);
     }
 
     method test_verify() {
         $!status.verify("Basic Sanity Test (BST)");
-        Assert::equal(1, 1);
+        $!assert.equal(1, 1);
     }
 
     method test_set_data() {
@@ -277,7 +296,7 @@ Here are some examples of test methods written in NQP using these features:
 
     method test_get_data() {
         my $value := $!context.get_data("Number");
-        Assert::equal($value, 7);
+        $!assert.equal($value, 7);
     }
 
 ### Test.TestContext
