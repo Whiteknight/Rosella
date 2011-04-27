@@ -8,40 +8,29 @@ namespace Rosella { namespace Test
     //       into a single Suite. The Suite can use nested TAP to handle them.
     class SuiteFactory : Rosella.ObjectFactory
     {
-        var test_prefix;    // prefix for valid tests
-        var test_context;   // The TestContext
-        var testcase_type;  // The type of testcase objects to build
         var test_type;      // The type to extract tests from
-        var seen_methods;
+        var options;        // User-specified options about the test run
 
         // Constructor. Take the test proto object and a few other options
-        function BUILD(var suite_type, var test_type, var testcase_type, var context,
-                string test_prefix [named,optional], int has_prefix [opt_flag])
+        function BUILD(var test_type, var options)
         {
-            self.target_type = suite_type;
+            self.target_type = options["suite_type"];
             self.test_type = test_type;
-            self.testcase_type = testcase_type;
-            self.test_context = context;
-            self.seen_methods = {};
-            if (has_prefix)
-                self.test_prefix = test_prefix;
-            else
-                self.test_prefix = "";
+            self.options = options;
         }
 
         // Create a Suite of the given type
         function create_typed(var type, var p [slurpy], var n [slurpy,named])
         {
             using Rosella.build;
-            var testfactory = build(class Rosella.Test.TestFactory,
-                    self.testcase_type, self.test_context);
+            var testfactory = build(class Rosella.Test.TestFactory, self.options);
             var test_methods = self.get_test_methods();
             var tests = {};
             for (var test in test_methods) {
                 var testcase = testfactory.create(test, test_methods[test]);
                 tests[test] = testcase;
             }
-            var suite = build(type, tests, self.test_context);
+            var suite = build(type, tests, self.options["test_context"]);
             return suite;
         }
 
@@ -50,6 +39,8 @@ namespace Rosella { namespace Test
         function get_test_methods()
         {
             using Rosella.get_type_class;
+
+            var seen_methods = {};
             var class_obj = get_type_class(self.test_type);
             var mro = class_obj.inspect("all_parents");
             var test_methods = {};
@@ -58,8 +49,8 @@ namespace Rosella { namespace Test
                     continue;
                 var methods = parent.inspect("methods");
                 for (var method in methods) {
-                    if (self.is_test_method(method) && !(exists self.seen_methods[method])) {
-                        self.seen_methods[method] = 1;
+                    if (self.is_test_method(method) && !(exists seen_methods[method])) {
+                        seen_methods[method] = 1;
                         test_methods[method] = methods[method];
                     }
                 }
@@ -72,9 +63,10 @@ namespace Rosella { namespace Test
         function is_test_method(string name)
         {
             int is_test = 0;
-            int prefix_length = length(self.test_prefix);
+            string prefix = self.options["test_prefix"];
+            int prefix_length = length(prefix);
             if (length(name) > prefix_length &&
-                substr(name, 0, prefix_length) == self.test_prefix) {
+                substr(name, 0, prefix_length) == prefix) {
                 is_test = 1;
             }
             return is_test;
