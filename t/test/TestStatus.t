@@ -7,7 +7,7 @@ Rosella::Test::test(Test::TestStatus::Test);
 class Test::TestStatus::Test {
     method test_current_test() {
         my $teststatus := Rosella::build(Rosella::Test::TestStatus, "TestName", "TestMethod");
-        Assert::equal($teststatus.current_test(), "TestMethod");
+        $!assert.equal($teststatus.current_test(), "TestMethod");
     }
 
     method test_todo() {

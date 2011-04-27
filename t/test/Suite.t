@@ -19,13 +19,13 @@ class MyFakeSubTest is MyFakeTest {
 class Test::Suite::Test {
     method test_BUILD() {
         my $suite := Rosella::build(Rosella::Test::Suite, [], "suite");
-        Assert::not_null($suite);
+        $!assert.not_null($suite);
     }
 
     method test_default_result() {
         my $suite := Rosella::build(Rosella::Test::Suite, [], "suite");
         my $result := $suite.default_result();
-        Assert::equal(~(pir::typeof__SP($result)), "Rosella;Test;Result");
+        $!assert.equal(~(pir::typeof__SP($result)), "Rosella;Test;Result");
     }
 
     method test_run() {

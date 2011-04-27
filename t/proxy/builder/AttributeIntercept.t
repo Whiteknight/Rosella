@@ -25,7 +25,7 @@ class AttributeInterceptTest {
         my $f := My::Foo.new();
         pir::setattribute__vPSP($f, '$!test', "hello");
         my $result := pir::getattribute__PPS($f, '$!test');
-        Assert::equal($result, "hello");
+        $!assert.equal($result, "hello");
 
         my $factory := Rosella::build(Rosella::Proxy::Factory, My::Foo, [
             Rosella::build(Rosella::Proxy::Builder::AttributeIntercept)
@@ -33,7 +33,7 @@ class AttributeInterceptTest {
 
         my $p := $factory.create(FooController.new());
         $result := pir::getattribute__PPS($p, '$!test');
-        Assert::equal($result, 'fake: $!test - ');
+        $!assert.equal($result, 'fake: $!test - ');
     }
 
     method test_set_attribute() {
@@ -44,7 +44,7 @@ class AttributeInterceptTest {
         my $p := $factory.create(FooController.new());
         pir::setattribute__vPSP($p, '$!test', "hello");
         my $result := pir::getattribute__PPS($p, '$!test');
-        Assert::equal($result, 'fake: $!test - fake hello');
+        $!assert.equal($result, 'fake: $!test - fake hello');
     }
 
     # Test that we can do intercepts on PMCProxy types. The logic is different
@@ -59,9 +59,9 @@ class AttributeInterceptTest {
         my $null := pir::null__P();
         my $target := pir::box__PS("Hello world!");
         my $p := $f.create($null, $target);
-        Assert::equal($p, "Hello world!");
+        $!assert.equal($p, "Hello world!");
         $p.replace("world", "rosella");
-        Assert::equal($p, "Hello rosella!");
+        $!assert.equal($p, "Hello rosella!");
     }
 
     method test_set_attribute_pmcproxy() {
@@ -72,8 +72,8 @@ class AttributeInterceptTest {
         my $target := pir::new__PS("Exception");
         pir::setattribute__vPSP($target, "payload", pir::box__PS("I'm an exception"));
         my $p := $f.create($null, $target);
-        Assert::equal(pir::getattribute__PPS($p, "payload"), "I'm an exception");
+        $!assert.equal(pir::getattribute__PPS($p, "payload"), "I'm an exception");
         pir::setattribute__vPSP($target, "payload", pir::box__PS("Now I'm a proxy"));
-        Assert::equal(pir::getattribute__PPS($p, "payload"), "Now I'm a proxy");
+        $!assert.equal(pir::getattribute__PPS($p, "payload"), "Now I'm a proxy");
     }
 }

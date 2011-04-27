@@ -15,47 +15,47 @@ class MyTestClass {
 class Event::Test {
     method test_BUILD() {
         my $m := Rosella::build(Rosella::Event, 0);
-        Assert::not_null($m);
-        Assert::instance_of($m, Rosella::Event);
+        $!assert.not_null($m);
+        $!assert.instance_of($m, Rosella::Event);
     }
 
     method add_subscriber_action() {
         my $m := Rosella::build(Rosella::Event, 0);
-        Assert::equal($m.num_subscribers, 0);
+        $!assert.equal($m.num_subscribers, 0);
         $m.add_subscriber_action("Foo",
             Rosella::build(Rosella::Action::Sub, sub() {})
         );
-        Assert::equal($m.num_subscribers, 1);
+        $!assert.equal($m.num_subscribers, 1);
     }
 
     method add_subscriber_object() {
         my $m := Rosella::build(Rosella::Event, 0);
         my $data := MyTestClass.new();
-        Assert::equal($m.num_subscribers, 0);
+        $!assert.equal($m.num_subscribers, 0);
         $m.add_subscriber_object("Foo", $data, "test_method");
-        Assert::equal($m.num_subscribers, 1);
+        $!assert.equal($m.num_subscribers, 1);
     }
 
     method remove_subscriber() {
         my $m := Rosella::build(Rosella::Event, 0);
         my $data := MyTestClass.new();
-        Assert::equal($m.num_subscribers, 0);
+        $!assert.equal($m.num_subscribers, 0);
         $m.add_subscriber_object("Foo", $data, "test_method");
-        Assert::equal($m.num_subscribers, 1);
+        $!assert.equal($m.num_subscribers, 1);
         $m.remove_subscriber("Foo");
-        Assert::equal($m.num_subscribers, 0);
+        $!assert.equal($m.num_subscribers, 0);
     }
 
     method remove_subscriber_none() {
         my $m := Rosella::build(Rosella::Event, 0);
-        Assert::equal($m.num_subscribers, 0);
+        $!assert.equal($m.num_subscribers, 0);
         $m.remove_subscriber("Foo");
-        Assert::equal($m.num_subscribers, 0);
+        $!assert.equal($m.num_subscribers, 0);
     }
 
     method get_count() {
         my $m := Rosella::build(Rosella::Event, 0);
-        Assert::equal($m.get_count, 0);
+        $!assert.equal($m.get_count, 0);
     }
 
     method get_pmc_keyed() {
@@ -82,7 +82,7 @@ class Event::Test {
         my $m := Rosella::build(Rosella::Event, 0);
         my $data := MyTestClass.new();
         $m.add_subscriber_object("Foo", $data, "test_method");
-        Assert::output_is({
+        $!assert.output_is({
             $m.raise();
         }, "test_method fired\n");
     }
@@ -91,7 +91,7 @@ class Event::Test {
         my $m := Rosella::build(Rosella::Event, 0);
         my $data := MyTestClass.new();
         $m.add_subscriber_object("Foo", $data, "test_method_pos_args");
-        Assert::output_is({
+        $!assert.output_is({
             $m.raise(1, 2, 3);
         }, "1,2,3\n");
     }

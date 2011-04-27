@@ -16,24 +16,24 @@ class Test::TestFactory::Test {
     method test_create_TestCase() {
         my $factory := Rosella::build(Rosella::Test::TestFactory, Rosella::Test::TestCase, "context");
         my $testcase := $factory.create("Foo", "Bar");
-        Assert::instance_of($testcase, Rosella::Test::TestCase);
+        $!assert.instance_of($testcase, Rosella::Test::TestCase);
     }
 
     method test_create_custom_subclass() {
         my $factory := Rosella::build(Rosella::Test::TestFactory, MyTestCaseSubclass, "context");
         my $testcase := $factory.create("Foo", "Bar");
-        Assert::instance_of($testcase, MyTestCaseSubclass);
+        $!assert.instance_of($testcase, MyTestCaseSubclass);
     }
 
     method test_create_typed_TestCase() {
         my $factory := Rosella::build(Rosella::Test::TestFactory, Rosella::Test::TestCase, "context");
         my $testcase := $factory.create_typed(Rosella::Test::TestCase, "Foo", "Bar");
-        Assert::instance_of($testcase, Rosella::Test::TestCase);
+        $!assert.instance_of($testcase, Rosella::Test::TestCase);
     }
 
     method test_create_typed_custom_subclass() {
         my $factory := Rosella::build(Rosella::Test::TestFactory, Rosella::Test::TestCase, "context");
         my $testcase := $factory.create_typed(MyTestCaseSubclass, "Foo", "Bar");
-        Assert::instance_of($testcase, MyTestCaseSubclass);
+        $!assert.instance_of($testcase, MyTestCaseSubclass);
     }
 }

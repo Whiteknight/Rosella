@@ -33,7 +33,7 @@ class Proxy::Builder::PMCKeyedHash::Test {
 
         my $p := $factory.create(FooController.new());
         my $result := $p[1];
-        Assert::equal($result, 7);
+        $!assert.equal($result, 7);
     }
 
     method test_set_keyed_intercept() {
@@ -44,7 +44,7 @@ class Proxy::Builder::PMCKeyedHash::Test {
         my $p := $factory.create(FooController.new());
         my $value := 0;
         $p[1] := sub($i) { $value := pir::set__IP($i); };
-        Assert::equal($value, 1);
+        $!assert.equal($value, 1);
     }
 
     method test_delete_keyed_intercept() {

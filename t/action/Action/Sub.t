@@ -8,7 +8,7 @@ Rosella::Test::test(ActionSubTest);
 class ActionSubTest {
     method test_BUILD() {
         my $action := Rosella::build(Rosella::Action::Sub, sub($item){}, []);
-        Assert::instance_of($action, Rosella::Action::Sub, "Is not an Action");
+        $!assert.instance_of($action, Rosella::Action::Sub, "Is not an Action");
     }
 
     method test_execute() {
@@ -19,7 +19,7 @@ class ActionSubTest {
             }, []
         );
         $action.execute($data);
-        Assert::equal($data, "That is a test");
+        $!assert.equal($data, "That is a test");
     }
 
     method test_BUILD_with_ActionArgs() {
@@ -33,7 +33,7 @@ class ActionSubTest {
             ]
         );
         $action.execute($data);
-        Assert::equal($data, "This is b test");
+        $!assert.equal($data, "This is b test");
     }
 
     method test_execute_args() {
@@ -47,7 +47,7 @@ class ActionSubTest {
             Rosella::build(Rosella::Action::Argument::Instance, "a", :position(0)),
             Rosella::build(Rosella::Action::Argument::Instance, "b", :position(1))
         ]);
-        Assert::equal($data, "This is b test");
+        $!assert.equal($data, "This is b test");
     }
 
     method test_all() {
@@ -63,6 +63,6 @@ class ActionSubTest {
         $action.execute($data, [
             Rosella::build(Rosella::Action::Argument::Instance, "i", :position(0)),
         ]);
-        Assert::equal($data, "Thbs bs a test");
+        $!assert.equal($data, "Thbs bs a test");
     }
 }

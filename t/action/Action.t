@@ -9,7 +9,7 @@ Rosella::Test::test(ActionTest);
 class ActionTest {
     method test_BUILD() {
         my $action := Rosella::build(Rosella::Action, "foo", []);
-        Assert::instance_of($action, Rosella::Action, "Is not an Action");
+        $!assert.instance_of($action, Rosella::Action, "Is not an Action");
     }
 
     method prepare_args_empty() {
@@ -17,8 +17,8 @@ class ActionTest {
         my @pos := [];
         my %named := {};
         $action.prepare_args(@pos, %named);
-        Assert::equal(+@pos, 0);
-        Assert::equal(+%named, 0);
+        $!assert.equal(+@pos, 0);
+        $!assert.equal(+%named, 0);
     }
 
     method prepare_args_positional() {
@@ -29,10 +29,10 @@ class ActionTest {
         my @pos := [];
         my %named := {};
         $action.prepare_args(@pos, %named);
-        Assert::equal(+@pos, 2);
-        Assert::equal(+%named, 0);
-        Assert::equal(@pos[0], 5);
-        Assert::equal(@pos[1], "Test");
+        $!assert.equal(+@pos, 2);
+        $!assert.equal(+%named, 0);
+        $!assert.equal(@pos[0], 5);
+        $!assert.equal(@pos[1], "Test");
     }
 
     method prepare_args_positional_skip() {
@@ -43,11 +43,11 @@ class ActionTest {
         my @pos := [];
         my %named := {};
         $action.prepare_args(@pos, %named);
-        Assert::equal(+@pos, 3);
-        Assert::equal(+%named, 0);
-        Assert::equal(@pos[0], 5, 'pos[0]');
-        Assert::not_defined(@pos[1], 'pos[1]');
-        Assert::equal(@pos[2], "Test", 'pos[2]');
+        $!assert.equal(+@pos, 3);
+        $!assert.equal(+%named, 0);
+        $!assert.equal(@pos[0], 5, 'pos[0]');
+        $!assert.not_defined(@pos[1], 'pos[1]');
+        $!assert.equal(@pos[2], "Test", 'pos[2]');
     }
 
     method prepare_args_named() {
@@ -58,9 +58,9 @@ class ActionTest {
         my @pos := [];
         my %named := {};
         $action.prepare_args(@pos, %named);
-        Assert::equal(+@pos, 0);
-        Assert::equal(+%named, 2);
-        Assert::equal(%named{"A"}, 5);
-        Assert::equal(%named{"B"}, "Test");
+        $!assert.equal(+@pos, 0);
+        $!assert.equal(+%named, 2);
+        $!assert.equal(%named{"A"}, 5);
+        $!assert.equal(%named{"B"}, "Test");
     }
 }

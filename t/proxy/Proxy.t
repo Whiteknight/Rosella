@@ -26,6 +26,6 @@ class ProxyTest {
         my $foo := pir::new__PP($class_obj);
         Rosella::Proxy::set_proxy_private_attr($foo, "foo", "hello");
         my $value := Rosella::Proxy::get_proxy_private_attr($foo, "foo");
-        Assert::equal($value, "hello");
+        $!assert.equal($value, "hello");
     }
 }

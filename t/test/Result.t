@@ -20,8 +20,8 @@ class Test::Result::Test {
 
     method test_BUILD() {
         my $result := Rosella::build(Rosella::Test::Result, []);
-        Assert::not_null($result);
-        Assert::equal($result.was_successful(), 1);
+        $!assert.not_null($result);
+        $!assert.equal($result.was_successful(), 1);
     }
 
     method test_plan_tests() {
@@ -73,10 +73,10 @@ class Test::Result::Test {
         #$c.expect_method("add_error").once.with_any_args;
         #my $m := $c.mock();
         #my $result := Rosella::build(Rosella::Test::Result, [$m]);
-        #Assert::equal($result.was_successful, 1);
+        #$!assert.equal($result.was_successful, 1);
         #$result.add_error($faketest, "context", "oops");
         #$c.verify();
-        #Assert::equal($result.was_successful, 0);
+        #$!assert.equal($result.was_successful, 0);
         $!status.unimplemented("This logic path has changed. Update the test");
     }
 
@@ -86,10 +86,10 @@ class Test::Result::Test {
         #$c.expect_method("add_failure").once.with_any_args;
         #my $m := $c.mock();
         #my $result := Rosella::build(Rosella::Test::Result, [$m]);
-        #Assert::equal($result.was_successful, 1);
+        #$!assert.equal($result.was_successful, 1);
         #$result.add_failure($faketest, "context", "oops");
         #$c.verify();
-        #Assert::equal($result.was_successful, 0);
+        #$!assert.equal($result.was_successful, 0);
         $!status.unimplemented("This logic path has changed. Update the test");
     }
 }

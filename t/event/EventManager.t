@@ -12,8 +12,8 @@ class MyTestClass {
 class Event::EventManager::Test {
     method test_BUILD() {
         my $em := Rosella::build(Rosella::Event::Manager);
-        Assert::not_null($em);
-        Assert::instance_of($em, Rosella::Event::Manager);
+        $!assert.not_null($em);
+        $!assert.instance_of($em, Rosella::Event::Manager);
     }
 
     method test_register_event() {
@@ -30,11 +30,11 @@ class Event::EventManager::Test {
                 )
             ), 0
         );
-        Assert::equal($count, 0, "not equal");
+        $!assert.equal($count, 0, "not equal");
         $em.raise_event("Test");
-        Assert::equal($count, 1, "not equal");
+        $!assert.equal($count, 1, "not equal");
         $em.raise_event("Test");
-        Assert::equal($count, 2, "not equal");
+        $!assert.equal($count, 2, "not equal");
     }
 
     method test_register_event_multi() {
@@ -65,9 +65,9 @@ class Event::EventManager::Test {
                 )
             ), 0
         );
-        Assert::equal($count, 0, "not equal");
+        $!assert.equal($count, 0, "not equal");
         $em.raise_event("Test");
-        Assert::equal($count, 6, "not equal");
+        $!assert.equal($count, 6, "not equal");
     }
 
     method test_register_event_payload() {
@@ -84,9 +84,9 @@ class Event::EventManager::Test {
                 )
             ), 0
         );
-        Assert::equal($data, "Hello", "not equal");
+        $!assert.equal($data, "Hello", "not equal");
         $em.raise_event("Test2", " World!");
-        Assert::equal($data, "Hello World!", "not equal");
+        $!assert.equal($data, "Hello World!", "not equal");
     }
 
     method test_register_event_namedpayload() {
@@ -103,14 +103,14 @@ class Event::EventManager::Test {
                 )
             ), 0
         );
-        Assert::equal($data, "Hello", "not equal");
+        $!assert.equal($data, "Hello", "not equal");
         $em.raise_event("Test2", :arg(" World!"));
-        Assert::equal($data, "Hello World!", "not equal");
+        $!assert.equal($data, "Hello World!", "not equal");
     }
 
     method register_event_nonevent() {
         my $em := Rosella::build(Rosella::Event::Manager);
-        Assert::throws({
+        $!assert.throws({
             $em.register_event("foo", "foo", 0);
         });
     }
@@ -118,23 +118,23 @@ class Event::EventManager::Test {
     method remove_event() {
         my $em := Rosella::build(Rosella::Event::Manager);
         my $data := "Hello";
-        Assert::equal($em.count_events, 0);
+        $!assert.equal($em.count_events, 0);
         $em.register_event("Foo", Rosella::build(Rosella::Event, 0), 0);
-        Assert::equal($em.count_events, 1);
+        $!assert.equal($em.count_events, 1);
         $em.remove_event("Foo");
-        Assert::equal($em.count_events, 0);
+        $!assert.equal($em.count_events, 0);
     }
 
     method count_events() {
         my $em := Rosella::build(Rosella::Event::Manager);
-        Assert::equal($em.count_events, 0);
+        $!assert.equal($em.count_events, 0);
     }
 
     method subscribe_object() {
         my $em := Rosella::build(Rosella::Event::Manager);
         my $data := MyTestClass.new();
         $em.subscribe_object("Foo", $data, "test_subscribe");
-        Assert::output_is({
+        $!assert.output_is({
             $em.raise_event("Foo");
         }, "test_subscribe fired\n");
     }
@@ -145,7 +145,7 @@ class Event::EventManager::Test {
         $em.subscribe_action("Foo",
             Rosella::build(Rosella::Action::Method, $method)
         );
-        Assert::output_is({
+        $!assert.output_is({
             $em.raise_event("Foo");
         }, "test_subscribe fired\n");
     }
@@ -157,7 +157,7 @@ class Event::EventManager::Test {
             Rosella::build(Rosella::Action::Method, $method)
         );
         $em.unsubscribe("Foo", $id);
-        Assert::output_is({
+        $!assert.output_is({
             $em.raise_event("Foo");
         }, "");
     }

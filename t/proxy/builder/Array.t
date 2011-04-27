@@ -36,7 +36,7 @@ class Proxy::Builder::Array::Test {
             $P0 = find_lex '$p'
             %r = $P0[1]
         };
-        Assert::equal($result, 7);
+        $!assert.equal($result, 7);
     }
 
     method test_set_keyed_intercept() {
@@ -52,7 +52,7 @@ class Proxy::Builder::Array::Test {
             $P1 = find_lex '$callback'
             $P0[1] = $P1
         };
-        Assert::equal($value, 1);
+        $!assert.equal($value, 1);
     }
 
     method test_delete_keyed_intercept() {
