@@ -1,5 +1,7 @@
 namespace Rosella
 {
+    // Private routine to provide a persistant global variable to store
+    // version numbers in
     function private_get_version_hash()
     {
         var version_hash = {};
@@ -8,14 +10,18 @@ namespace Rosella
         }
     }
 
+    // Get the version string for the specified library. Return null if the
+    // library is not found.
     function get_version(string lib)
     {
         var version_hash = private_get_version_hash();
         if (exists version_hash[lib])
             return version_hash[lib];
-        return -1;
+        return "-1(NOT FOUND)";
     }
 
+    // internal routine for setting a library version. Don't call this one
+    // yourself. For internal use only.
     function internal_set_version(string lib, var version)
     {
         var version_hash = private_get_version_hash();
