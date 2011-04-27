@@ -150,6 +150,9 @@ namespace Rosella
         return find_method(object, meth_name);
     }
 
+    // Invoke the given method on the object with the given parameters.
+    // The method parameter can be a method object or a String with the name
+    // of the method to lookup.
     function invoke_method(var obj, var method, var p, var n)
     {
         if (method instanceof 'String') {
@@ -163,6 +166,8 @@ namespace Rosella
         return obj.*method(p:[flat], n:[flat,named]);
     }
 
+    // Get a unique count number, which is guaranteed to be unique throughout
+    // the Rosella library for the duration of the program.
     function get_unique_count()
     {
         int i = 0;
