@@ -73,7 +73,8 @@ namespace Rosella { namespace MockObject
         // met.
         function verify()
         {
-            using Assert.fail;
+            using Rosella.Test.internal_fail;
+
             var missed_expectations = [];
             for (var expect in self.expectations) {
                 if (!expect.__satisfied())
@@ -87,7 +88,7 @@ namespace Rosella { namespace MockObject
             string errmsg = "Not all expectations have been met!";
             for (var missed in missed_expectations)
                 errmsg = errmsg + "\n\t" + string(missed.to_string());
-            fail(errmsg);
+            internal_fail(errmsg, 0, null);
         }
 
         /* Controller Methods
@@ -101,7 +102,6 @@ namespace Rosella { namespace MockObject
         // method object to be used in place of the method call.
         function find_method(var proxy, string name)
         {
-            using Assert.fail;
             int expects = self.have_method_expectations(name);
             if (expects == 0)
                 self.unmatched("method '" + name + "'");
@@ -176,8 +176,8 @@ namespace Rosella { namespace MockObject
         // Fail the test because we could not match
         function unmatched(string type)
         {
-            using Assert.fail;
-            fail("Can not match " + type);
+            using Rosella.Test.internal_fail;
+            internal_fail("Can not match " + type, 0, null);
         }
 
         // Attempt to match a method invoke to an expectation.

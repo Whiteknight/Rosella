@@ -21,15 +21,14 @@ namespace Rosella { namespace Test
             var exception [optional,named], int has_ex [opt_flag]
             )
         {
-            using Rosella.build;
+            using Rosella.Test.internal_fail;
 
             if (!has_is_i)
                 is_internal = 0;
             if (!has_ex)
                 exception = null;
 
-            var ex = build(class Rosella.Test.Failure, why, exception, is_internal);
-            ex.throw();
+            internal_fail(why, is_internal, exception);
         }
 
         /* Assertion Functions

@@ -28,9 +28,9 @@ namespace Rosella { namespace Test
         {
             using Rosella.build;
             var test = build(type);
+            var asserter = self.asserter;
             var status = build(class Rosella.Test.TestStatus, test_name, test_method);
             var context = self.context;
-            var asserter = self.asserter;
 
             // setattribute_p_p_s_p sets attributes through a different
             // mechanism and does not get routed through VTABLE_set_attr_str.

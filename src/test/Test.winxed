@@ -30,5 +30,15 @@ namespace Rosella
             var result = suite.run();
             return result.was_successful();
         }
+
+        // Unconditional fail. Throws a Rosella.Test.Failure
+        // This is for internal use only. You probably want Asserter.fail
+        // instead.
+        function internal_fail(string why, int is_internal, var exception)
+        {
+            using Rosella.build;
+            var ex = build(class Rosella.Test.Failure, why, exception, is_internal);
+            ex.throw();
+        }
     }
 }
