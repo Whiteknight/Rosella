@@ -7,13 +7,18 @@ Rosella::Test::test(Test::TestCase::Test);
 class Test::TestCase::Test {
     method test_make() {
         # We need a TestFactory to make a TestCase
-        my $factory := Rosella::build(Rosella::Test::TestFactory, Rosella::Test::TestCase, "Foo");
+        my %options := {};
+        %options{"testcase_type"} := Rosella::Test::TestCase;
+        my $factory := Rosella::build(Rosella::Test::TestFactory, %options);
         my $testcase := $factory.create("Bar", "Baz");
     }
 
     method test_attrs() {
         # We need a TestFactory to make a TestCase
-        my $factory := Rosella::build(Rosella::Test::TestFactory, Rosella::Test::TestCase, "Foo");
+        my %options := {};
+        %options{"testcase_type"} := Rosella::Test::TestCase;
+        %options{"context"} := "Foo";
+        my $factory := Rosella::build(Rosella::Test::TestFactory, %options);
         my $testcase := $factory.create("Bar", "Baz");
         $!assert.equal(pir::getattribute__PPS($testcase, 'method'), "Baz");
         $!assert.equal(pir::getattribute__PPS($testcase, '$!method'), "Baz");
