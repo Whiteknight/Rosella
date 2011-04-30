@@ -10,6 +10,7 @@ namespace Rosella { namespace Lazy
             using Rosella.build;
             self.target_type = type;
             self.proxy_factory = build(class Rosella.Proxy.Factory, type, [
+                build(class Rosella.Lazy.Builder),
                 build(class Rosella.Proxy.Builder.AttributeIntercept),
                 build(class Rosella.Proxy.Builder.MethodIntercept)
             ]);
@@ -24,7 +25,7 @@ namespace Rosella { namespace Lazy
             var proxy = self.proxy_factory.create_typed(target_type,
                     self.proxy_controller, null);
             set_proxy_private_attr(proxy, "lazy_pos_args", p);
-            set_proxy_private_attr(proxy, "lazy_pos_args", n);
+            set_proxy_private_attr(proxy, "lazy_named_args", n);
             set_proxy_private_attr(proxy, "lazy_constructor", constructor);
             return proxy;
         }
