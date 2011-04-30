@@ -5,15 +5,25 @@ namespace Rosella { namespace Query
         var separator;
         var searchers;
 
-        function BUILD(string separator [optional], int has_sep [opt_flag])
+        function BUILD(var searchers [slurpy],
+                string separator [optional,named], int has_sep [opt_flag])
         {
+            using Rosella.build;
+
             if (has_sep)
                 self.separator = separator;
             else
                 self.separator = ".";
-            self.searchers = [];
-            self.searchers[0] = function(o, n) { return self.try_get_hash(o, n); };
-            self.searchers[1] = function(o, n) { return self.try_get_attribute(o, n); };
+            if (elements(searchers) == 0)
+            {
+                self.searchers = []
+                self.searchers[0] = build(class Rosella.Path.Searcher.Hash);
+                self.searchers[1] = build(class Rosella.Path.Searcher.Attribute);
+            }
+            else
+            {
+                self.searchers = searchers;
+            }
         }
 
         function result_is_valid(var result)
@@ -32,72 +42,15 @@ namespace Rosella { namespace Query
                 return obj;
             }
             for (var searcher in self.searchers) {
-                var result = searcher(obj, name);
-                if (!self.result_is_valid(result))
+                if (!searcher.can_search(obj))
                     continue;
-                return result;
-            }
-            return null;
-        }
 
-        function try_get_hash(var obj, string name)
-        {
-            int is_hash = 0;
-            ${ does is_hash, obj, "hash" };
-            if (!is_hash)
-                return null;
-            //say("try_get_hash: " + name);
-            if (exists obj[name])
-                return obj[name];
-            string search = name;
-            string remainder = "";
-            int idx = name.reverse_index(self.separator, 0);
-            while (idx != -1) {
-                search = substr(search, 0, idx);
-                remainder = substr(name, idx + 1);
-                if (exists obj[search]) {
-                    var result = self.get(obj[search], remainder);
-                    if (self.result_is_valid(result))
-                        return result;
-                }
-                idx = search.reverse_index(self.separator, 0);
-            }
-            return null;
-        }
-
-        function try_get_attribute(var obj, string name)
-        {
-            //say("try_get_attribute: " + name);
-            int idx = indexof(name, self.separator);
-            while (idx != -1) {
-                string attr = substr(name, 0, idx);
-                //say("try_get_attribute checkpoint 1: " + attr);
-                var result = self.try_get_attribute_internal(obj, attr);
-                if (!self.result_is_valid(result)) {
-                    idx = indexof(name, self.separator, idx + 1);
-                    continue;
-                }
-                //say("try_get_attribute checkpoint 2: " + attr);
-                string remainder = substr(name, idx + 1);
-                result = self.get(result, remainder);
-                if (self.result_is_valid(result))
+                var result;
+                //:(success, name, result) = searcher.search(self, obj, name);
+                if (name == null || name == "")
                     return result;
-
-                idx = indexof(name, self.separator, idx + 1);
             }
-            return self.try_get_attribute_internal(obj, name);
-        }
-
-        function try_get_attribute_internal(var obj, string name)
-        {
-            //say("try_get_attribute_internal: " + name);
-            var result = null;
-            try {
-                ${ getattribute result, obj, name };
-            } catch() {
-                //say("try_get_attribute_internal does not have: " + name);
-            }
-            return result;
+            return null;
         }
     }
 }}

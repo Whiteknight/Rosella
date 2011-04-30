@@ -1,0 +1,46 @@
+namespace Rosella { namespace Path { namespace Searchers
+{
+    class Attribute
+    {
+        function can_search(var obj)
+        {
+            // TODO: Is there a way to check if we have *any* attributes?
+            return 1;
+        }
+
+        function search(var obj, string name)
+        {
+            //say("try_get_attribute: " + name);
+            int idx = indexof(name, self.separator);
+            while (idx != -1) {
+                string attr = substr(name, 0, idx);
+                //say("try_get_attribute checkpoint 1: " + attr);
+                var result = self.try_get_attribute_internal(obj, attr);
+                if (!self.result_is_valid(result)) {
+                    idx = indexof(name, self.separator, idx + 1);
+                    continue;
+                }
+                //say("try_get_attribute checkpoint 2: " + attr);
+                string remainder = substr(name, idx + 1);
+                result = self.get(result, remainder);
+                if (self.result_is_valid(result))
+                    return result;
+
+                idx = indexof(name, self.separator, idx + 1);
+            }
+            return self.try_get_attribute_internal(obj, name);
+        }
+
+        function internal_search_attributes(var obj, string name)
+        {
+            //say("try_get_attribute_internal: " + name);
+            var result = null;
+            try {
+                ${ getattribute result, obj, name };
+            } catch() {
+                //say("try_get_attribute_internal does not have: " + name);
+            }
+            return result;
+        }
+    }
+}}}
