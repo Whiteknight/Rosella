@@ -215,6 +215,15 @@ function setup_experimental_libraries(var rosella)
         "memoize/Controller",
         "memoize/Factory"
     );
+
+    setup_winxed_lib(rosella, "lazy",
+        "include/Core",
+        "include/Proxy",
+        "lazy/Lazy",
+        "lazy/Builder",
+        "lazy/Controller",
+        "lazy/Factory"
+    );
 }
 
 function setup_versions(var rosella)

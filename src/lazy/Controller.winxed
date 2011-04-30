@@ -1,0 +1,62 @@
+namespace Rosella { namespace Lazy
+{
+    class Controller : Rosella.Proxy.Controller
+    {
+        function get_attribute(var proxy, string name)
+        {
+            var target = self.private_get_target(proxy);
+            var value;
+            ${ getattribute value, target, name };
+            return value;
+        }
+
+        function set_attribute(var proxy, string name, var value)
+        {
+            var target = self.private_get_target(proxy);
+            ${ setattribute target, name, value };
+        }
+
+        function find_method(var proxy, string name)
+        {
+            using Rosella.find_method_named;
+            var target = self.private_get_target(proxy);
+            var method = find_method_named(target, name);
+            if (method == null) {
+                using Rosella.Error.invalid;
+                invalid("Lazy.Controller.find_method", "Cannot find method " + name);
+            }
+
+            return function (var t, var p [slurpy], var n [slurpy,named]) {
+                using Rosella.invoke_method;
+                return invoke_method(target, method, p, n);
+            };
+        }
+
+        function private_get_target(var proxy)
+        {
+            using Rosella.Proxy.get_proxy_private_attr;
+            var target = get_proxy_private_attr(proxy, "target_object");
+            if (target != null)
+                return target;
+            return private_create_target(proxy);
+        }
+
+        function private_create_target(var proxy)
+        {
+            using Rosella.invoke_method;
+            using Rosella.alloc;
+            using Rosella.Proxy.get_proxy_private_attr;
+            using Rosella.Proxy.set_proxy_private_attr;
+
+            var type = get_proxy_private_attr(proxy, "target_class");
+            var p = get_proxy_private_attr(proxy, "lazy_pos_args");
+            var n = get_proxy_private_attr(proxy, "lazy_named_args");
+            var c = get_proxy_private_attr(proxy, "lazy_constructor");
+
+            var target = alloc(type);
+            invoke_method(target, c, p, n);
+            set_proxy_private_attr(proxy, "target_object", target);
+            return proxy;
+        }
+    }
+}}
