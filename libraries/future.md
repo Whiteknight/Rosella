@@ -75,6 +75,13 @@ The Query library implements several higher-order functions for operating on
 aggregates. This library implements routines such as map, fold, reduce, count,
 and other utility routines for working with aggregates.
 
+### Lazy
+
+The Lazy library implements lazy objects. Lazy objects are proxies which take
+a target type but which only instantiate the targe object on demand. This is
+useful for when you need to have and pass an object "instance", but creating
+the object is too expensive to do eagerly.
+
 ## Planned Libraries
 
 These are libaries which exist only on paper (or, more likely, only in my
