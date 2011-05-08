@@ -2,7 +2,7 @@ namespace Rosella { namespace Path
 {
     namespace Searcher
     {
-
-
+        function can_search(var obj) { return 1; }
+        function search(var obj, string path) { return 0, null; }
     }
 }}

@@ -1,4 +1,4 @@
-namespace Rosella { namespace Path { namespace Searchers
+namespace Rosella { namespace Path { namespace Searcher
 {
     class Hash
     {
@@ -9,24 +9,11 @@ namespace Rosella { namespace Path { namespace Searchers
             return is_hash;
         }
 
-        function search(var path, var obj, string name)
+        function search(var obj, string name)
         {
             if (exists obj[name])
                 return 1, obj[name];
-            string search = name;
-            string remainder = "";
-            int idx = name.reverse_index(self.separator, 0);
-            while (idx != -1) {
-                search = substr(search, 0, idx);
-                remainder = substr(name, idx + 1);
-                if (exists obj[search]) {
-                    var result = path.get(obj[search], remainder);
-                    if (path.result_is_valid(result))
-                        return 1, result;
-                }
-                idx = search.reverse_index(self.separator, 0);
-            }
-            return 1, null;
+            return 0, null;
         }
     }
 }}}
