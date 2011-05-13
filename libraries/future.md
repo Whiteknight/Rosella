@@ -82,6 +82,12 @@ a target type but which only instantiate the targe object on demand. This is
 useful for when you need to have and pass an object "instance", but creating
 the object is too expensive to do eagerly.
 
+### String
+
+The string library provides abstractions for performing common string
+operations in a simplified and future-proof way. It also provides tokenization
+and other utilities for working with strings.
+
 ## Planned Libraries
 
 These are libaries which exist only on paper (or, more likely, only in my
@@ -93,14 +99,7 @@ haven't actually written any code for.
 This library will provide a number of helper utilities to support systems
 using an MVC architecture.
 
-### String
+### Multicast
 
-The string library will provide a number of utilities for working with
-strings in an efficient way.
-
-### Tokenizer
-
-The tokenizer library will implement tokenizing behavior. This library will
-implement a mechanism for breaking an input sequence into a sequence of
-tokens.
-
+This library will provide higher-order routines for combining functions
+together in logical ways to be executed as a single unit.
