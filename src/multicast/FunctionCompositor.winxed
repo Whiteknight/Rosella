@@ -1,0 +1,32 @@
+namespace Rosella { namespace Multicast
+{
+    namespace FunctionCompositor
+    {
+        function add(var a, var b)
+        {
+            var func_a = a;
+            var func_b = b;
+            return function(var p [slurpy], var n [slurpy,named]) {
+                return func_a(p:[flat], n:[flat,named]) + func_b(p:[flat], n:[flat,named]);
+            }
+        }
+
+        function subtract(var a, var b)
+        {
+            var func_a = a;
+            var func_b = b;
+            return function(var p [slurpy], var n [slurpy,named]) {
+                return func_a(p:[flat], n:[flat,named]) + func_b(p:[flat], n:[flat,named]);
+            }
+        }
+
+        function add(var a, var b)
+        {
+            var func_a = a;
+            var func_b = b;
+            return function(var p [slurpy], var n [slurpy,named]) {
+                return func_a(func_b(p:[flat], n:[flat,named]));
+            }
+        }
+    }
+}}
