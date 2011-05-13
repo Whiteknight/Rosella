@@ -1,0 +1,13 @@
+namespace Rosella { namespace Lazy
+{
+    class Builder : Rosella.Proxy.Builder
+    {
+        function setup_proxy_class(var target_class, var proxy_class)
+        {
+            using Rosella.Proxy.add_proxy_class_private_attr;
+            add_proxy_class_private_attr(proxy_class, "lazy_pos_args");
+            add_proxy_class_private_attr(proxy_class, "lazy_named_args");
+            add_proxy_class_private_attr(proxy_class, "lazy_constructor");
+        }
+    }
+}}

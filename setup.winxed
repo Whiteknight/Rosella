@@ -216,6 +216,15 @@ function setup_experimental_libraries(var rosella)
         "memoize/Factory"
     );
 
+    setup_winxed_lib(rosella, "lazy",
+        "include/Core",
+        "include/Proxy",
+        "lazy/Lazy",
+        "lazy/Builder",
+        "lazy/Controller",
+        "lazy/Factory"
+    );
+
     setup_winxed_lib(rosella, "string",
         "string/String",
         "string/CClassTokenizer"
