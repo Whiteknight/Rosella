@@ -34,46 +34,71 @@ namespace Rosella
 
         function get(var obj, string path)
         {
+            int success;
+            var result;
+            :(success, result) = self.get_recursive(obj, path);
+
+            if (success)
+                return result;
+            return null;
+        }
+
+        function get_recursive(var obj, string path)
+        {
+            say("searching for '" + path + "'");
             if (path == null || path == "") {
                 say("found immediately");
-                return obj;
+                return 1, obj;
             }
 
             string next_path = path;
-            string search = path;
+            string search_text = path;
             string remainder = "";
             int idx = length(path) - 1;
 
+            say(sprintf("search = '%s' remainder = '%s'", [search_text, remainder]));
             while (idx > 0) {
+                say(sprintf("search = '%s' remainder = '%s'", [search_text, remainder]));
                 int success = 0;
+                say(sprintf("search = '%s' remainder = '%s'", [search_text, remainder]));
                 var result = null;
+                say(sprintf("search = '%s' remainder = '%s'", [search_text, remainder]));
 
                 for (var searcher in self.searchers) {
+                    say(sprintf("\tSearching %s for '%s'", [typeof(searcher), search_text]));
                     if (!searcher.can_search(obj))
                         continue;
                     var result;
-                    :(success, result) = searcher.search(obj, search);
+
+                    :(success, result) = searcher.search(obj, search_text);
                     if (success) {
+                        say("\tfound");
                         obj = result;
                         break;
                     }
+                    say("\tnot found");
                 }
 
                 if (success) {
-                    if (remainder == null || remainder == "")
-                        return obj;
-                    // Lock in the result;
-                    search = remainder;
-                    next_path = remainder;
-                    remainder = "";
-                } else {
-                    idx = search.reverse_index(self.separator, 0);
-                    search = substr(search, 0, idx);
+                    if (remainder == null || remainder == "") {
+                        say("found non-recursive");
+                        return 1, obj;
+                    }
+                    //say("searching recursively for " + remainder);
+                    //:(success, result) = self.get_recursive(obj, remainder);
+                    //if (success) {
+                        //say("\tfound after recursive");
+                        //return 1, result;
+                    //}
+                }
+                else {
+                    idx = search_text.reverse_index(self.separator, 0);
+                    search_text = substr(search_text, 0, idx);
                     remainder = substr(next_path, idx + 1);
                 }
             }
 
-            return null;
+            return 0, null;
         }
     }
 }
