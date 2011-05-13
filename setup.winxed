@@ -215,6 +215,11 @@ function setup_experimental_libraries(var rosella)
         "memoize/Controller",
         "memoize/Factory"
     );
+
+    setup_winxed_lib(rosella, "string",
+        "string/String",
+        "string/CClassTokenizer"
+    );
 }
 
 function setup_versions(var rosella)
