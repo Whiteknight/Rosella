@@ -5,8 +5,10 @@ core: 2 Stable
 decorate: 0 Beta
 event: 2 Stable
 harness: 2 Stable
+lazy: 0 Alpha
 memoize: 0 Beta
 mockobject: 2 Stable
+multicast: 0 Alpha
 path: 0 Alpha
 prototype: 0 Alpha
 proxy: 2 Stable
