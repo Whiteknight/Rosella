@@ -6,10 +6,9 @@ namespace Rosella { namespace Test { namespace Listener
     {
         var test_builder;
 
-        function BUILD()
+        function TAP()
         {
-            using Rosella.build;
-            self.test_builder = build(class Rosella.Test.Builder);
+            self.test_builder = new Rosella.Test.Builder();
         }
 
         // Add a new exception result. This test is a failure, unless todo'd

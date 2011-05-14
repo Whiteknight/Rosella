@@ -24,7 +24,7 @@ namespace Rosella
             if (!(exists options["testcase_type"]))
                 options["testcase_type"] = class Rosella.Test.TestCase;
             if (!(exists options["context"]))
-                options["context"] = new Rosella.Test.TestContext;
+                options["context"] = new Rosella.Test.TestContext();
             if (!(exists options["test_prefix"]))
                 options["test_prefix"] = "";
             if (!(exists options["asserter"]))

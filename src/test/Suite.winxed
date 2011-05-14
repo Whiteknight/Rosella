@@ -20,7 +20,7 @@ namespace Rosella { namespace Test
         // listener. To get something else, subclass.
         function default_result()
         {
-            var tap_listener = new Rosella.Test.Listener.TAP;
+            var tap_listener = new Rosella.Test.Listener.TAP();
             var result = new Rosella.Test.Result([tap_listener]);
             return result;
         }
