@@ -8,7 +8,7 @@ class Test::Failure::Test {
     method test_throw() {
         $!assert.expect_fail({
             my $undef;
-            my $failure := Rosella::build(Rosella::Test::Failure, "whoops", $undef, 0);
+            my $failure := Rosella::construct(Rosella::Test::Failure, "whoops", $undef, 0);
             $failure.throw();
         });
     }

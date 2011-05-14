@@ -16,8 +16,8 @@ class My::Foo { }
 
 class InvokeInterceptTest {
     method test_method_intercept() {
-        my $factory := Rosella::build(Rosella::Proxy::Factory, My::Foo, [
-            Rosella::build(Rosella::Proxy::Builder::InvokeIntercept)
+        my $factory := Rosella::construct(Rosella::Proxy::Factory, My::Foo, [
+            Rosella::construct(Rosella::Proxy::Builder::InvokeIntercept)
         ]);
 
         my $p := $factory.create(FooController.new());

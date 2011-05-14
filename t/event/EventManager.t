@@ -11,18 +11,18 @@ class MyTestClass {
 
 class Event::EventManager::Test {
     method test_BUILD() {
-        my $em := Rosella::build(Rosella::Event::Manager);
+        my $em := Rosella::construct(Rosella::Event::Manager);
         $!assert.not_null($em);
         $!assert.instance_of($em, Rosella::Event::Manager);
     }
 
     method test_register_event() {
-        my $em := Rosella::build(Rosella::Event::Manager);
+        my $em := Rosella::construct(Rosella::Event::Manager);
         my $count := 0;
         $em.register_event("Test",
-            Rosella::build(Rosella::Event, 0,
+            Rosella::construct(Rosella::Event, 0,
                 :first(
-                    Rosella::build(Rosella::Action::Sub,
+                    Rosella::construct(Rosella::Action::Sub,
                         sub($event) {
                             $count := $count + 1;
                         }
@@ -38,26 +38,26 @@ class Event::EventManager::Test {
     }
 
     method test_register_event_multi() {
-        my $em := Rosella::build(Rosella::Event::Manager);
+        my $em := Rosella::construct(Rosella::Event::Manager);
         my $count := 0;
         $em.register_event("Test",
-            Rosella::build(Rosella::Event, 0,
+            Rosella::construct(Rosella::Event, 0,
                 :first(
-                    Rosella::build(Rosella::Action::Sub,
+                    Rosella::construct(Rosella::Action::Sub,
                         sub($event) {
                             $count := $count + 1;
                         }
                     )
                 ),
                 :second(
-                    Rosella::build(Rosella::Action::Sub,
+                    Rosella::construct(Rosella::Action::Sub,
                         sub($event) {
                             $count := $count + 2;
                         }
                     )
                 ),
                 :third(
-                    Rosella::build(Rosella::Action::Sub,
+                    Rosella::construct(Rosella::Action::Sub,
                         sub($event) {
                             $count := $count + 3;
                         }
@@ -71,12 +71,12 @@ class Event::EventManager::Test {
     }
 
     method test_register_event_payload() {
-        my $em := Rosella::build(Rosella::Event::Manager);
+        my $em := Rosella::construct(Rosella::Event::Manager);
         my $data := "Hello";
         $em.register_event("Test2",
-            Rosella::build(Rosella::Event, 0,
+            Rosella::construct(Rosella::Event, 0,
                 :first(
-                    Rosella::build(Rosella::Action::Sub,
+                    Rosella::construct(Rosella::Action::Sub,
                         sub($event) {
                             $data := $data ~ $event[0];
                         }
@@ -90,12 +90,12 @@ class Event::EventManager::Test {
     }
 
     method test_register_event_namedpayload() {
-        my $em := Rosella::build(Rosella::Event::Manager);
+        my $em := Rosella::construct(Rosella::Event::Manager);
         my $data := "Hello";
         $em.register_event("Test2",
-            Rosella::build(Rosella::Event, 0,
+            Rosella::construct(Rosella::Event, 0,
                 :first(
-                    Rosella::build(Rosella::Action::Sub,
+                    Rosella::construct(Rosella::Action::Sub,
                         sub($event) {
                             $data := $data ~ $event{"arg"};
                         }
@@ -109,29 +109,29 @@ class Event::EventManager::Test {
     }
 
     method register_event_nonevent() {
-        my $em := Rosella::build(Rosella::Event::Manager);
+        my $em := Rosella::construct(Rosella::Event::Manager);
         $!assert.throws({
             $em.register_event("foo", "foo", 0);
         });
     }
 
     method remove_event() {
-        my $em := Rosella::build(Rosella::Event::Manager);
+        my $em := Rosella::construct(Rosella::Event::Manager);
         my $data := "Hello";
         $!assert.equal($em.count_events, 0);
-        $em.register_event("Foo", Rosella::build(Rosella::Event, 0), 0);
+        $em.register_event("Foo", Rosella::construct(Rosella::Event, 0), 0);
         $!assert.equal($em.count_events, 1);
         $em.remove_event("Foo");
         $!assert.equal($em.count_events, 0);
     }
 
     method count_events() {
-        my $em := Rosella::build(Rosella::Event::Manager);
+        my $em := Rosella::construct(Rosella::Event::Manager);
         $!assert.equal($em.count_events, 0);
     }
 
     method subscribe_object() {
-        my $em := Rosella::build(Rosella::Event::Manager);
+        my $em := Rosella::construct(Rosella::Event::Manager);
         my $data := MyTestClass.new();
         $em.subscribe_object("Foo", $data, "test_subscribe");
         $!assert.output_is({
@@ -140,10 +140,10 @@ class Event::EventManager::Test {
     }
 
     method subscribe_action() {
-        my $em := Rosella::build(Rosella::Event::Manager);
+        my $em := Rosella::construct(Rosella::Event::Manager);
         my $method := MyTestClass::test_subscribe;
         $em.subscribe_action("Foo",
-            Rosella::build(Rosella::Action::Method, $method)
+            Rosella::construct(Rosella::Action::Method, $method)
         );
         $!assert.output_is({
             $em.raise_event("Foo");
@@ -151,10 +151,10 @@ class Event::EventManager::Test {
     }
 
     method unsubscribe() {
-        my $em := Rosella::build(Rosella::Event::Manager);
+        my $em := Rosella::construct(Rosella::Event::Manager);
         my $method := MyTestClass::test_subscribe;
         my $id := $em.subscribe_action("Foo",
-            Rosella::build(Rosella::Action::Method, $method)
+            Rosella::construct(Rosella::Action::Method, $method)
         );
         $em.unsubscribe("Foo", $id);
         $!assert.output_is({
@@ -165,7 +165,7 @@ class Event::EventManager::Test {
     method raise_event() {
         # Nothing should happen. I don't know how to test a negative like
         # that.
-        my $em := Rosella::build(Rosella::Event::Manager);
+        my $em := Rosella::construct(Rosella::Event::Manager);
         $em.raise_event("Foo");
     }
 }

@@ -34,7 +34,7 @@ class My::Foo {
 
 class Proxy::Builder::Imitate::Test {
     method test_BUILD() {
-        my $imitate := Rosella::build(Rosella::Proxy::Builder::Imitate);
+        my $imitate := Rosella::construct(Rosella::Proxy::Builder::Imitate);
         $!assert.instance_of($imitate, Rosella::Proxy::Builder::Imitate);
     }
 
@@ -42,16 +42,16 @@ class Proxy::Builder::Imitate::Test {
     #       The default controller should fall back to sane behavior.
 
     method Imitate() {
-        my $factory := Rosella::build(Rosella::Proxy::Factory, My::Foo, [
-            Rosella::build(Rosella::Proxy::Builder::Imitate)
+        my $factory := Rosella::construct(Rosella::Proxy::Factory, My::Foo, [
+            Rosella::construct(Rosella::Proxy::Builder::Imitate)
         ]);
         my $imitator := $factory.create(FooController.new());
         $!assert.not_null($imitator);
     }
 
     method isa() {
-        my $factory := Rosella::build(Rosella::Proxy::Factory, My::Foo, [
-            Rosella::build(Rosella::Proxy::Builder::Imitate)
+        my $factory := Rosella::construct(Rosella::Proxy::Factory, My::Foo, [
+            Rosella::construct(Rosella::Proxy::Builder::Imitate)
         ]);
         my $imitator := $factory.create(FooController.new());
         my $is_ok := pir::isa__IPS($imitator, "IS_String");
@@ -62,8 +62,8 @@ class Proxy::Builder::Imitate::Test {
     }
 
     method isa_pmc() {
-        my $factory := Rosella::build(Rosella::Proxy::Factory, My::Foo, [
-            Rosella::build(Rosella::Proxy::Builder::Imitate)
+        my $factory := Rosella::construct(Rosella::Proxy::Factory, My::Foo, [
+            Rosella::construct(Rosella::Proxy::Builder::Imitate)
         ]);
         my $imitator := $factory.create(FooController.new());
         my $is_ok := pir::isa__IPP($imitator, []);
@@ -74,8 +74,8 @@ class Proxy::Builder::Imitate::Test {
     }
 
     method does() {
-        my $factory := Rosella::build(Rosella::Proxy::Factory, My::Foo, [
-            Rosella::build(Rosella::Proxy::Builder::Imitate)
+        my $factory := Rosella::construct(Rosella::Proxy::Factory, My::Foo, [
+            Rosella::construct(Rosella::Proxy::Builder::Imitate)
         ]);
         my $imitator := $factory.create(FooController.new());
         my $does_ok := pir::does__IPS($imitator, "DOES_String");

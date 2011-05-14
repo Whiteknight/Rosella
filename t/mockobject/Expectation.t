@@ -8,7 +8,7 @@ class MyClass { }
 Rosella::Test::test(MockObject::Expectation::Test);
 class MockObject::Expectation::Test {
     sub get_controller() {
-        my $f := Rosella::build(Rosella::MockObject::Factory);
+        my $f := Rosella::construct(Rosella::MockObject::Factory);
         return $f.create_typed(MyClass);
     }
 

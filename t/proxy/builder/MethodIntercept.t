@@ -21,8 +21,8 @@ class MethodInterceptTest {
         my $result := $f.bar("test");
         $!assert.equal($result, "real test");
 
-        my $factory := Rosella::build(Rosella::Proxy::Factory, My::Foo, [
-            Rosella::build(Rosella::Proxy::Builder::MethodIntercept)
+        my $factory := Rosella::construct(Rosella::Proxy::Factory, My::Foo, [
+            Rosella::construct(Rosella::Proxy::Builder::MethodIntercept)
         ]);
 
         my $p := $factory.create(FooController.new());
@@ -35,8 +35,8 @@ class MethodInterceptTest {
     method test_method_intercept_target() {
         my $f := My::Foo.new();
 
-        my $factory := Rosella::build(Rosella::Proxy::Factory, My::Foo, [
-            Rosella::build(Rosella::Proxy::Builder::MethodIntercept)
+        my $factory := Rosella::construct(Rosella::Proxy::Factory, My::Foo, [
+            Rosella::construct(Rosella::Proxy::Builder::MethodIntercept)
         ]);
         my $null := pir::null__P();
         my $p := $factory.create($null, $f);

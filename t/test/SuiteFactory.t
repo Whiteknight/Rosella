@@ -7,7 +7,7 @@ class MyFakeTestClass {}
 Rosella::Test::test(Test::SuiteFactory::Test);
 class Test::SuiteFactory::Test {
     method basic_BUILD() {
-        my $factory := Rosella::build(Rosella::Test::SuiteFactory,
+        my $factory := Rosella::construct(Rosella::Test::SuiteFactory,
             MyFakeTestClass, {}
         );
     }
@@ -15,7 +15,7 @@ class Test::SuiteFactory::Test {
     method test_create_Suite() {
         my %options := {};
         %options{"suite_type"} := Rosella::Test::Suite;
-        my $factory := Rosella::build(Rosella::Test::SuiteFactory,
+        my $factory := Rosella::construct(Rosella::Test::SuiteFactory,
             MyFakeTestClass, %options
         );
         my $suite := $factory.create();
@@ -33,7 +33,7 @@ class Test::SuiteFactory::Test {
     method test_create_typed_Suite() {
         my %options := {};
         %options{"suite_type"} := Rosella::Test::Suite;
-        my $factory := Rosella::build(Rosella::Test::SuiteFactory,
+        my $factory := Rosella::construct(Rosella::Test::SuiteFactory,
             MyFakeTestClass, %options
         );
         my $suite := $factory.create_typed(Rosella::Test::Suite);

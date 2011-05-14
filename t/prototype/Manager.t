@@ -8,6 +8,6 @@ Rosella::Test::test(PrototypeManagerTest);
 
 class PrototypeManagerTest {
     method test_BUILD() {
-        my $pm := Rosella::build(Rosella::Prototype::Manager);
+        my $pm := Rosella::construct(Rosella::Prototype::Manager);
     }
 }

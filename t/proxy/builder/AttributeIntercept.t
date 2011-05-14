@@ -27,8 +27,8 @@ class AttributeInterceptTest {
         my $result := pir::getattribute__PPS($f, '$!test');
         $!assert.equal($result, "hello");
 
-        my $factory := Rosella::build(Rosella::Proxy::Factory, My::Foo, [
-            Rosella::build(Rosella::Proxy::Builder::AttributeIntercept)
+        my $factory := Rosella::construct(Rosella::Proxy::Factory, My::Foo, [
+            Rosella::construct(Rosella::Proxy::Builder::AttributeIntercept)
         ]);
 
         my $p := $factory.create(FooController.new());
@@ -37,8 +37,8 @@ class AttributeInterceptTest {
     }
 
     method test_set_attribute() {
-        my $factory := Rosella::build(Rosella::Proxy::Factory, My::Foo, [
-            Rosella::build(Rosella::Proxy::Builder::AttributeIntercept)
+        my $factory := Rosella::construct(Rosella::Proxy::Factory, My::Foo, [
+            Rosella::construct(Rosella::Proxy::Builder::AttributeIntercept)
         ]);
 
         my $p := $factory.create(FooController.new());
@@ -52,9 +52,9 @@ class AttributeInterceptTest {
     method test_get_attribute_pmcproxy() {
         # We need the Passthough builder here to force other vtables to
         # redirect to the target
-        my $f := Rosella::build(Rosella::Proxy::Factory, 'String', [
-            Rosella::build(Rosella::Proxy::Builder::Passthrough),
-            Rosella::build(Rosella::Proxy::Builder::AttributeIntercept)
+        my $f := Rosella::construct(Rosella::Proxy::Factory, 'String', [
+            Rosella::construct(Rosella::Proxy::Builder::Passthrough),
+            Rosella::construct(Rosella::Proxy::Builder::AttributeIntercept)
         ]);
         my $null := pir::null__P();
         my $target := pir::box__PS("Hello world!");
@@ -65,8 +65,8 @@ class AttributeInterceptTest {
     }
 
     method test_set_attribute_pmcproxy() {
-        my $f := Rosella::build(Rosella::Proxy::Factory, 'Exception', [
-            Rosella::build(Rosella::Proxy::Builder::AttributeIntercept)
+        my $f := Rosella::construct(Rosella::Proxy::Factory, 'Exception', [
+            Rosella::construct(Rosella::Proxy::Builder::AttributeIntercept)
         ]);
         my $null := pir::null__P();
         my $target := pir::new__PS("Exception");

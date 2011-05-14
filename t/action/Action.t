@@ -8,12 +8,12 @@ Rosella::Test::test(ActionTest);
 
 class ActionTest {
     method test_BUILD() {
-        my $action := Rosella::build(Rosella::Action, "foo", []);
+        my $action := Rosella::construct(Rosella::Action, "foo", []);
         $!assert.instance_of($action, Rosella::Action, "Is not an Action");
     }
 
     method prepare_args_empty() {
-        my $action := Rosella::build(Rosella::Action, "foo", []);
+        my $action := Rosella::construct(Rosella::Action, "foo", []);
         my @pos := [];
         my %named := {};
         $action.prepare_args(@pos, %named);
@@ -22,9 +22,9 @@ class ActionTest {
     }
 
     method prepare_args_positional() {
-        my $action := Rosella::build(Rosella::Action, "foo", [
-            Rosella::build(Rosella::Action::Argument::Instance, 5, :position(0)),
-            Rosella::build(Rosella::Action::Argument::Instance, "Test", :position(1)),
+        my $action := Rosella::construct(Rosella::Action, "foo", [
+            Rosella::construct(Rosella::Action::Argument::Instance, 5, :position(0)),
+            Rosella::construct(Rosella::Action::Argument::Instance, "Test", :position(1)),
         ]);
         my @pos := [];
         my %named := {};
@@ -36,9 +36,9 @@ class ActionTest {
     }
 
     method prepare_args_positional_skip() {
-        my $action := Rosella::build(Rosella::Action, "foo", [
-            Rosella::build(Rosella::Action::Argument::Instance, 5, :position(0)),
-            Rosella::build(Rosella::Action::Argument::Instance, "Test", :position(2)),
+        my $action := Rosella::construct(Rosella::Action, "foo", [
+            Rosella::construct(Rosella::Action::Argument::Instance, 5, :position(0)),
+            Rosella::construct(Rosella::Action::Argument::Instance, "Test", :position(2)),
         ]);
         my @pos := [];
         my %named := {};
@@ -51,9 +51,9 @@ class ActionTest {
     }
 
     method prepare_args_named() {
-        my $action := Rosella::build(Rosella::Action, "foo", [
-            Rosella::build(Rosella::Action::Argument::Instance, 5, :name("A")),
-            Rosella::build(Rosella::Action::Argument::Instance, "Test", :name("B"))
+        my $action := Rosella::construct(Rosella::Action, "foo", [
+            Rosella::construct(Rosella::Action::Argument::Instance, 5, :name("A")),
+            Rosella::construct(Rosella::Action::Argument::Instance, "Test", :name("B"))
         ]);
         my @pos := [];
         my %named := {};

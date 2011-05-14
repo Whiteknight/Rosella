@@ -18,12 +18,12 @@ class MyFakeSubTest is MyFakeTest {
 
 class Test::Suite::Test {
     method test_BUILD() {
-        my $suite := Rosella::build(Rosella::Test::Suite, [], "suite");
+        my $suite := Rosella::construct(Rosella::Test::Suite, [], "suite");
         $!assert.not_null($suite);
     }
 
     method test_default_result() {
-        my $suite := Rosella::build(Rosella::Test::Suite, [], "suite");
+        my $suite := Rosella::construct(Rosella::Test::Suite, [], "suite");
         my $result := $suite.default_result();
         $!assert.equal(~(pir::typeof__SP($result)), "Rosella;Test;Result");
     }
