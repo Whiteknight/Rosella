@@ -23,7 +23,7 @@ namespace Rosella { namespace Container { namespace ItemFactory
         }
 
         // Execute the factory method to return an instance of the object.
-        function resolve_instance()
+        function protected_resolve_instance()
         {
             var pos = [];
             var named = {};

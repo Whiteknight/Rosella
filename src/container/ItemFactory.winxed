@@ -64,7 +64,7 @@ namespace Rosella { namespace Container
         function protected_resolve_instance()
         {
             using Rosella.Error.must_subclass;
-            must_subclass("Rosella.ItemFactory.resolve_instance");
+            must_subclass("Rosella.ItemFactory.protected_resolve_instance");
         }
     }
 }}

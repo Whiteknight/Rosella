@@ -21,7 +21,7 @@ namespace Rosella { namespace Container { namespace ItemFactory
         }
 
         // Instantiate the class, using the various data
-        function resolve_instance()
+        function protected_resolve_instance()
         {
             int have_init_pmc = 0;
             var init_pmc = self.init_pmc;

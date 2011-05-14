@@ -13,7 +13,7 @@ namespace Rosella { namespace Container { namespace ItemFactory
         }
 
         // Return the instance
-        function resolve_instance()
+        function protected_resolve_instance()
         {
             return self.instance;
         }

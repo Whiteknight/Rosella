@@ -19,7 +19,7 @@ namespace Rosella { namespace Container { namespace ItemFactory
         }
 
         // Get a new instance from the P6protoobject
-        function resolve_instance()
+        function protected_resolve_instance()
         {
             return self.proto.new();
         }
