@@ -45,72 +45,50 @@ namespace Rosella
 
         function get_recursive(var obj, string path)
         {
-            //say("searching for '" + path + "'");
-            if (path == null || path == "") {
-                //say("found immediately");
+            if (path == null || path == "")
                 return 1, obj;
-            }
 
             string next_path = path;
             string search_text = path;
             string remainder = "";
             int idx = length(path) - 1;
-            //say(obj);
             var result;
             var found_result;
-            //say(sprintf("search = '%s' remainder = '%s' idx = '%s'", [search_text, remainder, idx]));
-            //say(sprintf("search = '%s' remainder = '%s'", [search_text, remainder]));
+
             while (idx >= 0) {
-                //say(sprintf("search = '%s' remainder = '%s'", [search_text, remainder]));
                 int success = 0;
-                //say(sprintf("search = '%s' remainder = '%s'", [search_text, remainder]));
 
                 for (var searcher in self.searchers) {
-                    //say(sprintf("\tSearching %s for '%s'", [typeof(searcher), search_text]));
                     if (!searcher.can_search(obj))
                         continue;
                     var result;
 
                     :(success, result) = searcher.search(obj, search_text);
                     if (success) {
-                        //say("\tfound");
-                        //say(result);
+                        // I don't know why this is necessary, but sometimes
+                        // the result variable becomes null once we break out
+                        // of the loop
                         found_result = result;
-                        //say(found_result);
                         break;
                     }
-                    //say("\tnot found");
                 }
-                //say("HERE");
+
                 if (success) {
-                    if (remainder == null || remainder == "") {
-                        //say("found non-recursive");
+                    if (remainder == null || remainder == "")
                         return 1, found_result;
-                    }
-                    //say("still have remainder, searching recursive...");
-                    //say(found_result);
                     :(success, result) = self.foo(found_result, remainder);
-                    if (success) {
-                        //say("\tfound after recursive");
+                    if (success)
                         return 1, result;
-                    }
-                    //say(sprintf("A0 search = '%s' remainder = '%s' idx = '%s'", [search_text, remainder, idx]));
                     idx = search_text.reverse_index(self.separator, 0);
                     remainder = substr(next_path, idx + 1);
                     search_text = substr(search_text, 0, idx);
-                    //say(sprintf("A1 search = '%s' remainder = '%s' idx = '%s'", [search_text, remainder, idx]));
-                    //say(obj);
                 }
                 else {
-                    //say(sprintf("B0 search = '%s' remainder = '%s' idx = '%s'", [search_text, remainder, idx]));
                     idx = search_text.reverse_index(self.separator, 0);
                     remainder = substr(next_path, idx + 1);
                     search_text = substr(search_text, 0, idx);
-                    //say(sprintf("B1 search = '%s' remainder = '%s' idx = '%s'", [search_text, remainder, idx]));
-                    //say(obj);
                 }
             }
-            //say("LOOP TERMINATED");
 
             return 0, null;
         }
