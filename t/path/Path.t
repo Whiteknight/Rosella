@@ -42,7 +42,7 @@ class PathTest {
             :d("h")
         );
         my $result := $q.get(%a, 'b.foo.separator');
-        $!assert.equal($result, ".");
+        $!assert.equal(~$result, ".");
     }
 
     method test_attr_hash_search() {
@@ -73,7 +73,7 @@ class PathTest {
 
         my $result := $q.get(%a, 'd.e.f');
         $!assert.equal($result, "g");
-        #$result := $q.get(%a, 'd.e.h');
-        #$!assert.equal($result, 'i');
+        $result := $q.get(%a, 'd.e.h');
+        $!assert.equal($result, 'i');
     }
 }
