@@ -2,19 +2,47 @@ namespace Rosella
 {
     namespace String
     {
+        // Find the first instance of something not in the class. Return -1
+        // if all characters are in the class
+        function first_not_cclass(string str, int cclass)
+        {
+            int idx = 0;
+            int len = length(str);
+            ${ find_not_cclass idx, cclass, str, 0, len };
+            if (idx >= len)
+                return -1;
+            return idx;
+        }
+
         function trim_start(string str, int cclass [optional], int has_cclass [opt_flag])
         {
             const int cclass_whitespace = 0x20;
             if (!has_cclass)
                 cclass = cclass_whitespace;
 
-            int idx = 0;
+            int idx = first_not_cclass(str, cclass);
+            if (idx == -1)
+                return "";
+            if (idx == 0)
+                return str;
+            return substr(str, idx);
+        }
+
+        // Find the last instance of a character not in the class. Return -1
+        // if all characters are in the class
+        function last_not_cclass(string str, int cclass)
+        {
+            int idx = -1;
             int len = length(str);
-            ${ find_not_cclass idx, cclass, str, 0, len };
-            string trimmed = str;
-            if (idx != len)
-                trimmed = substr(str, idx);
-            return trimmed;
+            for (int i = len - 1; i >= 0; i--) {
+                int char_is_cc = 0;
+                ${ is_cclass char_is_cc, cclass, str, i };
+                if (!char_is_cc) {
+                    idx = i + 1;
+                    break;
+                }
+            }
+            return idx;
         }
 
         function trim_end(string str, int cclass [optional], int has_cclass [opt_flag])
@@ -23,16 +51,8 @@ namespace Rosella
             if (!has_cclass)
                 cclass = cclass_whitespace;
 
-            int idx = -1;
             int len = length(str);
-            for (int i = len - 1; i >= 0; i--) {
-                int char_is_cc = 0;
-                ${ is_cclass char_is_cc, cclass, str, i };
-                if (!char_is_cc) {
-                    idx = i;
-                    break;
-                }
-            }
+            int idx = last_not_cclass(str, cclass);
 
             // If we never found something that wasn't in the class, the
             // whole string gets trimmed
@@ -52,8 +72,13 @@ namespace Rosella
             const int cclass_whitespace = 0x20;
             if (!has_cclass)
                 cclass = cclass_whitespace;
-            string tmp = trim_start(str, cclass);
-            return trim_end(tmp, cclass);
+            int start_idx = first_not_cclass(str, cclass);
+            if (start_idx == -1)
+                return "";
+            int end_idx = last_not_cclass(str, cclass);
+            if (end_idx == -1)
+                return "";
+            return substr(str, start_idx, end_idx - start_idx);
         }
 
         function sprintf(string format, var args [slurpy])

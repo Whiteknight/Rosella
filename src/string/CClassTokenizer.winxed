@@ -2,7 +2,8 @@ namespace Rosella { namespace String
 {
     namespace CClassTokenizer
     {
-        function private_get_cclasses()
+        // Get a default list of character classes, if none are provided
+        function private_get_default_cclasses()
         {
             var cclasses = new 'ResizableIntegerArray';
             cclasses[0] = 0x2000; // Word/Identifier
@@ -13,9 +14,12 @@ namespace Rosella { namespace String
                 yield(cclasses);
         }
 
-        function private_get_first_cclass(string str)
+        // From the provided list, determine the first character class that
+        // matches the first character in the string
+        function private_get_first_cclass(string str, var cclasses [optional], int has_cclasses [opt_flag])
         {
-            var cclasses = private_get_cclasses();
+            if (!has_cclasses || cclasses == null)
+                cclasses = private_get_default_cclasses();
             int num_classes = elements(cclasses);
             for (int i = 0; i < num_classes; i++) {
                 int first_is_cclass = 0;
@@ -32,11 +36,16 @@ namespace Rosella { namespace String
     {
         var tokens;
         var data;
+        var cclasses;
 
-        function BUILD()
+        function BUILD(var cclasses [optional], int has_cclasses [opt_flag])
         {
             self.tokens = [];
             self.data = null;
+            if (has_cclasses)
+                self.cclasses = cclasses;
+            else
+                self.cclasses = null;
         }
 
         function add_data(string str)
@@ -81,7 +90,7 @@ namespace Rosella { namespace String
         {
             string str = self.data;
             int len = length(str);
-            int curr_cclass = private_get_first_cclass(str);
+            int curr_cclass = private_get_first_cclass(str, self.classes);
             if (curr_cclass == 0)
                 return self.get_chars(1);
             int next_idx = 0;
