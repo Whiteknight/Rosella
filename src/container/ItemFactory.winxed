@@ -19,18 +19,18 @@ namespace Rosella { namespace Container
         // particular subclass.
         function create(var p [slurpy], var n [named,slurpy])
         {
-            var item = self.resolve_instance();
+            var item = self.protected_resolve_instance();
             self.private_initialize(item);
             return item;
         }
 
-        // Create a new object using standard Rosella.build(). Execute all
+        // Create a new object using standard Rosella.construct(). Execute all
         // initializers on it. This ignores most behavior of the particular
         // subclass and is probably not what you want.
         function create_typed(var type, var p [slurpy], var n [named,slurpy])
         {
-            using Rosella.build;
-            var object = build(type, p:[flat], n:[flat,named]);
+            using Rosella.construct;
+            var object = construct(type, p:[flat], n:[flat,named]);
             self.private_initialize(object);
             return object;
         }
@@ -64,7 +64,7 @@ namespace Rosella { namespace Container
         function protected_resolve_instance()
         {
             using Rosella.Error.must_subclass;
-            must_subclass("Rosella::ItemBuilder", "resolve_instance");
+            must_subclass("Rosella.ItemFactory.resolve_instance");
         }
     }
 }}

@@ -7,7 +7,7 @@ namespace Rosella { namespace Action { namespace Argument
         var container;
         var type;
 
-        function BUILD(var container, var type, var args [slurpy,named])
+        function ContainerResolver(var container, var type, var args [slurpy,named])
         {
             if (type == null || container == null) {
                 using Rosella.Error.invalid;

@@ -17,7 +17,7 @@ namespace Rosella
         /* Constructor
         */
 
-        function BUILD(var method,
+        function Action(var method,
                 var args [optional], int has_args [opt_flag])
         {
             if (method == null) {

@@ -1,9 +1,7 @@
 // Hack function to get a container instance.
 // TODO: Get rid of this when Winxed supports root-class lookups with class
 function __get_container() {
-    using Rosella.build;
-    var class_obj = class Rosella.Container;
-    return build(class_obj);
+    return new Rosella.Container;
 }
 
 namespace Rosella
@@ -59,7 +57,7 @@ namespace Rosella
         // the container will use that for fallback resolution behavior. If
         // we set auto_register to 1 (true) we will automatically register
         // automatically generated instances with the container.
-        function BUILD(var factory [named,optional], int have_fact [opt_flag],
+        function Container(var factory [named,optional], int have_fact [opt_flag],
                 var auto_register [named,optional], int have_auto_reg [opt_flag])
         {
             self.library = {};
@@ -76,7 +74,7 @@ namespace Rosella
 
         /* Registration Functions
             Registrations happen with a type "key". The type can be any object
-            understood by Rosella.build. The container can currently only
+            understood by Rosella.construct. The container can currently only
             support a single registration per type key. Subsequent
             registrations with the same key, or with a different type object
             which stringifies to the same thing as an existing key, will
@@ -224,19 +222,16 @@ namespace Rosella
         // Get an ItemFactory for handling instance registrations
         function private_get_instance_item(var instance, var meth_inits)
         {
-            using Rosella.build;
-            var class_obj = class Rosella.Container.ItemFactory.Instance;
-            var item = build(class_obj, instance,
-                    meth_inits);
+            var item = new Rosella.Container.ItemFactory.Instance(class_obj,
+                    instance, meth_inits);
             return item;
         }
 
         // Get an ItemFactory for handling prototype registrations
         function private_get_prototype_item(var proto, var meth_inits)
         {
-            using Rosella.build;
-            var class_obj = class Rosella.Container.ItemFactory.Prototype;
-            var item = build(class_obj, proto, meth_inits);
+            var item = new Rosella.Container.ItemFactory.Prototype(class_obj,
+                    proto, meth_inits);
             return item;
         }
 
@@ -245,19 +240,17 @@ namespace Rosella
         function private_get_generator_item(var type, var init_pmc, var meth_inits)
         {
             var item;
-            using Rosella.build;
-            var class_obj = null;
             if (type instanceof "P6protoobject") {
-                class_obj = class Rosella.Container.ItemFactory.P6protoobject;
-                item = build(class_obj, type, meth_inits);
+                item = new Rosella.Container.ItemFactory.P6protoobject(class_obj,
+                        type, meth_inits);
             } else if (type instanceof "Class") {
-                class_obj = class Rosella.Container.ItemFactory.ParrotClass;
-                item = build(class_obj, type, init_pmc, meth_inits);
+                item = new Rosella.Container.ItemFactory.ParrotClass(class_obj,
+                        type, init_pmc, meth_inits);
             } else {
                 using Rosella.get_type_class;
-                class_obj = class Rosella.Container.ItemFactory.ParrotClass;
                 var type_obj = get_type_class(type);
-                item = build(class_obj, type_obj, init_pmc, meth_inits);
+                item = new Rosella.Container.ItemFactory.ParrotClass(class_obj,
+                    type_obj, init_pmc, meth_inits);
             }
             return item;
         }
@@ -266,9 +259,8 @@ namespace Rosella
         function private_get_factory_method_item(var sub, var meth_inits,
                 var arg_inits)
         {
-            using Rosella.build;
-            var class_obj = class Rosella.Container.ItemFactory.FactoryMethod;
-            var item = build(class_obj, sub, meth_inits, arg_inits);
+            var item = new Rosella.Container.ItemFactory.FactoryMethod(class_obj,
+                    sub, meth_inits, arg_inits);
             return item;
         }
     }

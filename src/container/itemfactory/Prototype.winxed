@@ -7,7 +7,7 @@ namespace Rosella { namespace Container { namespace ItemFactory
     {
         var prototype;
 
-        function BUILD(var proto, var inits)
+        function Prototype(var proto, var inits)
         {
             if (proto == null) {
                 using Rosella.Error.invalid;

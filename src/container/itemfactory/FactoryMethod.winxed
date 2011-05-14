@@ -7,7 +7,7 @@ namespace Rosella { namespace Container { namespace ItemFactory
         var sub;
         var arg_initializers;
 
-        function BUILD(var sub, var inits, var arg_inits)
+        function FactoryMethod(var sub, var inits, var arg_inits)
         {
             if (sub == null) {
                 using Rosella.Error.invalid;

@@ -6,7 +6,7 @@ namespace Rosella { namespace Action { namespace Argument
     {
         var instance;
 
-        function BUILD(var instance, var args [slurpy,named])
+        function Instance(var instance, var args [slurpy,named])
         {
             self.instance = instance;
             self.setup_positioning(args:[flat,named]);
