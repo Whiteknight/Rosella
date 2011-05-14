@@ -17,12 +17,12 @@ namespace Rosella { namespace Harness
         {
             self.tests = tests;
             self.results = {
-                "ABORTED"    : new Rosella.Harness.TestRun.ResultSet,
-                "PASSED"     : new Rosella.Harness.TestRun.ResultSet,
-                "FAILED"     : new Rosella.Harness.TestRun.ResultSet,
-                "EMPTY"      : new Rosella.Harness.TestRun.ResultSet,
-                "TODOPASSED" : new Rosella.Harness.TestRun.ResultSet,
-                "TODOFAILED" : new Rosella.Harness.TestRun.ResultSet
+                "ABORTED"    : new Rosella.Harness.TestRun.ResultSet(),
+                "PASSED"     : new Rosella.Harness.TestRun.ResultSet(),
+                "FAILED"     : new Rosella.Harness.TestRun.ResultSet(),
+                "EMPTY"      : new Rosella.Harness.TestRun.ResultSet(),
+                "TODOPASSED" : new Rosella.Harness.TestRun.ResultSet(),
+                "TODOFAILED" : new Rosella.Harness.TestRun.ResultSet()
             };
             self.executed = 0;
         }

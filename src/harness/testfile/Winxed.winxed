@@ -2,6 +2,8 @@ namespace Rosella { namespace Harness { namespace TestFile
 {
     class Winxed : Rosella.Harness.TestFile
     {
+        function Winxed(var p [slurpy]) { self.TestFile(p:[flat]); }
+
         //our $have_winxed;
         function compile_test()
         {

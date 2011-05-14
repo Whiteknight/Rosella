@@ -14,7 +14,7 @@ namespace Rosella
 
         function default_view()
         {
-            return new Rosella.Harness.View;
+            return new Rosella.Harness.View();
         }
 
         // Run the harness. Optionally take a custom view, and a handful of

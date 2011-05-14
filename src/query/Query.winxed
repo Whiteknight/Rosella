@@ -65,7 +65,7 @@ namespace Rosella
                 return new Rosella.Query.Provider.Array;
             ${ does satisfies, data, "hash" };
             if (satisfies)
-                return new Rosella.Query.Provider.Hash);
+                return new Rosella.Query.Provider.Hash;
             err_no_provider(data);
         }
     }
