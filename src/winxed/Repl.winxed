@@ -31,8 +31,7 @@ namespace Rosella { namespace Winxed
                     break;
                 if (!self.run_command(input, state)) {
                     var result = self.eval(input, state);
-                    if (result != null)
-                        self.print_message("Result", "'%s'", result);
+                    self.print_result(result, state);
                 }
             }
         }
@@ -44,6 +43,43 @@ namespace Rosella { namespace Winxed
                 return 1;
             }
             return 0;
+        }
+
+        function print_result(var result, var state)
+        {
+            int does_array = 0;
+            ${ does does_array, result, "array" };
+            if (does_array)
+                self.print_array_result(result, state);
+
+            int does_hash = 0;
+            ${ does does_hash, result, "hash" };
+            if (does_hash)
+                self.print_hash_result(result, state);
+
+            if (!does_array && !does_hash)
+                self.print_scalar_result(result, state);
+        }
+
+        function print_array_result(var result, var state)
+        {
+            self.sprintf("Result = [");
+            for (int i = 0; i < elements(result); i++)
+                self.sprintf("\t%d => '%s' (%s)", i, result[i], string(typeof(result[i])));
+            self.sprintf("]");
+        }
+
+        function print_hash_result(var result, var state)
+        {
+            self.sprintf("Result = {");
+            for (string key in result)
+                self.sprintf("\t'%s' => '%s' (%s)", key, result[key], string(typeof(result[key])));
+            self.sprintf("}");
+        }
+
+        function print_scalar_result(var result, var state)
+        {
+            self.sprintf("Result = '%s'", result);
         }
 
         function eval(string code, var state)
@@ -62,14 +98,14 @@ namespace Rosella { namespace Winxed
             self.count = self.count + 1;
             string func_c = sprintf("function __REPL_line_%d(var state) { var result = null; %s; return result; }", [self.count, code]);
             if (state.showcode)
-                self.print_message("Code", "'%s'", func_c);
+                self.sprintf("Code = '%s'", func_c);
             return self.compiler.compile(func_c);
         }
 
-        function print_message(string name, string fmt, var args [slurpy])
+        function sprintf(string fmt, var args [slurpy])
         {
-            string fmt1 = sprintf("\t>>> %s = ", [name]);
-            say(sprintf(fmt1 + fmt, args));
+            print("\t>>> ");
+            say(sprintf(fmt, args));
         }
     }
 }}
