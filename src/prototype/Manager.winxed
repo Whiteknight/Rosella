@@ -5,27 +5,24 @@ namespace Rosella { namespace Prototype
         var library;
         var cloner;
 
-        function BUILD(var cloner [optional], int has_c [opt_flag])
+        function Manager(var cloner [optional], int has_c [opt_flag])
         {
             self.library = {};
             if (has_c)
                 self.cloner = cloner;
-            else {
-                using Rosella.build;
-                self.cloner = build(class Rosella.Prototype.ObjectCloner);
-            }
+            else
+                self.cloner = new Rosella.Prototype.ObjectCloner;
         }
 
         function add_prototype(var type, var proto,
                 var sub [optional], int has_sub [opt_flag])
         {
-            using Rosella.build;
             using Rosella.get_type_name;
 
             string type_name = get_type_name(type);
             if (!has_sub)
                 sub = null;
-            var entry = build(class Rosella.Prototype.Entry, proto, sub);
+            var entry = new Rosella.Prototype.Entry(proto, sub);
             self.library[type_name] = entry;
         }
 

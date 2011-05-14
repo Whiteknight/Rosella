@@ -24,7 +24,7 @@ class My::Test::With::Constructor {
 
 class RosellaTest {
     method test_build() {
-        my $item := Rosella::build(My::Test::Class);
+        my $item := Rosella::construct(My::Test::Class);
         $!assert.instance_of($item, My::Test::Class);
     }
 

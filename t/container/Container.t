@@ -7,7 +7,7 @@ Rosella::Test::test(ContainerTest);
 
 class ContainerTest {
     method test_BUILD() {
-        my $container := Rosella::build(Rosella::Container);
+        my $container := Rosella::construct(Rosella::Container);
         $!assert.not_null($container);
         $!assert.instance_of($container, Rosella::Container);
     }
@@ -18,20 +18,20 @@ class ContainerTest {
     }
 
     method test_resolve_default_factory() {
-        my $c := Rosella::build(Rosella::Container);
+        my $c := Rosella::construct(Rosella::Container);
         # No previous registration, falls back to the default object factory
         my $item := $c.resolve("String");
         $!assert.instance_of($item, "String");
     }
 
     method test_resolve_create() {
-        my $c := Rosella::build(Rosella::Container);
+        my $c := Rosella::construct(Rosella::Container);
         my $item := $c.resolve_create("String");
         $!assert.instance_of($item, "String");
     }
 
     method test_register_factory_method() {
-        my $c := Rosella::build(Rosella::Container);
+        my $c := Rosella::construct(Rosella::Container);
         $c.register_factory_method("Foobar", sub () {
             return pir::box__PI(7);
         });
@@ -40,18 +40,18 @@ class ContainerTest {
     }
 
     method test_register_type_withactions() {
-        my $c := Rosella::build(Rosella::Container);
+        my $c := Rosella::construct(Rosella::Container);
         $c.register_type("String",
             :meth_inits([
-                Rosella::build(Rosella::Action::Sub,
+                Rosella::construct(Rosella::Action::Sub,
                     sub ($obj) {
                         pir::set__vPS($obj, "FooBarBaz");
                     }, []
                 ),
-                Rosella::build(Rosella::Action::Method,
+                Rosella::construct(Rosella::Action::Method,
                     "replace", [
-                        Rosella::build(Rosella::Action::Argument::Instance, "B", :position(0)),
-                        Rosella::build(Rosella::Action::Argument::Instance, "C", :position(1))
+                        Rosella::construct(Rosella::Action::Argument::Instance, "B", :position(0)),
+                        Rosella::construct(Rosella::Action::Argument::Instance, "C", :position(1))
                     ]
                 )
             ]
@@ -77,14 +77,14 @@ class ContainerTest {
     }
 
     method test_auto_register() {
-        my $c := Rosella::build(Rosella::Container, :auto_register(1));
+        my $c := Rosella::construct(Rosella::Container, :auto_register(1));
         my $a := $c.resolve("String");
         my $b := $c.resolve("String");
         $!assert.same($a, $b);
     }
 
     method test_auto_register_disabled() {
-        my $c := Rosella::build(Rosella::Container, :auto_register(0));
+        my $c := Rosella::construct(Rosella::Container, :auto_register(0));
         my $a := $c.resolve("String");
         my $b := $c.resolve("String");
         $!assert.not_same($a, $b);

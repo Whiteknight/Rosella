@@ -1,0 +1,7 @@
+namespace Rosella { namespace Lazy
+{
+    class Object
+    {
+
+    }
+}}

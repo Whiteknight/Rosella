@@ -2,6 +2,8 @@ namespace Rosella { namespace MockObject { namespace Expectation
 {
     class Invoke : Rosella.MockObject.Expectation
     {
+        function Invoke(var p [slurpy]) { self.Expectation(p:[flat]); }
+
         // True if this expecation can match the specified invoke request
         function __can_match_internal(string type, string name, var pos, var named)
         {

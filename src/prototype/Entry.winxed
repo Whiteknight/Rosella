@@ -5,7 +5,7 @@ namespace Rosella { namespace Prototype
         var prototype;
         var constructor;
 
-        function BUILD(var proto, var sub [optional], int has_sub [opt_flag])
+        function Entry(var proto, var sub [optional], int has_sub [opt_flag])
         {
             self.prototype = proto;
             if (has_sub)

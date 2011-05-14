@@ -8,7 +8,7 @@ namespace Rosella { namespace MockObject
         var will;              // What the mock will do, once matched
         var with;              // What values the mock is expecting to match
 
-        function BUILD(string name)
+        function Expectation(string name)
         {
             self.quantity = 1;
             self.quantity_modifier = "=";
@@ -52,28 +52,22 @@ namespace Rosella { namespace MockObject
 
         function will_return(var value)
         {
-            using Rosella.build;
-
             self.__can_set_will();
-            self.will = build(class Rosella.MockObject.Expectation.Will.Return, value);
+            self.will = new Rosella.MockObject.Expectation.Will.Return(value);
             return self;
         }
 
         function will_throw(var value)
         {
-            using Rosella.build;
-
             self.__can_set_will();
-            self.will = build(class Rosella.MockObject.Expectation.Will.Throw, value);
+            self.will = new Rosella.MockObject.Expectation.Will.Throw(value);
             return self;
         }
 
         function will_do(var value)
         {
-            using Rosella.build;
-
             self.__can_set_will();
-            self.will = build(class Rosella.MockObject.Expectation.Will.Do, value);
+            self.will = new Rosella.MockObject.Expectation.Will.Do(value);
             return self;
         }
 
@@ -97,28 +91,22 @@ namespace Rosella { namespace MockObject
 
         function with_args(var pos [slurpy], var named [named,slurpy])
         {
-            using Rosella.build;
-
             self.__verify_can_set_args();
-            self.with = build(class Rosella.MockObject.Expectation.With.Args, pos, named);
+            self.with = new Rosella.MockObject.Expectation.With.Args(pos, named);
             return self;
         }
 
         function with_any_args()
         {
-            using Rosella.build;
-
             self.__verify_can_set_args();
-            self.with = build(class Rosella.MockObject.Expectation.With.Any);
+            self.with = new Rosella.MockObject.Expectation.With.Any();
             return self;
         }
 
         function with_no_args()
         {
-            using Rosella.build;
-
             self.__verify_can_set_args();
-            self.with = build(class Rosella.MockObject.Expectation.With.None);
+            self.with = new Rosella.MockObject.Expectation.With.None();
             return self;
         }
 

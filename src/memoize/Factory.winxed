@@ -5,15 +5,13 @@ namespace Rosella { namespace Memoize
         var proxy_factory;
         var controller;
 
-        function BUILD()
+        function Factory()
         {
-            using Rosella.build;
-
-            self.proxy_factory = build(class Rosella.Proxy.Factory, "Sub", [
-                build(class Rosella.Proxy.Builder.InvokeIntercept),
-                build(class Rosella.Proxy.Builder.ProxyData, "memoize_cache")
+            self.proxy_factory = new Rosella.Proxy.Factory("Sub", [
+                new Rosella.Proxy.Builder.InvokeIntercept,
+                new Rosella.Proxy.Builder.ProxyData("memoize_cache")
             ]);
-            self.controller = build(class Rosella.Memoize.Controller);
+            self.controller = new Rosella.Memoize.Controller;
         }
 
         function create(var func,
@@ -21,10 +19,8 @@ namespace Rosella { namespace Memoize
         {
             using Rosella.Proxy.set_proxy_private_attr;
 
-            if (!has_cache) {
-                using Rosella.build;
-                cache = build(class Rosella.Memoize.Cache.SimpleString);
-            }
+            if (!has_cache)
+                cache = new Rosella.Memoize.Cache.SimpleString;
             var proxy = self.proxy_factory.create(self.controller, func);
             set_proxy_private_attr(proxy, "memoize_cache", cache);
             return proxy;

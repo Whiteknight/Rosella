@@ -7,7 +7,7 @@ Rosella::Test::test(Harness::Test);
 
 class Harness::Test {
     method default_view() {
-        my $harness := Rosella::build(Rosella::Harness);
+        my $harness := Rosella::construct(Rosella::Harness);
         my $view := $harness.default_view();
         $!assert.instance_of($view, Rosella::Harness::View);
     }

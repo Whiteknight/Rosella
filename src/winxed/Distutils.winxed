@@ -65,7 +65,7 @@ namespace Rosella { namespace Winxed
         // Compile a winxed file to a .pir file
         function compile_to_pir(string winxed_file, string pir_file)
         {
-            string cmd = "winxed -o " + pir_file + " -c " + winxed_file;
+            string cmd = "winxed --nowarn -o " + pir_file + " -c " + winxed_file;
             int result;
             say(cmd);
             ${ spawnw result, cmd };

@@ -13,18 +13,16 @@ namespace Rosella { namespace Harness
         var executed;
 
         // Constructor. Setup the test run with all the necessary bookkeeping.
-        function BUILD(var tests)
+        function TestRun(var tests)
         {
-            using Rosella.build;
             self.tests = tests;
-            var test_results_class = class Rosella.Harness.TestRun.ResultSet;
             self.results = {
-                "ABORTED"    : build(test_results_class),
-                "PASSED"     : build(test_results_class),
-                "FAILED"     : build(test_results_class),
-                "EMPTY"      : build(test_results_class),
-                "TODOPASSED" : build(test_results_class),
-                "TODOFAILED" : build(test_results_class)
+                "ABORTED"    : new Rosella.Harness.TestRun.ResultSet(),
+                "PASSED"     : new Rosella.Harness.TestRun.ResultSet(),
+                "FAILED"     : new Rosella.Harness.TestRun.ResultSet(),
+                "EMPTY"      : new Rosella.Harness.TestRun.ResultSet(),
+                "TODOPASSED" : new Rosella.Harness.TestRun.ResultSet(),
+                "TODOFAILED" : new Rosella.Harness.TestRun.ResultSet()
             };
             self.executed = 0;
         }

@@ -29,7 +29,7 @@ namespace Rosella { namespace Harness
         var num_failed_tests;
         var num_aborted_files;
 
-        function BUILD()
+        function View()
         {
             self.test_runs = [];
             self.line_length = 0;

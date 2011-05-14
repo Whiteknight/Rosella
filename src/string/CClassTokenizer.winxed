@@ -1,0 +1,72 @@
+namespace Rosella { namespace String
+{
+    namespace CClassTokenizer
+    {
+        // Get a default list of character classes, if none are provided
+        function private_get_default_cclasses()
+        {
+            var cclasses = new 'ResizableIntegerArray';
+            cclasses[0] = 0x2000; // Word/Identifier
+            cclasses[1] = 0x0008; // Numeric
+            cclasses[2] = 0x0020; // Whitespace
+            //cclasses[3] = 0x0400; // Punctuation
+            while(1)
+                yield(cclasses);
+        }
+
+        // From the provided list, determine the first character class that
+        // matches the first character in the string
+        function private_get_first_cclass(string str, var cclasses [optional], int has_cclasses [opt_flag])
+        {
+            if (!has_cclasses || cclasses == null)
+                cclasses = private_get_default_cclasses();
+            int num_classes = elements(cclasses);
+            for (int i = 0; i < num_classes; i++) {
+                int first_is_cclass = 0;
+                int cclass = cclasses[i];
+                ${ is_cclass first_is_cclass, cclass, str, 0 };
+                if (first_is_cclass)
+                    return cclass;
+            }
+            return 0;
+        }
+    }
+
+    class CClassTokenizer : Rosella.String.Tokenizer
+    {
+        var cclasses;
+
+        function CClassTokenizer(var cclasses [optional], int has_cclasses [opt_flag])
+        {
+            self.Tokenizer();
+            if (has_cclasses)
+                self.cclasses = cclasses;
+            else
+                self.cclasses = null;
+        }
+
+        function lex_next_token()
+        {
+            string str = self.data;
+            int len = length(str);
+            int curr_cclass = private_get_first_cclass(str, self.cclasses);
+            if (curr_cclass == 0)
+                return self.get_chars(1);
+            int next_idx = 0;
+            ${ find_not_cclass next_idx, curr_cclass, str, 0, len };
+            return self.get_chars(next_idx);
+        }
+
+        function get_chars(int count)
+        {
+            string str = self.data;
+            int len = length(str);
+            if (count >= len) {
+                self.data = null;
+                return str;
+            }
+            self.data = substr(str, count);
+            return substr(str, 0, count);
+        }
+    }
+}}

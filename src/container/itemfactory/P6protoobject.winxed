@@ -6,7 +6,7 @@ namespace Rosella { namespace Container { namespace ItemFactory
     {
         var proto;
 
-        function BUILD(var proto, var inits)
+        function P6protoobject(var proto, var inits)
         {
             if (proto == null) {
                 using Rosella.Error.invalid;
@@ -19,7 +19,7 @@ namespace Rosella { namespace Container { namespace ItemFactory
         }
 
         // Get a new instance from the P6protoobject
-        function resolve_instance()
+        function protected_resolve_instance()
         {
             return self.proto.new();
         }

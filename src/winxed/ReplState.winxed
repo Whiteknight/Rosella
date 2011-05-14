@@ -1,0 +1,31 @@
+namespace Rosella { namespace Winxed
+{
+    class ReplState
+    {
+        var keep_running;
+        var data;
+        var showcode;
+
+        function ReplState()
+        {
+            self.keep_running = 1;
+            self.data = {};
+            self.showcode = 0;
+        }
+
+        function stop()
+        {
+            self.keep_running = 0;
+        }
+
+        function set_pmc_keyed[vtable](var key, var value)
+        {
+            self.data[key] = value;
+        }
+
+        function get_pmc_keyed[vtable](var key)
+        {
+            return self.data[key];
+        }
+    }
+}}

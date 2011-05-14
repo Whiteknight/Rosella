@@ -9,7 +9,7 @@ namespace Rosella { namespace Test
         var context;
 
         // Set up the suite with the given name and list of tests
-        function BUILD(var tests, var context)
+        function Suite(var tests, var context)
         {
             self.tests = tests;
             self.context = context;
@@ -20,9 +20,8 @@ namespace Rosella { namespace Test
         // listener. To get something else, subclass.
         function default_result()
         {
-            using Rosella.build;
-            var tap_listener = build(class Rosella.Test.Listener.TAP);
-            var result = build(class Rosella.Test.Result, [tap_listener]);
+            var tap_listener = new Rosella.Test.Listener.TAP();
+            var result = new Rosella.Test.Result([tap_listener]);
             return result;
         }
 

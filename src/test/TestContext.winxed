@@ -12,7 +12,7 @@ namespace Rosella { namespace Test
 
         // Create the TestContext, initializing the data store with any named
         // values
-        function BUILD(var data [slurpy,named])
+        function TestContext(var data [slurpy,named])
         {
             self.data = data;
         }

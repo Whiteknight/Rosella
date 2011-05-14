@@ -6,16 +6,16 @@ namespace Rosella { namespace Decorate
         var methods;
         var attributes;
 
-        function BUILD(var target_type, var methods, var attrs)
+        function Factory(var target_type, var methods, var attrs)
         {
             using Rosella.build;
             self.methods = methods;
             self.attributes = attrs;
             var builders = [
-                build(class Rosella.Proxy.Builder.Passthrough),
-                build(class Rosella.Decorate.Builder)
+                new Rosella.Proxy.Builder.Passthrough,
+                new Rosella.Decorate.Builder
             ];
-            self.proxy_factory = build(class Rosella.Proxy.Factory, target_type, builders);
+            self.proxy_factory = new Rosella.Proxy.Factory(target_type, builders);
         }
 
         function create(var target, var p [slurpy], var n [slurpy,named])

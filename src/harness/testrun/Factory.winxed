@@ -10,13 +10,12 @@ namespace Rosella { namespace Harness { namespace TestRun
         var testfile_types;
         var tests;
 
-        function BUILD()
+        function Factory()
         {
-            using Rosella.build;
             self.tests = [];
-            self.target_type = class Rosella.Harness.TestRun;
+            self.ObjectFactory(class Rosella.Harness.TestRun);
             // We need a default type for the testfile factory. NQP is as good a default as any, for now
-            self.testfile_factory         = build(class Rosella.Harness.TestFile.Factory, class Rosella.Harness.TestFile.NQP);
+            self.testfile_factory         = new Rosella.Harness.TestFile.Factory(class Rosella.Harness.TestFile.NQP);
             self.testfile_types = {};
             self.testfile_types["NQP"]    = class Rosella.Harness.TestFile.NQP;
             self.testfile_types["PIR"]    = class Rosella.Harness.TestFile.PIR;
@@ -25,8 +24,8 @@ namespace Rosella { namespace Harness { namespace TestRun
 
         function create_typed(var testrun_type, var p [slurpy], var n [slurpy,named])
         {
-            using Rosella.build;
-            var testrun = build(testrun_type, self.tests);
+            using Rosella.construct;
+            var testrun = construct(testrun_type, self.tests);
             self.tests = [];
             return testrun;
         }

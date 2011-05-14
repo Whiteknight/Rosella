@@ -1,0 +1,42 @@
+namespace Rosella { namespace Multicast
+{
+    class FunctionArray
+    {
+        var funcs;
+
+        function FunctionArray()
+        {
+            self.funcs = [];
+        }
+
+        function execute_array(var p [slurpy], var n [slurpy,named])
+        {
+            var results = [];
+            for (int i = 0; i < elements(self.funcs); i++) {
+                var func = self.funcs[i];
+                results[i] = func(p:[flat], n:[flat,named]);
+            }
+            return results;
+        }
+
+        function execute_chained(var p [slurpy], var n [slurpy,named])
+        {
+            for (int i = 0; i < elements(self.funcs); i++) {
+                var func = self.funcs[i];
+                :(p:[slurpy], n:[slurpy,named]) = func(p:[flat], n:[flat,named]);
+            }
+            return p:[flat], n:[flat,named];
+        }
+
+        function execute_aggregate(var aggregate, var init, var p [slurpy], var n [slurpy,named])
+        {
+            var result = clone(init);
+            for (int i = 0; i < elements(self.funcs); i++) {
+                var func = self.funcs[i];
+                var temp = func(p:[flat], n:[flat,named]);
+                result = aggregate(results, temp);
+            }
+            return result;
+        }
+    }
+}}

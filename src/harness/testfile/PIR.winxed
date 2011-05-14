@@ -2,6 +2,8 @@ namespace Rosella { namespace Harness { namespace TestFile
 {
     class PIR : Rosella.Harness.TestFile
     {
+        function PIR(var p [slurpy]) { self.TestFile(p:[flat]); }
+
         function compile_test()
         {
             var compiler = compreg("PIR");

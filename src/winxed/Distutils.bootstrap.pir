@@ -8,7 +8,7 @@
 # Body
 # {
 # predefined load_bytecode
-.annotate 'file', 'Distutils.winxed'
+.annotate 'file', 'src/winxed/Distutils.winxed'
 .annotate 'line', 9
     load_bytecode "distutils.pbc"
 .annotate 'line', 10
@@ -40,13 +40,13 @@
     unless_null $P1, __label_0
 .annotate 'line', 24
     .return()
- __label_0: # endif
+  __label_0: # endif
 .annotate 'line', 25
     get_hll_global $P2, 'newer'
 .annotate 'line', 26
     iter $P3, $P1
     set $P3, 0
- __label_1: # for iteration
+  __label_1: # for iteration
     unless $P3 goto __label_2
     shift $S1, $P3
 # {
@@ -63,14 +63,14 @@
     not $I2, $I1
     if $I2 goto __label_4
     $I2 = $P2($S2, $S1)
- __label_4:
+  __label_4:
     unless $I2 goto __label_3
 .annotate 'line', 31
     'compile_to_pir'($S2, $S1)
- __label_3: # endif
+  __label_3: # endif
 # }
     goto __label_1
- __label_2: # endfor
+  __label_2: # endfor
 # }
 .annotate 'line', 33
 
@@ -88,7 +88,7 @@
     unless_null $P1, __label_0
 .annotate 'line', 40
     .return()
- __label_0: # endif
+  __label_0: # endif
 .annotate 'line', 41
 # num_files: $I1
 # predefined elements
@@ -98,7 +98,7 @@
 .annotate 'line', 43
     iter $P3, $P1
     set $P3, 0
- __label_1: # for iteration
+  __label_1: # for iteration
     unless $P3 goto __label_2
     shift $S1, $P3
 # {
@@ -118,10 +118,10 @@
 .annotate 'line', 48
     $P2($S1)
 # }
- __label_3: # endif
+  __label_3: # endif
 # }
     goto __label_1
- __label_2: # endfor
+  __label_2: # endfor
 # }
 .annotate 'line', 51
 
@@ -144,7 +144,7 @@
     concat $S2, __ARG_1, " is not a winxed file"
 # predefined die
     die $S2
- __label_0: # endif
+  __label_0: # endif
 .annotate 'line', 60
 # pir_file: $S1
     null $S1
@@ -167,7 +167,7 @@
 # {
 .annotate 'line', 68
 # cmd: $S1
-    concat $S1, "winxed -o ", __ARG_2
+    concat $S1, "winxed --nowarn -o ", __ARG_2
     concat $S1, $S1, " -c "
     concat $S1, $S1, __ARG_1
 .annotate 'line', 69
@@ -188,7 +188,7 @@
     concat $S4, $S4, $S1
 # predefined die
     die $S4
- __label_0: # endif
+  __label_0: # endif
 # }
 .annotate 'line', 74
 

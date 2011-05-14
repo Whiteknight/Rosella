@@ -8,7 +8,7 @@ namespace Rosella { namespace Event
     {
         var events;
 
-        function BUILD()
+        function Manager()
         {
             self.events = {};
         }
@@ -112,11 +112,9 @@ namespace Rosella { namespace Event
         // Get an event, creating it if necessary
         function get_event_autocreate(string event_name)
         {
-            using Rosella.build;
-
             if (exists self.events[event_name])
                 return self.events[event_name];
-            var event = build(class Rosella.Event, 0);
+            var event = new Rosella.Event(0);
             self.events[event_name] = event;
             return event;
         }

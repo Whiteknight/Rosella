@@ -10,10 +10,8 @@ namespace Rosella { namespace Memoize
 {
     function memoize(var func, var cache [optional], int has_cache [opt_flag])
     {
-        if (!has_cache) {
-            using Rosella.build;
-            cache = build(class Rosella.Memoize.Cache.SimpleString);
-        }
+        if (!has_cache)
+            cache = new Rosella.Memoize.Cache.SimpleString;
         var _cache = cache;
         var f = func;
 
@@ -45,10 +43,8 @@ namespace Rosella { namespace Memoize
     function Y(var f,
             var cache [optional,named], int has_cache [opt_flag])
     {
-        if (!has_cache) {
-            using Rosella.build;
-            cache = build(class Rosella.Memoize.Cache.SimpleString);
-        }
+        if (!has_cache)
+            cache = new Rosella.Memoize.Cache.SimpleString;
         var _cache = cache;
         var F = f;
 

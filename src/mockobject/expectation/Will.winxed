@@ -7,7 +7,7 @@ namespace Rosella { namespace MockObject { namespace Expectation
     {
         var value;
 
-        function BUILD(var value)
+        function Will(var value)
         {
             self.value = value;
         }
@@ -23,6 +23,8 @@ namespace Rosella { namespace MockObject { namespace Expectation
     {
         class Return : Rosella.MockObject.Expectation.Will
         {
+            function Return(var p [slurpy]) { self.Will(p:[flat]); }
+
             function execute()
             {
                 return self.value;
@@ -31,6 +33,8 @@ namespace Rosella { namespace MockObject { namespace Expectation
 
         class Throw : Rosella.MockObject.Expectation.Will
         {
+            function Throw(var p [slurpy]) { self.Will(p:[flat]); }
+
             function execute()
             {
                 throw self.value;
@@ -39,6 +43,8 @@ namespace Rosella { namespace MockObject { namespace Expectation
 
         class Do : Rosella.MockObject.Expectation.Will
         {
+            function Do(var p [slurpy]) { self.Will(p:[flat]); }
+
             function execute()
             {
                 var sub = self.value;

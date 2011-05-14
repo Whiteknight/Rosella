@@ -12,7 +12,7 @@ namespace Rosella { namespace Test
         var options;        // User-specified options about the test run
 
         // Constructor. Take the test proto object and a few other options
-        function BUILD(var test_type, var options)
+        function SuiteFactory(var test_type, var options)
         {
             self.target_type = options["suite_type"];
             self.test_type = test_type;
@@ -22,15 +22,15 @@ namespace Rosella { namespace Test
         // Create a Suite of the given type
         function create_typed(var type, var p [slurpy], var n [slurpy,named])
         {
-            using Rosella.build;
-            var testfactory = build(class Rosella.Test.TestFactory, self.options);
+            using Rosella.construct;
+            var testfactory = new Rosella.Test.TestFactory(self.options);
             var test_methods = self.get_test_methods();
             var tests = {};
             for (var test in test_methods) {
                 var testcase = testfactory.create(test, test_methods[test]);
                 tests[test] = testcase;
             }
-            var suite = build(type, tests, self.options["test_context"]);
+            var suite = construct(type, tests, self.options["test_context"]);
             return suite;
         }
 

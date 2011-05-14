@@ -4,7 +4,7 @@ namespace Rosella { namespace Proxy { namespace Builder
     {
         var extra_fields;
 
-        function BUILD(var fields [slurpy])
+        function ProxyData(var fields [slurpy])
         {
             self.extra_fields = fields;
         }

@@ -6,14 +6,14 @@ namespace Rosella { namespace Container { namespace ItemFactory
     {
         var instance;
 
-        function BUILD(var obj, var inits)
+        function Instance(var obj, var inits)
         {
             self.instance = obj;
             self.protected_method_initializers(inits);
         }
 
         // Return the instance
-        function resolve_instance()
+        function protected_resolve_instance()
         {
             return self.instance;
         }

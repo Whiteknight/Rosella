@@ -27,8 +27,8 @@ class My::Foo {
 Rosella::Test::test(Proxy::Builder::Array::Test);
 class Proxy::Builder::Array::Test {
     method test_get_keyed_intercept() {
-        my $factory := Rosella::build(Rosella::Proxy::Factory, My::Foo, [
-            Rosella::build(Rosella::Proxy::Builder::Array)
+        my $factory := Rosella::construct(Rosella::Proxy::Factory, My::Foo, [
+            Rosella::construct(Rosella::Proxy::Builder::Array)
         ]);
 
         my $p := $factory.create(FooController.new());
@@ -40,8 +40,8 @@ class Proxy::Builder::Array::Test {
     }
 
     method test_set_keyed_intercept() {
-        my $factory := Rosella::build(Rosella::Proxy::Factory, My::Foo, [
-            Rosella::build(Rosella::Proxy::Builder::Array)
+        my $factory := Rosella::construct(Rosella::Proxy::Factory, My::Foo, [
+            Rosella::construct(Rosella::Proxy::Builder::Array)
         ]);
 
         my $p := $factory.create(FooController.new());
@@ -56,8 +56,8 @@ class Proxy::Builder::Array::Test {
     }
 
     method test_delete_keyed_intercept() {
-        my $factory := Rosella::build(Rosella::Proxy::Factory, My::Foo, [
-            Rosella::build(Rosella::Proxy::Builder::Array)
+        my $factory := Rosella::construct(Rosella::Proxy::Factory, My::Foo, [
+            Rosella::construct(Rosella::Proxy::Builder::Array)
         ]);
 
         my $p := $factory.create(FooController.new());
@@ -65,8 +65,8 @@ class Proxy::Builder::Array::Test {
     }
 
     method test_defined_keyed_intercept() {
-        my $factory := Rosella::build(Rosella::Proxy::Factory, My::Foo, [
-            Rosella::build(Rosella::Proxy::Builder::Array)
+        my $factory := Rosella::construct(Rosella::Proxy::Factory, My::Foo, [
+            Rosella::construct(Rosella::Proxy::Builder::Array)
         ]);
 
         my $p := $factory.create(FooController.new());
@@ -74,8 +74,8 @@ class Proxy::Builder::Array::Test {
     }
 
     method test_exists_keyed_intercept() {
-        my $factory := Rosella::build(Rosella::Proxy::Factory, My::Foo, [
-            Rosella::build(Rosella::Proxy::Builder::Array)
+        my $factory := Rosella::construct(Rosella::Proxy::Factory, My::Foo, [
+            Rosella::construct(Rosella::Proxy::Builder::Array)
         ]);
 
         my $p := $factory.create(FooController.new());

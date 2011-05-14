@@ -1,13 +1,13 @@
 namespace Rosella { namespace Container { namespace ItemFactory
 {
     // An ItemFactory for resolving from a Parrot Class PMC (or anything
-    // that can be resolved to a class using Rosella.build)
+    // that can be resolved to a class using Rosella.construct)
     class ParrotClass : Rosella.Container.ItemFactory
     {
         var class_obj;
         var init_pmc;
 
-        function BUILD(var class_obj, var init, var inits)
+        function ParrotClass(var class_obj, var init, var inits)
         {
             if (class_obj == null) {
                 using Rosella.Error.invalid;
@@ -21,7 +21,7 @@ namespace Rosella { namespace Container { namespace ItemFactory
         }
 
         // Instantiate the class, using the various data
-        function resolve_instance()
+        function protected_resolve_instance()
         {
             int have_init_pmc = 0;
             var init_pmc = self.init_pmc;

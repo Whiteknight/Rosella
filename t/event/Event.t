@@ -14,22 +14,22 @@ class MyTestClass {
 
 class Event::Test {
     method test_BUILD() {
-        my $m := Rosella::build(Rosella::Event, 0);
+        my $m := Rosella::construct(Rosella::Event, 0);
         $!assert.not_null($m);
         $!assert.instance_of($m, Rosella::Event);
     }
 
     method add_subscriber_action() {
-        my $m := Rosella::build(Rosella::Event, 0);
+        my $m := Rosella::construct(Rosella::Event, 0);
         $!assert.equal($m.num_subscribers, 0);
         $m.add_subscriber_action("Foo",
-            Rosella::build(Rosella::Action::Sub, sub() {})
+            Rosella::construct(Rosella::Action::Sub, sub() {})
         );
         $!assert.equal($m.num_subscribers, 1);
     }
 
     method add_subscriber_object() {
-        my $m := Rosella::build(Rosella::Event, 0);
+        my $m := Rosella::construct(Rosella::Event, 0);
         my $data := MyTestClass.new();
         $!assert.equal($m.num_subscribers, 0);
         $m.add_subscriber_object("Foo", $data, "test_method");
@@ -37,7 +37,7 @@ class Event::Test {
     }
 
     method remove_subscriber() {
-        my $m := Rosella::build(Rosella::Event, 0);
+        my $m := Rosella::construct(Rosella::Event, 0);
         my $data := MyTestClass.new();
         $!assert.equal($m.num_subscribers, 0);
         $m.add_subscriber_object("Foo", $data, "test_method");
@@ -47,14 +47,14 @@ class Event::Test {
     }
 
     method remove_subscriber_none() {
-        my $m := Rosella::build(Rosella::Event, 0);
+        my $m := Rosella::construct(Rosella::Event, 0);
         $!assert.equal($m.num_subscribers, 0);
         $m.remove_subscriber("Foo");
         $!assert.equal($m.num_subscribers, 0);
     }
 
     method get_count() {
-        my $m := Rosella::build(Rosella::Event, 0);
+        my $m := Rosella::construct(Rosella::Event, 0);
         $!assert.equal($m.get_count, 0);
     }
 
@@ -79,7 +79,7 @@ class Event::Test {
     }
 
     method raise() {
-        my $m := Rosella::build(Rosella::Event, 0);
+        my $m := Rosella::construct(Rosella::Event, 0);
         my $data := MyTestClass.new();
         $m.add_subscriber_object("Foo", $data, "test_method");
         $!assert.output_is({
@@ -88,7 +88,7 @@ class Event::Test {
     }
 
     method raise_args() {
-        my $m := Rosella::build(Rosella::Event, 0);
+        my $m := Rosella::construct(Rosella::Event, 0);
         my $data := MyTestClass.new();
         $m.add_subscriber_object("Foo", $data, "test_method_pos_args");
         $!assert.output_is({

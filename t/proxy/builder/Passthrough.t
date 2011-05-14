@@ -13,8 +13,8 @@ class My::Foo {
 Rosella::Test::test(Proxy::Builder::Passthrough::Test);
 class Proxy::Builder::Passthrough::Test {
     method test_passthrough() {
-        my $f := Rosella::build(Rosella::Proxy::Factory, My::Foo, [
-            Rosella::build(Rosella::Proxy::Builder::Passthrough),
+        my $f := Rosella::construct(Rosella::Proxy::Factory, My::Foo, [
+            Rosella::construct(Rosella::Proxy::Builder::Passthrough),
         ]);
         my $target := My::Foo.new();
         $target.test_a(5);

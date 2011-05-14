@@ -12,7 +12,7 @@ namespace Rosella
     {
         var target_type;
 
-        function BUILD(var target_type [optional], int has_type [opt_flag])
+        function ObjectFactory(var target_type [optional], int has_type [opt_flag])
         {
             if (has_type)
                 self.target_type = target_type;
@@ -30,7 +30,7 @@ namespace Rosella
             invalid("ObjectFactory.create",
                 "ObjectFactory: Cannot create an object without at type.\n" +
                 "You must provide a type to create_typed, pass one to the " +
-                "BUILD method of ObjectFactory"
+                "constructor for ObjectFactory"
             );
         }
 
@@ -39,8 +39,8 @@ namespace Rosella
         // subclasses may do something different
         function create_typed(var type, var pos [slurpy], var named [slurpy,named])
         {
-            using Rosella.build;
-            return build(type, pos:[flat], named:[flat,named]);
+            using Rosella.construct;
+            return construct(type, pos:[flat], named:[flat,named]);
         }
     }
 }

@@ -24,14 +24,13 @@ namespace Rosella { namespace Proxy
         // Construct the factory given the target type to proxy and the
         // list of builders to use. Set up the default proxy_class for use
         // when building proxies.
-        function BUILD(var target_type, var builders)
+        function Factory(var target_type, var builders)
         {
             using Rosella.get_type_class;
             using Rosella.get_type_name;
 
             string type_name = get_type_name(target_type);
-
-            self.target_type = target_type; // From ObjectFactory
+            self.ObjectFactory(target_type);
             self.target_name = type_name;
             self.target_class = get_type_class(target_type);
             self.builders = builders;

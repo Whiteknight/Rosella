@@ -6,7 +6,7 @@ Rosella::Test::test(Test::Builder::Test);
 
 class Test::Builder::Test {
     method test_BUILD() {
-        my $builder := Rosella::build(Rosella::Test::Builder);
+        my $builder := Rosella::construct(Rosella::Test::Builder);
         $!assert.instance_of($builder, Rosella::Test::Builder);
     }
 

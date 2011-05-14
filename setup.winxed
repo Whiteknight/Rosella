@@ -48,7 +48,11 @@ function setup_stable_libraries(var rosella)
     // A bootstrapped version is included in the repo because we need it
     // to run setup.winxed (this script). This is the only rosella library
     // which doesn't rely on Core.
-    setup_winxed_lib(rosella, "winxed", "winxed/Distutils");
+    setup_winxed_lib(rosella, "winxed",
+        "winxed/Distutils",
+        "winxed/Repl",
+        "winxed/ReplState"
+    );
 
     // The Rosella "core" library. Does very little on its own but is
     // required by other libraries in the sequence
@@ -217,6 +221,21 @@ function setup_experimental_libraries(var rosella)
         "memoize/cache/SimpleString",
         "memoize/Controller",
         "memoize/Factory"
+    );
+
+    setup_winxed_lib(rosella, "lazy",
+        "include/Core",
+        "include/Proxy",
+        "lazy/Lazy",
+        "lazy/Builder",
+        "lazy/Controller",
+        "lazy/Factory"
+    );
+
+    setup_winxed_lib(rosella, "string",
+        "string/String",
+        "string/CClassTokenizer",
+        "string/Tokenizer"
     );
 }
 

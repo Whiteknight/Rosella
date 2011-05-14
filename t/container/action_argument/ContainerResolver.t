@@ -8,8 +8,8 @@ Rosella::Test::test(ActionArgContainerResolverTest);
 
 class ActionArgContainerResolverTest {
     method test_BUILD() {
-        my $c := Rosella::build(Rosella::Container);
-        my $arg := Rosella::build(Rosella::Action::Argument::ContainerResolver, $c, "String");
+        my $c := Rosella::construct(Rosella::Container);
+        my $arg := Rosella::construct(Rosella::Action::Argument::ContainerResolver, $c, "String");
         $!status.unimplemented("Test this");
     }
 }

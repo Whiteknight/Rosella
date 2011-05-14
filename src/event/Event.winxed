@@ -23,7 +23,7 @@ namespace Rosella
         var handled;
         var id_count;
 
-        function BUILD(int start_id, var acts [named,slurpy])
+        function Event(int start_id, var acts [named,slurpy])
         {
             self.actions = acts;
             self.id_count = start_id;
@@ -47,8 +47,7 @@ namespace Rosella
         // invoked on the subscriber with the Event as an argument
         function add_subscriber_object(string id, var object, var meth)
         {
-            using Rosella.build;
-            var action = build(class Rosella.Action.Sub,
+            var action = new Rosella.Action.Sub(
                 function(var e) {
                     using Rosella.invoke_method;
                     invoke_method(object, meth, [e], {});

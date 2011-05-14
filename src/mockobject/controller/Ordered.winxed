@@ -5,6 +5,8 @@ namespace Rosella { namespace MockObject { namespace Controller
     */
     class Ordered : Rosella.MockObject.Controller
     {
+        function Ordered(var p [slurpy]) { self.Controller(p:[flat]); }
+
         // Mark the expectation complete, and if necessary shift it off the
         // front of the list. Keep shifting until we get to the one that was
         // satisfied. If the expectation is still

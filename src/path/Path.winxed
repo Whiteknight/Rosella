@@ -5,7 +5,7 @@ namespace Rosella
         var separator;
         var searchers;
 
-        function BUILD(var searchers [slurpy],
+        function Path(var searchers [slurpy],
                 string separator [optional,named], int has_sep [opt_flag])
         {
             using Rosella.build;

@@ -58,14 +58,13 @@ namespace Rosella
         {
             if (provider != null)
                 return provider;
-            using Rosella.build;
             int satisfies = 0;
             ${ does satisfies, data, "array" };
             if (satisfies)
-                return build(class Rosella.Query.Provider.Array);
+                return new Rosella.Query.Provider.Array;
             ${ does satisfies, data, "hash" };
             if (satisfies)
-                return build(class Rosella.Query.Provider.Hash);
+                return new Rosella.Query.Provider.Hash;
             err_no_provider(data);
         }
     }

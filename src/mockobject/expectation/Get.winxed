@@ -2,6 +2,8 @@ namespace Rosella { namespace MockObject { namespace Expectation
 {
     class Get : Rosella.MockObject.Expectation
     {
+        function Get(var p [slurpy]) { self.Expectation(p:[flat]); }
+
         function __verify_can_set_args()
         {
             die("get attribute does not take any args");

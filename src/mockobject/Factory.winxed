@@ -10,15 +10,13 @@ namespace Rosella { namespace MockObject
         var controller_factory;  // A MockObject.Controller factory
         var ordered_controller_factory;
 
-        function BUILD()
+        function Factory()
         {
-            using Rosella.build;
-
             self.proxy_factories = {};
             var c_type = class Rosella.MockObject.Controller;
-            self.controller_factory = build(class Rosella.ObjectFactory, c_type);
+            self.controller_factory = new Rosella.ObjectFactory(c_type);
             c_type = class Rosella.MockObject.Controller.Ordered;
-            self.ordered_controller_factory = build(class Rosella.ObjectFactory, c_type);
+            self.ordered_controller_factory = new Rosella.ObjectFactory(c_type);
         }
 
         // Get a new Mock and Controller. Return the Controller, from which
@@ -38,7 +36,6 @@ namespace Rosella { namespace MockObject
         // Get a new proxy factory for the given type. For internal use only.
         function get_mock_factory_internal(var type_to_mock, var opts)
         {
-            using Rosella.build;
             using Rosella.get_type_name;
 
             string type_name = get_type_name(type_to_mock);
@@ -47,7 +44,7 @@ namespace Rosella { namespace MockObject
 
             var builders = self.get_builder_types(opts);
 
-            var factory = build(class Rosella.Proxy.Factory, type_to_mock, builders);
+            var factory = new Rosella.Proxy.Factory(type_to_mock, builders);
             self.proxy_factories[type_name] = factory;
             return factory;
         }

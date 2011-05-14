@@ -12,7 +12,7 @@ namespace Rosella { namespace Test
         var listeners;
 
         // Constructor. Take a list of listeners and initialize the Result
-        function BUILD(var listeners)
+        function Result(var listeners)
         {
             self.total_tests = 0;
             self.num_failures = 0;

@@ -1,0 +1,112 @@
+namespace Rosella { namespace Winxed
+{
+    class Repl
+    {
+        var compiler;
+        var count;
+        var commands;
+
+        function Repl()
+        {
+            self.compiler = load_language("winxed");
+            self.count = 0;
+            self.commands = {
+                "quit" : function (var state) { state.stop(); },
+                "help" : function (var state) { say("Just type some winxed code!"); },
+                "codeon" : function (var state) { state.showcode = 1; },
+                "codeoff" : function (var state) { state.showcode = 0; }
+            };
+        }
+
+        function run()
+        {
+            var state = new Rosella.Winxed.ReplState;
+            var stdin = getstdin();
+
+            while (state.keep_running)
+            {
+                var input = stdin.readline_interactive("\nWinxed-Rosella> ");
+                if (input == null)
+                    break;
+                if (!self.run_command(input, state)) {
+                    var result = self.eval(input, state);
+                    self.print_result(result, state);
+                }
+            }
+        }
+
+        function run_command(string input, var state)
+        {
+            if (exists self.commands[input]) {
+                self.commands[input](state);
+                return 1;
+            }
+            return 0;
+        }
+
+        function print_result(var result, var state)
+        {
+            if (result == null)
+                return;
+            int does_array = 0;
+            ${ does does_array, result, "array" };
+            if (does_array)
+                self.print_array_result(result, state);
+
+            int does_hash = 0;
+            ${ does does_hash, result, "hash" };
+            if (does_hash)
+                self.print_hash_result(result, state);
+
+            if (!does_array && !does_hash)
+                self.print_scalar_result(result, state);
+        }
+
+        function print_array_result(var result, var state)
+        {
+            self.sprintf("Result = [");
+            for (int i = 0; i < elements(result); i++)
+                self.sprintf("\t%d => '%s' (%s)", i, result[i], string(typeof(result[i])));
+            self.sprintf("]");
+        }
+
+        function print_hash_result(var result, var state)
+        {
+            self.sprintf("Result = {");
+            for (string key in result)
+                self.sprintf("\t'%s' => '%s' (%s)", key, result[key], string(typeof(result[key])));
+            self.sprintf("}");
+        }
+
+        function print_scalar_result(var result, var state)
+        {
+            self.sprintf("Result = '%s'", result);
+        }
+
+        function eval(string code, var state)
+        {
+            var func = self.compile(code, state);
+            try {
+                return func(state);
+            } catch (e) {
+                say("Error: " + string(e["message"]));
+                return null;
+            }
+        }
+
+        function compile(string code, var state)
+        {
+            self.count = self.count + 1;
+            string func_c = sprintf("function __REPL_line_%d(var state) { var result = null; %s; return result; }", [self.count, code]);
+            if (state.showcode)
+                self.sprintf("Code = '%s'", func_c);
+            return self.compiler.compile(func_c);
+        }
+
+        function sprintf(string fmt, var args [slurpy])
+        {
+            print("\t>>> ");
+            say(sprintf(fmt, args));
+        }
+    }
+}}

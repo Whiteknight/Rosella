@@ -14,8 +14,7 @@ namespace Rosella
 
         function default_view()
         {
-            using Rosella.build;
-            return build(class Rosella.Harness.View);
+            return new Rosella.Harness.View();
         }
 
         // Run the harness. Optionally take a custom view, and a handful of
@@ -25,8 +24,6 @@ namespace Rosella
                 int line_length [named,optional], int has_ll [opt_flag],
                 int debug [named,optional], int has_dbg [opt_flag])
         {
-            using Rosella.build;
-
             if (!has_ri)
                 run_inline = 0;
             if (!has_ll)
@@ -39,7 +36,6 @@ namespace Rosella
         // Interal routine to run the harness
         function run_internal(var test_run, var view, int run_inline, int debug)
         {
-
             for (var test in test_run.tests()) {
                 view.start_test(test);
                 test.run(view, debug, run_inline);
