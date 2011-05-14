@@ -11,8 +11,10 @@ namespace Rosella { namespace Winxed
             self.compiler = load_language("winxed");
             self.count = 0;
             self.commands = {
-                "quit" : function (var args) { args.stop(); },
-                "help" : function (var args) { say("Just type some winxed code!"); }
+                "quit" : function (var state) { state.stop(); },
+                "help" : function (var state) { say("Just type some winxed code!"); },
+                "codeon" : function (var state) { state.showcode = 1; },
+                "codeoff" : function (var state) { state.showcode = 0; }
             };
         }
 
@@ -22,43 +24,52 @@ namespace Rosella { namespace Winxed
             var state = build(class Rosella.Winxed.ReplState);
             var stdin = getstdin();
 
-            while (state.should_continue())
+            while (state.keep_running)
             {
                 var input = stdin.readline_interactive("\nWinxed-Rosella> ");
                 if (input == null)
                     break;
-                if (exists self.commands[input])
-                    self.commands[input](state);
-                else {
+                if (!self.run_command(input, state)) {
                     var result = self.eval(input, state);
                     if (result != null)
-                        self.print_message("Result = '%s'", result);
+                        self.print_message("Result", "'%s'", result);
                 }
             }
         }
 
-        function eval(string code, var arg)
+        function run_command(string input, var state)
         {
-            var func = self.compile(code);
+            if (exists self.commands[input]) {
+                self.commands[input](state);
+                return 1;
+            }
+            return 0;
+        }
+
+        function eval(string code, var state)
+        {
+            var func = self.compile(code, state);
             try {
-                return func(arg);
+                return func(state);
             } catch (e) {
                 say("Error: " + string(e["message"]));
                 return null;
             }
         }
 
-        function compile(string code)
+        function compile(string code, var state)
         {
             self.count = self.count + 1;
             string func_c = sprintf("function __REPL_line_%d(var state) { var result = null; %s; return result; }", [self.count, code]);
-            self.print_message("'%s'", func_c);
+            if (state.showcode)
+                self.print_message("Code", "'%s'", func_c);
             return self.compiler.compile(func_c);
         }
 
-        function print_message(string fmt, var args [slurpy])
+        function print_message(string name, string fmt, var args [slurpy])
         {
-            say(sprintf("\t>>> " + fmt, args));
+            string fmt1 = sprintf("\t>>> %s = ", [name]);
+            say(sprintf(fmt1 + fmt, args));
         }
     }
 }}

@@ -4,21 +4,18 @@ namespace Rosella { namespace Winxed
     {
         var keep_running;
         var data;
+        var showcode;
 
         function BUILD()
         {
             self.keep_running = 1;
             self.data = {};
+            self.showcode = 0;
         }
 
         function stop()
         {
             self.keep_running = 0;
-        }
-
-        function should_continue()
-        {
-            return self.keep_running;
         }
 
         function set_pmc_keyed[vtable](var key, var value)
