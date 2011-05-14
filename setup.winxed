@@ -189,7 +189,10 @@ function setup_experimental_libraries(var rosella)
 
     setup_winxed_lib(rosella, "path",
         "include/Core",
-        "path/Path"
+        "path/Path",
+        "path/Searcher",
+        "path/searcher/Hash",
+        "path/searcher/Attribute"
     );
 
     // A library for creating and using cheap, transparent decorator

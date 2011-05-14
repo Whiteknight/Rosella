@@ -1,0 +1,22 @@
+namespace Rosella { namespace Path { namespace Searcher
+{
+    class Attribute
+    {
+        function can_search(var obj)
+        {
+            // TODO: Is there a way to check if we have *any* attributes?
+            return 1;
+        }
+
+        function search(var obj, string name)
+        {
+            var result = null;
+            int success = 0;
+            try {
+                ${ getattribute result, obj, name };
+                success = 1;
+            } catch() { }
+            return success, result;
+        }
+    }
+}}}

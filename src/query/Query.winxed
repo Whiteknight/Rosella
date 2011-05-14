@@ -7,7 +7,6 @@ namespace Rosella
             request to the appropriate provider.
         */
 
-
         function map(var data, var mapper,
             var provider [named,optional], int has_provider [opt_flag])
         {

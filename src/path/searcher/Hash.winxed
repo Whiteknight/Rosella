@@ -1,0 +1,19 @@
+namespace Rosella { namespace Path { namespace Searcher
+{
+    class Hash
+    {
+        function can_search(var obj)
+        {
+            int is_hash = 0;
+            ${ does is_hash, obj, "hash" };
+            return is_hash;
+        }
+
+        function search(var obj, string name)
+        {
+            if (exists obj[name])
+                return 1, obj[name];
+            return 0, null;
+        }
+    }
+}}}
