@@ -55,13 +55,14 @@ namespace Rosella
             string search_text = path;
             string remainder = "";
             int idx = length(path) - 1;
-
+            //say(obj);
+            var result;
+            var found_result;
+            //say(sprintf("search = '%s' remainder = '%s' idx = '%s'", [search_text, remainder, idx]));
             //say(sprintf("search = '%s' remainder = '%s'", [search_text, remainder]));
             while (idx >= 0) {
                 //say(sprintf("search = '%s' remainder = '%s'", [search_text, remainder]));
                 int success = 0;
-                //say(sprintf("search = '%s' remainder = '%s'", [search_text, remainder]));
-                var result = null;
                 //say(sprintf("search = '%s' remainder = '%s'", [search_text, remainder]));
 
                 for (var searcher in self.searchers) {
@@ -73,28 +74,40 @@ namespace Rosella
                     :(success, result) = searcher.search(obj, search_text);
                     if (success) {
                         //say("\tfound");
-                        obj = result;
+                        //say(result);
+                        found_result = result;
+                        //say(found_result);
                         break;
                     }
                     //say("\tnot found");
                 }
-
+                //say("HERE");
                 if (success) {
                     if (remainder == null || remainder == "") {
                         //say("found non-recursive");
-                        return 1, obj;
+                        return 1, found_result;
                     }
-                    :(success, result) = self.foo(obj, remainder);
+                    //say("still have remainder, searching recursive...");
+                    //say(found_result);
+                    :(success, result) = self.foo(found_result, remainder);
                     if (success) {
                         //say("\tfound after recursive");
                         return 1, result;
                     }
-                }
-                else {
+                    //say(sprintf("A0 search = '%s' remainder = '%s' idx = '%s'", [search_text, remainder, idx]));
                     idx = search_text.reverse_index(self.separator, 0);
                     remainder = substr(next_path, idx + 1);
                     search_text = substr(search_text, 0, idx);
-
+                    //say(sprintf("A1 search = '%s' remainder = '%s' idx = '%s'", [search_text, remainder, idx]));
+                    //say(obj);
+                }
+                else {
+                    //say(sprintf("B0 search = '%s' remainder = '%s' idx = '%s'", [search_text, remainder, idx]));
+                    idx = search_text.reverse_index(self.separator, 0);
+                    remainder = substr(next_path, idx + 1);
+                    search_text = substr(search_text, 0, idx);
+                    //say(sprintf("B1 search = '%s' remainder = '%s' idx = '%s'", [search_text, remainder, idx]));
+                    //say(obj);
                 }
             }
             //say("LOOP TERMINATED");
