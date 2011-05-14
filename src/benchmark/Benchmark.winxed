@@ -1,0 +1,24 @@
+namespace Rosella
+{
+    namespace Benchmark
+    {
+        function count_time(var code)
+        {
+            float starttime = floattime();
+            code();
+            float endtime = floattime();
+            return endtime - starttime;
+        }
+
+        function percent_of_base(float base, float t)
+        {
+            return (t / base) * 100;
+        }
+
+        function percent_difference(float base, float t)
+        {
+            float diff = t - base;
+            return (diff / base) * 100;
+        }
+    }
+}
