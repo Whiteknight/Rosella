@@ -11,6 +11,17 @@ namespace Rosella { namespace Multicast
             }
         }
 
+        function and(var a, var b)
+        {
+            var func_a = a;
+            var func_b = b;
+            return function(var p [slurpy], var n [slurpy,named]) {
+                if (func_a(p:[flat], n:[flat,named]))
+                    return func_b(p:[flat], n:[flat,named]);
+                return null;
+            }
+        }
+
         function subtract(var a, var b)
         {
             var func_a = a;
@@ -20,12 +31,34 @@ namespace Rosella { namespace Multicast
             }
         }
 
-        function add(var a, var b)
+        function or(var a, var b)
+        {
+            var func_a = a;
+            var func_b = b;
+            return function(var p [slurpy], var n [slurpy,named]) {
+                if (!func_a(p:[flat], n:[flat,named]))
+                    return func_b(p:[flat], n:[flat,named]);
+                return null;
+            }
+        }
+
+        function compose(var a, var b)
         {
             var func_a = a;
             var func_b = b;
             return function(var p [slurpy], var n [slurpy,named]) {
                 return func_a(func_b(p:[flat], n:[flat,named]));
+            }
+        }
+
+        function both(var a, var b)
+        {
+            var func_a = a;
+            var func_b = b;
+            return function(var p [slurpy], var n [slurpy,named]) {
+                var val_a = func_a(p:[flat], n:[flat,named]);
+                var val_b = func_b(p:[flat], n:[flat,named]);
+                return val_a, val_b;
             }
         }
     }
