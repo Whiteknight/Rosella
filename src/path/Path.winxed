@@ -23,15 +23,6 @@ namespace Rosella
                 self.searchers = searchers;
         }
 
-        function result_is_valid(var result)
-        {
-            if (result == null)
-                return 0;
-            int is_defined = 0;
-            ${ defined is_defined, result };
-            return is_defined;
-        }
-
         function get(var obj, string path)
         {
             int success;
@@ -76,7 +67,7 @@ namespace Rosella
                 if (success) {
                     if (remainder == null || remainder == "")
                         return 1, found_result;
-                    :(success, result) = self.foo(found_result, remainder);
+                    :(success, result) = self.get_recursive(found_result, remainder);
                     if (success)
                         return 1, result;
                     idx = search_text.reverse_index(self.separator, 0);
@@ -91,14 +82,6 @@ namespace Rosella
             }
 
             return 0, null;
-        }
-
-        function foo(var obj, string rem)
-        {
-            int success;
-            var result;
-            :(success, result) = self.get_recursive(obj, rem);
-            return success, result;
         }
     }
 }
