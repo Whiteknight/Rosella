@@ -48,9 +48,9 @@ Rosella provides this mechanism, and allows constructors to be defined in
 classes using one of two different formats:
 
 1. A method named BUILD (The "Perl6 Style")
-2. A method with the same short name as the class (The "Normal Style")
+2. A method with the same short name as the class (The "Winxed Style")
 
-The Rosella library itself uses the Perl6 Style of constructors internally,
+The Rosella library itself uses the Winxed Style of constructors internally,
 but mechanisms are provided for user code to do differently if needed.
 
 ### Problems with Constructors
@@ -104,7 +104,8 @@ Rosella's object building utilities provide two things:
    always attempt to call the BUILD method, if available. If you use
    `Rosella.construct`, it will always try to call a constructor with the same
    short name as the class. This is independent of the environment where the
-   call is being made.
+   call is being made. Rosella may eventually provide other mechanisms for
+   other HLLs as well.
 2. *Flexibility of Type Specifiers*. Rosella accepts multiple different forms
    of type specifier, any of which can be used to refer to an underlying
    Parrot Class, and can therefore be used to create new objects.
@@ -125,6 +126,10 @@ keys.
 * `get_type_class`: Get the Parrot Class PMC associated with the type
 * `isa`: Determine if a given object belongs to a type
 * `find_named_method`: Find a method on an object by name, null if not found
+* `invoke_method`: Invoke a method on an object, either by invokable object
+        reference or by name
+* `get_version`: Get the version information for individual Rosella libraries,
+        by name.
 
 ### Rosella.Error
 
