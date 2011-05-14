@@ -20,7 +20,7 @@ namespace Rosella { namespace MockObject
         var mock;
         var expectations;
 
-        function BUILD()
+        function Controller()
         {
             self.expectations = [];
         }
@@ -32,32 +32,28 @@ namespace Rosella { namespace MockObject
         // Create and return a new expectation object.
         function expect_method(string name)
         {
-            using Rosella.build;
-            var expect = build(class Rosella.MockObject.Expectation.Method, name);
+            var expect = new Rosella.MockObject.Expectation.Method(name);
             push(self.expectations, expect);
             return expect;
         }
 
         function expect_get(string name)
         {
-            using Rosella.build;
-            var expect = build(class Rosella.MockObject.Expectation.Get, name);
+            var expect = new Rosella.MockObject.Expectation.Get(name);
             push(self.expectations, expect);
             return expect;
         }
 
         function expect_set(string name)
         {
-            using Rosella.build;
-            var expect = build(class Rosella.MockObject.Expectation.Set, name);
+            var expect = new Rosella.MockObject.Expectation.Set(name);
             push(self.expectations, expect);
             return expect;
         }
 
         function expect_invoke()
         {
-            using Rosella.build;
-            var expect = build(class Rosella.MockObject.Expectation.Invoke, "");
+            var expect = new Rosella.MockObject.Expectation.Invoke("");
             push(self.expectations, expect);
             return expect;
         }

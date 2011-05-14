@@ -2,6 +2,8 @@ namespace Rosella { namespace MockObject { namespace Expectation
 {
     class Set : Rosella.MockObject.Expectation
     {
+        function Set(var p [slurpy]) { self.Expectation(p:[flat]); }
+
         function will_return(var value)
         {
             die("set attribute does not return a value");
@@ -9,12 +11,10 @@ namespace Rosella { namespace MockObject { namespace Expectation
 
         function with_args(var pos [slurpy], var named [named,slurpy])
         {
-            using Rosella.build;
-
             self.__verify_can_set_args();
             if (int(pos) != 1 || int(named) != 0)
                 die("set_attribute takes exactly 1 positional and 0 named args");
-            self.with = build(class Rosella.MockObject.Expectation.With.Args, pos, named);
+            self.with = new Rosella.MockObject.Expectation.With.Args(pos, named);
             return self;
         }
 
