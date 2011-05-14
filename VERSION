@@ -10,7 +10,7 @@ lazy: 0 Alpha
 memoize: 0 Beta
 mockobject: 2 Stable
 multicast: 0 Alpha
-path: 0 Alpha
+path: 0 Beta
 prototype: 0 Alpha
 proxy: 2 Stable
 query: 0 Alpha
