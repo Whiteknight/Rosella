@@ -8,7 +8,7 @@ namespace Rosella { namespace Harness { namespace TestRun
         var num_files;
         var num_tests;
 
-        function BUILD()
+        function ResultSet()
         {
             self.num_files = 0;
             self.num_tests = 0;

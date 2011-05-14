@@ -4,8 +4,7 @@ namespace Rosella { namespace Memoize
     {
         function get_item(var p, var n)
         {
-            using Rosella.build;
-            return build(class Rosella.Memoize.Cache.Item, null);
+            return new Rosella.Memoize.Cache.Item(null);
         }
 
         function remove_item(var p, var n)

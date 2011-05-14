@@ -5,16 +5,15 @@ namespace Rosella { namespace Lazy
         var proxy_factory;
         var proxy_controller;
 
-        function BUILD(var type)
+        function Factory(var type)
         {
-            using Rosella.build;
-            self.target_type = type;
-            self.proxy_factory = build(class Rosella.Proxy.Factory, type, [
-                build(class Rosella.Lazy.Builder),
-                build(class Rosella.Proxy.Builder.AttributeIntercept),
-                build(class Rosella.Proxy.Builder.MethodIntercept)
+            self.ObjectFactory(type);
+            self.proxy_factory = new Rosella.Proxy.Factory(type, [
+                new Rosella.Lazy.Builder,
+                new Rosella.Proxy.Builder.AttributeIntercept,
+                new Rosella.Proxy.Builder.MethodIntercept
             ]);
-            self.proxy_controller = build(class Rosella.Lazy.Controller);
+            self.proxy_controller = new Rosella.Lazy.Controller;
         }
 
         function create_typed(var target_type, var constructor, var p [slurpy],

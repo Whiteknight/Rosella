@@ -5,7 +5,7 @@ namespace Rosella { namespace Query
         var separator;
         var searchers;
 
-        function BUILD(string separator [optional], int has_sep [opt_flag])
+        function Path(string separator [optional], int has_sep [opt_flag])
         {
             if (has_sep)
                 self.separator = separator;

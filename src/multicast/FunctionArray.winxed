@@ -4,7 +4,7 @@ namespace Rosella { namespace Multicast
     {
         var funcs;
 
-        function BUILD()
+        function FunctionArray()
         {
             self.funcs = [];
         }

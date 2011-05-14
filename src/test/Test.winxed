@@ -19,20 +19,18 @@ namespace Rosella
         // in. Returns 1 if the test was a success, 0 otherwise.
         function test(var test_type, var options [slurpy,named])
         {
-            using Rosella.build;
-
             if (!(exists options["suite_type"]))
                 options["suite_type"] = class Rosella.Test.Suite;
             if (!(exists options["testcase_type"]))
                 options["testcase_type"] = class Rosella.Test.TestCase;
             if (!(exists options["context"]))
-                options["context"] = build(class Rosella.Test.TestContext);
+                options["context"] = new Rosella.Test.TestContext;
             if (!(exists options["test_prefix"]))
                 options["test_prefix"] = "";
             if (!(exists options["asserter"]))
                 options["asserter"] = new Rosella.Test.Asserter;
 
-            var suitefactory = build(class Rosella.Test.SuiteFactory, test_type, options);
+            var suitefactory = new Rosella.Test.SuiteFactory(test_type, options);
             var suite = suitefactory.create();
             var result = suite.run();
             return result.was_successful();
@@ -43,8 +41,7 @@ namespace Rosella
         // instead.
         function internal_fail(string why, int is_internal, var exception)
         {
-            using Rosella.build;
-            var ex = build(class Rosella.Test.Failure, why, exception, is_internal);
+            var ex = new Rosella.Test.Failure(why, exception, is_internal);
             ex.throw();
         }
     }

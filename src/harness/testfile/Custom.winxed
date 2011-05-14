@@ -5,7 +5,7 @@ namespace Rosella { namespace Harness { namespace TestFile
         var cmd_fmt;
         var compiler;
 
-        function BUILD(var compiler, string cmd)
+        function Custom(var compiler, string cmd)
         {
             self.cmd_fmt = cmd;
             self.compiler = compiler;

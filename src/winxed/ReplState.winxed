@@ -6,7 +6,7 @@ namespace Rosella { namespace Winxed
         var data;
         var showcode;
 
-        function BUILD()
+        function ReplState()
         {
             self.keep_running = 1;
             self.data = {};

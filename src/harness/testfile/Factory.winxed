@@ -11,9 +11,9 @@ namespace Rosella { namespace Harness { namespace TestFile
         /* Public API Functions
         */
 
-        function BUILD(var testfile_type)
+        function Factory(var testfile_type)
         {
-            self.target_type = testfile_type;
+            self.ObjectFactory(testfile_type);
             loadlib("os");
             self.os = new 'OS';
         }
@@ -21,8 +21,8 @@ namespace Rosella { namespace Harness { namespace TestFile
         // Make a suitable TestFile object for the given file.
         function create_typed(var type, string filename)
         {
-            using Rosella.build;
-            return build(type, filename);
+            using Rosella.construct;
+            return construct(type, filename);
         }
 
         // Return a list of TestFile objects from a list of directories.

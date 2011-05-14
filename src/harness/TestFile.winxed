@@ -17,7 +17,7 @@ namespace Rosella { namespace Harness
         var failed_tests;
         var passed_tests;
 
-        function BUILD(string filename)
+        function TestFile(string filename)
         {
             self.filename = filename;
             self.failed_tests = 0;
@@ -188,8 +188,7 @@ namespace Rosella { namespace Harness
 
         function parse_line(string line)
         {
-            using Rosella.build;
-            var lineobj = build(class Rosella.Harness.TestFile.Line, line);
+            var lineobj = new Rosella.Harness.TestFile.Line(line);
             if (lineobj.ignore())
                 return;
             string msg = sprintf("test %d - %s", [lineobj.number(), lineobj.name()]);

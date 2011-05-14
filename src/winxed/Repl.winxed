@@ -6,7 +6,7 @@ namespace Rosella { namespace Winxed
         var count;
         var commands;
 
-        function BUILD()
+        function Repl()
         {
             self.compiler = load_language("winxed");
             self.count = 0;
@@ -20,8 +20,7 @@ namespace Rosella { namespace Winxed
 
         function run()
         {
-            using Rosella.build;
-            var state = build(class Rosella.Winxed.ReplState);
+            var state = new Rosella.Winxed.ReplState;
             var stdin = getstdin();
 
             while (state.keep_running)

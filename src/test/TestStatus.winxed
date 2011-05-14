@@ -7,7 +7,7 @@ namespace Rosella { namespace Test
         var test_todo;
         var suite;
 
-        function BUILD(string test_name, var test)
+        function TestStatus(string test_name, var test)
         {
             self.current_test = test;
             self.test_name = test_name;

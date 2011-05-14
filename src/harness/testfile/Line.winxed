@@ -8,7 +8,7 @@ namespace Rosella { namespace Harness { namespace TestFile
         var ignore;
         var todo;
 
-        function BUILD(string line)
+        function Line(string line)
         {
             self.result = 0;
             self.number = -1;
