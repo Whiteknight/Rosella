@@ -46,19 +46,6 @@ namespace Rosella
         return object;
     }
 
-    function build_r(var proto, var pos [slurpy], var named [slurpy,named])
-    {
-        var object = alloc(proto);
-        var object_class = typeof(object);
-        var mro = object_class.parents();
-        for (int i = elements(mro); i >= 0; i++)
-        {
-            var method = mro[i].find_method("BUILD");
-            object.*method(pos, named);
-        }
-        return object;
-    }
-
     // Construct a new object. Allocate a fresh object of the given type and
     // call the class constructor. The class constructor is a method with the
     // same name as the short name of the Class.
