@@ -1,16 +1,16 @@
-action: 2
-container: 2
-contract: 0(Alpha)
-core: 2
-decorate: 0(Beta)
-event: 2
-harness: 2
-memoize: 0(Beta)
-mockobject: 2
-path: 0(Alpha)
-prototype: 0(Alpha)
-proxy: 2
-query: 0(Alpha)
-string: 0(Alpha)
-test: 3
-winxed: 2
+action: 2 Stable
+container: 2 Stable
+contract: 0 Alpha
+core: 2 Stable
+decorate: 0 Beta
+event: 2 Stable
+harness: 2 Stable
+memoize: 0 Beta
+mockobject: 2 Stable
+path: 0 Alpha
+prototype: 0 Alpha
+proxy: 2 Stable
+query: 0 Alpha
+string: 0 Alpha
+test: 3 Stable
+winxed: 2 Stable

@@ -17,14 +17,33 @@ namespace Rosella
         var version_hash = private_get_version_hash();
         if (exists version_hash[lib])
             return version_hash[lib];
-        return "-1(NOT FOUND)";
+        return new Rosella.Version(lib, -1, "UNKNOWN");
     }
 
     // internal routine for setting a library version. Don't call this one
     // yourself. For internal use only.
-    function internal_set_version(string lib, var version)
+    function internal_set_version(string lib, var vernum, var verstate)
     {
         var version_hash = private_get_version_hash();
-        version_hash[lib] = version;
+        var ver = new Rosella.Version(lib, vernum, verstate);
+        version_hash[lib] = ver;
+    }
+
+    class Version
+    {
+        var name;
+        var version_number;
+        var state;
+
+        function Version(var lib, var n, var s)
+        {
+            self.name = lib;
+            self.version_number = n;
+            self.state = s;
+        }
+
+        function library_name() { return self.name; }
+        function library_version() { return self.version_number; }
+        function library_state() { return self.state; }
     }
 }

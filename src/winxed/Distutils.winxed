@@ -7,7 +7,6 @@ namespace Rosella { namespace Winxed
         function winxed_setup()
         {
             load_bytecode("distutils.pbc");
-            using setup;
             using register_step_before;
 
             using static build_winxed;
