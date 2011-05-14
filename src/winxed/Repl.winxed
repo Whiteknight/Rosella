@@ -1,0 +1,64 @@
+namespace Rosella { namespace Winxed
+{
+    class Repl
+    {
+        var compiler;
+        var count;
+        var commands;
+
+        function BUILD()
+        {
+            self.compiler = load_language("winxed");
+            self.count = 0;
+            self.commands = {
+                "quit" : function (var args) { args.stop(); },
+                "help" : function (var args) { say("Just type some winxed code!"); }
+            };
+        }
+
+        function run()
+        {
+            using Rosella.build;
+            var state = build(class Rosella.Winxed.ReplState);
+            var stdin = getstdin();
+
+            while (state.should_continue())
+            {
+                var input = stdin.readline_interactive("\nWinxed-Rosella> ");
+                if (input == null)
+                    break;
+                if (exists self.commands[input])
+                    self.commands[input](state);
+                else {
+                    var result = self.eval(input, state);
+                    if (result != null)
+                        self.print_message("Result = '%s'", result);
+                }
+            }
+        }
+
+        function eval(string code, var arg)
+        {
+            var func = self.compile(code);
+            try {
+                return func(arg);
+            } catch (e) {
+                say("Error: " + string(e["message"]));
+                return null;
+            }
+        }
+
+        function compile(string code)
+        {
+            self.count = self.count + 1;
+            string func_c = sprintf("function __REPL_line_%d(var state) { var result = null; %s; return result; }", [self.count, code]);
+            self.print_message("'%s'", func_c);
+            return self.compiler.compile(func_c);
+        }
+
+        function print_message(string fmt, var args [slurpy])
+        {
+            say(sprintf("\t>>> " + fmt, args));
+        }
+    }
+}}

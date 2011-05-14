@@ -1,0 +1,20 @@
+function main[main](var args) {
+    load_bytecode("rosella/core.pbc");
+    load_bytecode("rosella/winxed.pbc");
+    for (int i = 1; i < elements(args); i++)
+    {
+        string lib = args[i];
+        try {
+            string libname = sprintf("rosella/%s.pbc", [lib]);
+            print("Loading " + libname + " ... ");
+            load_bytecode(libname);
+            say("Loaded.");
+        } catch(e) {
+            say("Error: Could not load library rosella/" + lib);
+        }
+    }
+    using Rosella.build;
+    var repl = build(class Rosella.Winxed.Repl);
+    repl.run();
+}
+
