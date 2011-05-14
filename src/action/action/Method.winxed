@@ -4,6 +4,8 @@ namespace Rosella { namespace Action
     */
     class Method : Rosella.Action
     {
+        function Method(var p [slurpy]) { self.Action(p:[flat]); }
+
         // Execute the method on the object, passing the parameters
         function execute_initializer(var obj, var pos, var named)
         {

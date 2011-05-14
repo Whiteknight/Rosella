@@ -29,12 +29,12 @@ class RosellaTest {
     }
 
     method test_build_BUILD_args() {
-        my $item := Rosella::construct(My::Test::With::BUILD, 3);
+        my $item := Rosella::build(My::Test::With::BUILD, 3);
         $!assert.equal($item.value, 8);
     }
 
     method test_build_without_BUILD() {
-        my $item := Rosella::construct(My::Test::With::Constructor, 3);
+        my $item := Rosella::build(My::Test::With::Constructor, 3);
         $!assert.equal($item.value, -2);
     }
 

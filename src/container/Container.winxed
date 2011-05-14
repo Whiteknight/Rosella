@@ -222,17 +222,13 @@ namespace Rosella
         // Get an ItemFactory for handling instance registrations
         function private_get_instance_item(var instance, var meth_inits)
         {
-            var item = new Rosella.Container.ItemFactory.Instance(class_obj,
-                    instance, meth_inits);
-            return item;
+            return new Rosella.Container.ItemFactory.Instance(instance, meth_inits);
         }
 
         // Get an ItemFactory for handling prototype registrations
         function private_get_prototype_item(var proto, var meth_inits)
         {
-            var item = new Rosella.Container.ItemFactory.Prototype(class_obj,
-                    proto, meth_inits);
-            return item;
+            return new Rosella.Container.ItemFactory.Prototype(proto, meth_inits);
         }
 
         // Get an ItemFactory for handling a Class or P6protoobject
@@ -241,15 +237,15 @@ namespace Rosella
         {
             var item;
             if (type instanceof "P6protoobject") {
-                item = new Rosella.Container.ItemFactory.P6protoobject(class_obj,
+                item = new Rosella.Container.ItemFactory.P6protoobject(
                         type, meth_inits);
             } else if (type instanceof "Class") {
-                item = new Rosella.Container.ItemFactory.ParrotClass(class_obj,
+                item = new Rosella.Container.ItemFactory.ParrotClass(
                         type, init_pmc, meth_inits);
             } else {
                 using Rosella.get_type_class;
                 var type_obj = get_type_class(type);
-                item = new Rosella.Container.ItemFactory.ParrotClass(class_obj,
+                item = new Rosella.Container.ItemFactory.ParrotClass(
                     type_obj, init_pmc, meth_inits);
             }
             return item;
@@ -259,9 +255,7 @@ namespace Rosella
         function private_get_factory_method_item(var sub, var meth_inits,
                 var arg_inits)
         {
-            var item = new Rosella.Container.ItemFactory.FactoryMethod(class_obj,
-                    sub, meth_inits, arg_inits);
-            return item;
+            return new Rosella.Container.ItemFactory.FactoryMethod(sub, meth_inits, arg_inits);
         }
     }
 }
