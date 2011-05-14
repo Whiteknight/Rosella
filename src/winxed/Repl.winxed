@@ -47,6 +47,8 @@ namespace Rosella { namespace Winxed
 
         function print_result(var result, var state)
         {
+            if (result == null)
+                return;
             int does_array = 0;
             ${ does does_array, result, "array" };
             if (does_array)

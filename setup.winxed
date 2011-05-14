@@ -231,7 +231,8 @@ function setup_experimental_libraries(var rosella)
 
     setup_winxed_lib(rosella, "string",
         "string/String",
-        "string/CClassTokenizer"
+        "string/CClassTokenizer",
+        "string/Tokenizer"
     );
 }
 

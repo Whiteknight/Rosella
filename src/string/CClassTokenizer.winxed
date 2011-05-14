@@ -32,65 +32,24 @@ namespace Rosella { namespace String
         }
     }
 
-    class CClassTokenizer
+    class CClassTokenizer : Rosella.String.Tokenizer
     {
-        var tokens;
-        var data;
         var cclasses;
 
-        function BUILD(var cclasses [optional], int has_cclasses [opt_flag])
+        function CClassTokenizer(var cclasses [optional], int has_cclasses [opt_flag])
         {
-            self.tokens = [];
-            self.data = null;
+            self.Tokenizer();
             if (has_cclasses)
                 self.cclasses = cclasses;
             else
                 self.cclasses = null;
         }
 
-        function add_data(string str)
-        {
-            if (self.data == null)
-                self.data = str;
-            else {
-                string data = self.data;
-                self.data = data + str;
-            }
-        }
-
-        function has_tokens()
-        {
-            if (elements(self.tokens) > 0)
-                return 1;
-            if (self.data != null && length(self.data) > 0)
-                return 1;
-            return 0;
-        }
-
-        function get_token()
-        {
-            if (elements(self.tokens) > 1) {
-                string token;
-                var tokens = self.tokens;
-                ${ shift token, tokens };
-                return token;
-            }
-            if (self.data != null && self.data != "")
-                return self.lex_next_token();
-            return null;
-        }
-
-        function unget_token(string token)
-        {
-            // Do we want this to go onto the front or the back of the list?
-            push(self.tokens, token);
-        }
-
         function lex_next_token()
         {
             string str = self.data;
             int len = length(str);
-            int curr_cclass = private_get_first_cclass(str, self.classes);
+            int curr_cclass = private_get_first_cclass(str, self.cclasses);
             if (curr_cclass == 0)
                 return self.get_chars(1);
             int next_idx = 0;
