@@ -1,10 +1,34 @@
 namespace Rosella
 {
+    /* Path Class
+        Path is a utility to search for values in nested aggregates by path
+        string. A path string is a string of identifiers separated by a
+        separator.
+
+        Path implements a search loop over an array of searchers. Each
+        searcher type is able to search different types of objects in
+        different ways.
+
+        Path performs a longest-token search, avoiding the semi-predicate
+        problem by allowing a separator to appear in search strings. If we
+        have the search string "a.b.c.d" with a separator of ".", we will
+        search for, in order:
+
+            "a.b.c.d"
+            "a.b.c"
+            "a.b"
+            "a"
+
+        Once a match is found on a substring, the remainder of the string
+        is used to continue recursive searching through the next object.
+    */
     class Path
     {
         var separator;
         var searchers;
 
+        // Constructor. Take a list of searchers, if any, and maybe a
+        // custom separator string. The default separator is "."
         function Path(var searchers [slurpy],
                 string separator [optional,named], int has_sep [opt_flag])
         {
@@ -23,6 +47,8 @@ namespace Rosella
                 self.searchers = searchers;
         }
 
+        // Take an object and a path. Use the path to search for a value
+        // inside the object
         function get(var obj, string path)
         {
             int success;
@@ -34,6 +60,8 @@ namespace Rosella
             return null;
         }
 
+        // Internal routine to perform a recursive search through the object
+        // to look for a value.
         function get_recursive(var obj, string path)
         {
             if (path == null || path == "")
