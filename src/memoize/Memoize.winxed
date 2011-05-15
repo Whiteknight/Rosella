@@ -26,7 +26,7 @@ namespace Rosella
         function memoize(var func, var cache [optional], int has_cache [opt_flag])
         {
             if (!has_cache)
-                cache = new Rosella.Memoize.Cache.SimpleString;
+                cache = new Rosella.Memoize.Cache.SimpleString();
             var _cache = cache;
             var f = func;
 
@@ -46,7 +46,7 @@ namespace Rosella
                 var cache [optional,named], int has_cache [opt_flag])
         {
             if (!has_cache)
-                cache = new Rosella.Memoize.Cache.SimpleString;
+                cache = new Rosella.Memoize.Cache.SimpleString();
             var _cache = cache;
             var F = f;
 

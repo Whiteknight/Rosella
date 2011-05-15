@@ -5,5 +5,8 @@ INIT {
 
 Rosella::Test::test(Test::Memoize::ProxyBased);
 
-class Test::Memoize::Cache::ProxyBased {
+class Test::Memoize::ProxyBased {
+    method test() {
+        $!status.unimplemented("Need tests for proxy-based memoization");
+    }
 }
