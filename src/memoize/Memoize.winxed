@@ -93,7 +93,7 @@ namespace Rosella
 
         // Get, and maybe set, the target function for a memoizer
         function proxy_function(var proxy,
-                var func [optional], int has_func [opt_flag]))
+                var func [optional], int has_func [opt_flag])
         {
             using Rosella.Proxy.get_proxy_private_attr;
             var old_func = get_proxy_private_attr(proxy, "target_object");
