@@ -20,6 +20,7 @@ $factory.add_test_dirs("NQP",
     "t/path",
     "t/proxy",
     "t/mockobject",
+    "t/memoize",
     :recurse(1)
 );
 my $librun := $factory.create();

@@ -2,6 +2,9 @@ namespace Rosella
 {
     namespace Proxy
     {
+        // TODO: Need a method here to determine if the given object is a
+        //       proxy or not
+
         // Get a name for the attribute which contains special characters
         // that are unlikely to be used by the object systems in any HLLs
         function get_private_attr_name(string attr)
