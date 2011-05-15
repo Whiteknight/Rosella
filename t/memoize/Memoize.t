@@ -18,6 +18,14 @@ sub add_two($a) { return $a + 2; }
 
 sub add_three($a) { return $a + 3; }
 
+class TestClass {
+    method test_method($a) {
+        pir::say("test_method: $a");
+        return $a + 5;
+    }
+    method get_string() is pirflags<:vtable> { return "TestClass"; }
+}
+
 class Test::Memoize {
     method test_memoize() {
         # First, set up the comparison
@@ -74,11 +82,41 @@ class Test::Memoize {
     }
 
     method memoize_method() {
-        $!status.unimplemented("Need test for this");
+        $!assert.output_is({
+            my $a := TestClass.new();
+            $a.test_method(5);
+            $a.test_method(5);
+            $a.test_method(6);
+            $a.test_method(6);
+        }, "test_method: 5\ntest_method: 5\ntest_method: 6\ntest_method: 6\n");
+        Rosella::Memoize::memoize_method(TestClass, "test_method");
+        $!assert.output_is({
+            my $b := TestClass.new();
+            $b.test_method(5);
+            $b.test_method(5);
+            $b.test_method(6);
+            $b.test_method(6);
+        }, "test_method: 5\ntest_method: 6\n");
+        Rosella::Memoize::unmemoize_method(TestClass, "test_method");
     }
 
     method unmemoize_method() {
-        $!status.unimplemented("Need test for this");
+        Rosella::Memoize::memoize_method(TestClass, "test_method");
+        $!assert.output_is({
+            my $b := TestClass.new();
+            $b.test_method(5);
+            $b.test_method(5);
+            $b.test_method(6);
+            $b.test_method(6);
+        }, "test_method: 5\ntest_method: 6\n");
+        Rosella::Memoize::unmemoize_method(TestClass, "test_method");
+        $!assert.output_is({
+            my $a := TestClass.new();
+            $a.test_method(5);
+            $a.test_method(5);
+            $a.test_method(6);
+            $a.test_method(6);
+        }, "test_method: 5\ntest_method: 5\ntest_method: 6\ntest_method: 6\n");
     }
 
     method get_proxy_cache() {
