@@ -14,6 +14,10 @@ sub foo($a) {
     return $a + 2;
 }
 
+sub add_two($a) { return $a + 2; }
+
+sub add_three($a) { return $a + 3; }
+
 class Test::Memoize {
     method test_memoize() {
         # First, set up the comparison
@@ -78,18 +82,34 @@ class Test::Memoize {
     }
 
     method get_proxy_cache() {
-        $!status.unimplemented("Need test for this");
+        my &mem := Rosella::Memoize::memoize_proxy(add_two);
+        my $value := &mem(2);
+        $!assert.equal(+$value, 4);
+        my $cache := Rosella::Memoize::proxy_cache(&mem);
+        my $item := $cache.get_item([2], {});
+        $item.update_value(7);
+        $value := &mem(2);
+        $!assert.equal(+$value, 7);
     }
 
     method set_proxy_cache() {
         $!status.unimplemented("Need test for this");
     }
 
-    method get_proxy_func() {
-        $!status.unimplemented("Need test for this");
+    method get_proxy_function() {
+        my &mem := Rosella::Memoize::memoize_proxy(add_two);
+        my &func := Rosella::Memoize::proxy_function(&mem);
+        $!assert.same(add_two, &func);
     }
 
-    method set_proxy_cache() {
-        $!status.unimplemented("Need test for this");
+    method set_proxy_function() {
+        my &mem := Rosella::Memoize::memoize_proxy(add_two);
+        my $value := &mem(4);
+        $!assert.equal($value, 6);
+        Rosella::Memoize::proxy_function(&mem, add_three);
+        $value := &mem(5);
+        $!assert.equal($value, 8);
+        $value := &mem(4);
+        $!assert.equal($value, 6);
     }
 }
