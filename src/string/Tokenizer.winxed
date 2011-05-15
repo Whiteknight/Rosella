@@ -1,0 +1,58 @@
+namespace Rosella { namespace String
+{
+    class Tokenizer
+    {
+        var tokens;
+        var data;
+
+        function Tokenizer()
+        {
+            self.tokens = [];
+            self.data = null;
+        }
+
+        function add_data(string str)
+        {
+            if (self.data == null)
+                self.data = str;
+            else {
+                string data = self.data;
+                self.data = data + str;
+            }
+        }
+
+        function has_tokens()
+        {
+            if (elements(self.tokens) > 0)
+                return 1;
+            if (self.data != null && length(self.data) > 0)
+                return 1;
+            return 0;
+        }
+
+        function get_token()
+        {
+            if (elements(self.tokens) > 1) {
+                string token;
+                var tokens = self.tokens;
+                ${ shift token, tokens };
+                return token;
+            }
+            if (self.data != null && self.data != "")
+                return self.lex_next_token();
+            return null;
+        }
+
+        function unget_token(string token)
+        {
+            // Do we want this to go onto the front or the back of the list?
+            push(self.tokens, token);
+        }
+
+        function lex_next_token()
+        {
+            using Rosella.Error.must_subclass;
+            must_subclass("String.Tokenizer.lex_next_token");
+        }
+    }
+}}
