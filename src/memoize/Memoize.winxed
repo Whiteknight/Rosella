@@ -78,6 +78,7 @@ namespace Rosella
             return factory.create(args:[flat]);
         }
 
+        // Get, and maybe set, the cache in the memoize proxy.
         function proxy_cache(var proxy,
                 var cache [optional], int has_cache [opt_flag])
         {
@@ -90,6 +91,7 @@ namespace Rosella
             return old_cache;
         }
 
+        // Get, and maybe set, the target function for a memoizer
         function proxy_function(var proxy,
                 var func [optional], int has_func [opt_flag]))
         {
@@ -109,6 +111,7 @@ namespace Rosella
             needing to create a custom subclass.
         */
 
+        // Memoize a method in a class. This uses proxy-based memoization.
         function memoize_method(var type, string method_name,
                 var cache [optional], int has_cache [opt_flag])
         {
@@ -127,6 +130,8 @@ namespace Rosella
             type_class.add_method(method_name, proxy);
         }
 
+        // Remove memoization from a method in a class. Return it to its
+        // original value
         function unmemoize_method(var type, string method_name)
         {
             using Rosella.get_type_class;
@@ -144,6 +149,7 @@ namespace Rosella
         /* Private Functions
         */
 
+        // Get a default Memoize.Factory instance
         function private_get_memoize_factory()
         {
             var factory = new Rosella.Memoize.Factory();
