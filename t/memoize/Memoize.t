@@ -50,7 +50,23 @@ class Test::Memoize {
     }
 
     method memoize_proxy() {
-        $!status.unimplemented("Need test for this");
+        # First, set up the comparison
+        $!assert.output_is({
+            test_foo(foo, 3);
+            test_foo(foo, 3);
+            test_foo(foo, 4);
+            test_foo(foo, 4);
+        }, "in foo\nfoo(3) : 5\nin foo\nfoo(3) : 5\nin foo\nfoo(4) : 6\nin foo\nfoo(4) : 6\n");
+
+        # Now show that we get the same results, but without calling foo as much
+        $!assert.output_is({
+            my &mem := Rosella::Memoize::memoize_proxy(foo);
+
+            test_foo(&mem, 3);
+            test_foo(&mem, 3);
+            test_foo(&mem, 4);
+            test_foo(&mem, 4);
+        }, "in foo\nfoo(3) : 5\nfoo(3) : 5\nin foo\nfoo(4) : 6\nfoo(4) : 6\n");
     }
 
     method memoize_method() {

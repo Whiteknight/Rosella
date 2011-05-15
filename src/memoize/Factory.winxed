@@ -26,7 +26,7 @@ namespace Rosella { namespace Memoize
             using Rosella.Proxy.set_proxy_private_attr;
 
             if (!has_cache)
-                cache = new Rosella.Memoize.Cache.SimpleString;
+                cache = new Rosella.Memoize.Cache.SimpleString();
             var proxy = self.proxy_factory.create(self.controller, func);
             set_proxy_private_attr(proxy, "memoize_cache", cache);
             return proxy;
