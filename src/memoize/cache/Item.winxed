@@ -10,7 +10,7 @@ namespace Rosella { namespace Memoize { namespace Cache
         var valid;
         var key;
 
-        function BUILD(var key, var value [optional], int has_value [opt_flag])
+        function Item(var key, var value [optional], int has_value [opt_flag])
         {
             self.key = key;
             self.value = value;

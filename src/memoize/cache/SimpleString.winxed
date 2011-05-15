@@ -11,7 +11,7 @@ namespace Rosella { namespace Memoize { namespace Cache
         var cache;
 
         // Constructor
-        function BUILD()
+        function SimpleString()
         {
             self.cache = {};
         }
@@ -23,8 +23,7 @@ namespace Rosella { namespace Memoize { namespace Cache
             string key = self.key(p, n);
             if (exists self.cache[key])
                 return self.cache[key];
-            using Rosella.build;
-            var item = build(class Rosella.Memoize.Cache.Item, key);
+            var item = new Rosella.Memoize.Cache.Item(key);
             self.cache[key] = item;
             return item;
         }
