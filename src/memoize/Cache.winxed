@@ -1,18 +1,23 @@
 namespace Rosella { namespace Memoize
 {
+    /* Memoize Cache
+        This is an abstract parent type for caches. All memoize caches must
+        implement this interface.
+
+        Do not use this type directly. Use a subclass.
+    */
     class Cache
     {
+        // Get an item from the cache.
         function get_item(var p, var n)
         {
             return new Rosella.Memoize.Cache.Item(null);
         }
 
-        function remove_item(var p, var n)
-        {
-        }
+        // Remove an entry from the cache
+        function remove_item(var p, var n) { }
 
-        function clear()
-        {
-        }
+        // Clear the cache
+        function clear() { }
     }
 }}

@@ -1,7 +1,14 @@
 namespace Rosella { namespace Memoize
 {
+    /* Memoize Controller
+        A proxy controller for memoizing proxies. Intercepts invoke vtables
+        and checks the cache.
+    */
     class Controller : Rosella.Proxy.Controller
     {
+        // Intercept invoke vtable. Check the cache to see if we have the
+        // value and return it if we do. Otherwise, fall back to invoke the
+        // original function
         function invoke(var proxy, var p, var n)
         {
             using Rosella.Proxy.get_proxy_private_attr;

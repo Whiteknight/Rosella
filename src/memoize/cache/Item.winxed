@@ -1,5 +1,9 @@
 namespace Rosella { namespace Memoize { namespace Cache
 {
+    /* Memoize Cache Item
+        An entry item for the cache. The entry contains the value and metadata
+        about the entry.
+    */
     class Item
     {
         var value;
