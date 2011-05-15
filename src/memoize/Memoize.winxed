@@ -1,13 +1,11 @@
 
 // Here's one idea for a memoizer which doesn't use Proxy as a base. We don't
 // have as much flexibility here as we might with Proxy.
-// TODO: Implement a new version using Proxy. Benchmark them to see if there
-//       is an appreciable difference in runtime. If Proxy is slower, we might
-//       want to offer both, with this version listed as "simple". If the
-//       times are nearly the same, scrap this simplistic version and use
-//       proxy only.
 namespace Rosella { namespace Memoize
 {
+    // Create a simple memoizer. In the simple case, the user cannot get
+    // access to the cache or the memoized function after the memoizer has
+    // been created
     function memoize(var func, var cache [optional], int has_cache [opt_flag])
     {
         if (!has_cache)
@@ -23,17 +21,59 @@ namespace Rosella { namespace Memoize
             cache_item.update_value(value);
             return value;
         };
-        // TODO: If we are going to be using getprop/setprop to attach
-        //       metadata for the library, we should probably add helper
-        //       methods somewhere.
-        // TODO: Use this to attach a reference to the original function, so
-        //       we can get it back later if we want.
-        //${ setprop memfunc, "!!!Rosella.Memoize!!!orig_func", f };
-
-        // TODO: Use this so we can keep a reference to the cache and clear or
-        //       modify it.
-        //${ setprop memfunc, "!!!Rosella.Memoize!!!cache", cache };
         return memfunc;
+    }
+
+    function private_get_memoize_factory()
+    {
+        var factory = new Rosella.Memoize.Factory();
+        while(1)
+            yield(factory);
+    }
+
+    // Memoize a function using a proxy-based approach. Proxy-based memoizers
+    // are heavier and a little slower, but allow the user to access the
+    // cache and the original function directly, in addition to a few other
+    // features inherent in Rosella's proxy implementation
+    function memoize_proxy(var func, var cache [optional], int has_cache [opt_flag])
+    {
+        var factory = private_get_memoize_factory();
+        var args = [func];
+        if (has_cache)
+            args[1] = cache;
+        return factory.create(args:[flat]);
+    }
+
+    function memoize_method(var type, string method_name,
+            var cache [optional], int has_cache [opt_flag])
+    {
+        using Rosella.get_type_class;
+        var type_class = get_type_class(type);
+        var method = type_class["methods"][method_name];
+        if (method == null) {
+            using Rosella.invalid;
+            invalid("Memoize.memoize_method", "The method does not exist");
+        }
+        var cache_args = [];
+        if (has_cache)
+            cache_args[0] = cache;
+        var proxy = memoize_proxy(method, cache_args:[flat]);
+        type_class.remove_method(method_name);
+        type_class.add_method(method_name, proxy);
+    }
+
+    function unmemoize_method(var type, string method_name)
+    {
+        using Rosella.get_type_class;
+        var type_class = get_type_class(type);
+        // TODO: Determine if the method is actually a proxy, before
+        // attempting to disassemble it.
+
+        var proxy = type_class["methods"][method_name];
+        using Rosella.Proxy.get_proxy_private_attr;
+        var method = get_proxy_private_attr(proxy, "target_object");
+        type_class.remove_method(method_name);
+        type_class.add_method(method_name, method);
     }
 
     // TODO: Method to memorize a method in-place (open the Class, replace the
