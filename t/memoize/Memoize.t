@@ -48,4 +48,32 @@ class Test::Memoize {
         }))(50);
         $!assert.equal($answer, 12586269025);
     }
+
+    method memoize_proxy() {
+        $!status.unimplemented("Need test for this");
+    }
+
+    method memoize_method() {
+        $!status.unimplemented("Need test for this");
+    }
+
+    method unmemoize_method() {
+        $!status.unimplemented("Need test for this");
+    }
+
+    method get_proxy_cache() {
+        $!status.unimplemented("Need test for this");
+    }
+
+    method set_proxy_cache() {
+        $!status.unimplemented("Need test for this");
+    }
+
+    method get_proxy_func() {
+        $!status.unimplemented("Need test for this");
+    }
+
+    method set_proxy_cache() {
+        $!status.unimplemented("Need test for this");
+    }
 }
