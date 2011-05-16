@@ -47,7 +47,7 @@ function setup_stable_libraries(var rosella)
     // A bootstrapped version is included in the repo because we need it
     // to run setup.winxed (this script). This is the only rosella library
     // which doesn't rely on Core.
-    setup_winxed_lib(rosella, "winxed",
+    setup_winxed_lib(rosella, "winxed", [],
         "winxed/Distutils",
         "winxed/Repl",
         "winxed/ReplState"
@@ -55,7 +55,7 @@ function setup_stable_libraries(var rosella)
 
     // The Rosella "core" library. Does very little on its own but is
     // required by other libraries in the sequence
-    setup_winxed_lib(rosella, "core",
+    setup_winxed_lib(rosella, "core", [],
         "core/Rosella",
         "core/Error",
         "core/IO",
@@ -66,8 +66,7 @@ function setup_stable_libraries(var rosella)
 
     // The action library. Allows creating Action/Command objects for
     // delayed evaluation.
-    setup_winxed_lib(rosella, "action",
-        "include/Core",
+    setup_winxed_lib(rosella, "action", ["Core"],
         "action/Action",
         "action/action/Sub",
         "action/action/Method",
@@ -76,9 +75,7 @@ function setup_stable_libraries(var rosella)
     );
 
     // Dependency Injection / Inversion of Control container library
-    setup_winxed_lib(rosella, "container",
-        "include/Core",
-        "include/Action",
+    setup_winxed_lib(rosella, "container", ["Core", "Action"],
         "container/Container",
         "container/ItemFactory",
         "container/itemfactory/ParrotClass",
@@ -90,8 +87,7 @@ function setup_stable_libraries(var rosella)
     );
 
     // A proxying library for building and managing proxies
-    setup_winxed_lib(rosella, "proxy",
-        "include/Core",
+    setup_winxed_lib(rosella, "proxy", ["Core"],
         "proxy/Builder",
         "proxy/Controller",
         "proxy/Factory",
@@ -109,8 +105,7 @@ function setup_stable_libraries(var rosella)
     );
 
     // A testing library for writing and running unit tests.
-    setup_winxed_lib(rosella, "test",
-        "include/Core",
+    setup_winxed_lib(rosella, "test", ["Core"],
         "test/Builder",
         "test/Asserter",
         "test/Failure",
@@ -127,9 +122,7 @@ function setup_stable_libraries(var rosella)
     );
 
     // A mock object library for advanced unit testing
-    setup_winxed_lib(rosella, "mockobject",
-        "include/Test",
-        "include/Proxy",
+    setup_winxed_lib(rosella, "mockobject", ["Core", "Test", "Proxy"],
         "mockobject/Controller",
         "mockobject/controller/Ordered",
         "mockobject/Expectation",
@@ -143,8 +136,7 @@ function setup_stable_libraries(var rosella)
     );
 
     // A tap harness library for building easy, extensible test harnesses
-    setup_winxed_lib(rosella, "harness",
-        "include/Core",
+    setup_winxed_lib(rosella, "harness", ["Core"],
         "harness/Harness",
         "harness/TestFile",
         "harness/testfile/Factory",
@@ -158,37 +150,32 @@ function setup_stable_libraries(var rosella)
         "harness/testrun/Factory",
         "harness/View"
     );
+
+    // Event library. Subscribe to, receive, and publish event notifications.
+    setup_winxed_lib(rosella, "event", ["Core", "Action"],
+        "event/Event",
+        "event/EventManager"
+    );
 }
 
 function setup_experimental_libraries(var rosella)
 {
-    // Event library. Subscript to, receive, and publish event notifications.
-    setup_winxed_lib(rosella, "event",
-        "include/Core",
-        "include/Action",
-        "event/Event",
-        "event/EventManager"
-    );
-
     // A prototype library for managing a prototype-based object system
-    setup_winxed_lib(rosella, "prototype",
-        "include/Core",
+    setup_unstable_lib(rosella, "prototype", ["Core"],
         "prototype/Entry",
         "prototype/Manager",
         "prototype/ObjectCloner"
     );
 
     // A library for working with aggregates
-    setup_winxed_lib(rosella, "query",
-        "include/Core",
+    setup_unstable_lib(rosella, "query", ["Core"],
         "query/Query",
         "query/Provider",
         "query/provider/Array",
         "query/provider/Hash"
     );
 
-    setup_winxed_lib(rosella, "path",
-        "include/Core",
+    setup_unstable_lib(rosella, "path", ["Core"],
         "path/Path",
         "path/Searcher",
         "path/searcher/Hash",
@@ -196,24 +183,19 @@ function setup_experimental_libraries(var rosella)
     );
 
     // A library for creating and using cheap, transparent decorator
-    setup_winxed_lib(rosella, "decorate",
-        "include/Core",
-        "include/Proxy",
+    setup_unstable_lib(rosella, "decorate", ["Core", "Proxy"],
         "decorate/Builder",
         "decorate/Decorator",
         "decorate/Factory"
     );
 
-    setup_winxed_lib(rosella, "contract",
-        "include/Core",
+    setup_unstable_lib(rosella, "contract", ["Core"],
         "contract/Contract",
         "contract/Method",
         "contract/Interface"
     );
 
-    setup_winxed_lib(rosella, "memoize",
-        "include/Core",
-        "include/Proxy",
+    setup_unstable_lib(rosella, "memoize", ["Core", "Proxy"],
         "memoize/Memoize",
         "memoize/Cache",
         "memoize/cache/Item",
@@ -222,28 +204,44 @@ function setup_experimental_libraries(var rosella)
         "memoize/Factory"
     );
 
-    setup_winxed_lib(rosella, "lazy",
-        "include/Core",
-        "include/Proxy",
+    setup_unstable_lib(rosella, "lazy", ["Core", "Proxy"],
         "lazy/Lazy",
         "lazy/Builder",
         "lazy/Controller",
         "lazy/Factory"
     );
 
-    setup_winxed_lib(rosella, "string",
+    setup_unstable_lib(rosella, "string", ["Core"],
         "string/String",
         "string/CClassTokenizer",
         "string/Tokenizer"
     );
 }
 
-function setup_winxed_lib(var rosella, string name, var files [slurpy])
+function setup_winxed_lib(var rosella, string name, var includes, var files [slurpy])
+{
+    setup_lib_internal(rosella, name, "src/", includes, files);
+}
+
+function setup_unstable_lib(var rosella, string name, var includes, var files [slurpy])
+{
+    setup_lib_internal(rosella, name, "src/unstable/", includes, files);
+}
+
+function setup_lib_internal(var rosella, string name, string prefix,
+        var includes, var files_raw)
 {
     var pbc_files = [];
     var pir_files = [];
-    for (string p_path in files) {
-        string path = "src/" + p_path;
+
+    // Get a list of all files
+    var files = [];
+    for (string include in includes)
+        push(files, "src/include/" + include);
+    for (string file in files_raw)
+        push(files, prefix + file);
+
+    for (string path in files) {
         string winxed_file = path + ".winxed";
         string pir_file = path + ".pir";
         string pbc_file = path + ".pbc";
