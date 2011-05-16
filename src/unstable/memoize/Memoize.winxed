@@ -143,6 +143,11 @@ namespace Rosella
                 using Rosella.invalid;
                 invalid("Memoize.memoize_method", "The method does not exist");
             }
+
+            // Don't re-memoize a memoized function
+            if (is_memoize_proxy(method))
+                return;
+
             var cache_args = [];
             if (has_cache)
                 cache_args[0] = cache;
@@ -158,10 +163,16 @@ namespace Rosella
         {
             using Rosella.get_type_class;
             var type_class = get_type_class(type);
-            // TODO: Determine if the method is actually a proxy, before
-            // attempting to disassemble it.
-
             var proxy = type_class.find_method(method_name);
+            if (proxy == null) {
+                using Rosella.invalid;
+                invalid("Memoize.memoize_method", "The method does not exist");
+            }
+
+            // Don't try to un-memoize a non-proxy
+            if (!is_memoize_proxy(proxy))
+                return;
+
             using Rosella.Proxy.get_proxy_private_attr;
             var method = get_proxy_private_attr(proxy, "target_object");
             type_class.clear_method_cache();

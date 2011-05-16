@@ -107,7 +107,13 @@ class Test::Memoize {
     }
 
     method memoize_method_already_memoized() {
-        $!status.unimplemented("Need test for the case where we attempt to memoize a method that is already memoized");
+        $!assert.throws_nothing({
+            Rosella::Memoize::memoize_method(TestClass, "test_method");
+            Rosella::Memoize::memoize_method(TestClass, "test_method");
+            Rosella::Memoize::memoize_method(TestClass, "test_method");
+            Rosella::Memoize::memoize_method(TestClass, "test_method");
+        });
+        Rosella::Memoize::unmemoize_method(TestClass, "test_method");
     }
 
     method unmemoize_method() {
@@ -130,7 +136,12 @@ class Test::Memoize {
     }
 
     method unmemoize_method_not_memoized() {
-        $!status.unimplemented("Need test for the case where we attempt to unmemoize an un-memoized method");
+        $!assert.throws_nothing({
+            Rosella::Memoize::unmemoize_method(TestClass, "test_method");
+            Rosella::Memoize::unmemoize_method(TestClass, "test_method");
+            Rosella::Memoize::unmemoize_method(TestClass, "test_method");
+            Rosella::Memoize::unmemoize_method(TestClass, "test_method");
+        });
     }
 
     method get_proxy_cache() {
