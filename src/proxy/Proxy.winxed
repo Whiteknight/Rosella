@@ -2,8 +2,21 @@ namespace Rosella
 {
     namespace Proxy
     {
-        // TODO: Need a method here to determine if the given object is a
-        //       proxy or not
+        // Determine if an object is secretly a proxy.
+        function is_proxy(var obj)
+        {
+            int is_p = 0;
+            try {
+                var factory = get_proxy_private_attr(obj, "proxy_factory");
+                if (factory != null) {
+                    var factory_class = class Rosella.Proxy.Factory;
+                    ${ isa is_p, factory, factory_class };
+                }
+            } catch (e) {
+                is_p = 0;
+            }
+            return is_p;
+        }
 
         // Get a name for the attribute which contains special characters
         // that are unlikely to be used by the object systems in any HLLs
