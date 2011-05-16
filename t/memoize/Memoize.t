@@ -81,6 +81,12 @@ class Test::Memoize {
         }, "in foo\nfoo(3) : 5\nfoo(3) : 5\nin foo\nfoo(4) : 6\nfoo(4) : 6\n");
     }
 
+    method is_memoize_proxy() {
+        $!assert.is_false(Rosella::Memoize::is_memoize_proxy(foo));
+        my &mem := Rosella::Memoize::memoize_proxy(foo);
+        $!assert.is_true(Rosella::Memoize::is_memoize_proxy(&mem));
+    }
+
     method memoize_method() {
         $!assert.output_is({
             my $a := TestClass.new();

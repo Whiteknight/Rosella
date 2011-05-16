@@ -104,6 +104,27 @@ namespace Rosella
             return old_func;
         }
 
+        // Determine if a given object is a memoize proxy.
+        function is_memoize_proxy(var obj)
+        {
+            using Rosella.Proxy.is_proxy;
+            if (!is_proxy(obj))
+                return 0;
+
+            int is_mp = 0;
+            try {
+                using Rosella.Proxy.get_proxy_private_attr;
+                var cache = get_proxy_private_attr(obj, "memoize_cache");
+                if (cache != null) {
+                    var cache_class = class Rosella.Memoize.Cache;
+                    ${ isa is_mp, cache, cache_class };
+                }
+            } catch (e) {
+                is_mp = 0;
+            }
+            return is_mp;
+        }
+
         /* Method Memoization
             These utilities allow methods in existing classes to be replaced
             with memoizing proxies. This allows you to add memoization to an
