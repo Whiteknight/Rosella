@@ -1,9 +1,3 @@
-// Hack function to get a container instance.
-// TODO: Get rid of this when Winxed supports root-class lookups with class
-function __get_container() {
-    return new Rosella.Container;
-}
-
 namespace Rosella
 {
     namespace Container
@@ -20,8 +14,9 @@ namespace Rosella
             if (has_cont)
                 default_cont = new_cont;
             else {
-                using static __get_container;
-                default_cont = __get_container();
+                //using static __get_container;
+                //default_cont = __get_container();
+                default_cont = new Rosella.Container();
             }
           get_container:
             yield default_cont;
