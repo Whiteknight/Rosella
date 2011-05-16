@@ -64,7 +64,7 @@ namespace Rosella
             if (have_fact)
                 self.default_factory = factory;
             else
-                self.default_factory = new Rosella.ObjectFactory;
+                self.default_factory = new Rosella.ObjectFactory();
         }
 
         /* Registration Functions
@@ -170,14 +170,13 @@ namespace Rosella
         // the default factory as the instance for that type.
         // Notice that when falling back to the default factory, no arguments
         // can be provided.
-        // TODO: Allow arguments to be passed to the default factory.
-        function resolve(var type)
+        function resolve(var type, var pos [slurpy], var named [slurpy,named])
         {
             using Rosella.get_type_name;
             string name = get_type_name(type);
             if (exists self.library[name])
                 return self.library[name].create();
-            var obj = self.resolve_create(type);
+            var obj = self.resolve_create(type, pos:[flat], named:[flat]);
             if (self.options["auto_register"])
                 self.register_instance(type, obj);
             return obj;
@@ -187,8 +186,8 @@ namespace Rosella
         // rules, always use the default factory.
         function resolve_create(var type, var pos [slurpy], var named [slurpy,named])
         {
-            return self.default_factory.create_typed(
-                type, pos:[flat], named:[flat,named]
+            return self.default_factory.create_typed(type,
+                pos:[flat], named:[flat,named]
             );
         }
 
@@ -201,6 +200,7 @@ namespace Rosella
             string name = get_type_name(type);
             if (exists self.library[name])
                 return self.library[name].create();
+
             using Rosella.Error.invalid;
             invalid("Rosella::Container", "Type " + type + " not registered");
         }
@@ -250,7 +250,9 @@ namespace Rosella
         function private_get_factory_method_item(var sub, var meth_inits,
                 var arg_inits)
         {
-            return new Rosella.Container.ItemFactory.FactoryMethod(sub, meth_inits, arg_inits);
+            return new Rosella.Container.ItemFactory.FactoryMethod(
+                sub, meth_inits, arg_inits
+            );
         }
     }
 }

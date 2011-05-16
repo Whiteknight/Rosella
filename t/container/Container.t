@@ -5,6 +5,14 @@ INIT {
 
 Rosella::Test::test(ContainerTest);
 
+class MyTestClass {
+    has $!a;
+    has $!b;
+    method MyTestClass($a, $b) { $!a := $a; $!b := $b; }
+    method a() { $!a; }
+    method b() { $!b; }
+}
+
 class ContainerTest {
     method test_BUILD() {
         my $container := Rosella::construct(Rosella::Container);
@@ -22,6 +30,16 @@ class ContainerTest {
         # No previous registration, falls back to the default object factory
         my $item := $c.resolve("String");
         $!assert.instance_of($item, "String");
+    }
+
+    method test_resolve_default_factory_with_args() {
+        my $c := Rosella::construct(Rosella::Container);
+        # No previous registration, falls back to the default object factory
+        # Pass arguments to the constructor
+        my $item := $c.resolve(MyTestClass, 1, 2);
+        $!assert.instance_of($item, MyTestClass);
+        $!assert.equal($item.a, 1);
+        $!assert.equal($item.b, 2);
     }
 
     method test_resolve_create() {
