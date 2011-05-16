@@ -124,6 +124,7 @@ class Mocking::Methods::Test {
             $c.expect_method("test").none;
             my $m := $c.mock();
             $m.test();
+            $c.verify();
         });
     }
 

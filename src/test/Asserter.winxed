@@ -319,7 +319,7 @@ namespace Rosella { namespace Test
 
             string out_str = stdout.readall();
             if (out_str != output)
-                self.fail(sprintf("%s\nExpected: '%s'\nReceived:'%s'", [message, output, out_str]));
+                self.fail(sprintf("%s\nExpected: '%s'\nReceived: '%s'", [message, output, out_str]));
 
             if (!has_erroutput)
                 return;
