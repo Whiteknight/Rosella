@@ -175,8 +175,8 @@ namespace Rosella
             using Rosella.get_type_name;
             string name = get_type_name(type);
             if (exists self.library[name])
-                return self.library[name].create();
-            var obj = self.resolve_create(type, pos:[flat], named:[flat]);
+                return self.library[name].create(pos:[flat], named:[flat,named]);
+            var obj = self.resolve_create(type, pos:[flat], named:[flat,named]);
             if (self.options["auto_register"])
                 self.register_instance(type, obj);
             return obj;
