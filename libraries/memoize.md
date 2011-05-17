@@ -62,18 +62,66 @@ following functions:
 
 ## Classes
 
-## Memoize.Controller
+### Memoize.Controller
 
-## Memoize.Factory
+`Rosella.Memoize.Controller` is a subclass of `Rosella.Proxy.Controller` for
+working with proxy-based memoizers. Do not use this class directly.
 
-## Memoize.Cache.Item
+### Memoize.Factory
 
-## Memoize.Cache.SimpleSring
+`Rosella.Memoize.Factory` is uses `Rosella.Proxy.Factory` to create memoize
+proxies.
+
+### Memoize.Cache
+
+`Rosella.Memoize.Cache` is an abstract parent class used for memoize caches.
+You should not use this class directly, but you *must* inherit from it in your
+custom cache implementations. The library identifies valid caches by searching
+the inheritance tree for this class. If you do not use this as a parent of a
+custom cache type, the library may break or exhibit weird behavior.
+
+### Memoize.Cache.Item
+
+`Rosella.Memoize.Cache.Item` is an entry in a cache. Item holds a value and
+also a flag to determine if that value is valid. Caches should return Item.
+
+### Memoize.Cache.SimpleSring
+
+`Rosella.Memoize.Cache.SimpleString` uses simple stringification to create
+cache keys. This is not a high-performance operation, and it does not work
+with objects which cannot be stringified.
 
 ## Examples
 
 ### Winxed
 
+    // Function to memoize
+    function my_function(var a) { ... }
+
+    // Simple memoization
+    using Rosella.Memoize.memoize;
+    var memoized = memoize(my_function);
+
+    // Proxy-based memoization
+    using Rosella.Memoize.memoize_proxy;
+    var memo_proxy = memoize_proxy(my_function);
+    using Rosella.Memoize.proxy_cache;
+    var cache = proxy_cache(memo_proxy);
+    using Rosella.Memoize.proxy_function;
+    var orig_func = proxy_function(memo_proxy);
+
 ### NQP-rx
+
+    # Simple memoization
+    sub my_function($a) { ... }
+    my &memoized := Rosella::Memoize::memoize(my_function);
+    &memoized(4);
+
+    # Proxy-based memoization
+    sub my_function($a) { ... }
+    my &memo_proxy := Rosella::Memoize::memoize_proxy(my_function);
+    my $cache := Rosella::Memoize::proxy_cache(&memo_proxy);
+    my $my_function := Rosella::memoze::proxy_function(&memo_proxy);
+    &memo_proxy(4);
 
 ## Users
