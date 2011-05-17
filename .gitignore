@@ -1,4 +1,6 @@
 *.pbc
 *.pir
+*.c
+*.o
 src/_build/*
 _site

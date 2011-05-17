@@ -20,6 +20,7 @@ function main[main](argv)
         "pbc_pir"           : {},
         "pir_pir"           : {},
         "inst_lib"          : [],
+        "installable_pbc"   : {},
         "manifest_includes" : ["CREDITS", "README.md", "setup.winxed"]
     };
 
@@ -29,6 +30,7 @@ function main[main](argv)
     setup_release(rosella);
     setup_stable_libraries(rosella);
     setup_experimental_libraries(rosella);
+    setup_utilities(rosella);
 
     get_all_tests(rosella, "t");
     argv.shift();
@@ -222,6 +224,22 @@ function setup_experimental_libraries(var rosella)
         "string/CClassTokenizer",
         "string/Tokenizer"
     );
+}
+
+function setup_utilities(var rosella)
+{
+    var utilities = {"winxed_repl" : "winxed_repl"};
+    string prefix = "src/unstable/utilities/";
+    for (string util_source in utilities) {
+        string winxed_file = prefix + util_source + ".winxed";
+        string pir_file = prefix + util_source + ".pir";
+        string pbc_file = prefix + util_source + ".pbc";
+        string util = string(utilities[util_source]);
+
+        rosella["pir_winxed"][pir_file] = winxed_file;
+        rosella["pbc_pir"][pbc_file] = pir_file;
+        rosella["installable_pbc"][util] = pbc_file;
+    }
 }
 
 function setup_winxed_lib(var rosella, string name, var includes, var files [slurpy])
