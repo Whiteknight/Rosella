@@ -1,11 +1,8 @@
-const int CCLASS_WORD        = 0x2000;
-const int CCLASS_NUMERIC     = 0x0008;
-const int CCLASS_WHITESPACE  = 0x0020;
-const int CCLASS_PUNCTUATION = 0x0400;
+$include_const "cclass.pasm";
 
-namespace Rosella { namespace String
+namespace Rosella { namespace String { namespace Tokenizer
 {
-    namespace CClassTokenizer
+    namespace CClass
     {
         // Get a default list of character classes, if none are provided
         function private_get_default_cclasses()
@@ -37,13 +34,15 @@ namespace Rosella { namespace String
         }
     }
 
-    class CClassTokenizer : Rosella.String.Tokenizer
+    class CClass : Rosella.String.Tokenizer
     {
         var cclasses;
 
-        function CClassTokenizer(var cclasses [optional], int has_cclasses [opt_flag])
+        function CClass(var cclasses [optional], int has_cclasses [opt_flag])
         {
-            self.Tokenizer();
+            //self.Tokenizer();
+            self.tokens = [];
+            self.data = null;
             if (has_cclasses)
                 self.cclasses = cclasses;
             else
@@ -74,4 +73,4 @@ namespace Rosella { namespace String
             return substr(str, 0, count);
         }
     }
-}}
+}}}
