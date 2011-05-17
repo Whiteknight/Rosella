@@ -1,0 +1,45 @@
+namespace Rosella { namespace Winxed { namespace Repl
+{
+    class Compiler
+    {
+        var compiler;
+        var count;
+
+        function Compiler()
+        {
+            self.compiler = load_language("winxed");
+            self.count = 0;
+        }
+
+        function eval(string code, var state, var view)
+        {
+            var func = self.compile(code, state, view);
+            try {
+                return func(state);
+            } catch (e) {
+                view.display_error(e);
+                return null;
+            }
+        }
+
+        function compile(string code, var state, var view)
+        {
+            self.count = self.count + 1;
+            string preamble = join(";\n\t", state.preamble);
+            string func_c = <<:
+function __REPL_line_%d(var state) {
+    var result = null;
+    %s;
+    %s;
+    return result;
+}
+:>>
+;
+            func_c = sprintf(func_c, [self.count, preamble, code]);
+            if (state.show_code)
+                view.show_code(func_c);
+            return self.compiler.compile(func_c);
+        }
+
+    }
+}}}

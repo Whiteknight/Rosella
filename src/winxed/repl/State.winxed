@@ -1,18 +1,24 @@
-namespace Rosella { namespace Winxed
+namespace Rosella { namespace Winxed { namespace Repl
 {
-    class ReplState
+    class State
     {
         var keep_running;
         var data;
-        var showcode;
+        var show_code;
         var preamble;
+        var view;
 
-        function ReplState()
+        function State()
         {
             self.keep_running = 1;
             self.data = {};
-            self.showcode = 0;
+            self.show_code = 0;
             self.preamble = [];
+        }
+
+        function set_view(var view)
+        {
+            self.view = view;
         }
 
         function stop()
@@ -30,4 +36,4 @@ namespace Rosella { namespace Winxed
             return self.data[key];
         }
     }
-}}
+}}}

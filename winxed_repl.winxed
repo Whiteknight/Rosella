@@ -14,6 +14,6 @@ function main[main](var args) {
         }
     }
     var repl = new Rosella.Winxed.Repl();
-    repl.run();
+    repl.run_loop();
 }
 

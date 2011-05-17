@@ -50,7 +50,11 @@ function setup_stable_libraries(var rosella)
     setup_winxed_lib(rosella, "winxed", [],
         "winxed/Distutils",
         "winxed/Repl",
-        "winxed/ReplState"
+        "winxed/repl/Commands",
+        "winxed/repl/CommandFuncs",
+        "winxed/repl/Compiler",
+        "winxed/repl/State",
+        "winxed/repl/View"
     );
 
     // The Rosella "core" library. Does very little on its own but is

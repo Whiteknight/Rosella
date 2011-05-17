@@ -1,0 +1,35 @@
+namespace Rosella { namespace Winxed { namespace Repl
+{
+    namespace CommandFuncs
+    {
+        function quit (var state, string args)
+        {
+            state.stop();
+        }
+
+        function help (var state, string args)
+        {
+            state.view.show_message("Just type of winxed code!");
+        }
+
+        function codeon (var state, string args)
+        {
+            state.show_code = 1;
+        }
+
+        function codeoff (var state, string args)
+        {
+            state.show_code = 0;
+        }
+
+        function showpre (var state, string args)
+        {
+            state.view.print_result(state.preamble, state);
+        }
+
+        function addpre (var state, string args)
+        {
+            push(state.preamble, args);
+        }
+    }
+}}}

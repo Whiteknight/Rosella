@@ -1,0 +1,84 @@
+namespace Rosella { namespace Winxed { namespace Repl
+{
+    class View
+    {
+        var stdin;
+
+        function View()
+        {
+            self.stdin = getstdin();
+        }
+
+        function get_input()
+        {
+            return self.stdin.readline_interactive("\nWinxed-Rosella> ");
+        }
+
+        function display_error(var e)
+        {
+            say(sprintf("\t>>> Error: '%s'", [e["message"]]));
+            var bt_list = e.backtrace_strings();
+            for (string bt in bt_list)
+                self.private_show_multiline(bt, 5);
+        }
+
+        function show_code(string func_c)
+        {
+            self.private_show_multiline(func_c, 0);
+        }
+
+        function private_show_multiline(string ml, int max)
+        {
+            var lines = split("\n", ml);
+            if (max <= 0) {
+                for(string line in lines)
+                    say(sprintf("\t>>> %s", [line]));
+            } else {
+                for(int i = 0; i < max && i < elements(lines); i++)
+                    say(sprintf("\t>>> %s", [lines[i]]));
+                if (elements(lines) > max)
+                    say("\t>>> ...");
+            }
+        }
+
+        function print_result(var result, var state)
+        {
+            if (result == null)
+                return;
+            int does_array = 0;
+            ${ does does_array, result, "array" };
+            if (does_array)
+                self.print_array_result(result, state);
+
+            int does_hash = 0;
+            ${ does does_hash, result, "hash" };
+            if (does_hash)
+                self.print_hash_result(result, state);
+
+            if (!does_array && !does_hash)
+                self.print_scalar_result(result, state);
+        }
+
+        function print_array_result(var result, var state)
+        {
+            say("\t>>> Result = [");
+            for (int i = 0; i < elements(result); i++)
+                say(sprintf("\t>>>\t%d => '%s' (%s)", [i, result[i], string(typeof(result[i]))]));
+            say("\t>>> ]");
+        }
+
+        function print_hash_result(var result, var state)
+        {
+            say("\t>>> Result = {");
+            for (string key in result)
+                say(sprintf("\t>>>\t'%s' => '%s' (%s)", [key, result[key], string(typeof(result[key]))]));
+            say("\t>>> }");
+        }
+
+        function print_scalar_result(var result, var state)
+        {
+            say(sprintf("\t>>> Result = '%s'", [result]));
+        }
+
+    }
+}}}
