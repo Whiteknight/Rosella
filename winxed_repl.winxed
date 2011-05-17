@@ -13,8 +13,7 @@ function main[main](var args) {
             say("Error: Could not load library rosella/" + lib);
         }
     }
-    using Rosella.build;
-    var repl = build(class Rosella.Winxed.Repl);
+    var repl = new Rosella.Winxed.Repl();
     repl.run();
 }
 

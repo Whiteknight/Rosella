@@ -5,12 +5,14 @@ namespace Rosella { namespace Winxed
         var keep_running;
         var data;
         var showcode;
+        var preamble;
 
         function ReplState()
         {
             self.keep_running = 1;
             self.data = {};
             self.showcode = 0;
+            self.preamble = [];
         }
 
         function stop()
