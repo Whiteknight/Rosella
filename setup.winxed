@@ -156,6 +156,17 @@ function setup_stable_libraries(var rosella)
         "event/Event",
         "event/EventManager"
     );
+
+    // Memoization library. Allows multiple types of transparent Sub
+    // memoization.
+    setup_winxed_lib(rosella, "memoize", ["Core", "Proxy"],
+        "memoize/Memoize",
+        "memoize/Cache",
+        "memoize/cache/Item",
+        "memoize/cache/SimpleString",
+        "memoize/Controller",
+        "memoize/Factory"
+    );
 }
 
 function setup_experimental_libraries(var rosella)
@@ -193,15 +204,6 @@ function setup_experimental_libraries(var rosella)
         "contract/Contract",
         "contract/Method",
         "contract/Interface"
-    );
-
-    setup_unstable_lib(rosella, "memoize", ["Core", "Proxy"],
-        "memoize/Memoize",
-        "memoize/Cache",
-        "memoize/cache/Item",
-        "memoize/cache/SimpleString",
-        "memoize/Controller",
-        "memoize/Factory"
     );
 
     setup_unstable_lib(rosella, "lazy", ["Core", "Proxy"],
