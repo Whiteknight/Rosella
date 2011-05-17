@@ -21,6 +21,7 @@ function main[main](argv)
         "pir_pir"           : {},
         "inst_lib"          : [],
         "installable_pbc"   : {},
+        "pasm_winxed"       : {},
         "manifest_includes" : ["CREDITS", "README.md", "setup.winxed"]
     };
 

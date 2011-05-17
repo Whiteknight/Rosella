@@ -11,8 +11,13 @@ namespace Rosella { namespace Winxed
 
             using static build_winxed;
             using static clean_winxed;
+            using static build_winxed_const_includes;
+            using static clean_winxed_const_includes;
+
             register_step_before("build", build_winxed);
+            register_step_before("build", build_winxed_const_includes);
             register_step_before("clean", clean_winxed);
+            register_step_before("clean", clean_winxed_const_includes);
         }
 
         // Build a winxed file into a .pir file
@@ -31,10 +36,42 @@ namespace Rosella { namespace Winxed
             }
         }
 
+        function build_winxed_const_includes(var args [slurpy,named])
+        {
+            var winxed_files = args["pasm_winxed"];
+            if (winxed_files == null)
+                return;
+            using newer;
+            for (string pasm_file in winxed_files) {
+                string winxed_file = winxed_files[pasm_file];
+                int e = 0;
+                ${ stat e, pasm_file, 0 };
+                if (!e || newer(winxed_file, pasm_file))
+                    compile_to_pasm_include(winxed_file, pasm_file);
+            }
+        }
+
         // Clean up all the .pir files generated from winxed files
         function clean_winxed(var args [slurpy,named])
         {
             var winxed_files = args["pir_winxed"];
+            if (winxed_files == null)
+                return;
+            int num_files = elements(winxed_files);
+            using unlink;
+            for (string file in winxed_files) {
+                int e = 0;
+                ${ stat e, file, 0 };
+                if (e) {
+                    say("unlink " + file);
+                    unlink(file);
+                }
+            }
+        }
+
+        function clean_winxed_const_includes(var args [slurpy,named])
+        {
+            var winxed_files = args["pasm_winxed"];
             if (winxed_files == null)
                 return;
             int num_files = elements(winxed_files);
@@ -65,6 +102,18 @@ namespace Rosella { namespace Winxed
         function compile_to_pir(string winxed_file, string pir_file)
         {
             string cmd = "winxed --nowarn -o " + pir_file + " -c " + winxed_file;
+            int result;
+            say(cmd);
+            ${ spawnw result, cmd };
+            if (result != 0)
+                die("exit status: " + result + "\ncommand: " + cmd);
+        }
+
+        function compile_to_pasm_include(string winxed_file, string pasm_file)
+        {
+            string cmd = sprintf("winxed --nowarn -o %s --target=include %s",
+                    [pasm_file, winxed_file]
+            );
             int result;
             say(cmd);
             ${ spawnw result, cmd };

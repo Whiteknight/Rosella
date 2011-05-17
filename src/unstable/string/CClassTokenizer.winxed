@@ -1,3 +1,8 @@
+const int CCLASS_WORD        = 0x2000;
+const int CCLASS_NUMERIC     = 0x0008;
+const int CCLASS_WHITESPACE  = 0x0020;
+const int CCLASS_PUNCTUATION = 0x0400;
+
 namespace Rosella { namespace String
 {
     namespace CClassTokenizer
@@ -6,10 +11,10 @@ namespace Rosella { namespace String
         function private_get_default_cclasses()
         {
             var cclasses = new 'ResizableIntegerArray';
-            cclasses[0] = 0x2000; // Word/Identifier
-            cclasses[1] = 0x0008; // Numeric
-            cclasses[2] = 0x0020; // Whitespace
-            //cclasses[3] = 0x0400; // Punctuation
+            cclasses[0] = CCLASS_WORD;
+            cclasses[1] = CCLASS_NUMERIC;
+            cclasses[2] = CCLASS_WHITESPACE;
+            //cclasses[3] = CCLASS_PUNCTUATION;
             while(1)
                 yield(cclasses);
         }
