@@ -49,12 +49,6 @@ creating cheap Decorators. A Decorator is an object which adds new
 attributes and methods to an object of an existing class, without violating
 encapsulation.
 
-### Memoize
-
-The Memoize library adds in functionality to add memoization and caching to
-subroutines. There is a simple version and a version which uses proxies to add
-more features, but is slower.
-
 ### Path
 
 The Path library allows searching of nested aggregates by using path strings.

@@ -102,6 +102,12 @@ full-featured mock objects for use in testing with the Test
 library. Several tests in the Rosella test suite are implemented
 using this library.
 
+#### [Memoize](/Rosella/libraries/memoize.html)
+
+The Memoize library adds in functionality to add memoization and caching to
+subroutines. There is a simple version and a version which uses proxies to add
+more features, but is slower.
+
 ### Rosella Development Libraries
 
 Rosella has a number of other libraries in planning and development. These
