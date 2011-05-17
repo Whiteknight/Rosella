@@ -1,8 +1,23 @@
 namespace Rosella { namespace Path
 {
+    /* Path Searcher Class.
+        Searchers are objects which know how to look in an aggregate in
+        certain way. Different searchers are able to look into different
+        types of objects, or into the same objects using different interfaces.
+        The user can select a list of searchers to direct how the path search
+        happens.
+
+        This is an abstract parent class that other searchers inherit from.
+        Do not use this class directly (it doesn't do anything).
+    */
     namespace Searcher
     {
+        // Determine if this searcher can search the given object. Return 1
+        // if a search is possible.
         function can_search(var obj) { return 1; }
+
+        // Search the object. Return a 1/0 success status and the found object
+        // if any.
         function search(var obj, string path) { return 0, null; }
     }
 }}

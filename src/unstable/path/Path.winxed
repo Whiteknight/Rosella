@@ -20,7 +20,8 @@ namespace Rosella
             "a"
 
         Once a match is found on a substring, the remainder of the string
-        is used to continue recursive searching through the next object.
+        is used to continue recursive searching through the next object. The
+        search continues until we have no more string left to search.
     */
     class Path
     {
@@ -67,16 +68,19 @@ namespace Rosella
             if (path == null || path == "")
                 return 1, obj;
 
-            string next_path = path;
+            string full_path = path;
             string search_text = path;
             string remainder = "";
             int idx = length(path) - 1;
             var result;
             var found_result;
 
+            // idx is the current location in the search string we are looking.
+            // Keep looping while we have string left to search.
             while (idx >= 0) {
                 int success = 0;
 
+                // Loop over all searchers, in order.
                 for (var searcher in self.searchers) {
                     if (!searcher.can_search(obj))
                         continue;
@@ -92,24 +96,33 @@ namespace Rosella
                     }
                 }
 
+                // If a searcher found a hit, lock in the partial answer.
+                // If it is the end of the search string, return the value.
+                // If not, try a recursive search on the partial result.
                 if (success) {
                     if (remainder == null || remainder == "")
                         return 1, found_result;
                     :(success, result) = self.get_recursive(found_result, remainder);
                     if (success)
                         return 1, result;
-                    idx = search_text.reverse_index(self.separator, 0);
-                    remainder = substr(next_path, idx + 1);
-                    search_text = substr(search_text, 0, idx);
                 }
-                else {
-                    idx = search_text.reverse_index(self.separator, 0);
-                    remainder = substr(next_path, idx + 1);
-                    search_text = substr(search_text, 0, idx);
-                }
+
+                // Get the next set of parameters and continue;
+                :(idx, remainder, search_text) = self.get_next_search_string(full_path, search_text);
             }
 
             return 0, null;
+        }
+
+        // Ratchet back to the previous instance of the separator, and
+        // repartition the input into a current search string and the
+        // remainder
+        function get_next_search_string(string full_path, string search_text)
+        {
+            int idx = search_text.reverse_index(self.separator, 0);
+            string remainder = substr(full_path, idx + 1);
+            search_text = substr(search_text, 0, idx);
+            return idx, remainder, search_text;
         }
     }
 }
