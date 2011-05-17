@@ -1,3 +1,5 @@
+$include_const "cclass.pasm";
+
 namespace Rosella
 {
     namespace String
@@ -16,9 +18,8 @@ namespace Rosella
 
         function trim_start(string str, int cclass [optional], int has_cclass [opt_flag])
         {
-            const int cclass_whitespace = 0x20;
             if (!has_cclass)
-                cclass = cclass_whitespace;
+                cclass = CCLASS_WHITESPACE;
 
             int idx = first_not_cclass(str, cclass);
             if (idx == -1)
@@ -47,9 +48,8 @@ namespace Rosella
 
         function trim_end(string str, int cclass [optional], int has_cclass [opt_flag])
         {
-            const int cclass_whitespace = 0x20;
             if (!has_cclass)
-                cclass = cclass_whitespace;
+                cclass = CCLASS_WHITESPACE;
 
             int len = length(str);
             int idx = last_not_cclass(str, cclass);
@@ -69,9 +69,8 @@ namespace Rosella
 
         function trim(string str, int cclass [optional], int has_cclass [opt_flag])
         {
-            const int cclass_whitespace = 0x20;
             if (!has_cclass)
-                cclass = cclass_whitespace;
+                cclass = CCLASS_WHITESPACE;
             int start_idx = first_not_cclass(str, cclass);
             if (start_idx == -1)
                 return "";
