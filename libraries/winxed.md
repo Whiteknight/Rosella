@@ -40,6 +40,8 @@ which compiles a .winxed file down to a .pir file.
 This namespace contains all the necessary utility functions to be able to
 build winxed files with distutils.
 
+### Rosella.Winxed.Repl.CommandFuncs
+
 ## Classes
 
 ### Winxed.Repl
@@ -48,7 +50,15 @@ build winxed files with distutils.
 is currently under development and not considered a stable part of the library
 yet. More documentation will come as the system becomes more mature.
 
+### Winxed.Repl.CommandEngine
+
+### Winxed.Repl.Compiler
+
 ### Winxed.Repl.State
+
+### Winxed.Repl.View
+
+##
 
 ## Examples
 
