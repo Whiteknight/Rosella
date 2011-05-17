@@ -58,7 +58,9 @@ namespace Rosella { namespace String { namespace Tokenizer
                 return self.get_chars(1);
             int next_idx = 0;
             ${ find_not_cclass next_idx, curr_cclass, str, 0, len };
-            return self.get_chars(next_idx);
+            string chars = self.get_chars(next_idx);
+            say(sprintf("CClass chars: %s, cclass: %d", [chars, curr_cclass]));
+            return chars, curr_cclass;
         }
 
         function get_chars(int count)

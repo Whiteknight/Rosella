@@ -223,7 +223,8 @@ function setup_experimental_libraries(var rosella)
     setup_unstable_lib(rosella, "string", ["Core"],
         "string/String",
         "string/Tokenizer",
-        "string/tokenizer/CClass"
+        "string/tokenizer/CClass",
+        "string/tokenizer/Token"
     );
 }
 

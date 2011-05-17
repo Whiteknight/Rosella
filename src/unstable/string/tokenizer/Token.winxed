@@ -1,0 +1,25 @@
+namespace Rosella { namespace String { namespace Tokenizer
+{
+    class Token
+    {
+        var data;
+        var type;
+
+        function Token(string data, int type)
+        {
+            self.data = data;
+            self.type = type;
+            say(sprintf("Token data: %s, cclass: %d", [data, type]));
+        }
+
+        function data()
+        {
+            return self.data;
+        }
+
+        function type()
+        {
+            return self.type;
+        }
+    }
+}}}
