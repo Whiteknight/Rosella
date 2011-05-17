@@ -1,10 +1,16 @@
 namespace Rosella { namespace Test
 {
-    /* Test Asserter to provide an OO-like interface to the functions defined
-       in the Assert namespace
+    /* Test Asserter class
+        This class provides test assertions. Assertions check various things
+        during the test run and signal failure if the checks are not met.
+        By default an instance of Asserter is located in the
+        "assert"/"$!assert" attribute of the TestCase object during the test
+        run.
+
+        You can provide a custom subclass, a custom instance, or a replacement
+        object for this functionality by passing an object to
+        Rosella.Test.test with the name "asserter".
     */
-    // TODO: Add the ability for the user to provide a custom subclass for
-    //       asserter instead.
     class Asserter
     {
         // Routine to get a default message, if none is provided
@@ -288,7 +294,8 @@ namespace Rosella { namespace Test
         }
 
         // Run the test, show that the output (and maybe the error output) matches
-        // the values expected
+        // the values expected. Notice that the strings are matched exactly,
+        // including leading and trailing whitespace
         function output_is(var block, string output,
                 string message [optional], int has_msg [opt_flag],
                 string erroutput [named,optional], int has_erroutput [opt_flag])
@@ -315,8 +322,6 @@ namespace Rosella { namespace Test
                 );
             }
 
-            // TODO: We should trim leading/trailing whitespace
-
             string out_str = stdout.readall();
             if (out_str != output)
                 self.fail(sprintf("%s\nExpected: '%s'\nReceived: '%s'", [message, output, out_str]));
@@ -328,6 +333,5 @@ namespace Rosella { namespace Test
             if (errout_str != erroutput)
                 self.fail(message);
         }
-
     }
 }}

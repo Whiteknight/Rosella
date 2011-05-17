@@ -6,11 +6,19 @@ namespace Rosella { namespace Test
     class Builder
     {
         var test_number;
+        var output;
 
-        // TODO: We should take a Handle here, and use that handle for output.
-        function Builder()
+        function Builder(var output [optional], int has_out [opt_flag])
         {
             self.test_number = 0;
+            if (!has_out)
+                output = getstdout();
+            self.output = output;
+        }
+
+        function _printf(string fmt, var args [slurpy])
+        {
+            self.output.print(sprintf(fmt, args));
         }
 
         function reset()
@@ -23,10 +31,9 @@ namespace Rosella { namespace Test
         {
             self.test_number = self.test_number + 1;
             string output = self._get_result_text(self.test_number, pass, msg);
-            if (has_todo)
-                say(output + " # TODO " + todo);
-            else
-                say(output + " # TODO");
+            if (!has_todo)
+                todo = "";
+            self._printf("%s # TODO %s\n", output, todo);
         }
 
         function ok(int pass, string msg [optional], int has_msg [opt_flag])
@@ -34,7 +41,8 @@ namespace Rosella { namespace Test
             self.test_number = self.test_number + 1;
             if (!has_msg)
                 msg = null;
-            say(self._get_result_text(self.test_number, pass, msg));
+            string result_text = self._get_result_text(self.test_number, pass, msg);
+            self._printf("%s\n", result_text);
         }
 
         function _get_result_text(int number, int pass, string msg)
@@ -56,23 +64,24 @@ namespace Rosella { namespace Test
                 var errmsg = error.message;
                 var lines = split("\n", errmsg);
                 for (string line in lines)
-                    say("# " + line);
+                    self._printf("# %s\n", line);
+
                 var bt_list = error.backtrace_strings();
                 for (string bt in bt_list) {
                     var frames = split("\n", bt);
                     for (string frame in frames)
-                        say("# " + frame);
+                        self._printf("# %s\n", frame);
                 }
 
 
             } else
-                say("# " + string(error));
+                self._printf("# %s\n", string(error));
         }
 
         function plan(int count)
         {
             // TODO: Error checking
-            say("1.." + count);
+            self._printf("1..%d\n", count);
         }
     }
 }}
