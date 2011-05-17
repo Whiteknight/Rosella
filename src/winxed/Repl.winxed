@@ -30,12 +30,17 @@ namespace Rosella { namespace Winxed
 
             while (state.keep_running)
             {
-                var input = stdin.readline_interactive("\nWinxed-Rosella> ");
-                if (input == null)
-                    break;
-                if (!self.run_command(input, state)) {
-                    var result = self.eval(input, state);
-                    self.print_result(result, state);
+                try {
+                    var input = stdin.readline_interactive("\nWinxed-Rosella> ");
+                    if (input == null)
+                        break;
+                    if (!self.run_command(input, state)) {
+                        var result = self.eval(input, state);
+                        self.print_result(result, state);
+                    }
+                } catch (e) {
+                    say(sprintf("\t>>> Error: '%s'", [e["message"]]));
+                    say("\t>>> Error is recoverable. Continuing. Type '%quit' to exit");
                 }
             }
         }
@@ -94,15 +99,15 @@ namespace Rosella { namespace Winxed
 
         function print_hash_result(var result, var state)
         {
-            self.sprintf("Result = {");
+            say("\t>>> Result = {");
             for (string key in result)
-                self.sprintf("\t'%s' => '%s' (%s)", key, result[key], string(typeof(result[key])));
-            self.sprintf("}");
+                say(sprintf("\t>>>\t'%s' => '%s' (%s)", [key, result[key], string(typeof(result[key]))]));
+            say("\t>>> }");
         }
 
         function print_scalar_result(var result, var state)
         {
-            self.sprintf("Result = '%s'", result);
+            say(sprintf("\t>>> Result = '%s'", result));
         }
 
         function eval(string code, var state)
@@ -136,12 +141,6 @@ function __REPL_line_%d(var state) {
                 say(">>> END CODE <<<");
             }
             return self.compiler.compile(func_c);
-        }
-
-        function sprintf(string fmt, var args [slurpy])
-        {
-            print("\t>>> ");
-            say(sprintf(fmt, args));
         }
     }
 }}
