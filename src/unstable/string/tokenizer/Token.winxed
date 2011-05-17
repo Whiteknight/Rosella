@@ -9,7 +9,6 @@ namespace Rosella { namespace String { namespace Tokenizer
         {
             self.data = data;
             self.type = type;
-            say(sprintf("Token data: %s, cclass: %d", [data, type]));
         }
 
         function data()

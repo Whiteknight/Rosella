@@ -38,13 +38,8 @@ namespace Rosella { namespace String
                 ${ shift token, tokens };
                 return token;
             }
-            if (self.data != null && self.data != "") {
-                int type;
-                int data;
-                :(data, type) = self.lex_next_token();
-                say(sprintf("Tokenizer data: %s, cclass: %d", [data, type]));
-                return new Rosella.String.Tokenizer.Token(data, type);
-            }
+            if (self.data != null && self.data != "")
+                return self.lex_next_token();
             return null;
         }
 

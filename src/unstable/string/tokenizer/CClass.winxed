@@ -55,12 +55,11 @@ namespace Rosella { namespace String { namespace Tokenizer
             int len = length(str);
             int curr_cclass = private_get_first_cclass(str, self.cclasses);
             if (curr_cclass == 0)
-                return self.get_chars(1);
+                return new Rosella.String.Tokenizer.Token(self.get_chars(1), curr_cclass);
             int next_idx = 0;
             ${ find_not_cclass next_idx, curr_cclass, str, 0, len };
             string chars = self.get_chars(next_idx);
-            say(sprintf("CClass chars: %s, cclass: %d", [chars, curr_cclass]));
-            return chars, curr_cclass;
+            return new Rosella.String.Tokenizer.Token(chars, curr_cclass);
         }
 
         function get_chars(int count)
