@@ -31,12 +31,24 @@ them in a hash to a given rule. For instance, the rule "pbc_pir" compiles
 PIR files to PBC files. The Winxed library adds the "pir_winxed" rule,
 which compiles a .winxed file down to a .pir file.
 
+### REPL
+
 ## Namespaces
 
 ### Rosella.Winxed.Distutils
 
 This namespace contains all the necessary utility functions to be able to
 build winxed files with distutils.
+
+## Classes
+
+### Winxed.Repl
+
+`Rosella.Winxed.Repl` implements a Read-Eval-Print Loop (REPL) for Winxed. It
+is currently under development and not considered a stable part of the library
+yet. More documentation will come as the system becomes more mature.
+
+### Winxed.Repl.State
 
 ## Examples
 
