@@ -3,12 +3,12 @@ namespace Rosella { namespace String { namespace Tokenizer
     class Token
     {
         var data;
-        var type;
+        var metadata;
 
-        function Token(string data, int type)
+        function Token(var data, var metadata)
         {
             self.data = data;
-            self.type = type;
+            self.metadata = metadata;
         }
 
         function data()
@@ -16,9 +16,9 @@ namespace Rosella { namespace String { namespace Tokenizer
             return self.data;
         }
 
-        function type()
+        function metadata()
         {
-            return self.type;
+            return self.metadata;
         }
     }
 }}}
