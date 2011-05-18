@@ -4,11 +4,13 @@ namespace Rosella { namespace String
     {
         var tokens;
         var data;
+        var map;
 
         function Tokenizer()
         {
             self.tokens = [];
             self.data = null;
+            self.map = {};
         }
 
         function add_data(string str)
@@ -21,6 +23,11 @@ namespace Rosella { namespace String
             }
         }
 
+        function map_token(string key, var metadata)
+        {
+            self.map[key] = self.build_token(key, metadata);
+        }
+
         function has_tokens()
         {
             if (elements(self.tokens) > 0)
@@ -30,7 +37,7 @@ namespace Rosella { namespace String
             return 0;
         }
 
-        function get_token()
+        function next_token()
         {
             if (elements(self.tokens) > 1) {
                 string token;
@@ -41,6 +48,18 @@ namespace Rosella { namespace String
             if (self.data != null && self.data != "")
                 return self.lex_next_token();
             return null;
+        }
+
+        function get_token(string text, var metadata)
+        {
+            if (exists self.map[text])
+                return self.map[text];
+            return self.build_token(text, metadata);
+        }
+
+        function build_token(string text, var metadata)
+        {
+            return new Rosella.String.Tokenizer.Token(text, metadata);
         }
 
         function lex_next_token()
