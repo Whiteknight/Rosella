@@ -1,0 +1,23 @@
+namespace Rosella { namespace Prototype { namespace Class
+{
+    class JS : Rosella.Prototype.Class.HashBased
+    {
+        function init_pmc [vtable](var sub)
+        {
+            using Rosella.Prototype.Class.init;
+            self.*init();
+            ${ setprop self, "invoke", sub };
+        }
+
+        function invoke[vtable](var p [slurpy], var n [slurpy,named])
+        {
+            var sub = null;
+            ${ getprop sub, self, "invoke" };
+            if (sub == null) {
+                using Rosella.Error.invalid;
+                invalid("Prototype.PrototypeClass", "Cannot be invoked");
+            }
+            return sub(p:[flat], n:[flat,named]);
+        }
+    }
+}}}

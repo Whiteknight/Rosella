@@ -11,7 +11,7 @@ namespace Rosella { namespace Prototype
             if (has_c)
                 self.cloner = cloner;
             else
-                self.cloner = new Rosella.Prototype.ObjectCloner;
+                self.cloner = new Rosella.Prototype.Manager.ObjectCloner;
         }
 
         function add_prototype(var type, var proto,
@@ -22,7 +22,7 @@ namespace Rosella { namespace Prototype
             string type_name = get_type_name(type);
             if (!has_sub)
                 sub = null;
-            var entry = new Rosella.Prototype.Entry(proto, sub);
+            var entry = new Rosella.Prototype.Manager.Entry(proto, sub);
             self.library[type_name] = entry;
         }
 

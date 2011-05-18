@@ -1,4 +1,4 @@
-namespace Rosella { namespace Prototype
+namespace Rosella { namespace Prototype { namespace Manager
 {
     class Entry
     {
@@ -40,4 +40,4 @@ namespace Rosella { namespace Prototype
             return self.prototype;
         }
     }
-}}
+}}}
