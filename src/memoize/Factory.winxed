@@ -36,7 +36,7 @@ namespace Rosella { namespace Memoize
         function create_typed(var type, var p [slurpy], var n [slurpy,named])
         {
             using Rosella.Error.invalid;
-            invalid("Rosella.Memoize.Factory", "Cannot create_typed with Memoize.Factory");
+            invalid(__FUNCTION__, "Cannot create_typed with Memoize.Factory");
         }
     }
 }}

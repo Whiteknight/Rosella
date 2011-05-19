@@ -22,12 +22,12 @@ namespace Rosella
         {
             if (method == null) {
                 using Rosella.Error.invalid;
-                invalid("Action", "Subroutine is null");
+                invalid(__FUNCTION__, "Subroutine is null");
             }
             self.method = method;
             if (has_args) {
                 using Rosella.Action.Argument.verify_all_arguments;
-                verify_all_arguments("Action", args);
+                verify_all_arguments(__FUNCTION__, args);
                 self.args = args;
             } else
                 self.args = [];
@@ -47,7 +47,7 @@ namespace Rosella
                 arg.resolve_to(pos, named);
             if (has_overrides) {
                 using Rosella.Action.Argument.verify_all_arguments;
-                verify_all_arguments("Action.prepare_args", overrides);
+                verify_all_arguments(__FUNCTION__, overrides);
                 for (var override in overrides)
                     override.resolve_to(pos, named);
             }

@@ -30,7 +30,7 @@ namespace Rosella { namespace Event
 
             if (!isa_type(class Rosella.Event, event)) {
                 using Rosella.Error.invalid;
-                invalid("not a valid event");
+                invalid(__FUNCTION__, "not a valid event");
             }
             var old_event = self.events[event_name];
             if (old_event != null && merge) {

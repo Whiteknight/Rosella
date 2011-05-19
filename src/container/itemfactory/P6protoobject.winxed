@@ -10,9 +10,7 @@ namespace Rosella { namespace Container { namespace ItemFactory
         {
             if (proto == null) {
                 using Rosella.Error.invalid;
-                invalid("Container.ItemFactory.P6protoobject",
-                    "proto object may not be null"
-                );
+                invalid(__FUNCTION__, "proto object may not be null");
             }
             self.proto = proto;
             self.protected_method_initializers(inits);

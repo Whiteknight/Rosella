@@ -17,7 +17,7 @@ namespace Rosella { namespace Memoize
 
             if (cache == null) {
                 using Rosella.Error.invalid;
-                invalid("Memoize.Controller", "no cache in memoize proxy");
+                invalid(__FUNCTION__, "no cache in memoize proxy");
             }
 
             var cache_item = cache.get_item(p, n);

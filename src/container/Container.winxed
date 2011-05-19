@@ -202,7 +202,7 @@ namespace Rosella
                 return self.library[name].create();
 
             using Rosella.Error.invalid;
-            invalid("Rosella::Container", "Type " + type + " not registered");
+            invalid(__FUNCTION__, "Type " + type + " not registered");
         }
 
         /* Instance Entry Functions

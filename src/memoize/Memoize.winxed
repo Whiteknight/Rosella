@@ -141,7 +141,7 @@ namespace Rosella
             var method = type_class.find_method(method_name);
             if (method == null) {
                 using Rosella.invalid;
-                invalid("Memoize.memoize_method", "The method does not exist");
+                invalid(__FUNCTION__, "The method does not exist");
             }
 
             // Don't re-memoize a memoized function
@@ -166,7 +166,7 @@ namespace Rosella
             var proxy = type_class.find_method(method_name);
             if (proxy == null) {
                 using Rosella.invalid;
-                invalid("Memoize.memoize_method", "The method does not exist");
+                invalid(__FUNCTION__, "The method does not exist");
             }
 
             // Don't try to un-memoize a non-proxy

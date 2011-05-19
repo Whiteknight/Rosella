@@ -11,9 +11,7 @@ namespace Rosella { namespace Container { namespace ItemFactory
         {
             if (class_obj == null) {
                 using Rosella.Error.invalid;
-                invalid("Container.ItemFactory.ParrotClass",
-                    "class_obj may not be null"
-                );
+                invalid(__FUNCTION__, "class_obj may not be null");
             }
             self.class_obj = class_obj;
             self.init_pmc = init;

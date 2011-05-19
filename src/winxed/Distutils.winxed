@@ -3,88 +3,90 @@ namespace Rosella { namespace Winxed
 {
     namespace Distutils
     {
-        // winxed wrapper for distutils setup() routine
+        /* Public API Functions
+        */
+
+        // Setup Distutils with new Winxed-specific capabilities
+        // This needs to be called before setup() if you want to use Winxed
+        // features in your build
         function winxed_setup()
         {
             load_bytecode("distutils.pbc");
             using register_step_before;
 
-            using static build_winxed;
-            using static clean_winxed;
+            using static build_winxed_files;
             using static build_winxed_const_includes;
-            using static clean_winxed_const_includes;
+            using static build_concat_winxed_files;
 
-            register_step_before("build", build_winxed);
+            register_step_before("build", build_winxed_files);
             register_step_before("build", build_winxed_const_includes);
-            register_step_before("clean", clean_winxed);
-            register_step_before("clean", clean_winxed_const_includes);
+            register_step_before("build", build_concat_winxed_files);
+
+            register_step_before("clean", function (var args [slurpy,named]) {
+                delete_files(args["winxed_winxed"]);
+            });
+            register_step_before("clean", function (var args [slurpy,named]) {
+                delete_files(args["pir_winxed"]);
+            });
+            register_step_before("clean",function (var args [slurpy,named]) {
+                delete_files(args["include_winxed"]);
+            });
         }
 
+        /* Distutils Step Functions
+            These steps are registered with the distutils library and run
+            automatically from setup(). Don't use these directly.
+        */
+
         // Build a winxed file into a .pir file
-        function build_winxed(var args [slurpy,named])
+        function build_winxed_files(var args [slurpy,named])
         {
             var winxed_files = args["pir_winxed"];
             if (winxed_files == null)
                 return;
-            using newer;
+            using needs_updating;
             for (string pir_file in winxed_files) {
                 string winxed_file = winxed_files[pir_file];
-                int e = 0;
-                ${ stat e, pir_file, 0 };
-                if (!e || newer(winxed_file, pir_file))
+                if (needs_updating(winxed_file, pir_file))
                     compile_to_pir(winxed_file, pir_file);
             }
         }
 
+        // Extract constant definitions from a .winxed file and output them
+        // to a .pasm file
         function build_winxed_const_includes(var args [slurpy,named])
         {
-            var winxed_files = args["pasm_winxed"];
+            var winxed_files = args["include_winxed"];
             if (winxed_files == null)
                 return;
-            using newer;
+            using needs_updating;
             for (string pasm_file in winxed_files) {
                 string winxed_file = winxed_files[pasm_file];
-                int e = 0;
-                ${ stat e, pasm_file, 0 };
-                if (!e || newer(winxed_file, pasm_file))
+                if (needs_updating(winxed_file, pasm_file))
                     compile_to_pasm_include(winxed_file, pasm_file);
             }
         }
 
-        // Clean up all the .pir files generated from winxed files
-        function clean_winxed(var args [slurpy,named])
+        // Concatenate several small winxed files into a single large winxed
+        // file.
+        function build_concat_winxed_files(var args [slurpy,named])
         {
-            var winxed_files = args["pir_winxed"];
-            if (winxed_files == null)
+            var dest_files = args["winxed_winxed"];
+            if (dest_files == null)
                 return;
-            int num_files = elements(winxed_files);
-            using unlink;
-            for (string file in winxed_files) {
-                int e = 0;
-                ${ stat e, file, 0 };
-                if (e) {
-                    say("unlink " + file);
-                    unlink(file);
-                }
+
+            using needs_updating_all;
+            for (string dest_file in dest_files) {
+                var source_files = dest_files[dest_file];
+                if (needs_updating_all(source_files, dest_file))
+                    concat_files(source_files, dest_file);
             }
         }
 
-        function clean_winxed_const_includes(var args [slurpy,named])
-        {
-            var winxed_files = args["pasm_winxed"];
-            if (winxed_files == null)
-                return;
-            int num_files = elements(winxed_files);
-            using unlink;
-            for (string file in winxed_files) {
-                int e = 0;
-                ${ stat e, file, 0 };
-                if (e) {
-                    say("unlink " + file);
-                    unlink(file);
-                }
-            }
-        }
+        /* Private Helper Functions
+            These functions are helpers from the routines above, and should
+            probably not be used directly.
+        */
 
         // Get the .pir filename corresponding to the given winxed file
         function get_pir_file_name(string winxed_file)
@@ -109,6 +111,7 @@ namespace Rosella { namespace Winxed
                 die("exit status: " + result + "\ncommand: " + cmd);
         }
 
+        // Compile a winxed file down to a .pasm include file
         function compile_to_pasm_include(string winxed_file, string pasm_file)
         {
             string cmd = sprintf("winxed --nowarn -o %s --target=include %s",
@@ -119,6 +122,76 @@ namespace Rosella { namespace Winxed
             ${ spawnw result, cmd };
             if (result != 0)
                 die("exit status: " + result + "\ncommand: " + cmd);
+        }
+
+        function delete_files(var files)
+        {
+            if (files == null)
+                return;
+
+            using static delete_file;
+            for (string file in files)
+                delete_file(file);
+        }
+
+        function delete_file(string file)
+        {
+            using unlink;
+            int e = 0;
+            ${ stat e, file, 0 };
+            if (e) {
+                say("unlink " + file);
+                unlink(file);
+            }
+        }
+
+        // Returns 1 if the dest file does not exist, or if it is older than
+        // any of the source files from which it is derived
+        function needs_updating_all(var sources, string dest_file)
+        {
+            if (sources == null)
+                return 0;
+
+            using newer;
+            int e = 0;
+            ${ stat e, dest_file, 0 };
+            if (!e)
+                return 1;
+
+            for (string source_file in sources) {
+                if (newer(source_file, dest_file))
+                    return 1;
+            }
+            return 0;
+        }
+
+        // Returns 1 if dest_file does not exist, or if it is older than the
+        // source file
+        function needs_updating(string source_file, string dest_file)
+        {
+            using newer;
+            int e = 0;
+            ${ stat e, dest_file, 0 };
+            if (!e || newer(source_file, dest_file))
+                return 1;
+            return 0;
+        }
+
+        function concat_files(var source_files, var dest_file)
+        {
+            delete_file(dest_file);
+            say(sprintf("concat %s = %s", [dest_file, join(", ", source_files)]));
+            var dest_fh = new 'FileHandle';
+            dest_fh.open(dest_file, "w");
+            for (string source_file in source_files) {
+                var source_fh = new 'FileHandle';
+                source_fh.open(source_file, "r");
+                string contents = source_fh.readall();
+                source_fh.close();
+                dest_fh.print(contents);
+                dest_fh.print("\n");
+            }
+            dest_fh.close();
         }
     }
 }}
