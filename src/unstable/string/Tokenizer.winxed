@@ -73,11 +73,5 @@ namespace Rosella { namespace String
             // Do we want this to go onto the front or the back of the list?
             push(self.tokens, token);
         }
-
-        function lex_next_token()
-        {
-            using Rosella.Error.must_subclass;
-            must_subclass("String.Tokenizer.lex_next_token");
-        }
     }
 }}
