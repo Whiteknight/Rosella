@@ -85,39 +85,50 @@ namespace Rosella
             return sprintf(format, args);
         }
 
-        function pad_internal(string str, int total_width)
+        function pad_internal(string str, int total_width, string char)
         {
             int len = length(str);
+
+            if (char == null || length(char) == 0)
+                char = " ";
+            else if (length(char) > 1)
+                char = substr(char, 0, 1);
+
             if (len < total_width) {
                 int diff = total_width - len;
                 string pad = null;
-                string space = " ";
-                ${ repeat pad, space, diff };
+                ${ repeat pad, char, diff };
                 return pad;
             }
             return "";
         }
 
-        function pad_left(string str, int total_width)
+        function pad_left(string str, int total_width,
+                string char [optional], int has_char [opt_flag])
         {
-            string pad = pad_internal(str, total_width);
+            if (!has_char)
+                char = " ";
+            string pad = pad_internal(str, total_width, char);
             return pad + str;
         }
 
-        function pad_right(string str, int total_width)
+        function pad_right(string str, int total_width,
+                string char [optional], int has_char [opt_flag])
         {
-            string pad = pad_internal(str, total_width);
+            if (!has_char)
+                char = " ";
+            string pad = pad_internal(str, total_width, char);
             return str + pad;
         }
 
-        function remove_start(string str, int count)
-        {
-            return substr(str, 0, count);
-        }
-
-        function remove_end(string str, int start)
+        function remove_start(string str, int start)
         {
             return substr(str, start);
+        }
+
+        function remove_end(string str, int count)
+        {
+            return substr(str, 0, count);
         }
 
         function remove_middle(string str, int start, int count)
@@ -126,6 +137,11 @@ namespace Rosella
             string first_half = substr(str, 0, start);
             string second_half = substr(str, start + count);
             return first_half + second_half;
+        }
+
+        function replace(string str, string target, string subst)
+        {
+            return join(subst, split(target, str));
         }
     }
 }
