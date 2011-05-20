@@ -1,5 +1,4 @@
 action: 2 Stable
-benchmark: 0 Alpha
 container: 2 Stable
 contract: 0 Alpha
 core: 2 Stable
@@ -9,7 +8,6 @@ harness: 2 Stable
 lazy: 0 Alpha
 memoize: 1 Stable
 mockobject: 2 Stable
-multicast: 0 Alpha
 path: 0 Beta
 prototype: 0 Alpha
 proxy: 2 Stable

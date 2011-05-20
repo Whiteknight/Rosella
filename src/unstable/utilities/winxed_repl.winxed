@@ -1,19 +1,67 @@
-function main[main](var args) {
+function main[main](var args)
+{
     load_bytecode("rosella/core.pbc");
     load_bytecode("rosella/winxed.pbc");
-    for (int i = 1; i < elements(args); i++)
-    {
-        string lib = args[i];
-        try {
-            string libname = sprintf("rosella/%s.pbc", [lib]);
-            print("Loading " + libname + " ... ");
-            load_bytecode(libname);
-            say("Loaded.");
-        } catch(e) {
-            say("Error: Could not load library rosella/" + lib);
-        }
+
+    using Rosella.get_version_hash;
+    var version_hash = get_version_hash();
+    for (string library in version_hash)
+        load_bytecode("rosella/" + library + ".pbc");
+
+    show_preamble();
+
+    if (elements(args) <= 1)
+        run_repl();
+    else if (args[1] == "--help")
+        show_help();
+    else if (args[1] == "--version")
+        show_versions();
+    else
+        say("Unknown arguments");
+}
+
+function show_help()
+{
+    say(<<:
+Winxed/Rosella REPL
+
+    --help      Show this help
+    --version   Show version information
+:>>
+);
+}
+
+function show_versions()
+{
+    using Rosella.get_version_hash;
+    using Rosella.get_version;
+    // TODO: When the String library gets more stable, use this for prettiness
+    //using Rosella.String.pad_right;
+
+    var version_hash = get_version_hash();
+    say("Rosella library version information:");
+    for (string library in version_hash) {
+        var ver = get_version(library);
+        //library = pad_right(library, 10);
+        say(sprintf("\t%s : %d (%s)", [library, ver.version_number, ver.state]));
     }
+}
+
+function show_preamble()
+{
+    using Rosella.get_version;
+    var winxed_version = get_version("winxed");
+    var core_version = get_version("core");
+    say(sprintf(<<:
+Winxed REPL with Rosella
+Version %d %s
+Type 'quit' or 'exit(0)' to quit
+:>>
+        , [winxed_version.version_number, winxed_version.state]));
+}
+
+function run_repl()
+{
     var repl = new Rosella.Winxed.Repl();
     repl.run_loop();
 }
-
