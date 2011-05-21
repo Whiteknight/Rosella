@@ -122,13 +122,15 @@ namespace Rosella { namespace Query
         // Return the data as an array
         function to_array()
         {
-            return self.provider.to_array(self.data);
+            var data = self.provider.to_array(self.data);
+            return self.as_queryable(data);
         }
 
         // Return the data as a hash
         function to_hash(var func)
         {
-            return self.provider.to_hash(self.data, func);
+            var data = self.provider.to_hash(self.data, func);
+            return self.as_queryable(data);
         }
 
         // Get an iterator over the data
