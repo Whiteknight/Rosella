@@ -10,12 +10,17 @@ namespace Rosella { namespace Query
         var data;
         var provider;
 
-        // Constructor. Store the data and get a suitable provider
-        function Queryable(var data)
+        // Constructor. Store the data and get a suitable provider. It is
+        // probably better to use Rosella.Query.as_queryable instead of
+        // creating this directly.
+        function Queryable(var data, var provider [optional], int has_p [opt_flag])
         {
             // TODO: Take an optional provider
             self.data = data;
-            self.provider = self.get_provider(data);
+            if (has_p)
+                self.provider = provider;
+            else
+                self.provider = self.get_provider(data);
         }
 
         // Get suitable provider for the given data
