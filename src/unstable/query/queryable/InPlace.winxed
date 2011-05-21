@@ -1,12 +1,20 @@
 namespace Rosella { namespace Query { namespace Queryable
 {
+    /* In-Place Queryable
+        This Queryable variant reuses itself for each result, instead of
+        creating a new Queryable for each. This makes for faster and more
+        efficient method chaining, but it can unexpectedly change behavior if
+        references are preserved in other places.
+    */
     class InPlace : Rosella.Query.Queryable
     {
+        // Constructor
         function InPlace(var p [slurpy], var n [slurpy,named])
         {
             self.Queryable(p:[flat], n:[flat,named]);
         }
 
+        // Update self and return it
         function as_queryable(var data)
         {
             self.data = data;

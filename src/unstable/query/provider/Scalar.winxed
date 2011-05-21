@@ -67,7 +67,9 @@ namespace Rosella { namespace Query { namespace Provider
         function to_hash(var data, var func)
         {
             string key = func(data);
-            return { key : data };
+            var new_hash = {};
+            new_hash[key] = data;
+            return new_hash;
         }
     }
 }}}
