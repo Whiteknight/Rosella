@@ -3,57 +3,34 @@ INIT {
     pir::load_bytecode("rosella/query.pbc");
 }
 
-Rosella::Test::test(QueryTest);
+Rosella::Test::test(Test::Query);
 
-class QueryTest {
-    method test_map_hash() {
-        my %data := {};
-        %data{"foo"} := 1;
-        %data{"bar"} := 2;
-        %data{"baz"} := 3;
-        %data{"fie"} := 4;
-        my %new_data := Rosella::Query::map(%data, sub($item) { return "($item)"; });
-        $!assert.equal(%new_data{"foo"}, "(1)");
-        $!assert.equal(%new_data{"bar"}, "(2)");
-        $!assert.equal(%new_data{"baz"}, "(3)");
-        $!assert.equal(%new_data{"fie"}, "(4)");
+class Test::Query {
+    method as_queryable() {
+        my %hash := {};
+        my $q := Rosella::Query::as_queryable(%hash);
+        $!assert.instance_of($q, Rosella::Query::Queryable);
+
+        $q := Rosella::Query::as_queryable(%hash, 0);
+        $!assert.instance_of($q, Rosella::Query::Queryable);
+
+        $q := Rosella::Query::as_queryable(%hash, 1);
+        $!assert.instance_of($q, Rosella::Query::Queryable::InPlace);
     }
 
-    method test_map_array() {
-        my @data := <foo bar baz fie>;
-        my @new_data := Rosella::Query::map(@data, sub($item) { return "($item)"; });
-        $!assert.equal(pir::elements(@new_data), 4);
-        $!assert.equal(@new_data[0], "(foo)");
-        $!assert.equal(@new_data[1], "(bar)");
-        $!assert.equal(@new_data[2], "(baz)");
-        $!assert.equal(@new_data[3], "(fie)");
+    method is_hash() {
+        my %hash := {};
+        my @array := [];
+
+        $!assert.is_false(Rosella::Query::is_hash(@array));
+        $!assert.is_true(Rosella::Query::is_hash(%hash));
     }
 
-    method test_filter_hash() {
-        my %data := {};
-        %data{"foo"} := 1;
-        %data{"bar"} := 2;
-        %data{"baz"} := 3;
-        %data{"fie"} := 4;
-        my %new_data := Rosella::Query::filter(%data,
-            sub($item) {
-                return $item % 2 == 0;
-            }
-        );
-        $!assert.equal(pir::elements(%new_data), 2);
-        $!assert.equal(%new_data{"bar"}, 2);
-        $!assert.equal(%new_data{"fie"}, 4);
-    }
+    method is_array() {
+        my %hash := {};
+        my @array := [];
 
-    method test_filter_array() {
-        my @data := <foo bar baz fie>;
-        my @new_data := Rosella::Query::filter(@data,
-            sub($item) {
-                return pir::substr($item, 0, 1) eq 'f';
-            }
-        );
-        $!assert.equal(pir::elements(@new_data), 2);
-        $!assert.equal(@new_data[0], "foo");
-        $!assert.equal(@new_data[1], "fie");
+        $!assert.is_false(Rosella::Query::is_array(%hash));
+        $!assert.is_true(Rosella::Query::is_array(@array));
     }
 }

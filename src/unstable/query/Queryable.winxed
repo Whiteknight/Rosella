@@ -15,7 +15,6 @@ namespace Rosella { namespace Query
         // creating this directly.
         function Queryable(var data, var provider [optional], int has_p [opt_flag])
         {
-            // TODO: Take an optional provider
             self.data = data;
             if (has_p)
                 self.provider = provider;
