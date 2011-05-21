@@ -1,16 +1,24 @@
 namespace Rosella { namespace Query
 {
+    /* Queryable Class
+        This class is a wrapper type which provides higher-order behaviors
+        for existing aggregate types. To provide this behavior, we pair each
+        aggregate with a Provider. The Provider implements all the behaviors.
+    */
     class Queryable
     {
         var data;
         var provider;
 
+        // Constructor. Store the data and get a suitable provider
         function Queryable(var data)
         {
+            // TODO: Take an optional provider
             self.data = data;
             self.provider = self.get_provider(data);
         }
 
+        // Get suitable provider for the given data
         function get_provider(var data)
         {
             var provider = null;
@@ -32,28 +40,37 @@ namespace Rosella { namespace Query
             return provider;
         }
 
+        // Get the raw data back
         function data()
         {
             return self.data;
         }
 
+        // Wrap the given data in a Queryable. In the default case, create a
+        // new Queryable
         function as_queryable(var data)
         {
             return new Rosella.Query.Queryable(data);
         }
 
+        // Return a new aggregate where each element is a function of the
+        // elements in the data
         function map(var mapper)
         {
             var data = self.provider.map(self.data, mapper);
             return self.as_queryable(data);
         }
 
+        // Return a new aggregate where only the elements from the original
+        // data which satisfy a test are included
         function filter(var func)
         {
             var data = self.provider.filter(self.data, func);
             return self.as_queryable(data);
         }
 
+        // Combine elements from the aggregate into a single value and
+        // return that.
         function fold(var func, var seed [optional], int has_seed [opt_flag])
         {
             if (!has_seed)
@@ -62,6 +79,7 @@ namespace Rosella { namespace Query
             return self.as_queryable(value);
         }
 
+        // Return a count of elements
         function count(var func [optional], int has_func [opt_flag])
         {
             if (has_func)
@@ -70,6 +88,9 @@ namespace Rosella { namespace Query
                 return self.provider.count(self.data);
         }
 
+        // Return an aggregate of the first N elements in the data. If a
+        // predicate is provided, return the first N which satisfy the
+        // prediate
         function take(int count, var func [optional], int has_func [opt_flag])
         {
             var data;
@@ -80,6 +101,8 @@ namespace Rosella { namespace Query
             return self.as_queryable(data);
         }
 
+        // Return all but the first N elements. If a predicate is provided,
+        // return all by the first N elements which satisfy the predicate.
         function skip(int count, var func [optional], int has_func [opt_flag])
         {
             var data;
@@ -92,16 +115,19 @@ namespace Rosella { namespace Query
 
         //function combine() { }
 
+        // Return the data as an array
         function to_array()
         {
             return self.provider.to_array(self.data);
         }
 
+        // Return the data as a hash
         function to_hash(var func)
         {
             return self.provider.to_hash(self.data, func);
         }
 
+        // Get an iterator over the data
         function get_iter[vtable]()
         {
             var iter = null;

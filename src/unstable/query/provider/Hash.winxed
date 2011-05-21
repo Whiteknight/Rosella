@@ -1,9 +1,14 @@
 namespace Rosella { namespace Query { namespace Provider
 {
+    /* Hash Query Provider
+        This provider works with hashes
+    */
     class Hash : Rosella.Query.Provider
     {
+        // Constructor
         function Hash() { }
 
+        // Map all values to a new hash with the same keys
         function map(var data, var mapper)
         {
             var new_data = {};
@@ -12,6 +17,8 @@ namespace Rosella { namespace Query { namespace Provider
             return new_data;
         }
 
+        // Return a new hash with the key/value pairs that satisfy the
+        // predicate
         function filter(var data, var func,
                 int limit [optional], int has_limit [opt_flag])
         {
@@ -31,6 +38,7 @@ namespace Rosella { namespace Query { namespace Provider
             return new_data;
         }
 
+        // Fold the values into the seed.
         function fold(var seed, var data, var func)
         {
             var result = seed;
@@ -39,6 +47,7 @@ namespace Rosella { namespace Query { namespace Provider
             return result;
         }
 
+        // Take the first N key/value pairs which satisfy the predicate
         function take(var data, var limit,
                 var func [optional], int has_func [opt_flag])
         {
@@ -56,6 +65,7 @@ namespace Rosella { namespace Query { namespace Provider
             return new_data;
         }
 
+        // Combine
         function combine(var a, var b,
                 var filter [optional], int has_filter [opt_flag],
                 var key_func [optional], int has_key_func [opt_flag],
@@ -84,6 +94,7 @@ namespace Rosella { namespace Query { namespace Provider
             return new_data;
         }
 
+        // Return an array of all values
         function to_array(var data)
         {
             var new_data = [];
@@ -94,6 +105,7 @@ namespace Rosella { namespace Query { namespace Provider
             return new_data;
         }
 
+        // Create a new hash as a clone of this one
         function to_hash(var data, var func)
         {
             var new_hash = {};

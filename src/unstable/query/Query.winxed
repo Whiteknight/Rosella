@@ -1,7 +1,19 @@
 namespace Rosella
 {
+    /* Query Library
+        This library implements a series of higher-order functions for
+        working with aggregates.
+
+        To work with the Query library, you must wrap your aggregate in a
+        Queryable. Use Query.as_queryable to do this easily. Once you have a
+        Queryable, you can call and chain methods on it to produce results.
+    */
     namespace Query
     {
+        // Get a Queryable. The optional second argument determines the type
+        // of queryable wrapper to use. 0 (default) = a normal Queryable.
+        // 1 = in-place queryable. In-place produces less churn, but is not
+        // immutable.
         function as_queryable(var data, int inplace [optional], int has_ip [opt_flag])
         {
             if (has_ip && inplace)
@@ -10,6 +22,7 @@ namespace Rosella
                 return new Rosella.Query.Queryable(data);
         }
 
+        // Helper function. Determine if the aggregate is an array
         function is_array(var data)
         {
             int flag;
@@ -17,6 +30,7 @@ namespace Rosella
             return flag;
         }
 
+        // Helper function. Determine if the aggregate is a hash
         function is_hash(var data)
         {
             int flag;

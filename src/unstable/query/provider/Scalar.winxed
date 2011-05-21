@@ -1,14 +1,21 @@
 namespace Rosella { namespace Query { namespace Provider
 {
+    /* Scalar Query Provider
+        This Query Provider wraps any arbitrary scalar value. It makes a
+        Scalar look like an aggregate
+    */
     class Scalar : Rosella.Query.Provider
     {
+        // Constructor
         function Scalar() {}
 
+        // Map the scalar
         function map(var data, var mapper)
         {
             return mapper(data);
         }
 
+        // Return the scalar if it matches, null otherwise
         function filter(var data, var func,
             int limit [optional], int has_limit [opt_flag])
         {
@@ -17,6 +24,7 @@ namespace Rosella { namespace Query { namespace Provider
             return null;
         }
 
+        // Fold the scalar and the seed
         function fold(var seed, var data, var func)
         {
             var result = seed;
@@ -25,6 +33,13 @@ namespace Rosella { namespace Query { namespace Provider
             return func(result, data);
         }
 
+        // Return 1
+        function count(var data, var func [optional], int has_func [opt_flag])
+        {
+            return 1;
+        }
+
+        // Return the scalar, or null if it does not match the predicate
         function take(var data, var limit,
                 var func [optional], int has_func [opt_flag])
         {
@@ -33,6 +48,7 @@ namespace Rosella { namespace Query { namespace Provider
             return data;
         }
 
+        // Combine
         function combine(var a, var b,
                 var filter [optional], int has_filter [opt_flag],
                 var key_func [optional], int has_key_func [opt_flag],
@@ -41,11 +57,13 @@ namespace Rosella { namespace Query { namespace Provider
             // TODO
         }
 
+        // Return an array with the scalar as the only element
         function to_array(var data)
         {
             return [data];
         }
 
+        // Return a hash with the scalar at a key determined by the function
         function to_hash(var data, var func)
         {
             string key = func(data);

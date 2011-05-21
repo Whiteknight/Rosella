@@ -1,28 +1,30 @@
 namespace Rosella { namespace Query { namespace Provider
 {
+    /* Array Query Provider
+        This provider operates on Array data.
+    */
     class Array : Rosella.Query.Provider
     {
+        // Constructor
         function Array() {}
 
+        // Return a new array where the elements are all functions of the
+        // elements in the current array
         function map(var data, var mapper)
         {
-            // TODO: Can we presize this?
             var new_data = [];
-            int i = 0;
-            int elems = 0;
-            ${ elements elems, data };
-            while (i < elems) {
+            for (int i = elements(data) - 1; i >= 0; i--)
                 new_data[i] = mapper(data[i]);
-                i = i + 1;
-            }
             return new_data;
         }
 
+        // Return a new array with only the elements from the original array
+        // which satisfy the predicate. If provided, only return up to N items
         function filter(var data, var func,
             int limit [optional], int has_limit [opt_flag])
         {
             if (!has_limit)
-                ${ elements limit, data };
+                limit = elements(data);
             var new_data = [];
             if (limit <= 0)
                 return new_data;
@@ -38,6 +40,7 @@ namespace Rosella { namespace Query { namespace Provider
             return new_data;
         }
 
+        // Return a single result which is a combination of all elements
         function fold(var seed, var data, var func)
         {
             var result = seed;
@@ -48,6 +51,8 @@ namespace Rosella { namespace Query { namespace Provider
             return result;
         }
 
+        // Return a new array, the first N items which match the optional
+        // predicate
         function take(var data, var limit,
                 var func [optional], int has_func [opt_flag])
         {
@@ -64,6 +69,7 @@ namespace Rosella { namespace Query { namespace Provider
             return new_data;
         }
 
+        // Combine
         function combine(var a, var b,
                 var filter [optional], int has_filter [opt_flag],
                 var key_func [optional], int has_key_func [opt_flag],
@@ -109,6 +115,7 @@ namespace Rosella { namespace Query { namespace Provider
             return new_data;
         }
 
+        // Return a new array. Clone this one.
         function to_array(var data)
         {
             var new_data = [];
@@ -117,6 +124,7 @@ namespace Rosella { namespace Query { namespace Provider
             return new_data;
         }
 
+        // Return a new hash. The keys of which are returned from the function
         function to_hash(var data, var func)
         {
             var new_hash = {};

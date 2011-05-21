@@ -1,7 +1,13 @@
 namespace Rosella { namespace Query
 {
+    /* Provider Namespace
+        This namespace has some helper methods for maintaining singletons for
+        various provider types. Providers tend not to have state, so they can
+        be reused as singletons
+    */
     namespace Provider
     {
+        // Get the Array provider
         function get_array_provider()
         {
             var provider = new Rosella.Query.Provider.Array();
@@ -9,6 +15,7 @@ namespace Rosella { namespace Query
                 yield provider;
         }
 
+        // Get the Hash Provider
         function get_hash_provider()
         {
             var provider = new Rosella.Query.Provider.Hash();
@@ -16,6 +23,7 @@ namespace Rosella { namespace Query
                 yield provider;
         }
 
+        // Get the Scalar Provider
         function get_scalar_provider()
         {
             var provider = new Rosella.Query.Provider.Scalar();
@@ -24,26 +32,36 @@ namespace Rosella { namespace Query
         }
     }
 
+    /* Provider Class
+        This is an abstract base class for all Providers. It implements some
+        common behaviors and specifies an interface that other Providers must
+        use. Do not use this class directly, use a subclass.
+    */
     class Provider
     {
+        // Map the data
         function map(var data, var func)
         {
             using Rosella.Error.must_subclass;
             must_subclass("Rosella::Query::Provider");
         }
 
+        // Filter the data
         function filter(var data, var func)
         {
             using Rosella.Error.must_subclass;
             must_subclass("Rosella::Query::Provider");
         }
 
+        // Fold the data
         function fold(var seed, var data, var func)
         {
             using Rosella.Error.must_subclass;
             must_subclass("Rosella::Query::Provider");
         }
 
+        // Return a count of elements. If a predicate is provided, return a
+        // count of elements which satisfy that predicate
         function count(var data, var func [optional], int has_func [opt_flag])
         {
             if (has_func && func != null)
@@ -53,18 +71,21 @@ namespace Rosella { namespace Query
             return elems;
         }
 
+        // Take from the data
         function take(var data, int count, var func [optional], int has_func [opt_flag])
         {
             using Rosella.Error.must_subclass;
             must_subclass("Rosella::Query::Provider");
         }
 
+        // Skip some of the data
         function skip(var data, int count, var func [optional], int has_func [opt_flag])
         {
             using Rosella.Error.must_subclass;
             must_subclass("Rosella::Query::Provider");
         }
 
+        // Combine two aggregates
         function combine(var a, var b,
                 var filter [optional], int has_filter [opt_flag],
                 var key_func [optional], int has_key_func [opt_flag],
@@ -74,12 +95,14 @@ namespace Rosella { namespace Query
             must_subclass("Rosella::Query::Provider");
         }
 
+        // Convert to an array
         function to_array(var data)
         {
             using Rosella.Error.must_subclass;
             must_subclass("Rosella::Query::Provider");
         }
 
+        // Convert to a hash
         function to_hash(var data, var func)
         {
             using Rosella.Error.must_subclass;
