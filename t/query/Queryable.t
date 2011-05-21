@@ -31,6 +31,11 @@ class Test::Query::Queryable {
         $assert.equal(pir::elements(%a), pir::elements(%b));
         $assert.throws_nothing({
             for %a -> $key {
+                pir::print($key);
+                pir::print(": ");
+                say(%a{$key});
+                say(%b{$key});
+                #say("$key: " ~ %a{$key});
                 $assert.equal(%a{$key}, %b{$key});
             }
         });
@@ -52,16 +57,16 @@ class Test::Query::Queryable {
     method get_provider() {
         my %hash := {};
         my @array := [];
-        my $q := Rosella::construct(Rosella.Query.Queryable, @array);
+        my $q := Rosella::construct(Rosella::Query::Queryable, @array);
 
         my $p := $q.get_provider(%hash);
-        $!assert.instance_of($p, Rosella::Query::Provider.Hash);
+        $!assert.instance_of($p, Rosella::Query::Provider::Hash);
 
         $p := $q.get_provider(@array);
-        $!assert.instance_of($p, Rosella::Query::Provider.Array);
+        $!assert.instance_of($p, Rosella::Query::Provider::Array);
 
         $p := $q.get_provider(1);
-        $!assert.instance_of($p, Rosella::Query::Provider.Scalar);
+        $!assert.instance_of($p, Rosella::Query::Provider::Scalar);
     }
 
     method data() {
@@ -207,18 +212,18 @@ class Test::Query::Queryable {
 
     method test_to_array_hash() {
         my %data := test_hash();
-        my @array := Rosella::Query::as_queryable(%data).to_array();
+        my @array := Rosella::Query::as_queryable(%data).to_array.data;
         arrays_equal($!assert, @array, [1, 2, 3, 4]);
     }
 
     method test_to_array_array() {
         my @data := <foo bar baz fie>;
-        my @new_data := Rosella::Query::as_queryable(@data).to_array();
+        my @new_data := Rosella::Query::as_queryable(@data).to_array.data;
         $!assert.not_same(@data, @new_data);
     }
 
     method test_to_array_scalar() {
-        my @array := Rosella::Query::as_queryable(1).to_array();
+        my @array := Rosella::Query::as_queryable(1).to_array.data;
         arrays_equal($!assert, @array, [1]);
     }
 
@@ -228,7 +233,7 @@ class Test::Query::Queryable {
         my %data := test_hash();
         my %hash := Rosella::Query::as_queryable(%data).to_hash(
             -> $item { "test_$item"; }
-        );
+        ).data;
         hashes_equal($!assert, %hash, hash(:test_foo(1), :test_bar(2), :test_baz(3), :test_fie(4)));
     }
 
@@ -236,14 +241,14 @@ class Test::Query::Queryable {
         my @data := <foo bar baz fie>;
         my %hash := Rosella::Query::as_queryable(@data).to_hash(
             -> $item { "test_$item"; }
-        );
+        ).data;
         hashes_equal($!assert, %hash, hash(:test_foo("foo"), :test_bar("bar"), :test_baz("baz"), :test_fie("fie")));
     }
 
     method test_to_hash_scalar() {
         my %hash := Rosella::Query::as_queryable("A").to_hash(
             -> $item { "test_$item"; }
-        );
+        ).data;
         hashes_equal($!assert, %hash, hash(:test_A("A")));
     }
 }

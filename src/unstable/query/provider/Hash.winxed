@@ -42,6 +42,8 @@ namespace Rosella { namespace Query { namespace Provider
         function fold(var seed, var data, var func)
         {
             var result = seed;
+            if (result == null)
+                result = "";
             for (string key in data)
                 result = func(result, data[key]);
             return result;
