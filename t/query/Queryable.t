@@ -42,7 +42,7 @@ class Test::Query::Queryable {
 
     method test_BUILD() {
         my @data := <1, 2, 3, 4>;
-        my $q := Rosella::construct(Rosella.Query.Queryable, @data);
+        my $q := Rosella::construct(Rosella::Query::Queryable, @data);
     }
 
     method test_BUILD_provider() {
