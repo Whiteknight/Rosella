@@ -1,0 +1,17 @@
+namespace Rosella { namespace Query { namespace Queryable
+{
+    class InPlace : Rosella.Query.Queryable
+    {
+        function InPlace(var p [slurpy], var n [slurpy,named])
+        {
+            self.Queryable(p:[flat], n:[flat,named]);
+        }
+
+        function as_queryable(var data)
+        {
+            self.data = data;
+            self.provider = self.get_provider(data);
+            return self;
+        }
+    }
+}}}

@@ -1,0 +1,113 @@
+namespace Rosella { namespace Query
+{
+    class Queryable
+    {
+        var data;
+        var provider;
+
+        function Queryable(var data)
+        {
+            self.data = data;
+            self.provider = self.get_provider(data);
+        }
+
+        function get_provider(var data)
+        {
+            var provider = null;
+            using Rosella.Query.is_array;
+            if (is_array(data)) {
+                using Rosella.Query.Provider.get_array_provider;
+                provider = get_array_provider();
+            } else {
+                using Rosella.Query.is_hash;
+                if (is_hash(data)) {
+                    using Rosella.Query.Provider.get_hash_provider;
+                    provider = get_hash_provider();
+                }
+            }
+            if (provider == null) {
+                using Rosella.Query.Provider.get_scalar_provider;
+                provider = get_scalar_provider(data);
+            }
+            return provider;
+        }
+
+        function data()
+        {
+            return self.data;
+        }
+
+        function as_queryable(var data)
+        {
+            return new Rosella.Query.Queryable(data);
+        }
+
+        function map(var mapper)
+        {
+            var data = self.provider.map(self.data, mapper);
+            return self.as_queryable(data);
+        }
+
+        function filter(var func)
+        {
+            var data = self.provider.filter(self.data, func);
+            return self.as_queryable(data);
+        }
+
+        function fold(var func, var seed [optional], int has_seed [opt_flag])
+        {
+            if (!has_seed)
+                seed = null;
+            var value = self.provider.fold(seed, self.data, func);
+            return self.as_queryable(value);
+        }
+
+        function count(var func [optional], int has_func [opt_flag])
+        {
+            if (has_func)
+                return self.provider.count(self.data, func);
+            else
+                return self.provider.count(self.data);
+        }
+
+        function take(int count, var func [optional], int has_func [opt_flag])
+        {
+            var data;
+            if (has_func)
+                data = self.provider.take(self.data, count, func);
+            else
+                data = self.provider.take(self.data, count);
+            return self.as_queryable(data);
+        }
+
+        function skip(int count, var func [optional], int has_func [opt_flag])
+        {
+            var data;
+            if (has_func)
+                data = self.provider.skip(self.data, count, func);
+            else
+                data = self.provider.skip(self.data, count);
+            return self.as_queryable(data);
+        }
+
+        //function combine() { }
+
+        function to_array()
+        {
+            return self.provider.to_array(self.data);
+        }
+
+        function to_hash(var func)
+        {
+            return self.provider.to_hash(self.data, func);
+        }
+
+        function get_iter[vtable]()
+        {
+            var iter = null;
+            var data = self.data;
+            ${ iter iter, data };
+            return data;
+        }
+    }
+}}

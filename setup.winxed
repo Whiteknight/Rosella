@@ -190,10 +190,13 @@ function setup_experimental_libraries(var rosella)
 
     // A library for working with aggregates
     setup_unstable_lib(rosella, "query", ["Core"],
-        "query/Query",
         "query/Provider",
         "query/provider/Array",
-        "query/provider/Hash"
+        "query/provider/Hash",
+        "query/provider/Scalar",
+        "query/Query",
+        "query/Queryable",
+        "query/queryable/InPlace"
     );
 
     setup_unstable_lib(rosella, "path", ["Core"],

@@ -1,5 +1,29 @@
 namespace Rosella { namespace Query
 {
+    namespace Provider
+    {
+        function get_array_provider()
+        {
+            var provider = new Rosella.Query.Provider.Array();
+            while(1)
+                yield provider;
+        }
+
+        function get_hash_provider()
+        {
+            var provider = new Rosella.Query.Provider.Hash();
+            while(1)
+                yield provider;
+        }
+
+        function get_scalar_provider()
+        {
+            var provider = new Rosella.Query.Provider.Scalar();
+            while(1)
+                yield provider;
+        }
+    }
+
     class Provider
     {
         function map(var data, var func)
@@ -35,7 +59,7 @@ namespace Rosella { namespace Query
             must_subclass("Rosella::Query::Provider");
         }
 
-        function skip(var data, var count, var func [optional], int has_func [opt_flag])
+        function skip(var data, int count, var func [optional], int has_func [opt_flag])
         {
             using Rosella.Error.must_subclass;
             must_subclass("Rosella::Query::Provider");
@@ -45,6 +69,18 @@ namespace Rosella { namespace Query
                 var filter [optional], int has_filter [opt_flag],
                 var key_func [optional], int has_key_func [opt_flag],
                 var dispute [optional], int has_dispute [opt_flag])
+        {
+            using Rosella.Error.must_subclass;
+            must_subclass("Rosella::Query::Provider");
+        }
+
+        function to_array(var data)
+        {
+            using Rosella.Error.must_subclass;
+            must_subclass("Rosella::Query::Provider");
+        }
+
+        function to_hash(var data, var func)
         {
             using Rosella.Error.must_subclass;
             must_subclass("Rosella::Query::Provider");

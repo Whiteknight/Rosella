@@ -1,0 +1,55 @@
+namespace Rosella { namespace Query { namespace Provider
+{
+    class Scalar : Rosella.Query.Provider
+    {
+        function Scalar() {}
+
+        function map(var data, var mapper)
+        {
+            return mapper(data);
+        }
+
+        function filter(var data, var func,
+            int limit [optional], int has_limit [opt_flag])
+        {
+            if (func(data))
+                return data;
+            return null;
+        }
+
+        function fold(var seed, var data, var func)
+        {
+            var result = seed;
+            if (result == null)
+                result = "";
+            return func(result, data);
+        }
+
+        function take(var data, var limit,
+                var func [optional], int has_func [opt_flag])
+        {
+            if (has_func)
+                return self.filter(data, func, limit);
+            return data;
+        }
+
+        function combine(var a, var b,
+                var filter [optional], int has_filter [opt_flag],
+                var key_func [optional], int has_key_func [opt_flag],
+                var dispute [optional], int has_dispute [opt_flag])
+        {
+            // TODO
+        }
+
+        function to_array(var data)
+        {
+            return [data];
+        }
+
+        function to_hash(var data, var func)
+        {
+            string key = func(data);
+            return { key : data };
+        }
+    }
+}}}

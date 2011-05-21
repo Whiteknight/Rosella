@@ -2,6 +2,8 @@ namespace Rosella { namespace Query { namespace Provider
 {
     class Hash : Rosella.Query.Provider
     {
+        function Hash() { }
+
         function map(var data, var mapper)
         {
             var new_data = {};
@@ -80,6 +82,27 @@ namespace Rosella { namespace Query { namespace Provider
                     new_data[key_b] = value_b;
             }
             return new_data;
+        }
+
+        function to_array(var data)
+        {
+            var new_data = [];
+            for (string key in data) {
+                var item = data[key];
+                push(new_data, item);
+            }
+            return new_data;
+        }
+
+        function to_hash(var data, var func)
+        {
+            var new_hash = {};
+            for (string key in data) {
+                var item = data[key];
+                string new_key = func(item);
+                new_hash[new_key] = item;
+            }
+            return new_hash;
         }
     }
 }}}
