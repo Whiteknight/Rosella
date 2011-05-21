@@ -11,7 +11,7 @@ mockobject: 2 Stable
 path: 0 Beta
 prototype: 0 Alpha
 proxy: 2 Stable
-query: 0 Alpha
+query: 0 Beta
 string: 0 Alpha
 test: 3 Stable
 winxed: 2 Stable
