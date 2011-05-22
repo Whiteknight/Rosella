@@ -33,7 +33,7 @@ namespace Rosella { namespace Query { namespace Provider
                 if (func(item)) {
                     push(new_data, item);
                     count = count + 1;
-                    if (count > limit)
+                    if (count >= limit)
                         return new_data;
                 }
             }
@@ -57,7 +57,7 @@ namespace Rosella { namespace Query { namespace Provider
                 var func [optional], int has_func [opt_flag])
         {
             if (has_func)
-                return self.filter(data, func, limit:[named]);
+                return self.filter(data, func, limit);
             int count = 0;
             var new_data = [];
             for (var item in data) {
@@ -113,6 +113,11 @@ namespace Rosella { namespace Query { namespace Provider
             for (string key in keys)
                 push(new_data, keys[key]);
             return new_data;
+        }
+
+        function unwrap_first(var data)
+        {
+            return data[0];
         }
 
         // Return a new array. Clone this one.

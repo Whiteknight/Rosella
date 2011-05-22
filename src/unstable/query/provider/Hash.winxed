@@ -31,11 +31,18 @@ namespace Rosella { namespace Query { namespace Provider
                 if (func(item)) {
                     new_data[key] = item;
                     count = count + 1;
-                    if (count > limit)
+                    if (count >= limit)
                         return new_data;
                 }
             }
             return new_data;
+        }
+
+        function unwrap_first(var data)
+        {
+            // Let the iterator decide which entry is "first"
+            for (var item in data)
+                return item;
         }
 
         // Fold the values into the seed.

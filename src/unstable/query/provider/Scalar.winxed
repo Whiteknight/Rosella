@@ -57,6 +57,11 @@ namespace Rosella { namespace Query { namespace Provider
             // TODO
         }
 
+        function unwrap_first(var data)
+        {
+            return data;
+        }
+
         // Return an array with the scalar as the only element
         function to_array(var data)
         {

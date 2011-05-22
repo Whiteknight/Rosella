@@ -18,6 +18,18 @@ class Test::Query::Provider {
     method count() {
     }
 
+    method any() {
+    }
+
+    method single() {
+    }
+
+    method first() {
+    }
+
+    method first_or_default() {
+    }
+
     method take() {
     }
 
