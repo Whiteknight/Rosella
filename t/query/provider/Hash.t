@@ -35,7 +35,7 @@ class Test::Query::Provider::Hash {
 
     method fold() {
         my %data := hash(:foo(1), :bar(2), :baz(3));
-        my $result := Rosella::Query::as_queryable(%data).map(
+        my $result := Rosella::Query::as_queryable(%data).fold(
             -> $s, $i { $i + $s }
         ).data;
         $!assert.equal($result, 6);
