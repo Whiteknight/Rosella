@@ -3,38 +3,54 @@ INIT {
     pir::load_bytecode("rosella/harness.pbc");
 }
 
+my @argv := pir::getinterp__P()[2];
+my $dummy := pir::shift__PP(@argv);
+
 my $factory := Rosella::construct(Rosella::Harness::TestRun::Factory);
-$factory.add_test_dirs("NQP",
-    "t/core"
-);
-my $corerun := $factory.create();
-
-$factory.add_test_dirs("NQP",
-    "t/tap_harness",    # "harness", can't shadow t/harness program
-    "t/test",
-    "t/action",
-    "t/container",
-    "t/event",
-    "t/prototype",
-    "t/query",
-    "t/path",
-    "t/proxy",
-    "t/mockobject",
-    "t/memoize",
-    :recurse(1)
-);
-my $librun := $factory.create();
-
 my $harness := Rosella::construct(Rosella::Harness);
 my $testview := $harness.default_view();
-$testview.add_run($corerun, 0);
-$testview.add_run($librun, 0);
 
+my @test_runs := [];
 
-my $result := $harness.run($corerun, $testview);
-if ($result) {
-    $harness.run($librun, $testview);
+if (pir::elements(@argv)) {
+    for @argv -> $dir {
+        $factory.add_test_dirs("NQP", "t/$dir", :recurse(1));
+        my $run := $factory.create();
+        pir::push(@test_runs, $run);
+        $testview.add_run($run, 0);
+    }
+} else {
+    $factory.add_test_dirs("NQP",
+        "t/core"
+    );
+    my $run := $factory.create();
+    pir::push(@test_runs, $run);
+    $testview.add_run($run, 0);
+    $factory.add_test_dirs("NQP",
+        "t/tap_harness",    # "harness", can't shadow t/harness program
+        "t/test",
+        "t/action",
+        "t/container",
+        "t/event",
+        "t/prototype",
+        "t/query",
+        "t/path",
+        "t/proxy",
+        "t/mockobject",
+        "t/memoize",
+        :recurse(1)
+    );
+    $run := $factory.create();
+    pir::push(@test_runs, $run);
+    $testview.add_run($run, 0);
+}
+
+for @test_runs -> $run {
+    my $result := $harness.run($run, $testview);
+    if (!$result) {
+        $testview.show_results();
+        pir::exit(1);
+    }
 }
 $testview.show_results();
-
-
+pir::exit(0);
