@@ -7,12 +7,12 @@ Rosella::Test::test(PrototypeItemTest);
 
 class PrototypeItemTest {
     method test_BUILD() {
-        my $pmc := Rosella::construct(Rosella::Prototype::Entry, 1);
+        my $pmc := Rosella::construct(Rosella::Prototype::Manager::Entry, 1);
     }
 
     method test_create() {
         my $proto := "This is a string";
-        my $item := Rosella::construct(Rosella::Prototype::Entry, $proto);
+        my $item := Rosella::construct(Rosella::Prototype::Manager::Entry, $proto);
         my $other := $item.create();
         $!assert.equal($proto, $other);
         $!assert.not_same($proto, $other);
@@ -21,7 +21,7 @@ class PrototypeItemTest {
     method test_construct() {
         my $proto := "This is a string";
         my &const := sub($self) { $self.replace("This", "That"); };
-        my $item := Rosella::construct(Rosella::Prototype::Entry, $proto, &const);
+        my $item := Rosella::construct(Rosella::Prototype::Manager::Entry, $proto, &const);
         my $other := $item.create();
         $item.construct($other);
         $!assert.equal($other, "That is a string");
@@ -31,7 +31,7 @@ class PrototypeItemTest {
     method test_construct_args() {
         my $proto := "This is a string";
         my &const := sub($self, $a, $b) { $self.replace($a, $b); };
-        my $item := Rosella::construct(Rosella::Prototype::Entry, $proto, &const);
+        my $item := Rosella::construct(Rosella::Prototype::Manager::Entry, $proto, &const);
         my $other := $item.create();
         $item.construct($other, ["string", "test"]);
         $!assert.equal($other, "This is a test");
