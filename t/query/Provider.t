@@ -36,6 +36,9 @@ class Test::Query::Provider {
     method skip() {
     }
 
+    method unwrap_first() {
+    }
+
     method to_array() {
     }
 
