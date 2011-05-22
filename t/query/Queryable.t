@@ -31,11 +31,6 @@ class Test::Query::Queryable {
         $assert.equal(pir::elements(%a), pir::elements(%b));
         $assert.throws_nothing({
             for %a -> $key {
-                pir::print($key);
-                pir::print(": ");
-                say(%a{$key});
-                say(%b{$key});
-                #say("$key: " ~ %a{$key});
                 $assert.equal(%a{$key}, %b{$key});
             }
         });
@@ -234,7 +229,7 @@ class Test::Query::Queryable {
         my %hash := Rosella::Query::as_queryable(%data).to_hash(
             -> $item { "test_$item"; }
         ).data;
-        hashes_equal($!assert, %hash, hash(:test_foo(1), :test_bar(2), :test_baz(3), :test_fie(4)));
+        hashes_equal($!assert, %hash, hash(:test_1(1), :test_2(2), :test_3(3), :test_4(4)));
     }
 
     method test_to_hash_array() {
