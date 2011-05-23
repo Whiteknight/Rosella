@@ -63,7 +63,7 @@ class Test::Query::Provider::Hash {
         $!assert.equal(pir::elements(%result), 0);
     }
 
-    method take_zero() {
+    method take_zero_predicate() {
         my %data := hash(:foo(1), :bar(2), :baz(3));
         my %result := Rosella::Query::as_queryable(%data).take(0,
             -> $i { $i == 1 }
@@ -91,12 +91,50 @@ class Test::Query::Provider::Hash {
         $!assert.equal(pir::elements(%result), 2);
     }
 
+    method skip_zero() {
+        my %data := hash(:foo(1), :bar(2), :baz(3));
+        my %result := Rosella::Query::as_queryable(%data).skip(0).data;
+        $!assert.equal(pir::elements(%result), 3);
+    }
+
+    method skip_two() {
+        my %data := hash(:foo(1), :bar(2), :baz(3));
+        my %result := Rosella::Query::as_queryable(%data).skip(2).data;
+        $!assert.equal(pir::elements(%result), 1);
+    }
+
+    method skip_predicate() {
+        my %data := hash(:foo(1), :bar(2), :baz(3));
+        my %result := Rosella::Query::as_queryable(%data).skip(1,
+            -> $i { $i % 2 }
+        ).data;
+        $!assert.equal(pir::elements(%result), 1);
+    }
+
+    method skip_predicate_zero() {
+        my %data := hash(:foo(1), :bar(2), :baz(3));
+        my %result := Rosella::Query::as_queryable(%data).skip(0,
+            -> $i { $i % 2 }
+        ).data;
+        $!assert.equal(pir::elements(%result), 2);
+    }
+
     method unwrap_first() {
+        my %data := hash(:foo(1), :bar(2), :baz(3));
+        my $p := Rosella::construct(Rosella::Query::Provider::Hash);
+        my $result := $p.unwrap_first(%data);
+        $!assert.instance_of($result, 'Integer');
     }
 
     method to_array() {
+        my %data := hash(:foo(1), :bar(2), :baz(3));
+        my @result := Rosella::Query::as_queryable(%data).to_array.data;
+        $!assert.does(@result, 'array');
     }
 
     method to_hash() {
+        my %data := hash(:foo(1), :bar(2), :baz(3));
+        my %result := Rosella::Query::as_queryable(%data).to_hash.data;
+        $!
     }
 }

@@ -99,7 +99,11 @@ namespace Rosella { namespace Test
         {
             message = self.default_message(message, has_msg, "item failed 'does'");
             int obj_does = 0;
-            ${ does obj_does, obj, role };
+            if (role instanceof 'String') {
+                string role_s = role;
+                ${ does obj_does, obj, role_s };
+            } else
+                ${ does obj_does, obj, role };
             if (!obj_does)
                 self.fail(message);
         }

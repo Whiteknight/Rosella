@@ -26,6 +26,8 @@ namespace Rosella { namespace Query { namespace Provider
                 ${ elements limit, data };
             var new_data = {};
             int count = 0;
+            if (limit == 0)
+                return new_data;
             for (string key in data) {
                 var item = data[key];
                 if (func(item)) {
@@ -42,7 +44,7 @@ namespace Rosella { namespace Query { namespace Provider
         {
             // Let the iterator decide which entry is "first"
             for (var item in data)
-                return item;
+                return data[item];
         }
 
         // Fold the values into the seed.
@@ -64,12 +66,32 @@ namespace Rosella { namespace Query { namespace Provider
                 return self.filter(data, func, limit:[named]);
             int num = 0;
             var new_data = {};
+            if (limit == 0)
+                return new_data;
             for (string key in data) {
                 var item = data[key];
                 new_data[key] = item;
                 num = num + 1;
-                if (num > limit)
+                if (num >= limit)
                     return new_data;
+            }
+            return new_data;
+        }
+
+        // Take all but the first N key/value pairs which satisfy the
+        // predicate
+        function skip(var data, int count,
+                var func [optional], int has_func [opt_flag])
+        {
+            if (has_func)
+                data = self.filter(data, func);
+            int num = 0;
+            var new_data = {};
+            for (string key in data) {
+                num++;
+                if (num <= count)
+                    continue;
+                new_data[key] = data[key];
             }
             return new_data;
         }
