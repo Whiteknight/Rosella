@@ -1,11 +1,27 @@
 ---
 layout: rosella
-title: Rosella Core
+title: Rosella Query
 ---
 
 ## Overview
 
+The Rosella Query library is a library for performing higher-order functions
+on aggregate data. Aggregates are things like arrays and hashes, where an
+object contains many related child objects. The Rosella Query library is based
+in no small part on ideas from the .NET System.Linq library, although many of
+the routine names are changed and the interfaces have been modified to suit
+the capabilities of the Parrot Virtual Machine.
+
 ## Concepts
+
+### Functions and Predicates
+
+The Query library takes two types of function objects for it's routines:
+regular functions and predicates. This is mostly a difference in terminology.
+A function is one that takes one or more data values and is expected to return
+another data value. A Predicate is a function that is expected to take one or
+more data values and return a boolean. Typically the boolean value is an
+answer to the question "Does this value belong in the result set?".
 
 ### Map, Filter, and Fold
 
