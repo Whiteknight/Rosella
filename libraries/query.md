@@ -91,7 +91,7 @@ be nonsensical. If the aggregate is empty, First throws an exception. There
 is a variant called `.first_or_default` which returns a default value (null,
 unless specified otherwise) if the aggregate is empty.
 
-## to_array and to_hash
+### to_array and to_hash
 
 The Query library can convert between hash and array types, or remap the
 items in a hash to new positions.
@@ -105,7 +105,7 @@ The `to_hash` method returns a hash queryable. It takes a function reference
 to be used for generating the key of the hash. The key generator function only
 takes the data item as input, not the key for an existing hash.
 
-## data and unwrap_first
+### data and unwrap_first
 
 There are two methods for pulling data out of a queryable without wrapping it
 back into another queryable. The first, `.data()` returns the complete data
