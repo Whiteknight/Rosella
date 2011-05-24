@@ -1,0 +1,36 @@
+namespace Rosella { namespace File
+{
+    class Visitor
+    {
+        function visit(string file)
+        {
+            if (self.should_visit(file))
+                self.process(file);
+        }
+
+        function should_visit(string file)
+        {
+            return 1;
+        }
+
+        function begin_folder(string path, string name)
+        {
+        }
+
+        function end_folder(string path, string name)
+        {
+        }
+
+        function process(string file)
+        {
+            using Rosella.Error.must_subclass;
+            must_subclass("Rosella.File.Visitor");
+        }
+
+        function result()
+        {
+            using Rosella.Error.must_subclass;
+            must_subclass("Rosella.File.Visitor");
+        }
+    }
+}}

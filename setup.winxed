@@ -232,6 +232,12 @@ function setup_experimental_libraries(var rosella)
         "string/tokenizer/CClass",
         "string/tokenizer/Token"
     );
+
+    setup_unstable_lib(rosella, "file", ["Core"],
+        "file/Visitor",
+        "file/visitor/FileList",
+        "file/Walker"
+    );
 }
 
 function setup_utilities(var rosella)

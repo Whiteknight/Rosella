@@ -1,0 +1,22 @@
+namespace Rosella { namespace File { namespace Visitor
+{
+    class FileList : Rosella.File.Visitor
+    {
+        var files;
+
+        function FileList()
+        {
+            self.files = new 'ResizableStringArray';
+        }
+
+        function process(string file)
+        {
+            push(self.files, file);
+        }
+
+        function result()
+        {
+            return self.files;
+        }
+    }
+}}}
