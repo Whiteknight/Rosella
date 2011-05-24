@@ -174,6 +174,17 @@ function setup_stable_libraries(var rosella)
         "memoize/Controller",
         "memoize/Factory"
     );
+
+    // A library for working with aggregates
+    setup_winxed_lib(rosella, "query", ["Core"],
+        "query/Provider",
+        "query/provider/Array",
+        "query/provider/Hash",
+        "query/provider/Scalar",
+        "query/Query",
+        "query/Queryable",
+        "query/queryable/InPlace"
+    );
 }
 
 function setup_experimental_libraries(var rosella)
@@ -186,17 +197,6 @@ function setup_experimental_libraries(var rosella)
         "prototype/Manager",
         "prototype/manager/Entry",
         "prototype/manager/ObjectCloner"
-    );
-
-    // A library for working with aggregates
-    setup_unstable_lib(rosella, "query", ["Core"],
-        "query/Provider",
-        "query/provider/Array",
-        "query/provider/Hash",
-        "query/provider/Scalar",
-        "query/Query",
-        "query/Queryable",
-        "query/queryable/InPlace"
     );
 
     setup_unstable_lib(rosella, "path", ["Core"],
