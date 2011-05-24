@@ -134,7 +134,9 @@ class Test::Query::Provider::Hash {
 
     method to_hash() {
         my %data := hash(:foo(1), :bar(2), :baz(3));
-        my %result := Rosella::Query::as_queryable(%data).to_hash.data;
-        $!
+        my %result := Rosella::Query::as_queryable(%data).to_hash(
+            -> $i { "test_$i"; }
+        ).data;
+        hashes_equal($!assert, %result, hash(:test_1(1), :test_2(2), :test_3(3)));
     }
 }
