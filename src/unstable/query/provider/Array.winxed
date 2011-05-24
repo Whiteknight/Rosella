@@ -58,14 +58,20 @@ namespace Rosella { namespace Query { namespace Provider
         {
             if (has_func)
                 return self.filter(data, func, limit);
-            int count = 0;
             var new_data = [];
-            for (var item in data) {
-                push(new_data, item);
-                count = count + 1;
-                if (count > limit)
-                    return new_data;
-            }
+            for (int i = 0; i < limit && i < elements(data); i++)
+                new_data[i] = data[i];
+            return new_data;
+        }
+
+        function skip(var data, int count,
+                var func [optional], int has_func [opt_flag])
+        {
+            if (has_func)
+                data = self.filter(data, func);
+            var new_data = [];
+            for (int i = count; i < elements(data); i++)
+                new_data[i - count] = data[i];
             return new_data;
         }
 
