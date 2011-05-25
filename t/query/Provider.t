@@ -15,6 +15,9 @@ class Test::Query::Provider {
     method fold() {
     }
 
+    method sort() {
+    }
+
     method count() {
     }
 

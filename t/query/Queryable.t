@@ -150,6 +150,47 @@ class Test::Query::Queryable {
         $!assert.equal($new_data, 2);
     }
 
+    # sort
+
+    method test_sort_hash() {
+        my %data := hash(:foo(3), :bar(5), :baz(2));
+        my @new_data := Rosella::Query::as_queryable(%data).sort(
+            -> $i, $j {
+                my $result := -1;
+                if ($i > $j) { $result := 1; }
+                elsif ($i == $j) { $result := 0; }
+                $result;
+            }
+        ).data;
+        arrays_equal($!assert, @new_data, [2, 3, 5]);
+    }
+
+    method test_sort_array() {
+        my @data := [3, 5, 2, 4, 1];
+        my @new_data := Rosella::Query::as_queryable(@data).sort(
+            -> $i, $j {
+                my $result := -1;
+                if ($i > $j) { $result := 1; }
+                elsif ($i == $j) { $result := 0; }
+                $result;
+            }
+        ).data;
+        arrays_equal($!assert, @new_data, [1, 2, 3, 4, 5]);
+    }
+
+    method test_sort_scalar() {
+        my $data := 1;
+        my @new_data := Rosella::Query::as_queryable($data).sort(
+            -> $i, $j {
+                my $result := -1;
+                if ($i > $j) { $result := 1; }
+                elsif ($i == $j) { $result := 0; }
+                $result;
+            }
+        ).data;
+        arrays_equal($!assert, @new_data, [1]);
+    }
+
     # count
 
     method test_count_hash() {
