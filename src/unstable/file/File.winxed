@@ -70,7 +70,7 @@ namespace Rosella { namespace File
 
         function read_all_lines()
         {
-            string text = self.read_all_text()
+            string text = self.read_all_text();
             return split("\n", text);
         }
 

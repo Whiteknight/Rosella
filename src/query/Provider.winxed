@@ -30,6 +30,39 @@ namespace Rosella { namespace Query
             while(1)
                 yield provider;
         }
+
+        function qsort(var d, int s, int n, var cmp)
+        {
+            if (n - 1 > s) {
+                int pivot = s;
+                pivot = private_partition(d, s, n, pivot, cmp);
+                qsort(d, s, pivot, cmp);
+                qsort(d, pivot+1, n, cmp);
+            }
+        }
+
+        function private_partition(var d, int s, int n, int pivot, var cmp)
+        {
+            var piv = d[pivot];
+            private_swap(d, pivot, n-1);
+            var store = s;
+            int ix;
+            for(ix = s; ix < n - 1; ix++) {
+                if (cmp(d[ix], piv) < 0) {
+                    private_swap(d, store, ix);
+                    store++;
+                }
+            }
+            private_swap(d, n-1, store);
+            return store;
+        }
+
+        function private_swap(var d, int a, int b)
+        {
+            var tmp = d[a];
+            d[a] = d[b];
+            d[b] = tmp;
+        }
     }
 
     /* Provider Class
@@ -175,6 +208,13 @@ namespace Rosella { namespace Query
         {
             using Rosella.Error.must_subclass;
             must_subclass("Rosella::Query::Provider");
+        }
+
+        function sort(var data, var func)
+        {
+            var new_data = self.to_array(data);
+            qsort(new_data, 0, elements(new_data), func);
+            return new_data;
         }
     }
 }}

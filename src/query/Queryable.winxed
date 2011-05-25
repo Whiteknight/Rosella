@@ -83,6 +83,12 @@ namespace Rosella { namespace Query
             return self.as_queryable(value);
         }
 
+        function sort(var func)
+        {
+            var result = self.provider.sort(self.data, func);
+            return self.as_queryable(result);
+        }
+
         // Return a count of elements
         function count(var func [optional], int has_func [opt_flag])
         {
