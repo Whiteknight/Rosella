@@ -1,0 +1,6 @@
+namespace Rosella { namespace File { namespace Directory
+{
+    class Iterator
+    {
+    }
+}}}

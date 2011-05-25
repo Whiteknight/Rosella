@@ -1,0 +1,57 @@
+namespace Rosella { namespace File
+{
+    namespace Directory
+    {
+        function current_directory()
+        {
+            using Rosella.File.get_os_pmc;
+            string cwd = get_os_pmc().cwd();
+            return new Rosella.File.Directory(cwd);
+        }
+    }
+
+    class Directory
+    {
+        var path;
+
+        function Directory(string path)
+        {
+            self.path = path;
+        }
+
+        function exists()
+        {
+            // TODO
+        }
+
+        function delete(int recursive [optional], int has_r [opt_flag])
+        {
+            // TODO
+        }
+
+        function create()
+        {
+            // TODO
+        }
+
+        function rename(string new_path)
+        {
+            // TODO
+        }
+
+        function get_files()
+        {
+            // TODO
+        }
+
+        function get_subdirectories()
+        {
+            // TODO
+        }
+
+        function get_iter[vtable]()
+        {
+            // TODO
+        }
+    }
+}}

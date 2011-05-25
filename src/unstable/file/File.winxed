@@ -1,0 +1,102 @@
+namespace Rosella
+{
+    namespace File
+    {
+        function get_os_pmc()
+        {
+            loadlib("os");
+            var os = new 'OS';
+            while(1)
+                return os;
+        }
+    }
+}
+
+namespace Rosella { namespace File
+{
+    class File
+    {
+        var filename;
+
+        function File(string filepath)
+        {
+            self.filename = filepath;
+        }
+
+        function exists()
+        {
+            // TODO
+        }
+
+        function delete()
+        {
+            using Rosella.File.get_os_pmc;
+            get_os_pmc().rm(self.filename);
+        }
+
+        function rename(string new_name)
+        {
+            using Rosella.File.get_os_pmc;
+            get_os_pmc().rename(self.filename, new_name);
+            self.filename = new_name;
+        }
+
+        function open(string mode [optional], int has_mode [opt_flag])
+        {
+            if (!has_mode)
+                mode = "r";
+            var filehandle = new 'FileHandle';
+            filehandle.open(self.filename, mode);
+            return filehandle;
+        }
+
+        function open_read()
+        {
+            return self.open("r");
+        }
+
+        function open_write()
+        {
+            return self.open("w");
+        }
+
+        function read_all_text()
+        {
+            var filehandle = self.open("r");
+            string text = filehandle.readall();
+            filehandle.close();
+            return text;
+        }
+
+        function read_all_lines()
+        {
+            string text = self.read_all_text()
+            return split("\n", text);
+        }
+
+        function write_all_text(string text)
+        {
+            var filehandle = self.open("w");
+            filehandle.print(text);
+            filehandle.close();
+        }
+
+        function write_all_lines(var lines)
+        {
+            var text = join("\n", lines);
+            self.write_all_text(text);
+        }
+
+        function append_text(string text)
+        {
+            var filehandle = self.open("a");
+            filehandle.print(text);
+            filehandle.close();
+        }
+
+        function copy(string dest)
+        {
+            // TODO
+        }
+    }
+}}

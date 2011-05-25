@@ -234,6 +234,7 @@ function setup_experimental_libraries(var rosella)
     );
 
     setup_unstable_lib(rosella, "file", ["Core"],
+        "file/File",
         "file/Visitor",
         "file/visitor/FileList",
         "file/Walker"

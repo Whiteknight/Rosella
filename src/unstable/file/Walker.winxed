@@ -2,9 +2,6 @@
 
 namespace Rosella { namespace File
 {
-    const int STAT_ISREG = 0x8000;
-    const int STAT_ISDIR = 0x4000;
-
     class Walker
     {
         var root_path;
@@ -13,8 +10,8 @@ namespace Rosella { namespace File
         function Walker(string root_path)
         {
             self.root_path = root_path;
-            loadlib("os");
-            self.os = new 'OS';
+            using Rosella.File.get_os_pmc;
+            self.os = get_os_pmc();
         }
 
         function walk(var visitor [optional], int has_v [opt_flag])
