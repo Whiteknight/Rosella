@@ -25,7 +25,8 @@ namespace Rosella { namespace File
 
         function exists()
         {
-            // TODO
+            using Rosella.File.get_os_pmc;
+            get_os_pmc().exists(self.filename);
         }
 
         function delete()
@@ -96,7 +97,10 @@ namespace Rosella { namespace File
 
         function copy(string dest)
         {
-            // TODO
+            var file = new Rosella.File.File(dest);
+            string txt = self.read_all_text();
+            file.write_all_text(txt);
+            return file;
         }
     }
 }}
