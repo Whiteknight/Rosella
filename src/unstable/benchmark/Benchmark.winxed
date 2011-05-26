@@ -2,12 +2,37 @@ namespace Rosella
 {
     namespace Benchmark
     {
-        function count_time(var code)
+        function benchmark(var code)
         {
             float starttime = floattime();
             code();
             float endtime = floattime();
-            return endtime - starttime;
+            return new Rosella.Benchmark.Result(endtime - starttime, 100, 0, null);
+        }
+
+        function benchmark_sequence(var code, var seq)
+        {
+            if (seq == null || elements(seq) == 0)
+                return null, null;
+            var times = new 'ResizableFloatArray';
+            for (int i = 0; i < elements(seq); i++) {
+                float starttime = floattime();
+                code(seq[i]);
+                float endtime = floattime();
+                times[i] =  endtime - starttime;
+            }
+            float min = times[0];
+            for (int i = 1; i < elements(times); i++) {
+                if (times[i] < min)
+                    min = times[i];
+            }
+            var results = [];
+            for (int i = 0; i < elements(times); i++) {
+                float percent = percent_of_base(min, times[i]);
+                float diff = percent_difference(min, times[i]);
+                results[i] = new Rosella.Benchmark.Result(times[i], percent, diff, seq[i]);
+            }
+            return results;
         }
 
         function percent_of_base(float base, float t)

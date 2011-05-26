@@ -241,6 +241,11 @@ function setup_experimental_libraries(var rosella)
         "file/Walker",
         ["file/Constants"]:[named("constants")]
     );
+
+    setup_unstable_lib(rosella, "benchmark", [],
+        "benchmark/Benchmark",
+        "benchmark/Result"
+    );
 }
 
 function setup_utilities(var rosella)
