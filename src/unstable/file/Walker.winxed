@@ -1,3 +1,5 @@
+$include_const "src/unstable/file/Constants.pasm";
+
 namespace Rosella { namespace File
 {
     class Walker
@@ -24,8 +26,6 @@ namespace Rosella { namespace File
         // subdirectories, if requested.
         function visit_dir(string path, string name, var visitor)
         {
-            int STAT_ISREG = 0x8000;
-            int STAT_ISDIR = 0x4000;
             visitor.begin_folder(path, name);
             var contents_raw = self.os.readdir(path);
 
@@ -50,8 +50,6 @@ namespace Rosella { namespace File
 
         function get_file_details(string entry)
         {
-            int STAT_ISREG = 0x8000;
-            int STAT_ISDIR = 0x4000;
             var stat = self.os.stat(entry);
             int mode = stat[2];
             int isdir = 0;

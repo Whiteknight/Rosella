@@ -21,7 +21,7 @@ function main[main](argv)
         "pir_pir"           : {},
         "inst_lib"          : [],
         "installable_pbc"   : {},
-        "pasm_winxed"       : {},
+        "include_winxed"    : {},
         "manifest_includes" : ["CREDITS", "README.md", "setup.winxed"]
     };
 
@@ -237,7 +237,8 @@ function setup_experimental_libraries(var rosella)
         "file/File",
         "file/Visitor",
         "file/visitor/FileList",
-        "file/Walker"
+        "file/Walker",
+        ["file/Constants"]:[named("constants")]
     );
 }
 
@@ -257,21 +258,24 @@ function setup_utilities(var rosella)
     }
 }
 
-function setup_winxed_lib(var rosella, string name, var includes, var files [slurpy])
+function setup_winxed_lib(var rosella, string name, var includes, var files [slurpy],
+        var named [slurpy,named])
 {
-    setup_lib_internal(rosella, name, "src/", includes, files);
+    setup_lib_internal(rosella, name, "src/", includes, files, named);
 }
 
-function setup_unstable_lib(var rosella, string name, var includes, var files [slurpy])
+function setup_unstable_lib(var rosella, string name, var includes, var files [slurpy],
+        var named [slurpy,named])
 {
-    setup_lib_internal(rosella, name, "src/unstable/", includes, files);
+    setup_lib_internal(rosella, name, "src/unstable/", includes, files, named);
 }
 
 function setup_lib_internal(var rosella, string name, string prefix,
-        var includes, var files_raw)
+        var includes, var files_raw, var named)
 {
     var pbc_files = [];
     var pir_files = [];
+    setup_lib_constants(rosella, name, prefix, named);
 
     // Get a list of all files
     var files = [];
@@ -296,6 +300,20 @@ function setup_lib_internal(var rosella, string name, string prefix,
     rosella["inst_lib"].push(pbc_lib_name);
     rosella["manifest_includes"].push(pir_lib_name);
 }
+
+function setup_lib_constants(var rosella, string name, string prefix, var args)
+{
+    var constants_files = args["constants"];
+    if (constants_files == null || elements(constants_files) == 0)
+        return;
+    for (string constant_file in constants_files) {
+        string pasm_file = sprintf("%s%s.pasm", [prefix, constant_file]);
+        string winxed_file = sprintf("%s%s.winxed", [prefix, constant_file]);
+        rosella["include_winxed"][pasm_file] = winxed_file;
+    }
+}
+
+
 
 // Load in the distutils library, which we are also responsible for
 // building. If we don't have a version handy, load in the bootstrapping
