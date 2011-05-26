@@ -34,7 +34,9 @@ namespace Rosella { namespace Query
         function qsort(var d, int s, int n, var cmp)
         {
             if (n - 1 > s) {
-                int pivot = s;
+
+                int pivot = s + int((n - s) / 2);
+                say(sprintf("s = %d n = %d pivot = %d", [s, n, pivot]));
                 pivot = private_partition(d, s, n, pivot, cmp);
                 qsort(d, s, pivot, cmp);
                 qsort(d, pivot+1, n, cmp);
@@ -43,9 +45,9 @@ namespace Rosella { namespace Query
 
         function private_partition(var d, int s, int n, int pivot, var cmp)
         {
-            var piv = d[pivot];
+            int piv = d[pivot];
             private_swap(d, pivot, n-1);
-            var store = s;
+            int store = s;
             int ix;
             for(ix = s; ix < n - 1; ix++) {
                 if (cmp(d[ix], piv) < 0) {
@@ -59,7 +61,7 @@ namespace Rosella { namespace Query
 
         function private_swap(var d, int a, int b)
         {
-            var tmp = d[a];
+            int tmp = d[a];
             d[a] = d[b];
             d[b] = tmp;
         }
