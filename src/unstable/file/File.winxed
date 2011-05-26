@@ -1,3 +1,5 @@
+$include_const "src/unstable/file/Constants.pasm";
+
 namespace Rosella
 {
     namespace File
@@ -8,6 +10,24 @@ namespace Rosella
             var os = new 'OS';
             while(1)
                 return os;
+        }
+
+        function is_file(string path)
+        {
+            var stat = get_os_pmc().stat(path);
+            int mode = stat[2];
+            int isfile = 0;
+            ${ band isfile, mode, STAT_ISREG };
+            return isfile;
+        }
+
+        function is_directory(string path)
+        {
+            var stat = get_os_pmc().stat(path);
+            int mode = stat[2];
+            int isdir = 0;
+            ${ band isdir, mode, STAT_ISDIR };
+            return isdir;
         }
     }
 }

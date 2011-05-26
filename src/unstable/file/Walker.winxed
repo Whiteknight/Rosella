@@ -26,37 +26,31 @@ namespace Rosella { namespace File
         // subdirectories, if requested.
         function visit_dir(string path, string name, var visitor)
         {
+            using Rosella.File.is_file;
+            using Rosella.File.is_directory;
+
             visitor.begin_folder(path, name);
             var contents_raw = self.os.readdir(path);
 
             for (string file in contents_raw) {
                 string entry = path + "/" + file;
-                int isfile = 0;
-                int isdir = 0;
-                :(isfile, isdir) = self.get_file_details(entry);
 
                 // Don't follow the "special" files
                 if (file == "." || file == "..")
                     continue;
 
+                int isfile = is_file(entry);
                 if (isfile == STAT_ISREG)
                     visitor.visit(entry);
-
-                if (isdir == STAT_ISDIR)
-                    self.visit_dir(entry, file, visitor);
+                else {
+                    int isdir = is_directory(entry);
+                    if (isdir == STAT_ISDIR)
+                        self.visit_dir(entry, file, visitor);
+                }
             }
             visitor.end_folder(path, name);
         }
 
-        function get_file_details(string entry)
-        {
-            var stat = self.os.stat(entry);
-            int mode = stat[2];
-            int isdir = 0;
-            ${ band isdir, mode, STAT_ISDIR };
-            int isfile = 0;
-            ${ band isfile, mode, STAT_ISREG };
-            return isfile, isdir;
-        }
+
     }
 }}

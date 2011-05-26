@@ -1,3 +1,5 @@
+$include_const "src/unstable/file/Constants.pasm";
+
 namespace Rosella { namespace File
 {
     namespace Directory
@@ -21,7 +23,8 @@ namespace Rosella { namespace File
 
         function exists()
         {
-            // TODO
+            using Rosella.File.get_os_pmc;
+            get_os_pmc().exists(self.path);
         }
 
         function delete(int recursive [optional], int has_r [opt_flag])
@@ -31,22 +34,43 @@ namespace Rosella { namespace File
 
         function create()
         {
-            // TODO
+            using Rosella.File.get_os_pmc;
+            var os = get_os_pmc();
+            if (!os.exists(self.path))
+                os.mkdir(self.path, 0);
         }
 
         function rename(string new_path)
         {
-            // TODO
+            using Rosella.File.get_os_pmc;
+            get_os_pmc().rename(self.path, new_path);
+            self.path = new_path;
         }
 
         function get_files()
         {
-            // TODO
+            using Rosella.File.get_os_pmc;
+            var file_names = get_os_pmc().readdir(self.path);
+            var files = [];
+            using Rosella.File.is_file;
+            for (string file_name in file_names) {
+                if (is_file(file_name))
+                    push(files, new Rosella.File.File(file_name));
+            }
+            return files;
         }
 
         function get_subdirectories()
         {
-            // TODO
+            using Rosella.File.get_os_pmc;
+            var names = get_os_pmc().readdir(self.path);
+            var dirs = [];
+            using Rosella.File.is_directory;
+            for (string name in names) {
+                if (is_directory(name))
+                    push(dirs, new Rosella.File.Directory(name));
+            }
+            return dirs;
         }
 
         function get_iter[vtable]()
