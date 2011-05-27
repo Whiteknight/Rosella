@@ -64,24 +64,26 @@ details about all libraries, what they do, and how to use them, see the
 These libraries are considered stable enough for most uses. These are all
 tested and documented.
 
-1. Core (rosella/core.pbc)
-2. Action (rosella/action.pbc)
-3. Container (rosella/container.pbc)
-4. Test (rosella/test.pbc)
-5. TAP Harness (rosella/tap_harness.pbc)
-6. Proxy (rosella/proxy.pbc)
-7. Mock Object (rosella/mockobject.pbc)
-8. Event (rosella/event.pbc)
-9. Winxed (rosella/winxed.pbc)
+1.  Core (rosella/core.pbc)
+2.  Action (rosella/action.pbc)
+3.  Container (rosella/container.pbc)
+4.  Test (rosella/test.pbc)
+5.  TAP Harness (rosella/tap_harness.pbc)
+6.  Proxy (rosella/proxy.pbc)
+7.  Mock Object (rosella/mockobject.pbc)
+8.  Event (rosella/event.pbc)
+9.  Winxed (rosella/winxed.pbc)
+10. Memoize (rosella/memoize.pbc)
+11. Query (rosella/query.pbc)
 
 ## Libraries in Development
 
-1. Prototype (rosella/prototype.pbc)
-2. Query (rosella/query.pbc)
-3. Decorate (rosella/decorate.pbc)
-4. Path (rosella/path.pbc)
-5. Contract (rosella/contract.pbc)
-6. Memoize (rosella/memoize.pbc)
+There are a number of additional libraries in earlier stages of development
+which are not considered to be "stable". These libraries are located in the
+directory `src/unstable/`. Libraries which are built as part of the
+`setup.winxed` command and which are listed in the `VERSION` file may be
+usable, but are not considered stable and are subject to be changed or even
+deleted on a whim.
 
 # Hacking
 
