@@ -14,7 +14,7 @@ namespace Rosella { namespace File
         function walk(string dirname, var visitor [optional], int has_v [opt_flag])
         {
             if (!has_v)
-                visitor = new Rosella.File.Visitor.FileList();
+                visitor = new Rosella.File.Visitor.FileList(1, 1);
             private_visit_dir(dirname, "", visitor);
             return visitor.result();
         }

@@ -1,0 +1,35 @@
+namespace Rosella { namespace File { namespace Visitor
+{
+    class List : Rosella.File.Visitor
+    {
+        var entries;
+        var select_files;
+        var select_dirs;
+
+        function List(int file, int dir)
+        {
+            self.entries = new 'ResizableStringArray';
+            self.select_files = file;
+            self.select_dirs = dir;
+        }
+
+        function process(string entry)
+        {
+            if (self.select_files) {
+                using Rosella.File.is_file;
+                if (is_file(entry))
+                    push(self.entries, entry);
+            }
+            else if (self.select_dirs) {
+                using Rosella.File.is_directory;
+                if (is_directory(entry))
+                    push(self.entries, entry);
+            }
+        }
+
+        function result()
+        {
+            return self.files;
+        }
+    }
+}}}
