@@ -43,6 +43,11 @@ namespace Rosella { namespace File
             self.filename = filepath;
         }
 
+        function get_string[vtable]()
+        {
+            return self.filename;
+        }
+
         function exists()
         {
             using Rosella.File.get_os_pmc;
