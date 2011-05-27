@@ -1,0 +1,55 @@
+namespace Rosella { namespace Benchmark
+{
+    class Result
+    {
+        var time;
+        var percent;
+        var percent_diff;
+        var data;
+
+        function Result(float time, float percent, float percent_diff, var data)
+        {
+            self.time = time;
+            self.percent = percent;
+            self.percent_diff = percent_diff;
+            self.data = data;
+        }
+
+        function set_base_time(float base)
+        {
+            using Rosella.Benchmark.percent_of_base;
+            using Rosella.Benchmark.percent_difference;
+
+                self.percent = percent_of_base(base, self.time);
+                self.percent_diff = percent_difference(base, self.time);
+
+        }
+
+        function time()
+        {
+            return self.time;
+        }
+
+        function percent()
+        {
+            return self.percent;
+        }
+
+        function percent_diff()
+        {
+            return self.percent_diff;
+        }
+
+        function data()
+        {
+            return self.data;
+        }
+
+        function get_string[vtable]()
+        {
+            return sprintf("%fs - %%%f (%%%f diff)",
+                [self.time, self.percent, self.percent_diff]
+            );
+        }
+    }
+}}
