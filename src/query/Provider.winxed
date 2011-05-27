@@ -33,36 +33,34 @@ namespace Rosella { namespace Query
 
         function qsort(var d, int s, int n, var cmp)
         {
-            if (n - 1 > s) {
-                int pivot = s;
-                pivot = private_partition(d, s, n, pivot, cmp);
-                qsort(d, s, pivot, cmp);
-                qsort(d, pivot+1, n, cmp);
-            }
-        }
+            int last = n-1;
+            while (last > s) {
+                int pivot = s + int((n - s) / 2);
+                int store = s;
+                var tmp;
 
-        function private_partition(var d, int s, int n, int pivot, var cmp)
-        {
-            var piv = d[pivot];
-            private_swap(d, pivot, n-1);
-            var store = s;
-            int ix;
-            for(ix = s; ix < n - 1; ix++) {
-                if (cmp(d[ix], piv) < 0) {
-                    private_swap(d, store, ix);
-                    store++;
+                var piv = d[pivot];
+                d[pivot] = d[last];
+                d[last] = piv;
+
+                for(int ix = s; ix < last; ix++) {
+                    if (cmp(d[ix], piv) < 0) {
+                        tmp = d[store];
+                        d[store] = d[ix];
+                        d[ix] = tmp;
+                        store++;
+                    }
                 }
+
+                tmp = d[last];
+                d[last] = d[store];
+                d[store] = tmp;
+                pivot = store;
+                qsort(d, s, pivot, cmp);
+                s = pivot + 1;
             }
-            private_swap(d, n-1, store);
-            return store;
         }
 
-        function private_swap(var d, int a, int b)
-        {
-            var tmp = d[a];
-            d[a] = d[b];
-            d[b] = tmp;
-        }
     }
 
     /* Provider Class
