@@ -46,7 +46,7 @@ namespace Rosella { namespace File
         function exists()
         {
             using Rosella.File.get_os_pmc;
-            get_os_pmc().exists(self.filename);
+            return get_os_pmc().exists(self.filename);
         }
 
         function delete()
@@ -62,23 +62,18 @@ namespace Rosella { namespace File
             self.filename = new_name;
         }
 
-        function open(string mode [optional], int has_mode [opt_flag])
-        {
-            if (!has_mode)
-                mode = "r";
-            var filehandle = new 'FileHandle';
-            filehandle.open(self.filename, mode);
-            return filehandle;
-        }
-
         function open_read()
         {
-            return self.open("r");
+            var filehandle = new 'FileHandle';
+            filehandle.open(self.filename, "r");
+            return filehandle;
         }
 
         function open_write()
         {
-            return self.open("w");
+            var filehandle = new 'FileHandle';
+            filehandle.open(self.filename, "w");
+            return filehandle;
         }
 
         function read_all_text()
