@@ -10,6 +10,44 @@ namespace Rosella { namespace File
             string cwd = get_os_pmc().cwd();
             return new Rosella.File.Directory(cwd);
         }
+
+        function walk(string dirname, var visitor [optional], int has_v [opt_flag])
+        {
+            if (!has_v)
+                visitor = new Rosella.File.Visitor.FileList();
+            private_visit_dir(dirname, "", visitor);
+            return visitor.result();
+        }
+
+        // Get a list of test files from a directory. Allow recursion into
+        // subdirectories, if requested.
+        function private_visit_dir(string path, string name, var visitor)
+        {
+            using Rosella.File.is_file;
+            using Rosella.File.is_directory;
+            using Rosella.File.get_os_pmc;
+
+            visitor.begin_folder(path, name);
+            var contents_raw = get_os_pmc().readdir(path);
+
+            for (string file in contents_raw) {
+                string entry = path + "/" + file;
+
+                // Don't follow the "special" files
+                if (file == "." || file == "..")
+                    continue;
+
+                int isfile = is_file(entry);
+                if (isfile == STAT_ISREG)
+                    visitor.visit(entry);
+                else {
+                    int isdir = is_directory(entry);
+                    if (isdir == STAT_ISDIR)
+                        private_visit_dir(entry, file, visitor);
+                }
+            }
+            visitor.end_folder(path, name);
+        }
     }
 
     class Directory
@@ -71,11 +109,6 @@ namespace Rosella { namespace File
                     push(dirs, new Rosella.File.Directory(name));
             }
             return dirs;
-        }
-
-        function get_iter[vtable]()
-        {
-            // TODO
         }
     }
 }}

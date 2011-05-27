@@ -238,7 +238,6 @@ function setup_experimental_libraries(var rosella)
         "file/File",
         "file/Visitor",
         "file/visitor/FileList",
-        "file/Walker",
         ["file/Constants"]:[named("constants")]
     );
 
