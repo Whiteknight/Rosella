@@ -237,7 +237,7 @@ function setup_experimental_libraries(var rosella)
         "file/Directory",
         "file/File",
         "file/Visitor",
-        "file/visitor/FileList",
+        "file/visitor/List",
         ["file/Constants"]:[named("constants")]
     );
 
