@@ -20,12 +20,15 @@ if (pir::elements(@argv)) {
         $testview.add_run($run, 0);
     }
 } else {
+    # Core tests (If these fail, we don't attempt anything else)
     $factory.add_test_dirs("NQP",
         "t/core"
     );
     my $run := $factory.create();
     pir::push(@test_runs, $run);
     $testview.add_run($run, 0);
+
+    # Stable library tests
     $factory.add_test_dirs("NQP",
         "t/tap_harness",    # "harness", can't shadow t/harness program
         "t/test",
@@ -38,6 +41,15 @@ if (pir::elements(@argv)) {
         "t/proxy",
         "t/mockobject",
         "t/memoize",
+        :recurse(1)
+    );
+    $run := $factory.create();
+    pir::push(@test_runs, $run);
+    $testview.add_run($run, 0);
+
+    # Unstable library tests
+    $factory.add_test_dirs("NQP",
+        "t/string",
         :recurse(1)
     );
     $run := $factory.create();
