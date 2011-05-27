@@ -1,5 +1,6 @@
 *.pbc
 *.pir
+*.pasm
 *.c
 *.o
 src/_build/*
