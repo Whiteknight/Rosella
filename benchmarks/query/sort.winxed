@@ -1,0 +1,56 @@
+function main[main]()
+{
+    load_bytecode("rosella/benchmark.pbc");
+    using Rosella.Benchmark.benchmark;
+
+    load_bytecode("rosella/query.pbc");
+
+    const int N = 100000;
+    say(sprintf("N = %d", [N]));
+    var dataA = [];
+    for (int i = N - 1; i >= 0; i--)
+        dataA[i] = N - i;
+
+    var dataB = [];
+    for (int i = N - 1; i >= 0; i--)
+        dataB[i] = N - i;
+
+    var dataC = new 'ResizableIntegerArray';
+    for (int i = N - 1; i >= 0; i--)
+        dataC[i] = N - i;
+
+    var builtin = benchmark(function() {
+        using static compare;
+        dataA.sort(compare);
+    });
+    display_result("sort with .sort BUILTIN", builtin);
+
+    var query = benchmark(function() {
+        using static compare;
+        using Rosella.Query.as_queryable;
+        as_queryable(dataB).sort(compare);
+    });
+    query.set_base_time(builtin.time());
+    display_result("sort with Rosella Query", query);
+
+    var ria = benchmark(function() {
+        using static compare;
+        using Rosella.Query.as_queryable;
+        as_queryable(dataC).sort(compare);
+    });
+    query.set_base_time(builtin.time());
+    display_result("sort RIA with Rosella Query", ria);
+}
+
+function compare(var a, var b) {
+    if (a > b) return 1;
+    if (a == b) return 0;
+    return -1;
+}
+
+function display_result(string name, var result)
+{
+    print(name);
+    print(" - ");
+    say(result);
+}
