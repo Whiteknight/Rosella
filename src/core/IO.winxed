@@ -24,5 +24,8 @@ namespace Rosella
 
             return save_handles;
         }
+
+        function sayf(string fmt, var args[slurpy]) { say(sprintf(fmt, args)); }
+        function printf(string fmt, var args[slurpy]) { print(sprintf(fmt, args)); }
     }
 }
