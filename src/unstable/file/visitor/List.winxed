@@ -29,7 +29,7 @@ namespace Rosella { namespace File { namespace Visitor
 
         function result()
         {
-            return self.files;
+            return self.entries;
         }
     }
 }}}
