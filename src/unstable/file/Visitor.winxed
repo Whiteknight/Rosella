@@ -2,15 +2,35 @@ namespace Rosella { namespace File
 {
     class Visitor
     {
+        var select_files;
+        var select_dirs;
+
+        function Visitor(int file, int dir)
+        {
+
+            self.select_files = file;
+            self.select_dirs = dir;
+        }
+
         function visit(string file)
         {
             if (self.should_visit(file))
                 self.process(file);
         }
 
-        function should_visit(string file)
+        function should_visit(string entry)
         {
-            return 1;
+            if (self.select_files) {
+                using Rosella.File.is_file;
+                if (is_file(entry))
+                    return 1;
+            }
+            if (self.select_dirs) {
+                using Rosella.File.is_directory;
+                if (is_directory(entry))
+                    return 1;
+            }
+            return 0;
         }
 
         function begin_folder(string path, string name)

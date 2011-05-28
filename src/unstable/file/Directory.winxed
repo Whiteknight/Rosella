@@ -29,14 +29,10 @@ namespace Rosella { namespace File
                 if (file == "." || file == "..")
                     continue;
 
-                int isfile = is_file(entry);
-                if (isfile == STAT_ISREG)
-                    visitor.visit(entry);
-                else {
-                    int isdir = is_directory(entry);
-                    if (isdir == STAT_ISDIR)
-                        private_visit_dir(entry, file, visitor);
-                }
+                visitor.visit(entry);
+                int isdir = is_directory(entry);
+                if (isdir == STAT_ISDIR)
+                    private_visit_dir(entry, file, visitor);
             }
             visitor.end_folder(path, name);
         }
