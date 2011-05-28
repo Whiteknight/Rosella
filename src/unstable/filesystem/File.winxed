@@ -1,38 +1,6 @@
-$include_const "src/unstable/file/Constants.pasm";
+$include_const "src/unstable/filesystem/Constants.pasm";
 
-namespace Rosella
-{
-    namespace File
-    {
-        function get_os_pmc()
-        {
-            loadlib("os");
-            var os = new 'OS';
-            while(1)
-                return os;
-        }
-
-        function is_file(string path)
-        {
-            var stat = get_os_pmc().stat(path);
-            int mode = stat[2];
-            int isfile = 0;
-            ${ band isfile, mode, STAT_ISREG };
-            return isfile;
-        }
-
-        function is_directory(string path)
-        {
-            var stat = get_os_pmc().stat(path);
-            int mode = stat[2];
-            int isdir = 0;
-            ${ band isdir, mode, STAT_ISDIR };
-            return isdir;
-        }
-    }
-}
-
-namespace Rosella { namespace File
+namespace Rosella { namespace FileSystem
 {
     class File
     {
@@ -50,19 +18,19 @@ namespace Rosella { namespace File
 
         function exists()
         {
-            using Rosella.File.get_os_pmc;
+            using Rosella.FileSystem.get_os_pmc;
             return get_os_pmc().exists(self.filename);
         }
 
         function delete()
         {
-            using Rosella.File.get_os_pmc;
+            using Rosella.FileSystem.get_os_pmc;
             get_os_pmc().rm(self.filename);
         }
 
         function rename(string new_name)
         {
-            using Rosella.File.get_os_pmc;
+            using Rosella.FileSystem.get_os_pmc;
             get_os_pmc().rename(self.filename, new_name);
             self.filename = new_name;
         }
@@ -117,7 +85,7 @@ namespace Rosella { namespace File
 
         function copy(string dest)
         {
-            var file = new Rosella.File.File(dest);
+            var file = new Rosella.FileSystem.File(dest);
             string txt = self.read_all_text();
             file.write_all_text(txt);
             return file;

@@ -1,6 +1,6 @@
-namespace Rosella { namespace File { namespace Visitor
+namespace Rosella { namespace FileSystem { namespace Visitor
 {
-    class List : Rosella.File.Visitor
+    class List : Rosella.FileSystem.Visitor
     {
         var entries;
 

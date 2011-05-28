@@ -1,4 +1,4 @@
-namespace Rosella { namespace File
+namespace Rosella { namespace FileSystem
 {
     class Visitor
     {
@@ -7,7 +7,6 @@ namespace Rosella { namespace File
 
         function Visitor(int file, int dir)
         {
-
             self.select_files = file;
             self.select_dirs = dir;
         }
@@ -21,12 +20,12 @@ namespace Rosella { namespace File
         function should_visit(string entry)
         {
             if (self.select_files) {
-                using Rosella.File.is_file;
+                using Rosella.FileSystem.is_file;
                 if (is_file(entry))
                     return 1;
             }
             if (self.select_dirs) {
-                using Rosella.File.is_directory;
+                using Rosella.FileSystem.is_directory;
                 if (is_directory(entry))
                     return 1;
             }

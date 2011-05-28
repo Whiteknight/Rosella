@@ -233,12 +233,12 @@ function setup_experimental_libraries(var rosella)
         "string/tokenizer/Token"
     );
 
-    setup_unstable_lib(rosella, "file", ["Core"],
-        "file/Directory",
-        "file/File",
-        "file/Visitor",
-        "file/visitor/List",
-        ["file/Constants"]:[named("constants")]
+    setup_unstable_lib(rosella, "filesystem", ["Core"],
+        "filesystem/Directory",
+        "filesystem/File",
+        "filesystem/Visitor",
+        "filesystem/visitor/List",
+        ["filesystem/Constants"]:[named("constants")]
     );
 
     setup_unstable_lib(rosella, "benchmark", [],

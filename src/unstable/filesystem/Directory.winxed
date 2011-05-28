@@ -1,23 +1,23 @@
-$include_const "src/unstable/file/Constants.pasm";
+$include_const "src/unstable/filesystem/Constants.pasm";
 
-namespace Rosella { namespace File
+namespace Rosella { namespace FileSystem
 {
     namespace Directory
     {
         function current_directory()
         {
-            using Rosella.File.get_os_pmc;
+            using Rosella.FileSystem.get_os_pmc;
             string cwd = get_os_pmc().cwd();
-            return new Rosella.File.Directory(cwd);
+            return new Rosella.FileSystem.Directory(cwd);
         }
 
         // Get a list of test files from a directory. Allow recursion into
         // subdirectories, if requested.
         function private_visit_dir(string path, string name, var visitor)
         {
-            using Rosella.File.is_file;
-            using Rosella.File.is_directory;
-            using Rosella.File.get_os_pmc;
+            using Rosella.FileSystem.is_file;
+            using Rosella.FileSystem.is_directory;
+            using Rosella.FileSystem.get_os_pmc;
 
             visitor.begin_folder(path, name);
             var contents_raw = get_os_pmc().readdir(path);
@@ -31,7 +31,7 @@ namespace Rosella { namespace File
 
                 visitor.visit(entry);
                 int isdir = is_directory(entry);
-                if (isdir == STAT_ISDIR)
+                if (isdir)
                     private_visit_dir(entry, file, visitor);
             }
             visitor.end_folder(path, name);
@@ -54,7 +54,7 @@ namespace Rosella { namespace File
 
         function exists()
         {
-            using Rosella.File.get_os_pmc;
+            using Rosella.FileSystem.get_os_pmc;
             return get_os_pmc().exists(self.path);
         }
 
@@ -65,7 +65,7 @@ namespace Rosella { namespace File
 
         function create()
         {
-            using Rosella.File.get_os_pmc;
+            using Rosella.FileSystem.get_os_pmc;
             var os = get_os_pmc();
             if (!os.exists(self.path))
                 // 493 = 0755 octal.
@@ -74,39 +74,39 @@ namespace Rosella { namespace File
 
         function rename(string new_path)
         {
-            using Rosella.File.get_os_pmc;
+            using Rosella.FileSystem.get_os_pmc;
             get_os_pmc().rename(self.path, new_path);
             self.path = new_path;
         }
 
         function get_files()
         {
-            using Rosella.File.get_os_pmc;
+            using Rosella.FileSystem.get_os_pmc;
             string path = string(self.path) + "/";
             var file_names = get_os_pmc().readdir(path);
             var files = [];
-            using Rosella.File.is_file;
+            using Rosella.FileSystem.is_file;
             for (string file_name in file_names) {
                 if (file_name == "." || file_name == "..")
                     continue;
                 if (is_file(path + file_name))
-                    push(files, new Rosella.File.File(file_name));
+                    push(files, new Rosella.FileSystem.File(file_name));
             }
             return files;
         }
 
         function get_subdirectories()
         {
-            using Rosella.File.get_os_pmc;
+            using Rosella.FileSystem.get_os_pmc;
             string path = string(self.path) + "/";
             var names = get_os_pmc().readdir(path);
             var dirs = [];
-            using Rosella.File.is_directory;
+            using Rosella.FileSystem.is_directory;
             for (string name in names) {
                 if (name == "." || name == "..")
                     continue;
                 if (is_directory(path + name))
-                    push(dirs, new Rosella.File.Directory(name));
+                    push(dirs, new Rosella.FileSystem.Directory(name));
             }
             return dirs;
         }
@@ -114,7 +114,7 @@ namespace Rosella { namespace File
         function walk(var visitor [optional], int has_v [opt_flag])
         {
             if (!has_v)
-                visitor = new Rosella.File.Visitor.List(1, 1);
+                visitor = new Rosella.FileSystem.Visitor.List(1, 1);
             using static private_visit_dir;
             private_visit_dir(self.path, "", visitor);
             return visitor.result();
