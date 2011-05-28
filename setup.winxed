@@ -236,6 +236,7 @@ function setup_experimental_libraries(var rosella)
     setup_unstable_lib(rosella, "filesystem", ["Core"],
         "filesystem/Directory",
         "filesystem/File",
+        "filesystem/FileSystem",
         "filesystem/Visitor",
         "filesystem/visitor/List",
         ["filesystem/Constants"]:[named("constants")]
