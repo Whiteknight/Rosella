@@ -61,10 +61,11 @@ namespace Rosella { namespace FileSystem
             must_subclass("Rosella.File.Visitor");
         }
 
+        // Return the result of the walk, if any. By default there is nothing
+        // to report.
         function result()
         {
-            using Rosella.Error.must_subclass;
-            must_subclass("Rosella.File.Visitor");
+            return null;
         }
     }
 }}

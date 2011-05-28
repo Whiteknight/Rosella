@@ -2,32 +2,43 @@ $include_const "src/unstable/filesystem/Constants.pasm";
 
 namespace Rosella { namespace FileSystem
 {
+    /* File Class
+        This class represents a file. The file can be created, examined,
+        modified, and deleted using methods on this object.
+    */
     class File
     {
         var filename;
 
+        // Constructor
         function File(string filepath)
         {
             self.filename = filepath;
         }
 
+        // Get the name of the File
         function get_string[vtable]()
         {
             return self.filename;
         }
 
+        // Determine if the file exists. Returns non-zero if it exists, 0
+        // otherwise. Does not verify that the given path points to a file
+        // (as opposed to a directory)
         function exists()
         {
             using Rosella.FileSystem.get_os_pmc;
             return get_os_pmc().exists(self.filename);
         }
 
+        // Delete the file
         function delete()
         {
             using Rosella.FileSystem.get_os_pmc;
             get_os_pmc().rm(self.filename);
         }
 
+        // Rename the file. Update the path name stored in this object
         function rename(string new_name)
         {
             using Rosella.FileSystem.get_os_pmc;
@@ -35,6 +46,8 @@ namespace Rosella { namespace FileSystem
             self.filename = new_name;
         }
 
+        // Open the file for reading, returning the open FileHandle. The user
+        // must close the filehandle themselves.
         function open_read()
         {
             var filehandle = new 'FileHandle';
@@ -42,6 +55,8 @@ namespace Rosella { namespace FileSystem
             return filehandle;
         }
 
+        // Open the file for writing, returning the open FileHandle. The user
+        // must close the FileHandle themselves.
         function open_write()
         {
             var filehandle = new 'FileHandle';
@@ -49,6 +64,7 @@ namespace Rosella { namespace FileSystem
             return filehandle;
         }
 
+        // Return all text from the file in a single string.
         function read_all_text()
         {
             var filehandle = self.open("r");
@@ -57,12 +73,17 @@ namespace Rosella { namespace FileSystem
             return text;
         }
 
-        function read_all_lines()
+        // Return all text from the file, as an array of lines.
+        function read_all_lines(string delim [optional], int has_d [opt_flag])
         {
+            if (!has_d)
+                delim = "\n";
             string text = self.read_all_text();
-            return split("\n", text);
+            return split(delim, text);
         }
 
+        // Write the text to the file. Create the file if it does not exist,
+        // overwrite it if it does.
         function write_all_text(string text)
         {
             var filehandle = self.open("w");
@@ -70,12 +91,17 @@ namespace Rosella { namespace FileSystem
             filehandle.close();
         }
 
-        function write_all_lines(var lines)
+        // Write the array of lines to the file, separated by newlines
+        function write_all_lines(var lines, string delim [optional], int has_d [opt_flag])
         {
-            var text = join("\n", lines);
+            if (!has_d)
+                delim = "\n";
+            var text = join(delim, lines);
             self.write_all_text(text);
         }
 
+        // Append the given text to the file without disrupting the existing
+        // contents.
         function append_text(string text)
         {
             var filehandle = self.open("a");
@@ -83,6 +109,7 @@ namespace Rosella { namespace FileSystem
             filehandle.close();
         }
 
+        // Copy one file to a new destination.
         function copy(string dest)
         {
             var file = new Rosella.FileSystem.File(dest);

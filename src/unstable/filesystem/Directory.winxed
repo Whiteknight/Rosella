@@ -2,8 +2,12 @@ $include_const "src/unstable/filesystem/Constants.pasm";
 
 namespace Rosella { namespace FileSystem
 {
+    /* Utilities for working with Directories
+    */
     namespace Directory
     {
+        // Get the current directory object where the application is
+        // executing.
         function current_directory()
         {
             using Rosella.FileSystem.get_os_pmc;
@@ -37,26 +41,35 @@ namespace Rosella { namespace FileSystem
         }
     }
 
+    /* Directory Class
+        This object represents a directory in a file system.
+    */
     class Directory
     {
         var path;
 
+        // Constructor. Build a directory with the given path name
         function Directory(string path)
         {
             self.path = path;
         }
 
+        // Get the directory path name
         function get_string[vtable]()
         {
             return self.path;
         }
 
+        // Determine if this directory exists
         function exists()
         {
             using Rosella.FileSystem.get_os_pmc;
             return get_os_pmc().exists(self.path);
         }
 
+        // Delete the directory. If the recursive argument is provided and is
+        // non-zero, the directory is deleted by recursively deleting all
+        // contents. Otherwise, only an empty directory can be deleted.
         function delete(int recursive [optional], int has_r [opt_flag])
         {
             if (has_r && recursive) {
@@ -68,6 +81,7 @@ namespace Rosella { namespace FileSystem
             }
         }
 
+        // Create the directory, if it does not already exist.
         function create()
         {
             using Rosella.FileSystem.get_os_pmc;
@@ -76,6 +90,8 @@ namespace Rosella { namespace FileSystem
                 os.mkdir(self.path, 493);       // 493 = 0755 octal.
         }
 
+        // Rename the directory. Update the path for this object to point to
+        // the new directory
         function rename(string new_path)
         {
             using Rosella.FileSystem.get_os_pmc;
@@ -83,6 +99,8 @@ namespace Rosella { namespace FileSystem
             self.path = new_path;
         }
 
+        // Get a list of all files in this directory (but not in all
+        // subdirectories).
         function get_files()
         {
             using Rosella.FileSystem.get_os_pmc;
@@ -99,6 +117,7 @@ namespace Rosella { namespace FileSystem
             return files;
         }
 
+        // Get a list of all subdirectories in this directory.
         function get_subdirectories()
         {
             using Rosella.FileSystem.get_os_pmc;
@@ -115,6 +134,7 @@ namespace Rosella { namespace FileSystem
             return dirs;
         }
 
+        // Walk this directory recursively using a Visitor object.
         function walk(var visitor [optional], int has_v [opt_flag])
         {
             if (!has_v)
@@ -124,6 +144,8 @@ namespace Rosella { namespace FileSystem
             return visitor.result();
         }
 
+        // Walk this directory recursively, applying a function to all files
+        // in the directory.
         function walk_func(var func, var named [slurpy,named])
         {
             var visitor = new Rosella.FileSystem.Visitor.Function(func, named:[flat,named]);

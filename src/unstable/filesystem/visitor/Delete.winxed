@@ -1,9 +1,14 @@
 namespace Rosella { namespace FileSystem { namespace Visitor
 {
+    /* Deletion Visitor
+        This visitor deletes all files and directories passed to it. This is
+        used to implement recursive directory deletions.
+    */
     class Delete : Rosella.FileSystem.Visitor
     {
         var os;
 
+        // Constructor
         function Delete()
         {
             self.Visitor(1, 0);
@@ -11,21 +16,16 @@ namespace Rosella { namespace FileSystem { namespace Visitor
             self.os = get_os_pmc();
         }
 
+        // Delete the file
         function process(string file)
         {
-            say("deleting " + file);
             self.os.rm(file);
         }
 
+        // When we've deleted everything in the folder, delete the folder.
         function end_folder(string path, string name)
         {
-            say("deleting " + path);
             self.os.rm(path);
-        }
-
-        function result()
-        {
-            return 1;
         }
     }
 }}}
