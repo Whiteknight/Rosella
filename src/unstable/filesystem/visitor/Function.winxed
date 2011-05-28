@@ -1,0 +1,30 @@
+namespace Rosella { namespace FileSystem { namespace Visitor
+{
+    class Function : Rosella.FileSystem.Visitor
+    {
+        var func;
+
+        function Function(var func,
+                int dofiles [named,optional], int has_f [opt_flag],
+                int dodirs [named,optional], int has_d [opt_flag])
+        {
+            if (!has_f)
+                dofiles = 1;
+            if (!has_d)
+                dodirs = 0;
+            self.Visitor(dofiles, dodirs);
+            self.func = func;
+        }
+
+        function process(string entry)
+        {
+            var func = self.func;
+            func(entry);
+        }
+
+        function result()
+        {
+            return 1;
+        }
+    }
+}}}

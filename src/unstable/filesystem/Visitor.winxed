@@ -1,22 +1,33 @@
 namespace Rosella { namespace FileSystem
 {
+    /* FileSystem Visitor base class
+        Specifies the Visitor API, and provides some default behaviors for
+        certain operations which subclasses can inherit. Do not use this
+        class directly, use a subclass or a custom replacement instead
+    */
     class Visitor
     {
         var select_files;
         var select_dirs;
 
+        // Constructor. Default constructor takes flags to determine if we
+        // should visit files and/or directories.
         function Visitor(int file, int dir)
         {
             self.select_files = file;
             self.select_dirs = dir;
         }
 
+        // Visit the given entry. This might be a directory or a file
         function visit(string file)
         {
             if (self.should_visit(file))
                 self.process(file);
         }
 
+        // Determine if we should visit the entry. This is a helper method
+        // called by .visit(). If a subclass overrides .visit(), this method
+        // might not be needed
         function should_visit(string entry)
         {
             if (self.select_files) {
@@ -32,14 +43,18 @@ namespace Rosella { namespace FileSystem
             return 0;
         }
 
+        // Begin visiting a folder
         function begin_folder(string path, string name)
         {
         }
 
+        // End visiting a folder
         function end_folder(string path, string name)
         {
         }
 
+        // Process an entry. This is only called from .visit(). If a subclass
+        // overrides .visit(), this method might be unnecessary
         function process(string file)
         {
             using Rosella.Error.must_subclass;

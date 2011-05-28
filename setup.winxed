@@ -239,6 +239,7 @@ function setup_experimental_libraries(var rosella)
         "filesystem/FileSystem",
         "filesystem/Visitor",
         "filesystem/visitor/Delete",
+        "filesystem/visitor/Function",
         "filesystem/visitor/List",
         ["filesystem/Constants"]:[named("constants")]
     );

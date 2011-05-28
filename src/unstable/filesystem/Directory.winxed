@@ -123,5 +123,11 @@ namespace Rosella { namespace FileSystem
             private_visit_dir(self.path, "", visitor);
             return visitor.result();
         }
+
+        function walk_func(var func, var named [slurpy,named])
+        {
+            var visitor = new Rosella.FileSystem.Visitor.Function(func, named:[flat,named]);
+            return self.walk(visitor);
+        }
     }
 }}
