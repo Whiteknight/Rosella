@@ -73,8 +73,7 @@ namespace Rosella { namespace FileSystem
             using Rosella.FileSystem.get_os_pmc;
             var os = get_os_pmc();
             if (!os.exists(self.path))
-                // 493 = 0755 octal.
-                os.mkdir(self.path, 493);
+                os.mkdir(self.path, 493);       // 493 = 0755 octal.
         }
 
         function rename(string new_path)

@@ -1,7 +1,14 @@
 namespace Rosella
 {
+    /* Rosella IO Routines
+        These are convenience routines for doing some common IO-related tasks
+        in Rosella.
+    */
     namespace IO
     {
+        // swap the interpreter standard input, error and output handles with
+        // a named hash of replacements. Return a hash of the previous values
+        // by name
         function swap_handles(var handles)
         {
             var save_handles = {};
@@ -25,6 +32,7 @@ namespace Rosella
             return save_handles;
         }
 
+        // Convenience routines for performing formatted output
         function sayf(string fmt, var args[slurpy]) { say(sprintf(fmt, args)); }
         function printf(string fmt, var args[slurpy]) { print(sprintf(fmt, args)); }
     }
