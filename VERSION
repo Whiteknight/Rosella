@@ -4,6 +4,7 @@ contract: 0 Alpha
 core: 2 Stable
 decorate: 0 Beta
 event: 2 Stable
+filesystem: 0 Beta
 harness: 2 Stable
 lazy: 0 Alpha
 memoize: 1 Stable
