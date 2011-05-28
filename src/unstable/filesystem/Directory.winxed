@@ -23,14 +23,13 @@ namespace Rosella { namespace FileSystem
             var contents_raw = get_os_pmc().readdir(path);
 
             for (string file in contents_raw) {
-                string entry = path + "/" + file;
-
                 // Don't follow the "special" files
                 if (file == "." || file == "..")
                     continue;
 
-                visitor.visit(entry);
+                string entry = path + "/" + file;
                 int isdir = is_directory(entry);
+                visitor.visit(entry);
                 if (isdir)
                     private_visit_dir(entry, file, visitor);
             }
@@ -60,7 +59,13 @@ namespace Rosella { namespace FileSystem
 
         function delete(int recursive [optional], int has_r [opt_flag])
         {
-            // TODO
+            if (has_r && recursive) {
+                var deleter = new Rosella.FileSystem.Visitor.Delete();
+                self.walk(deleter);
+            } else {
+                using Rosella.FileSystem.get_os_pmc;
+                get_os_pmc().rm(self.path);
+            }
         }
 
         function create()
