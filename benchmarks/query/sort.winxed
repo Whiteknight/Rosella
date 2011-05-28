@@ -1,45 +1,86 @@
+$loadlib "math_ops";
+const int N = 100000;
+
 function main[main]()
 {
     load_bytecode("rosella/benchmark.pbc");
     using Rosella.Benchmark.benchmark;
-
     load_bytecode("rosella/query.pbc");
-
-    const int N = 100000;
     say(sprintf("N = %d", [N]));
-    var dataA = [];
-    for (int i = N - 1; i >= 0; i--)
-        dataA[i] = N - i;
+    var d = [];
 
-    var dataB = [];
-    for (int i = N - 1; i >= 0; i--)
-        dataB[i] = N - i;
+    sorted_N_list(d);
+    var base = benchmark(function() { using static compare; d.sort(compare); });
+    display_result("sort with .sort BUILTIN (presorted)", base);
 
-    var dataC = new 'ResizableIntegerArray';
-    for (int i = N - 1; i >= 0; i--)
-        dataC[i] = N - i;
+    reverse_sorted_N_list(d);
+    var result = benchmark(function() { using static compare; d.sort(compare); });
+    result.set_base_time(base.time());
+    display_result("sort with .sort BUILTIN (reversed)", result);
 
-    var builtin = benchmark(function() {
-        using static compare;
-        dataA.sort(compare);
-    });
-    display_result("sort with .sort BUILTIN", builtin);
+    random_N_list(d);
+    result = benchmark(function() { using static compare; d.sort(compare); });
+    result.set_base_time(base.time());
+    display_result("sort with .sort BUILTIN (random)", result);
 
-    var query = benchmark(function() {
-        using static compare;
+    reverse_sorted_N_list(d);
+    result = benchmark(function() {
         using Rosella.Query.as_queryable;
-        as_queryable(dataB).sort(compare);
-    });
-    query.set_base_time(builtin.time());
-    display_result("sort with Rosella Query", query);
-
-    var ria = benchmark(function() {
         using static compare;
-        using Rosella.Query.as_queryable;
-        as_queryable(dataC).sort(compare);
+        as_queryable(d).sort(compare);
     });
-    query.set_base_time(builtin.time());
-    display_result("sort RIA with Rosella Query", ria);
+    result.set_base_time(base.time());
+    display_result("sort with Rosella Query (reversed)", result);
+
+    random_N_list(d);
+    result = benchmark(function() {
+        using Rosella.Query.as_queryable;
+        using static compare;
+        as_queryable(d).sort(compare);
+    });
+    result.set_base_time(base.time());
+    display_result("sort with Rosella Query (random)", result);
+
+    reverse_sorted_N_list(d);
+    result = benchmark(function() { using static compare; qsort_with_insertion(d, 0, elements(d), compare); });
+    result.set_base_time(base.time());
+    display_result("qsort+insertion sort (reversed)", result);
+
+    random_N_list(d);
+    result = benchmark(function() { using static compare; qsort_with_insertion(d, 0, elements(d), compare); });
+    result.set_base_time(base.time());
+    display_result("qsort+insertion sort (random)", result);
+
+    //var d_ria = new 'ResizableIntegerArray';
+    //reverse_sorted_N_list(d_ria);
+    //var ria = benchmark(function() {
+    //    using static compare;
+    //    using Rosella.Query.as_queryable;
+    //    as_queryable(d_ria).sort(compare);
+    //});
+    //query.set_base_time(builtin.time());
+    //display_result("sort RIA with Rosella Query", ria);
+}
+
+function sorted_N_list(var d)
+{
+    for (int i = N - 1; i >= 0; i--)
+        d[i] = i;
+}
+
+function reverse_sorted_N_list(var d)
+{
+    for (int i = N - 1; i >= 0; i--)
+        d[i] = N - i;
+}
+
+function random_N_list(var d)
+{
+    for (int i = N - 1; i >= 0; i--) {
+        int x;
+        ${ rand x };
+        d[i] = x;
+    }
 }
 
 function compare(var a, var b) {
@@ -53,4 +94,55 @@ function display_result(string name, var result)
     print(name);
     print(" - ");
     say(result);
+}
+
+const int SORT_TRANSITION = 14;
+
+function qsort_with_insertion(var d, int s, int n, var cmp)
+{
+    int last = n-1;
+    while (last > s) {
+        if ((last - s) < SORT_TRANSITION) {
+            insertion_sort(d, s, n, cmp);
+            return;
+        }
+        int pivot = s + int((n - s) / 2);
+        int store = s;
+        var tmp;
+
+        var piv = d[pivot];
+        d[pivot] = d[last];
+        d[last] = piv;
+
+        for(int ix = s; ix < last; ix++) {
+            if (cmp(d[ix], piv) < 0) {
+                tmp = d[store];
+                d[store] = d[ix];
+                d[ix] = tmp;
+                store++;
+            }
+        }
+
+        tmp = d[last];
+        d[last] = d[store];
+        d[store] = tmp;
+        pivot = store;
+        qsort_with_insertion(d, s, pivot, cmp);
+        s = pivot + 1;
+    }
+}
+
+function insertion_sort(var d, int s, int n, var cmp)
+{
+    for (int x = s + 1; x < n; x++)
+    {
+        var val = d[x];
+        int j = x - 1;
+        while (j >= 0 && val < d[j])
+        {
+            d[j + 1] = d[j];
+            j--;
+        }
+        d[j + 1] = val;
+    }
 }
