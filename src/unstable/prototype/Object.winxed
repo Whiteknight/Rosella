@@ -1,0 +1,98 @@
+namespace Rosella { namespace Prototype
+{
+    class Object
+    {
+        var attrs;
+
+        function init [vtable,nsentry]()
+        {
+            var mytype;
+            ${ typeof mytype, self };
+            var proto;
+            ${ getprop proto, 'prototype', mytype };
+
+            var attrs = {};
+            attrs['prototype'] = proto;
+            self.attrs = attrs;
+        }
+
+        function init_pmc [vtable](var sub)
+        {
+            using Rosella.Prototype.Class.init;
+            self.*init();
+            ${ setprop self, "code", sub };
+        }
+
+        function invoke[vtable](var p [slurpy], var n [slurpy,named])
+        {
+            var sub = null;
+            ${ getprop sub, "code", self };
+            if (sub == null) {
+                using Rosella.Error.invalid;
+                invalid("Prototype.Object", "Cannot be invoked");
+            }
+            return sub(p:[flat], n:[flat,named]);
+        }
+
+        function find_method[vtable](string name)
+        {
+            var n = name;
+            return function(var obj, var p [slurpy], var n [slurpy,named])
+            {
+                var f = null;
+                if (exists obj.attrs[n])
+                    f = obj.attrs[n];
+                else {
+                    var prototype = obj.attrs['prototype'];
+                    if (prototype != null && exists prototype[n])
+                        f = prototype[n];
+                }
+                if (f == null) {
+                    using Rosella.Error.invalid;
+                    invalid("Prototype.Object", "method not found: " + string(n));
+                }
+                return obj.*f(p:[flat], n:[flat,named]);
+            };
+        }
+
+        function get_pmc_keyed_str[vtable,nsentry](string name)
+        {
+            var attrs;
+            var protoclass = class Rosella.Prototype.Object;
+            ${ getattribute attrs, self, protoclass, 'attrs' };
+            return attrs[name];
+        }
+
+        function set_pmc_keyed_str[vtable,nsentry](string name, var value)
+        {
+            var attrs;
+            var protoclass = class Rosella.Prototype.Object;
+            ${ getattribute attrs, self, protoclass, 'attrs' };
+            attrs[name] = value;
+        }
+
+        function get_attr_str[vtable] (string name)
+        {
+            using Rosella.Prototype.Object.get_pmc_keyed_str;
+            return self.*get_pmc_keyed_str(name);
+        }
+
+        function set_attr_str[vtable] (string name, var value)
+        {
+            using Rosella.Prototype.Object.set_pmc_keyed_str;
+            return self.*set_pmc_keyed_str(name, value);
+        }
+
+        function get_pmc_keyed[vtable] (var name)
+        {
+            using Rosella.Prototype.Object.get_pmc_keyed_str;
+            return self.*get_pmc_keyed_str(name);
+        }
+
+        function set_pmc_keyed[vtable] (var name, var value)
+        {
+            using Rosella.Prototype.Object.set_pmc_keyed_str;
+            return self.*set_pmc_keyed_str(name, value);
+        }
+    }
+}}

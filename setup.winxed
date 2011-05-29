@@ -191,9 +191,7 @@ function setup_experimental_libraries(var rosella)
 {
     // A prototype library for managing a prototype-based object system
     setup_unstable_lib(rosella, "prototype", ["Core"],
-        //"prototype/Class",
-        //"prototype/class/HashBased",
-        //"prototype/class/JS",
+        "prototype/Object",
         "prototype/Manager",
         "prototype/manager/Entry",
         "prototype/manager/ObjectCloner"
