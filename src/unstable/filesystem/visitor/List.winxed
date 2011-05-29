@@ -10,16 +10,15 @@ namespace Rosella { namespace FileSystem { namespace Visitor
         var entries;
 
         // Constructor
-        function List(int file, int dir)
+        function List()
         {
-            self.entries = new 'ResizableStringArray';
-            self.Visitor(file, dir);
+            self.entries = [];
         }
 
         // Add the item to the list
-        function process(string entry)
+        function process(var file)
         {
-            push(self.entries, entry);
+            push(self.entries, file);
         }
 
         // Return the list

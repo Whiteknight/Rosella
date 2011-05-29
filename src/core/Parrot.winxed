@@ -1,0 +1,17 @@
+$include_const "iglobals.pasm";
+
+namespace Rosella
+{
+    /* Utilities for Parrot-Specific things
+    */
+    namespace Parrot
+    {
+        // Get the Config hash
+        function get_config_hash()
+        {
+            var config = getinterp()[IGLOBALS_CONFIG_HASH];
+            while(1)
+                return config;
+        }
+    }
+}

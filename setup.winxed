@@ -67,6 +67,7 @@ function setup_stable_libraries(var rosella)
         "core/Error",
         "core/IO",
         "core/ObjectFactory",
+        "core/Parrot",
         "core/Version",
         "_build/_versions"
     );
@@ -232,6 +233,7 @@ function setup_experimental_libraries(var rosella)
     );
 
     setup_unstable_lib(rosella, "filesystem", ["Core"],
+        "filesystem/Entry",
         "filesystem/Directory",
         "filesystem/File",
         "filesystem/FileSystem",

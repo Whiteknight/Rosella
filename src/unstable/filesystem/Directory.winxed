@@ -14,71 +14,23 @@ namespace Rosella { namespace FileSystem
             string cwd = get_os_pmc().cwd();
             return new Rosella.FileSystem.Directory(cwd);
         }
-
-        // Get a list of test files from a directory. Allow recursion into
-        // subdirectories, if requested.
-        function private_visit_dir(string path, string name, var visitor)
-        {
-            using Rosella.FileSystem.is_file;
-            using Rosella.FileSystem.is_directory;
-            using Rosella.FileSystem.get_os_pmc;
-
-            visitor.begin_folder(path, name);
-            var contents_raw = get_os_pmc().readdir(path);
-
-            for (string file in contents_raw) {
-                // Don't follow the "special" files
-                if (file == "." || file == "..")
-                    continue;
-
-                string entry = path + "/" + file;
-                int isdir = is_directory(entry);
-                visitor.visit(entry);
-                if (isdir)
-                    private_visit_dir(entry, file, visitor);
-            }
-            visitor.end_folder(path, name);
-        }
     }
 
     /* Directory Class
         This object represents a directory in a file system.
     */
-    class Directory
+    class Directory : Rosella.FileSystem.Entry
     {
-        var path;
-
         // Constructor. Build a directory with the given path name
-        function Directory(string path)
-        {
-            self.path = path;
-        }
-
-        // Get the directory path name
-        function get_string[vtable]()
-        {
-            return self.path;
-        }
-
-        // Determine if this directory exists
-        function exists()
-        {
-            using Rosella.FileSystem.get_os_pmc;
-            return get_os_pmc().exists(self.path);
-        }
+        function Directory(string path) { self.Entry(path); }
 
         // Delete the directory. If the recursive argument is provided and is
         // non-zero, the directory is deleted by recursively deleting all
         // contents. Otherwise, only an empty directory can be deleted.
-        function delete(int recursive [optional], int has_r [opt_flag])
+        function delete_recursive()
         {
-            if (has_r && recursive) {
-                var deleter = new Rosella.FileSystem.Visitor.Delete();
-                self.walk(deleter);
-            } else {
-                using Rosella.FileSystem.get_os_pmc;
-                get_os_pmc().rm(self.path);
-            }
+            var deleter = new Rosella.FileSystem.Visitor.Delete();
+            return self.walk(deleter);
         }
 
         // Create the directory, if it does not already exist.
@@ -88,15 +40,6 @@ namespace Rosella { namespace FileSystem
             var os = get_os_pmc();
             if (!os.exists(self.path))
                 os.mkdir(self.path, 493);       // 493 = 0755 octal.
-        }
-
-        // Rename the directory. Update the path for this object to point to
-        // the new directory
-        function rename(string new_path)
-        {
-            using Rosella.FileSystem.get_os_pmc;
-            get_os_pmc().rename(self.path, new_path);
-            self.path = new_path;
         }
 
         // Get a list of all files in this directory (but not in all
@@ -111,7 +54,8 @@ namespace Rosella { namespace FileSystem
             for (string file_name in file_names) {
                 if (file_name == "." || file_name == "..")
                     continue;
-                if (is_file(path + file_name))
+                file_name = path + file_name;
+                if (is_file(file_name))
                     push(files, new Rosella.FileSystem.File(file_name));
             }
             return files;
@@ -128,7 +72,8 @@ namespace Rosella { namespace FileSystem
             for (string name in names) {
                 if (name == "." || name == "..")
                     continue;
-                if (is_directory(path + name))
+                name = path + name;
+                if (is_directory(name))
                     push(dirs, new Rosella.FileSystem.Directory(name));
             }
             return dirs;
@@ -139,8 +84,16 @@ namespace Rosella { namespace FileSystem
         {
             if (!has_v)
                 visitor = new Rosella.FileSystem.Visitor.List(1, 1);
-            using static private_visit_dir;
-            private_visit_dir(self.path, "", visitor);
+            visitor.begin_directory(self);
+            var files = self.get_files();
+            for (var file in files)
+                visitor.visit_file(file);
+            var subdirs = self.get_subdirectories();
+            for (var dir in subdirs) {
+                say(sprintf("Walking subdir: %s", [dir]));
+                dir.walk(visitor);
+            }
+            visitor.end_directory(self);
             return visitor.result();
         }
 

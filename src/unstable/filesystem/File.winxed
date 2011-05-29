@@ -6,52 +6,17 @@ namespace Rosella { namespace FileSystem
         This class represents a file. The file can be created, examined,
         modified, and deleted using methods on this object.
     */
-    class File
+    class File : Rosella.FileSystem.Entry
     {
-        var filename;
-
         // Constructor
-        function File(string filepath)
-        {
-            self.filename = filepath;
-        }
-
-        // Get the name of the File
-        function get_string[vtable]()
-        {
-            return self.filename;
-        }
-
-        // Determine if the file exists. Returns non-zero if it exists, 0
-        // otherwise. Does not verify that the given path points to a file
-        // (as opposed to a directory)
-        function exists()
-        {
-            using Rosella.FileSystem.get_os_pmc;
-            return get_os_pmc().exists(self.filename);
-        }
-
-        // Delete the file
-        function delete()
-        {
-            using Rosella.FileSystem.get_os_pmc;
-            get_os_pmc().rm(self.filename);
-        }
-
-        // Rename the file. Update the path name stored in this object
-        function rename(string new_name)
-        {
-            using Rosella.FileSystem.get_os_pmc;
-            get_os_pmc().rename(self.filename, new_name);
-            self.filename = new_name;
-        }
+        function File(string filepath) { self.Entry(filepath); }
 
         // Open the file for reading, returning the open FileHandle. The user
         // must close the filehandle themselves.
         function open_read()
         {
             var filehandle = new 'FileHandle';
-            filehandle.open(self.filename, "r");
+            filehandle.open(self.path, "r");
             return filehandle;
         }
 
@@ -60,14 +25,21 @@ namespace Rosella { namespace FileSystem
         function open_write()
         {
             var filehandle = new 'FileHandle';
-            filehandle.open(self.filename, "w");
+            filehandle.open(self.path, "w");
+            return filehandle;
+        }
+
+        function open_append()
+        {
+            var filehandle = new 'FileHandle';
+            filehandle.open(self.path, "a");
             return filehandle;
         }
 
         // Return all text from the file in a single string.
         function read_all_text()
         {
-            var filehandle = self.open("r");
+            var filehandle = self.open_read();
             string text = filehandle.readall();
             filehandle.close();
             return text;
@@ -86,7 +58,7 @@ namespace Rosella { namespace FileSystem
         // overwrite it if it does.
         function write_all_text(string text)
         {
-            var filehandle = self.open("w");
+            var filehandle = self.open_write();
             filehandle.print(text);
             filehandle.close();
         }
@@ -104,7 +76,7 @@ namespace Rosella { namespace FileSystem
         // contents.
         function append_text(string text)
         {
-            var filehandle = self.open("a");
+            var filehandle = self.open_append();
             filehandle.print(text);
             filehandle.close();
         }

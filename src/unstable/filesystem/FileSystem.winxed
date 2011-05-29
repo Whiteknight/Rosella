@@ -1,4 +1,5 @@
 $include_const "src/unstable/filesystem/Constants.pasm";
+$include_const "iglobals.pasm";
 
 namespace Rosella
 {
@@ -39,6 +40,16 @@ namespace Rosella
             int isdir = 0;
             ${ band isdir, mode, STAT_ISDIR };
             return isdir;
+        }
+
+        // Get the path separator for this system
+        function path_separator()
+        {
+            using Rosella.Parrot.get_config_hash;
+            var config = get_config_hash;
+            string sep = config["slash"];
+            while(1)
+                return sep;
         }
     }
 }

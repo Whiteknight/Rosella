@@ -6,26 +6,16 @@ namespace Rosella { namespace FileSystem { namespace Visitor
     */
     class Delete : Rosella.FileSystem.Visitor
     {
-        var os;
-
-        // Constructor
-        function Delete()
-        {
-            self.Visitor(1, 0);
-            using Rosella.FileSystem.get_os_pmc;
-            self.os = get_os_pmc();
-        }
-
         // Delete the file
-        function process(string file)
+        function process(var file)
         {
-            self.os.rm(file);
+            file.delete();
         }
 
         // When we've deleted everything in the folder, delete the folder.
-        function end_folder(string path, string name)
+        function end_directory(var dir)
         {
-            self.os.rm(path);
+            dir.delete();
         }
     }
 }}}
