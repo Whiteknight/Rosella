@@ -1,2 +1,6 @@
+/* Constants for working with stat. Notice that these aren't the same as the
+   constants defined in stat.pasm in the Parrot standard library,
+   inexplicably.
+*/
 const int STAT_ISREG = 0x8000;
 const int STAT_ISDIR = 0x4000;
