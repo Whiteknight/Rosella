@@ -1,5 +1,6 @@
 $loadlib "math_ops";
 const int N = 100000;
+const int SORT_TRANSITION = 6;
 
 function main[main]()
 {
@@ -7,44 +8,47 @@ function main[main]()
     using Rosella.Benchmark.benchmark;
     load_bytecode("rosella/query.pbc");
     say(sprintf("N = %d", [N]));
+    say(sprintf("SORT_TRANSITION = %d", [SORT_TRANSITION]));
     var d = [];
+    var result;
+    var base;
 
-    sorted_N_list(d);
-    var base = benchmark(function() { using static compare; d.sort(compare); });
-    display_result("sort with .sort BUILTIN (presorted)", base);
+    //sorted_N_list(d);
+    //var base = benchmark(function() { using static compare; d.sort(compare); });
+    //display_result("sort with .sort BUILTIN (presorted)", base);
+
+    //reverse_sorted_N_list(d);
+    //var result = benchmark(function() { using static compare; d.sort(compare); });
+    //result.set_base_time(base.time());
+    //display_result("sort with .sort BUILTIN (reversed)", result);
+
+    //random_N_list(d);
+    //result = benchmark(function() { using static compare; d.sort(compare); });
+    //result.set_base_time(base.time());
+    //display_result("sort with .sort BUILTIN (random)", result);
 
     reverse_sorted_N_list(d);
-    var result = benchmark(function() { using static compare; d.sort(compare); });
-    result.set_base_time(base.time());
-    display_result("sort with .sort BUILTIN (reversed)", result);
-
-    random_N_list(d);
-    result = benchmark(function() { using static compare; d.sort(compare); });
-    result.set_base_time(base.time());
-    display_result("sort with .sort BUILTIN (random)", result);
-
-    reverse_sorted_N_list(d);
-    result = benchmark(function() {
+    base = benchmark(function() {
         using Rosella.Query.as_queryable;
         using static compare;
         as_queryable(d).sort(compare);
     });
-    result.set_base_time(base.time());
-    display_result("sort with Rosella Query (reversed)", result);
-
-    random_N_list(d);
-    result = benchmark(function() {
-        using Rosella.Query.as_queryable;
-        using static compare;
-        as_queryable(d).sort(compare);
-    });
-    result.set_base_time(base.time());
-    display_result("sort with Rosella Query (random)", result);
+    //result.set_base_time(base.time());
+    display_result("sort with Rosella Query (reversed)", base);
 
     reverse_sorted_N_list(d);
     result = benchmark(function() { using static compare; qsort_with_insertion(d, 0, elements(d), compare); });
     result.set_base_time(base.time());
     display_result("qsort+insertion sort (reversed)", result);
+
+    random_N_list(d);
+    base = benchmark(function() {
+        using Rosella.Query.as_queryable;
+        using static compare;
+        as_queryable(d).sort(compare);
+    });
+    //result.set_base_time(base.time());
+    display_result("sort with Rosella Query (random)", base);
 
     random_N_list(d);
     result = benchmark(function() { using static compare; qsort_with_insertion(d, 0, elements(d), compare); });
@@ -96,7 +100,7 @@ function display_result(string name, var result)
     say(result);
 }
 
-const int SORT_TRANSITION = 14;
+
 
 function qsort_with_insertion(var d, int s, int n, var cmp)
 {
@@ -138,7 +142,7 @@ function insertion_sort(var d, int s, int n, var cmp)
     {
         var val = d[x];
         int j = x - 1;
-        while (j >= 0 && val < d[j])
+        while (j >= 0 && cmp(val, d[j]) < 0)
         {
             d[j + 1] = d[j];
             j--;
