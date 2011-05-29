@@ -50,6 +50,7 @@ if (pir::elements(@argv)) {
     # Unstable library tests
     $factory.add_test_dirs("NQP",
         "t/string",
+        "t/filesystem",
         :recurse(1)
     );
     $run := $factory.create();
