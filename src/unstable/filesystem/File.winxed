@@ -80,7 +80,7 @@ namespace Rosella { namespace FileSystem
         {
             if (!has_d)
                 delim = "\n";
-            var text = join(delim, lines);
+            string text = join(delim, lines);
             self.write_all_text(text);
         }
 
