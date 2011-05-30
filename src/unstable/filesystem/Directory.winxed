@@ -114,5 +114,24 @@ namespace Rosella { namespace FileSystem
             var visitor = new Rosella.FileSystem.Visitor.Function(func, named:[flat,named]);
             return self.walk(visitor);
         }
+
+        function get_pmc_keyed[vtable](var key)
+        {
+            string path = string(self.path);
+            string name = path + string(key);
+            using Rosella.FileSystem.get_os_pmc;
+            int exist = get_os_pmc().exists(name);
+            if (!exist)
+                return null;
+
+            using Rosella.FileSystem.is_file;
+            if (is_file(name))
+                return new Rosella.FileSystem.File(name);
+
+            using Rosella.FileSystem.is_directory;
+            if (is_directory(name))
+                return new Rosella.FileSystem.Directory(name);
+            return null;
+        }
     }
 }}
