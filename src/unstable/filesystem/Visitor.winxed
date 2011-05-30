@@ -19,8 +19,6 @@ namespace Rosella { namespace FileSystem
                 self.process(file);
         }
 
-
-
         // Begin visiting a folder
         function begin_directory(var dir) { }
 
