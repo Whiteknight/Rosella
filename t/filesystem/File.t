@@ -30,7 +30,7 @@ class Test::FileSystem::File {
 
     method short_name() {
         my $file := Rosella::construct(Rosella::FileSystem::File, "t/harness");
-        $!assert.equal($file.short_name, "t/harness");
+        $!assert.equal($file.short_name(), "harness");
     }
 
     method open_read() {

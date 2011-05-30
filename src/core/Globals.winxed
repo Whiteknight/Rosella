@@ -1,5 +1,6 @@
 namespace Rosella
 {
+    // Get the hash of globals.
     function __get_globals()
     {
         var globals = {};
@@ -7,6 +8,7 @@ namespace Rosella
             yield globals;
     }
 
+    // Get a global by name
     function get_global(string name)
     {
         var globals = __get_globals();
@@ -15,6 +17,7 @@ namespace Rosella
         return null;
     }
 
+    // Register a new global by name
     function register_global(string name, var value)
     {
         var globals = __get_globals();

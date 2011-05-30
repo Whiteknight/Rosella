@@ -14,8 +14,8 @@ class Test::FileSystem::Directory {
 
     method test_BUILD() {
         my $dir := Rosella::construct(Rosella::FileSystem::Directory, "t");
-        $!assert.not_null($pwd);
-        $!assert.instance_of($pwd, Rosella::FileSystem::Directory);
+        $!assert.not_null($dir);
+        $!assert.instance_of($dir, Rosella::FileSystem::Directory);
     }
 
     method exists() {
@@ -34,7 +34,7 @@ class Test::FileSystem::Directory {
 
     method get_string() {
         my $dir := Rosella::construct(Rosella::FileSystem::Directory, "t");
-        $!assert.equal(~$dir, "t");
+        $!assert.equal(~$dir, "t/");
     }
 
     method rename() {
@@ -65,7 +65,7 @@ class Test::FileSystem::Directory {
         my $dir := Rosella::construct(Rosella::FileSystem::Directory, "t/filesystem");
         my @subdirs := $dir.get_subdirectories;
         $!assert.equal(+@subdirs, 1);
-        $!assert.equal(@subdirs[0], "visitor");
+        $!assert.equal(~@subdirs[0], "t/filesystem/visitor/");
     }
 
     method walk() {
@@ -76,13 +76,13 @@ class Test::FileSystem::Directory {
 
     method get_pmc_keyed() {
         my $dir := Rosella::construct(Rosella::FileSystem::Directory, "t/filesystem");
-        my $file := $dir["FileSystem.t"];
+        my $file := $dir{"FileSystem.t"};
         $!assert.not_null($file);
         $!assert.instance_of($file, Rosella::FileSystem::File);
 
-        my $subdir := $dir["visitor"];
+        my $subdir := $dir{"visitor"};
         $!assert.not_null($subdir);
-        $!assert.instance_of($file, Rosella::FileSystem::Directory);
+        $!assert.instance_of($subdir, Rosella::FileSystem::Directory);
     }
 
     method exists_keyed() {
@@ -91,7 +91,7 @@ class Test::FileSystem::Directory {
             $P0 = find_lex "$dir"
             $I0 = exists $P0["harness"]
             %r = box $I0
-        }
+        };
         $!assert.is_true($file_exists);
     }
 
@@ -101,7 +101,7 @@ class Test::FileSystem::Directory {
             $P0 = find_lex "$dir"
             $I0 = exists $P0["WHARBLEGARBLE"]
             %r = box $I0
-        }
+        };
         $!assert.is_false($file_exists);
     }
 

@@ -37,7 +37,10 @@ namespace Rosella
         // if it is a file.
         function is_file(string path)
         {
-            var stat = get_os_pmc().stat(path);
+            var os = get_os_pmc();
+            if (!os.exists(path))
+                return 0;
+            var stat = os.stat(path);
             int mode = stat[2];
             int isfile = 0;
             ${ band isfile, mode, STAT_ISREG };
@@ -48,7 +51,10 @@ namespace Rosella
         // is a directory, zero otherwise.
         function is_directory(string path)
         {
-            var stat = get_os_pmc().stat(path);
+            var os = get_os_pmc();
+            if (!os.exists(path))
+                return 0;
+            var stat = os.stat(path);
             int mode = stat[2];
             int isdir = 0;
             ${ band isdir, mode, STAT_ISDIR };
@@ -59,7 +65,7 @@ namespace Rosella
         function path_separator()
         {
             using Rosella.Parrot.get_config_hash;
-            var config = get_config_hash;
+            var config = get_config_hash();
             string sep = config["slash"];
             while(1)
                 return sep;
