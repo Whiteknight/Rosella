@@ -62,16 +62,49 @@ class Mocking::Methods::Test {
         });
     }
 
-    #method test_one_method_no_args_fail_with_named_args() {
-    #    $!assert.expect_fail(sub() {
-    #        my $f := Rosella::construct(Rosella::MockObject::Factory, MyClass);
-    #        my $c := $f.create_typed();
-    #        $c.expect().once().method("test").with_no_args();
-    #        my $m := $c.mock();
-    #        $m.test(3:[named("whatever")]);
-    #        $c.verify();
-    #    });
-    #}
+    method test_one_method_with_named_args() {
+        $!assert.expect_pass(sub() {
+            my $f := Rosella::construct(Rosella::MockObject::Factory);
+            my $c := $f.create_typed(MyClass);
+            $c.expect_method("test").once.with_args(:whatever(3));
+            my $m := $c.mock();
+            $m.test(:whatever(3));
+            $c.verify();
+        });
+    }
+
+    method test_one_method_with_named_args_fail_no_args() {
+        $!assert.expect_fail(sub() {
+            my $f := Rosella::construct(Rosella::MockObject::Factory);
+            my $c := $f.create_typed(MyClass);
+            $c.expect_method("test").once.with_args(:whatever(3));
+            my $m := $c.mock();
+            $m.test();
+            $c.verify();
+        });
+    }
+
+    method test_one_method_with_named_args_fail_wrong_name() {
+        $!assert.expect_fail(sub() {
+            my $f := Rosella::construct(Rosella::MockObject::Factory);
+            my $c := $f.create_typed(MyClass);
+            $c.expect_method("test").once.with_args(:whatever(3));
+            my $m := $c.mock();
+            $m.test(:foo(3));
+            $c.verify();
+        });
+    }
+
+    method test_one_method_with_named_args_fail_wrong_value() {
+        $!assert.expect_fail(sub() {
+            my $f := Rosella::construct(Rosella::MockObject::Factory);
+            my $c := $f.create_typed(MyClass);
+            $c.expect_method("test").once.with_args(:whatever(3));
+            my $m := $c.mock();
+            $m.test(:whatever(4));
+            $c.verify();
+        });
+    }
 
     method test_one_method_args_return_pass() {
         $!assert.expect_pass(sub() {
