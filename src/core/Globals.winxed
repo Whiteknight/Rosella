@@ -1,5 +1,12 @@
 namespace Rosella
 {
+    /* Global Instance Registry
+        The routines in this file are used to establish a registry for global
+        instances. This is useful for situations where we would like to keep
+        a single instance of a type around globally, or be able to inject
+        global behavior at runtime
+    */
+
     const string DEFAULT_FACTORY_GLOBAL = "Rosella.default_factory";
 
     // Get the hash of globals.
@@ -28,6 +35,7 @@ namespace Rosella
         globals[name] = value;
     }
 
+    // Helper method to retrieve a global ObjectFactory instance
     function get_default_factory()
     {
         return __get_globals()[DEFAULT_FACTORY_GLOBAL];
