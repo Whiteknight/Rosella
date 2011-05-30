@@ -62,4 +62,13 @@ class Test::FileSystem::Directory {
 
     method walk_func() {
     }
+
+    method get_pmc_keyed() {
+    }
+
+    method exists_keyed() {
+    }
+
+    method delete_keyed() {
+    }
 }

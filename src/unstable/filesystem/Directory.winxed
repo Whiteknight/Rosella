@@ -133,5 +133,25 @@ namespace Rosella { namespace FileSystem
                 return new Rosella.FileSystem.Directory(name);
             return null;
         }
+
+        function exists_keyed[vtable](var key)
+        {
+            string path = string(self.path);
+            string name = path + string(key);
+            using Rosella.FileSystem.get_os_pmc;
+            int exist = get_os_pmc().exists(name);
+            return exist;
+        }
+
+        function delete_keyed[vtable](var key)
+        {
+            string path = string(self.path);
+            string name = path + string(key);
+            using Rosella.FileSystem.get_os_pmc;
+            var os = get_os_pmc();
+            int exist = os.exists(name);
+            if (exist)
+                os.rm(name);
+        }
     }
 }}
