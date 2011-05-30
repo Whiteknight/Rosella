@@ -2,6 +2,18 @@ $include_const "src/unstable/filesystem/Constants.pasm";
 
 namespace Rosella { namespace FileSystem
 {
+    namespace File
+    {
+
+        function get_filehandle()
+        {
+            using Rosella.get_default_factory;
+            return get_default_factory().create_typed("FileHandle");
+            var factory = filehandle_factory();
+            return factory.create();
+        }
+    }
+
     /* File Class
         This class represents a file. The file can be created, examined,
         modified, and deleted using methods on this object.
@@ -15,7 +27,7 @@ namespace Rosella { namespace FileSystem
         // must close the filehandle themselves.
         function open_read()
         {
-            var filehandle = new 'FileHandle';
+            var filehandle = get_filehandle();
             filehandle.open(self.path, "r");
             return filehandle;
         }
@@ -24,14 +36,14 @@ namespace Rosella { namespace FileSystem
         // must close the FileHandle themselves.
         function open_write()
         {
-            var filehandle = new 'FileHandle';
+            var filehandle = get_filehandle();
             filehandle.open(self.path, "w");
             return filehandle;
         }
 
         function open_append()
         {
-            var filehandle = new 'FileHandle';
+            var filehandle = get_filehandle();
             filehandle.open(self.path, "a");
             return filehandle;
         }

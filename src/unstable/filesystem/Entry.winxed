@@ -4,6 +4,8 @@ namespace Rosella { namespace FileSystem
     {
         var path;
 
+        // Constructor. Set the path of this Entry. The path is relative to
+        // the current working directory of the program
         function Entry(string path)
         {
             self.path = path;
@@ -39,6 +41,7 @@ namespace Rosella { namespace FileSystem
             self.path = new_name;
         }
 
+        // Get the short name of this Entry
         function short_name()
         {
             using Rosella.FileSystem.path_separator;

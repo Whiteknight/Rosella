@@ -1,11 +1,23 @@
 INIT {
     pir::load_bytecode("rosella/test.pbc");
     pir::load_bytecode("rosella/filesystem.pbc");
+    pir::load_bytecode("rosella/mockobject.pbc");
 }
 
 Rosella::Test::test(Test::FileSystem::Directory);
 
 class Test::FileSystem::Directory {
+    sub test_with_mock_os(&setup, &test)
+    {
+        my $c := Rosella::construct(Rosella::MockObject::Factory).create_typed("OS");
+        &setup($c);
+        my $old_os := Rosella::FileSystem::get_os_pmc();
+        Rosella::FileSystem::set_os_pmc($c.mock);
+        &test();
+        Rosella::FileSystem::set_os_pmc($old_os);
+        $c.verify();
+    }
+
     method current_directory() {
         my $pwd := Rosella::FileSystem::Directory::current_directory();
         $!assert.not_null($pwd);
@@ -29,7 +41,12 @@ class Test::FileSystem::Directory {
     }
 
     method delete() {
-        $!status.unimplemented("Find a way to test Directory.delete");
+        my $dir := Rosella::construct(Rosella::FileSystem::Directory, "WHARBLEGARBLE");
+        test_with_mock_os(-> $c {
+            $c.expect_method("rm").once.with_args("WHARBLEGARBLE/");
+        }, {
+            $dir.delete();
+        });
     }
 
     method get_string() {
@@ -38,7 +55,12 @@ class Test::FileSystem::Directory {
     }
 
     method rename() {
-        $!status.unimplemented("Find a way to test Directory.rename");
+        my $dir := Rosella::construct(Rosella::FileSystem::Directory, "WHARBLEGARBLE");
+        test_with_mock_os(-> $c {
+            $c.expect_method("rename").once.with_args("WHARBLEGARBLE/", "FooBar");
+        }, {
+            $dir.rename("FooBar");
+        });
     }
 
     method short_name() {
@@ -51,7 +73,13 @@ class Test::FileSystem::Directory {
     }
 
     method create() {
-        $!status.unimplemented("Find a way to test Directory.create");
+        my $dir := Rosella::construct(Rosella::FileSystem::Directory, "WHARBLEGARBLE");
+        test_with_mock_os(-> $c {
+            $c.expect_method("exists").once.with_args("WHARBLEGARBLE/").will_return(0);
+            $c.expect_method("mkdir").once.with_args("WHARBLEGARBLE/", 493);
+        }, {
+            $dir.create();
+        });
     }
 
     method get_files() {
@@ -106,6 +134,15 @@ class Test::FileSystem::Directory {
     }
 
     method delete_keyed() {
-        $!status.unimplemented("Find a way to test Directory.delete");
+        my $dir := Rosella::construct(Rosella::FileSystem::Directory, "WHARBLEGARBLE");
+        test_with_mock_os(-> $c {
+            $c.expect_method("exists").once.with_args("WHARBLEGARBLE/foo.txt").will_return(1);
+            $c.expect_method("rm").once.with_args("WHARBLEGARBLE/foo.txt");
+        }, {
+            Q:PIR {
+                $P0 = find_lex '$dir'
+                delete $P0["foo.txt"]
+            }
+        });
     }
 }

@@ -1,9 +1,13 @@
 namespace Rosella
 {
+    const string DEFAULT_FACTORY_GLOBAL = "Rosella.default_factory";
+
     // Get the hash of globals.
     function __get_globals()
     {
-        var globals = {};
+        var globals = {
+            DEFAULT_FACTORY_GLOBAL : new Rosella.ObjectFactory()
+        };
         while (1)
             yield globals;
     }
@@ -22,5 +26,10 @@ namespace Rosella
     {
         var globals = __get_globals();
         globals[name] = value;
+    }
+
+    function get_default_factory()
+    {
+        return __get_globals()[DEFAULT_FACTORY_GLOBAL];
     }
 }
