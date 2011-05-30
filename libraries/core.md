@@ -110,6 +110,26 @@ Rosella's object building utilities provide two things:
    of type specifier, any of which can be used to refer to an underlying
    Parrot Class, and can therefore be used to create new objects.
 
+### Global Instance Registry
+
+Rosella contains a global instance registry. This is a globally-visible hash
+which can be used to store instances of objects that need to be kept available
+for components to use repeatedly. This is a mechanism which is typically only
+used by the various Rosella libraries themselves to store certain persistant
+data values.
+
+This mechanism is not necessarily designed for user code to use directly,
+although it does provide a mechanism for user code to override some defaults
+used internally by Rosella.
+
+Register a global instance:
+
+    using Rosella.register_global;
+    register_global("name", value);
+
+    using Rosella.get_global;
+    var foo = get_global("name");
+
 ## Namespaces
 
 ### Rosella
