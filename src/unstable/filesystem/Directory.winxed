@@ -22,7 +22,17 @@ namespace Rosella { namespace FileSystem
     class Directory : Rosella.FileSystem.Entry
     {
         // Constructor. Build a directory with the given path name
-        function Directory(string path) { self.Entry(path); }
+        function Directory(string path) {
+            if (path == null || path == "") {
+                using Rosella.Error.invalid;
+                invalid(__FUNCTION__, "Directory needs a valid path");
+            }
+            int len = length(path);
+            string lastchar = substr(path, len - 1);
+            if (lastchar != "/")
+                path = path + "/";
+            self.Entry(path);
+        }
 
         // Delete the directory. If the recursive argument is provided and is
         // non-zero, the directory is deleted by recursively deleting all
@@ -47,7 +57,7 @@ namespace Rosella { namespace FileSystem
         function get_files()
         {
             using Rosella.FileSystem.get_os_pmc;
-            string path = string(self.path) + "/";
+            string path = string(self.path);
             var file_names = get_os_pmc().readdir(path);
             var files = [];
             using Rosella.FileSystem.is_file;
@@ -65,7 +75,7 @@ namespace Rosella { namespace FileSystem
         function get_subdirectories()
         {
             using Rosella.FileSystem.get_os_pmc;
-            string path = string(self.path) + "/";
+            string path = string(self.path);
             var names = get_os_pmc().readdir(path);
             var dirs = [];
             using Rosella.FileSystem.is_directory;
