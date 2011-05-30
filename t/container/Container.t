@@ -25,6 +25,13 @@ class ContainerTest {
         $!assert.instance_of($c, Rosella::Container, "no default");
     }
 
+    method set_default_container() {
+        my $c := "test";
+        Rosella::Container::set_default_container($c);
+        my $d := Rosella::Container::default_container();
+        $!assert.same($c, $d);
+    }
+
     method test_resolve_default_factory() {
         my $c := Rosella::construct(Rosella::Container);
         # No previous registration, falls back to the default object factory

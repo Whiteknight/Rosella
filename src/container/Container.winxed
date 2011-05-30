@@ -2,25 +2,31 @@ namespace Rosella
 {
     namespace Container
     {
-        // A global-point of access for a container. If called with a
-        // container instance, that container will be the global container.
-        // Otherwise, if called without a container or a pre-existing global
-        // container, it creates a new one.
+        const string DEFAULT_CONTAINER_GLOBAL = "Rosella.Container.default_container";
+
+        // A global-point of access for a default Container instance. Returns
+        // the globally-registered default Container instance. By default this
+        // is a plain vanilla Container, but that instance can be overridden.
         // Notice that you do not need to use this for your program, it is
-        // only a convenience to help bootstrap dependency injection
-        function default_container(var new_cont [optional], int has_cont [opt_flag])
+        // only a convenience to help bootstrap dependency injection.
+        function default_container()
         {
-            var default_cont = null;
-            if (has_cont)
-                default_cont = new_cont;
-            else {
-                //using static __get_container;
-                //default_cont = __get_container();
-                default_cont = new Rosella.Container();
+            using Rosella.get_global;
+            var temp = get_global(DEFAULT_CONTAINER_GLOBAL);
+            if (temp == null) {
+                using Rosella.register_global;
+                register_global(DEFAULT_CONTAINER_GLOBAL, new Rosella.Container());
             }
-          get_container:
-            yield default_cont;
-            goto get_container;
+            while(1)
+                yield get_global(DEFAULT_CONTAINER_GLOBAL);
+        }
+
+        // Set the globally registered Container instance to something besides
+        // the default.
+        function set_default_container(var container)
+        {
+            using Rosella.register_global;
+            register_global(DEFAULT_CONTAINER_GLOBAL, container);
         }
     }
 
