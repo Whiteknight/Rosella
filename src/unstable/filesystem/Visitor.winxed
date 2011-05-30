@@ -7,12 +7,38 @@ namespace Rosella { namespace FileSystem
     */
     class Visitor
     {
+        /* Public API
+            These are the routines that a Visitor subclass or look-alike class
+            need to implement to work with Directory.walk.
+        */
+
         // Visit the given entry. This might be a directory or a file
         function visit_file(var file)
         {
             if (self.should_visit(file))
                 self.process(file);
         }
+
+
+
+        // Begin visiting a folder
+        function begin_directory(var dir) { }
+
+        // End visiting a folder
+        function end_directory(var dir) { }
+
+        // Return the result of the walk, if any. By default there is nothing
+        // to report.
+        function result()
+        {
+            return null;
+        }
+
+        /* Implementation-Specific Routines
+            These routines are used by the default Visitor implementation for
+            ease. These do not need to be used by custom subclasses if the
+            .visit_file method is overridden.
+        */
 
         // Determine if we should visit the entry. This is a helper method
         // called by .visit(). If a subclass overrides .visit(), this method
@@ -22,25 +48,12 @@ namespace Rosella { namespace FileSystem
             return 1;
         }
 
-        // Begin visiting a folder
-        function begin_directory(var dir) { }
-
-        // End visiting a folder
-        function end_directory(var dir) { }
-
         // Process an entry. This is only called from .visit(). If a subclass
         // overrides .visit(), this method might be unnecessary
         function process(var file)
         {
             using Rosella.Error.must_subclass;
             must_subclass("Rosella.File.Visitor");
-        }
-
-        // Return the result of the walk, if any. By default there is nothing
-        // to report.
-        function result()
-        {
-            return null;
         }
     }
 }}
