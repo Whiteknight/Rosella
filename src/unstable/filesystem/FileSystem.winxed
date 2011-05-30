@@ -11,13 +11,26 @@ namespace Rosella
     */
     namespace FileSystem
     {
-        // Get an OS PMC from the Parrot distribution.
+        const string OS_PMC_GLOBAL = "Rosella.FileSystem.OS";
+
+        // Get an OS PMC from the Parrot distribution. Register it as a global
         function get_os_pmc()
         {
+            using Rosella.get_global;
+
             loadlib("os");
             var os = new 'OS';
-            while(1)
-                return os;
+            set_os_pmc(os);
+            while (1)
+                yield get_global(OS_PMC_GLOBAL);
+        }
+
+        // Set the OS PMC instance that should be used by low-level
+        // operations.
+        function set_os_pmc(var os)
+        {
+            using Rosella.register_global;
+            register_global(OS_PMC_GLOBAL, os);
         }
 
         // Determine if the given path is a file. Returns 0 if not, non-zero

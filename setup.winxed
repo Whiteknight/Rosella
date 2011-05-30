@@ -66,6 +66,7 @@ function setup_stable_libraries(var rosella)
         "core/Rosella",
         "core/Error",
         "core/IO",
+        "core/Globals",
         "core/ObjectFactory",
         "core/Parrot",
         "core/Version",

@@ -1,0 +1,23 @@
+namespace Rosella
+{
+    function __get_globals()
+    {
+        var globals = {};
+        while (1)
+            yield globals;
+    }
+
+    function get_global(string name)
+    {
+        var globals = __get_globals();
+        if (exists globals[name])
+            return globals[name];
+        return null;
+    }
+
+    function register_global(string name, var value)
+    {
+        var globals = __get_globals();
+        globals[name] = value;
+    }
+}

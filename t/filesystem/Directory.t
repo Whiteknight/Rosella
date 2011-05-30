@@ -29,7 +29,7 @@ class Test::FileSystem::Directory {
     }
 
     method delete() {
-
+        $!status.unimplemented("Find a way to test Directory.delete");
     }
 
     method get_string() {
@@ -38,6 +38,7 @@ class Test::FileSystem::Directory {
     }
 
     method rename() {
+        $!status.unimplemented("Find a way to test Directory.rename");
     }
 
     method short_name() {
@@ -46,15 +47,25 @@ class Test::FileSystem::Directory {
     }
 
     method delete_recursive() {
+        $!status.unimplemented("Find a way to test Directory.delete_recursive");
     }
 
     method create() {
+        $!status.unimplemented("Find a way to test Directory.create");
     }
 
     method get_files() {
+        my $dir := Rosella::construct(Rosella::FileSystem::Directory, "t/filesystem");
+        my @files := $dir.get_files;
+        $!assert.is_true(+@files > 0);
+        # TODO: Can we have a better, more specific test?
     }
 
     method get_subdirectories() {
+        my $dir := Rosella::construct(Rosella::FileSystem::Directory, "t/filesystem");
+        my @subdirs := $dir.get_subdirectories;
+        $!assert.equal(+@subdirs, 1);
+        $!assert.equal(@subdirs[0], "visitor");
     }
 
     method walk() {
@@ -64,11 +75,37 @@ class Test::FileSystem::Directory {
     }
 
     method get_pmc_keyed() {
+        my $dir := Rosella::construct(Rosella::FileSystem::Directory, "t/filesystem");
+        my $file := $dir["FileSystem.t"];
+        $!assert.not_null($file);
+        $!assert.instance_of($file, Rosella::FileSystem::File);
+
+        my $subdir := $dir["visitor"];
+        $!assert.not_null($subdir);
+        $!assert.instance_of($file, Rosella::FileSystem::Directory);
     }
 
     method exists_keyed() {
+        my $dir := Rosella::construct(Rosella::FileSystem::Directory, "t");
+        my $file_exists := Q:PIR {
+            $P0 = find_lex "$dir"
+            $I0 = exists $P0["harness"]
+            %r = box $I0
+        }
+        $!assert.is_true($file_exists);
+    }
+
+    method exists_keyed_fail() {
+        my $dir := Rosella::construct(Rosella::FileSystem::Directory, "t");
+        my $file_exists := Q:PIR {
+            $P0 = find_lex "$dir"
+            $I0 = exists $P0["WHARBLEGARBLE"]
+            %r = box $I0
+        }
+        $!assert.is_false($file_exists);
     }
 
     method delete_keyed() {
+        $!status.unimplemented("Find a way to test Directory.delete");
     }
 }

@@ -1,13 +1,17 @@
 namespace Rosella
 {
+    const string VERSION_HASH_NAME = "Rosella.version_hash";
+
     // Private routine to provide a persistant global variable to store
     // version numbers in
     function get_version_hash()
     {
-        var version_hash = {};
-        while (1) {
-            yield version_hash;
-        }
+        using Rosella.register_global;
+        using Rosella.get_global;
+
+        register_global(VERSION_HASH_NAME, {});
+        while (1)
+            yield get_global(VERSION_HASH_NAME);
     }
 
     // Get the version string for the specified library. Return null if the
