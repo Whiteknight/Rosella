@@ -7,8 +7,7 @@ INIT {
 Rosella::Test::test(Test::FileSystem::Directory);
 
 class Test::FileSystem::Directory {
-    sub test_with_mock_os(&setup, &test)
-    {
+    sub test_with_mock_os(&setup, &test) {
         my $c := Rosella::construct(Rosella::MockObject::Factory).create_typed("OS");
         &setup($c);
         my $old_os := Rosella::FileSystem::get_os_pmc();
@@ -97,9 +96,11 @@ class Test::FileSystem::Directory {
     }
 
     method walk() {
+        $!status.unimplemented("Need tests for Directory.walk");
     }
 
     method walk_func() {
+        $!status.unimplemented("Need tests for Directory.walk_func");
     }
 
     method get_pmc_keyed() {
