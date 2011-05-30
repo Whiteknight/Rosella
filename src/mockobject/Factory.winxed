@@ -6,10 +6,11 @@ namespace Rosella { namespace MockObject
     */
     class Factory : Rosella.ObjectFactory
     {
-        var proxy_factories;     // A hash of proxy factories, by target type name key
-        var controller_factory;  // A MockObject.Controller factory
-        var ordered_controller_factory;
+        var proxy_factories;            // A hash of proxy factories, by target type name key
+        var controller_factory;         // A MockObject.Controller factory
+        var ordered_controller_factory; // A MockObject.Controller.Ordered factory
 
+        // Constructor
         function Factory()
         {
             self.proxy_factories = {};
@@ -49,6 +50,7 @@ namespace Rosella { namespace MockObject
             return factory;
         }
 
+        // Get a default array of builders based on a hash of options.
         function get_builder_types(var opts)
         {
             using Rosella.Proxy.Builder.get_builders;

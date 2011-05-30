@@ -20,6 +20,7 @@ namespace Rosella { namespace MockObject
         var mock;
         var expectations;
 
+        // Constructor
         function Controller()
         {
             self.expectations = [];
@@ -37,6 +38,7 @@ namespace Rosella { namespace MockObject
             return expect;
         }
 
+        // Expect a get attribute call
         function expect_get(string name)
         {
             var expect = new Rosella.MockObject.Expectation.Get(name);
@@ -44,6 +46,7 @@ namespace Rosella { namespace MockObject
             return expect;
         }
 
+        // Expect a set attribute call
         function expect_set(string name)
         {
             var expect = new Rosella.MockObject.Expectation.Set(name);
@@ -51,6 +54,7 @@ namespace Rosella { namespace MockObject
             return expect;
         }
 
+        // Expect the object to be invoked
         function expect_invoke()
         {
             var expect = new Rosella.MockObject.Expectation.Invoke("");

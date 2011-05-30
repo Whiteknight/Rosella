@@ -1,5 +1,10 @@
 namespace Rosella { namespace MockObject
 {
+    /* MockObject Expectations
+        An Expectation is an object to codify a single expected behavior. This
+        can be a number of different things with a number of different options
+        depending on subclass and delegate components.
+    */
     class Expectation
     {
         var quantity;          // The number of times we expect this behavior
@@ -8,6 +13,7 @@ namespace Rosella { namespace MockObject
         var will;              // What the mock will do, once matched
         var with;              // What values the mock is expecting to match
 
+        // Constructor. Take the name of the thing we are expecting.
         function Expectation(string name)
         {
             self.quantity = 1;
@@ -17,6 +23,8 @@ namespace Rosella { namespace MockObject
             self.with = null;
         }
 
+        // Create a stringified version of the expectation, for display to the
+        // user
         function to_string() {
             if (self.name == null)
                 return ("Null (unmatchable) expectation");
@@ -29,6 +37,7 @@ namespace Rosella { namespace MockObject
             Tell how many times we expect this to happen
         */
 
+        // Specify how many of the event we want.
         function quantity(int num, string mod)
         {
             self.quantity = num;
@@ -50,6 +59,7 @@ namespace Rosella { namespace MockObject
             Will behaviors can only be set once we know the type.
         */
 
+        // The event will return a value to the calling code
         function will_return(var value)
         {
             self.__can_set_will();
@@ -57,6 +67,7 @@ namespace Rosella { namespace MockObject
             return self;
         }
 
+        // The event will throw an exception
         function will_throw(var value)
         {
             self.__can_set_will();
@@ -64,6 +75,7 @@ namespace Rosella { namespace MockObject
             return self;
         }
 
+        // The event will have a side-effect
         function will_do(var value)
         {
             self.__can_set_will();
@@ -71,6 +83,7 @@ namespace Rosella { namespace MockObject
             return self;
         }
 
+        // Set a custom will behavior for the event
         function will(var will)
         {
             self.__can_set_will();
@@ -78,6 +91,7 @@ namespace Rosella { namespace MockObject
             return self;
         }
 
+        // helper method. Determine if we can set a will behavior
         function __can_set_will()
         {
             if (self.will != null)
@@ -89,6 +103,7 @@ namespace Rosella { namespace MockObject
             These methods set up the expectation to match those.
         */
 
+        // The event will have a predefined set of arguments
         function with_args(var pos [slurpy], var named [named,slurpy])
         {
             self.__verify_can_set_args();
@@ -96,6 +111,7 @@ namespace Rosella { namespace MockObject
             return self;
         }
 
+        // The event will have any arguments. In other words, we won't check.
         function with_any_args()
         {
             self.__verify_can_set_args();
@@ -103,6 +119,7 @@ namespace Rosella { namespace MockObject
             return self;
         }
 
+        // The event will not have any arguments. Any arguments is an error.
         function with_no_args()
         {
             self.__verify_can_set_args();
@@ -110,6 +127,7 @@ namespace Rosella { namespace MockObject
             return self;
         }
 
+        // Set a custom with condition.
         function with(var with)
         {
             self.__verify_can_set_args();
@@ -148,6 +166,8 @@ namespace Rosella { namespace MockObject
             return self.__can_match_internal(type, name, pos, named);
         }
 
+        // helper method. This must be subclassed. Determines if we can set
+        // a match
         function __can_match_internal(string type, string name, var pos, var named)
         {
             using Rosella.Error.must_subclass;
