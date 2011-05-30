@@ -115,6 +115,8 @@ namespace Rosella { namespace FileSystem
             return self.walk(visitor);
         }
 
+        // Get an entry from the directory by name. This could return either
+        // a File or a Directory object
         function get_pmc_keyed[vtable](var key)
         {
             string path = string(self.path);
@@ -134,6 +136,7 @@ namespace Rosella { namespace FileSystem
             return null;
         }
 
+        // Determines if the directory Entry with that name exists
         function exists_keyed[vtable](var key)
         {
             string path = string(self.path);
@@ -143,6 +146,8 @@ namespace Rosella { namespace FileSystem
             return exist;
         }
 
+        // Deletes the directory Entry. Deletion in this case is non-recursive
+        // so non-empty subdirectories will not be deleted.
         function delete_keyed[vtable](var key)
         {
             string path = string(self.path);
