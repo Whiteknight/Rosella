@@ -1,0 +1,47 @@
+namespace Rosella
+{
+    /* Mock Object Library
+        The MockObject library is an extension library to Rosella.Test for
+        creating tests with mock objects.
+
+        This namespace provides some convenience routines for working with
+        mock objects.
+    */
+    namespace MockObject
+    {
+        const string DEFAULT_MOCK_FACTORY_KEY = "Rosella.MockObject.default_factory";
+
+        // Get a default MockObject.Factory instance from the global registry.
+        // MockObject.Factory is not a typed ObjectFactory, so a global
+        // instance can typically be used without causing too many problems.
+        function default_mock_factory()
+        {
+            using Rosella.get_global;
+            var temp = get_global(DEFAULT_MOCK_FACTORY_KEY);
+            if (temp == null) {
+                using Rosella.register_global;
+                register_global(DEFAULT_MOCK_FACTORY_KEY, new Rosella.MockObject.Factory());
+            }
+            yield temp;
+            while(1)
+                yield temp;
+        }
+
+        // Set a new MockObject instance in the global instance registry.
+        // This is useful for situations where we need to inject new default
+        // behavior, but can have negative effects if used improperly.
+        function set_default_mock_factory(var factory)
+        {
+            using Rosella.register_global;
+            register_global(DEFAULT_MOCK_FACTORY_KEY, factory);
+        }
+
+        // Use the default MockObject.Factory instance to create a new
+        // mock controller for the given type.
+        function get_controller(var type)
+        {
+            var factory = default_mock_factory();
+            return factory.create_typed(type);
+        }
+    }
+}

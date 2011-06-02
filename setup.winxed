@@ -132,6 +132,7 @@ function setup_stable_libraries(var rosella)
 
     // A mock object library for advanced unit testing
     setup_winxed_lib(rosella, "mockobject", ["Core", "Test", "Proxy"],
+        "mockobject/MockObject",
         "mockobject/Controller",
         "mockobject/controller/Ordered",
         "mockobject/Expectation",
