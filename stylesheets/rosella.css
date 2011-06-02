@@ -19,6 +19,12 @@ h1 {
     margin-bottom: 3px;
 }
 
+.main-page-content h1 {
+    font-size: 1.8em;
+    color: #2B2B37;
+    margin-bottom: 3px;
+}
+
 h2 {
     text-align: center;
     font-size: 1.5em;
