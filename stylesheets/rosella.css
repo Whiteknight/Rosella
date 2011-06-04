@@ -14,12 +14,6 @@ body {
 }
 
 h1 {
-    font-size: 3.8em;
-    color: #000000;
-    margin-bottom: 3px;
-}
-
-.main-page-content h1 {
     font-size: 1.8em;
     color: #2B2B37;
     margin-bottom: 3px;
@@ -50,7 +44,7 @@ a {
 .download { float: right; }
 
 .libraries {
-    font-size: larger;
+    /*font-size: larger;*/
     margin-left: 2em;
 }
 
