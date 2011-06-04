@@ -188,6 +188,18 @@ function setup_stable_libraries(var rosella)
         "query/Queryable",
         "query/queryable/InPlace"
     );
+
+    setup_winxed_lib(rosella, "filesystem", ["Core"],
+        "filesystem/Entry",
+        "filesystem/Directory",
+        "filesystem/File",
+        "filesystem/FileSystem",
+        "filesystem/Visitor",
+        "filesystem/visitor/Delete",
+        "filesystem/visitor/Function",
+        "filesystem/visitor/List",
+        ["filesystem/Constants"]:[named("constants")]
+    );
 }
 
 function setup_experimental_libraries(var rosella)
@@ -232,18 +244,6 @@ function setup_experimental_libraries(var rosella)
         "string/Tokenizer",
         "string/tokenizer/CClass",
         "string/tokenizer/Token"
-    );
-
-    setup_unstable_lib(rosella, "filesystem", ["Core"],
-        "filesystem/Entry",
-        "filesystem/Directory",
-        "filesystem/File",
-        "filesystem/FileSystem",
-        "filesystem/Visitor",
-        "filesystem/visitor/Delete",
-        "filesystem/visitor/Function",
-        "filesystem/visitor/List",
-        ["filesystem/Constants"]:[named("constants")]
     );
 
     setup_unstable_lib(rosella, "benchmark", [],
