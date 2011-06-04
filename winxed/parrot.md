@@ -1,6 +1,6 @@
 ---
 layout: rosella
-title: Winxed Documentation
+title: Winxed and Parrot
 ---
 
 ## Descending to PIR

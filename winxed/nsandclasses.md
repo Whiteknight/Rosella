@@ -1,6 +1,6 @@
 ---
 layout: rosella
-title: Namespace and Class
+title: Namespaces and Classes
 ---
 
 We looked at namespaces briefly when talking about objects and constructors.

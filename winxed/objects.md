@@ -301,5 +301,3 @@ detail later.
 
 ## Null and Definedness
 
-
-

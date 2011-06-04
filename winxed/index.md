@@ -1,6 +1,6 @@
 ---
 layout: rosella
-title: Winxed
+title: Winxed Documentation
 ---
 
 ## Table of Contents

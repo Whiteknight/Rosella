@@ -210,7 +210,12 @@ This means that function returns use the same internal mechanisms as function
 calls do, and function returns can pass arguments back to the caller in the
 same way as the caller passes arguments back to the function.
 
+    function myfunction() {
+        return 1, 2, 3;
+    }
+
     :(a, b, c) = myfunction(1, 2, 3);
+
 
 ## Coroutines and yield
 
