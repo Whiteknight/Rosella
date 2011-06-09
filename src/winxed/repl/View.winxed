@@ -2,43 +2,46 @@ namespace Rosella { namespace Winxed { namespace Repl
 {
     class View
     {
+        const int MAX_BACKTRACE_LINES = 5;
+        const string PROMPT = "\nWinxed-Rosella> ";
+
         var stdin;
+        var stdout;
 
         function View()
         {
+            // TODO: Take these in the constructor
             self.stdin = getstdin();
+            self.stdout = getstdout();
+        }
+
+        function __printf(string fmt, var args [slurpy])
+        {
+            self.stdout.print(sprintf(fmt, args));
         }
 
         function get_input()
         {
-            return self.stdin.readline_interactive("\nWinxed-Rosella> ");
+            return self.stdin.readline_interactive(PROMPT);
         }
 
         function display_error(var e)
         {
-            say(sprintf("\t>>> Error: '%s'", [e["message"]]));
-            var bt_list = e.backtrace_strings();
-            for (string bt in bt_list)
-                self.private_show_multiline(bt, 5);
+            self.__printf("\t>>> Error: '%s'\n", e["message"]);
+            using Rosella.Parrot.get_backtrace_ex_strings;
+
+            var bt = get_backtrace_ex_strings(e);
+            for (int i = 0; i < MAX_BACKTRACE_LINES && i < elements(bt); i++)
+                self.__printf("\t>>> %s\n", bt[i]);
+            if (MAX_BACKTRACE_LINES < elements(bt))
+                self.__printf("\t>>> ...\n");
         }
 
         function show_code(string func_c)
         {
-            self.private_show_multiline(func_c, 0);
-        }
-
-        function private_show_multiline(string ml, int max)
-        {
-            var lines = split("\n", ml);
-            if (max <= 0) {
-                for(string line in lines)
-                    say(sprintf("\t>>> %s", [line]));
-            } else {
-                for(int i = 0; i < max && i < elements(lines); i++)
-                    say(sprintf("\t>>> %s", [lines[i]]));
-                if (elements(lines) > max)
-                    say("\t>>> ...");
-            }
+            var lines = split("\n", func_c);
+            for(string line in lines)
+                self.__printf("\t>>> %s\n", line);
         }
 
         function print_result(var result, var state)
@@ -63,7 +66,7 @@ namespace Rosella { namespace Winxed { namespace Repl
         {
             say("\t>>> Result = [");
             for (int i = 0; i < elements(result); i++)
-                say(sprintf("\t>>>\t%d => '%s' (%s)", [i, result[i], string(typeof(result[i]))]));
+                self.__printf("\t>>>\t%d => '%s' (%s)\n", i, result[i], string(typeof(result[i])));
             say("\t>>> ]");
         }
 
@@ -71,13 +74,13 @@ namespace Rosella { namespace Winxed { namespace Repl
         {
             say("\t>>> Result = {");
             for (string key in result)
-                say(sprintf("\t>>>\t'%s' => '%s' (%s)", [key, result[key], string(typeof(result[key]))]));
+                self.__printf("\t>>>\t'%s' => '%s' (%s)\n", key, result[key], string(typeof(result[key])));
             say("\t>>> }");
         }
 
         function print_scalar_result(var result, var state)
         {
-            say(sprintf("\t>>> Result = '%s'", [result]));
+            self.__printf("\t>>> Result = '%s'\n", result);
         }
 
     }
