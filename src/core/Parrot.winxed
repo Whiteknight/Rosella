@@ -13,5 +13,41 @@ namespace Rosella
             while(1)
                 return config;
         }
+
+        // Get an array of strings representing a backtrace from the caller
+        function get_backtrace_strings()
+        {
+            var cur_ctx = getinterp()["context"];
+            var last_ctx = cur_ctx.caller_ctx;
+            return __format_backtrace(last_ctx.backtrace());
+        }
+
+        // Get an array of strings representing a backtrace from the exception
+        function get_backtrace_ex_strings(var ex)
+        {
+            var bt = ex.backtrace();
+            return __format_backtrace(bt);
+
+        }
+
+        // private routine. Format backtrace information into an array of
+        // human-readable strings
+        function __format_backtrace(var bt)
+        {
+            var bts = [];
+            for (int i = 0; i < elements(bt); i++) {
+                var sub = bt[i]["sub"];
+                string subname = "(entry)";
+                if (sub != null)
+                    subname = string(sub);
+                var annotations = bt[i]["annotations"];
+                string filename = annotations["file"];
+                int lineno = annotations["line"];
+                bts[i] = sprintf("Called from '%s' (%s : %d)", [subname, filename, lineno]);
+                if (sub == null)
+                    break;
+            }
+            return bts;
+        }
     }
 }

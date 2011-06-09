@@ -330,15 +330,15 @@ function setup_lib_constants(var rosella, string name, string prefix, var args)
 // version. If we do have one built, use that instead
 function setup_distutils()
 {
-    int e = 0;
-    string distutils = "src/winxed/Distutils.pir";
-    ${ stat e, distutils, 0 };
-    if (e)
-        load_bytecode(distutils);
-    else {
+    //int e = 0;
+    //string distutils = "src/winxed/Distutils.pir";
+    //${ stat e, distutils, 0 };
+    //if (e)
+    //    load_bytecode(distutils);
+    //else {
         say("Bootstrapping build with existing distutils library");
         load_bytecode("src/winxed/Distutils.bootstrap.pir");
-    }
+    //}
 
     using Rosella.Winxed.Distutils.winxed_setup;
     winxed_setup();
