@@ -19,6 +19,7 @@ function main[main](argv)
         "pbc_pbc"           : {},
         "pbc_pir"           : {},
         "pir_pir"           : {},
+        "winxed_winxed"     : {},
         "inst_lib"          : [],
         "installable_pbc"   : {},
         "include_winxed"    : {},
@@ -283,30 +284,22 @@ function setup_unstable_lib(var rosella, string name, var includes, var files [s
 function setup_lib_internal(var rosella, string name, string prefix,
         var includes, var files_raw, var named)
 {
-    var pbc_files = [];
     var pir_files = [];
     setup_lib_constants(rosella, name, prefix, named);
 
     // Get a list of all files
     var files = [];
     for (string include in includes)
-        push(files, "src/include/" + include);
+        push(files, "src/include/" + include + ".winxed");
     for (string file in files_raw)
-        push(files, prefix + file);
+        push(files, prefix + file + ".winxed");
 
-    for (string path in files) {
-        string winxed_file = path + ".winxed";
-        string pir_file = path + ".pir";
-        string pbc_file = path + ".pbc";
-        rosella["pir_winxed"][pir_file] = winxed_file;
-        rosella["pbc_pir"][pbc_file] = pir_file;
-        pbc_files.push(pbc_file);
-        pir_files.push(pir_file);
-    }
+    string winxed_master = "rosella/" + name + ".winxed";
     string pbc_lib_name = "rosella/" + name + ".pbc";
     string pir_lib_name = "rosella/" + name + ".pir";
-    rosella["pbc_pbc"][pbc_lib_name] = pbc_files;
-    rosella["pir_pir"][pir_lib_name] = pir_files;
+    rosella["winxed_winxed"][winxed_master] = files;
+    rosella["pir_winxed"][pir_lib_name] = winxed_master;
+    rosella["pbc_pir"][pbc_lib_name] = pir_lib_name;
     rosella["inst_lib"].push(pbc_lib_name);
     rosella["manifest_includes"].push(pir_lib_name);
 }
