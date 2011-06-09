@@ -6,6 +6,7 @@ namespace Rosella { namespace Proxy { namespace Builder
         {
             using Rosella.Proxy.add_vtable_override;
             using Rosella.Proxy.Builder.Immutable.intercept_immutable;
+
             add_vtable_override(proxy_class, "set_attr_str", intercept_immutable);
 
             proxy_class.add_vtable_override("set_integer_native", intercept_immutable);
@@ -13,6 +14,21 @@ namespace Rosella { namespace Proxy { namespace Builder
             proxy_class.add_vtable_override("set_number_native", intercept_immutable);
             proxy_class.add_vtable_override("set_pmc", intercept_immutable);
             proxy_class.add_vtable_override("assign_pmc", intercept_immutable);
+            proxy_class.add_vtable_override("set_pmc_keyed_int", intercept_immutable);
+            proxy_class.add_vtable_override("set_pmc_keyed_string", intercept_immutable);
+            proxy_class.add_vtable_override("set_pmc_keyed", intercept_immutable);
+            proxy_class.add_vtable_override("set_string_keyed_int", intercept_immutable);
+            proxy_class.add_vtable_override("set_string_keyed_string", intercept_immutable);
+            proxy_class.add_vtable_override("set_string_keyed", intercept_immutable);
+            proxy_class.add_vtable_override("set_number_keyed_int", intercept_immutable);
+            proxy_class.add_vtable_override("set_number_keyed_string", intercept_immutable);
+            proxy_class.add_vtable_override("set_number_keyed", intercept_immutable);
+            proxy_class.add_vtable_override("set_integer_keyed_int", intercept_immutable);
+            proxy_class.add_vtable_override("set_integer_keyed_string", intercept_immutable);
+            proxy_class.add_vtable_override("set_integer_keyed", intercept_immutable);
+            proxy_class.add_vtable_override("delete_keyed_int", intercept_immutable);
+            proxy_class.add_vtable_override("delete_keyed_string", intercept_immutable);
+            proxy_class.add_vtable_override("delete_keyed", intercept_immutable);
         }
 
         function intercept_immutable[nsentry](var args [slurpy])

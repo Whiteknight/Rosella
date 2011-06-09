@@ -191,6 +191,7 @@ function setup_stable_libraries(var rosella)
     );
 
     setup_winxed_lib(rosella, "filesystem", ["Core"],
+        "filesystem/Includes",
         "filesystem/Entry",
         "filesystem/Directory",
         "filesystem/File",
@@ -241,6 +242,7 @@ function setup_experimental_libraries(var rosella)
     );
 
     setup_unstable_lib(rosella, "string", ["Core"],
+        "string/Includes",
         "string/String",
         "string/Tokenizer",
         "string/tokenizer/CClass",
