@@ -8,6 +8,7 @@ namespace Rosella { namespace Test
         var test_number;
         var output;
 
+        // Constructor
         function Builder(var output [optional], int has_out [opt_flag])
         {
             self.test_number = 0;
@@ -16,16 +17,20 @@ namespace Rosella { namespace Test
             self.output = output;
         }
 
+        // Helper printf function
         function _printf(string fmt, var args [slurpy])
         {
             self.output.print(sprintf(fmt, args));
         }
 
+        // Reset the count
         function reset()
         {
             self.test_number = 0;
         }
 
+        // Display a todo result. pass=1 means an unexpected pass. pass=0 is
+        // an expected failure
         function todo(int pass, string msg,
                 string todo [optional], int has_todo [opt_flag])
         {
@@ -36,6 +41,8 @@ namespace Rosella { namespace Test
             self._printf("%s # TODO %s\n", output, todo);
         }
 
+        // Display a normal result. pass=1 is an expected test pass. pass=0
+        // is an unexpected failure
         function ok(int pass, string msg [optional], int has_msg [opt_flag])
         {
             self.test_number = self.test_number + 1;
@@ -45,6 +52,7 @@ namespace Rosella { namespace Test
             self._printf("%s\n", result_text);
         }
 
+        // helper function to get the display text for the result
         function _get_result_text(int number, int pass, string msg)
         {
             string result = null;
@@ -58,6 +66,7 @@ namespace Rosella { namespace Test
                 return result;
         }
 
+        // display diagnostics information as comments
         function diag(var error)
         {
             if (error instanceof "Exception") {
@@ -76,6 +85,7 @@ namespace Rosella { namespace Test
                 self._printf("# %s\n", string(error));
         }
 
+        // print out a plan
         function plan(int count)
         {
             // TODO: Error checking
