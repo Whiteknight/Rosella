@@ -66,14 +66,12 @@ namespace Rosella { namespace Test
                 for (string line in lines)
                     self._printf("# %s\n", line);
 
-                var bt_list = error.backtrace_strings();
-                for (string bt in bt_list) {
-                    var frames = split("\n", bt);
-                    for (string frame in frames)
-                        self._printf("# %s\n", frame);
-                }
-
-
+                // TODO: scan the backtrace, looking for subs that aren't
+                // part of Rosella. Don't show internal functions in the bt
+                using Rosella.Parrot.get_backtrace_ex_strings;
+                var bt_list = get_backtrace_ex_strings(error);
+                for (string bt in bt_list)
+                    self._printf("# %s\n", bt);
             } else
                 self._printf("# %s\n", string(error));
         }
