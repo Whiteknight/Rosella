@@ -14,10 +14,6 @@ namespace Rosella { namespace Winxed
             load_bytecode("distutils.pbc");
             using register_step_before;
 
-            using static build_winxed_files;
-            using static build_winxed_const_includes;
-            using static build_concat_winxed_files;
-
             register_step_before("build", build_winxed_files);
             register_step_before("build", build_winxed_const_includes);
             register_step_before("build", build_concat_winxed_files);
