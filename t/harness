@@ -28,6 +28,16 @@ if (pir::elements(@argv)) {
     pir::push(@test_runs, $run);
     $testview.add_run($run, 0);
 
+    # Winxed tests
+    # These are some basic sanity tests to prove we can also write tests in
+    # winxed.
+    $factory.add_test_dirs("Winxed",
+        "t/winxed_test"
+    );
+    $run := $factory.create();
+    pir::push(@test_runs, $run);
+    $testview.add_run($run, 0);
+
     # Stable library tests
     $factory.add_test_dirs("NQP",
         "t/tap_harness",    # "harness", can't shadow t/harness program
