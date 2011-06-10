@@ -125,7 +125,6 @@ namespace Rosella { namespace Winxed
             if (files == null)
                 return;
 
-            using static delete_file;
             for (string file in files)
                 delete_file(file);
         }
