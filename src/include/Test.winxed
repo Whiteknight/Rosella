@@ -1,4 +1,1 @@
-function rosella_include_test [anon,init,load]()
-{
-    load_bytecode("rosella/test.pbc");
-}
+$load "rosella/test.pbc";
