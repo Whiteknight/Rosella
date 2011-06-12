@@ -31,8 +31,10 @@ namespace Rosella { namespace Harness { namespace TestFile
         function create_tests_from_dirs(var test_type, var dirs, int recurse)
         {
             var tests = [];
-            for (string dir in dirs) {
+            for (string dirpath in dirs) {
                 var rawfiles = [];
+                var dir = new Rosella.FileSystem.Directory(dirpath);
+                dir.walk_func(is_test);
                 self.get_dir_contents(dir, recurse, rawfiles);
                 for (string filename in rawfiles) {
                     var testobj = self.create_typed(test_type, filename);
@@ -55,35 +57,6 @@ namespace Rosella { namespace Harness { namespace TestFile
             return tests;
         }
 
-        /* Internal Routines
-        */
-
-        // Get a list of test files from a directory. Allow recursion into
-        // subdirectories, if requested.
-        function get_dir_contents(string path, int recurse, var contents)
-        {
-            int STAT_ISREG = 0x8000;
-            int STAT_ISDIR = 0x4000;
-            var contents_raw = self.os.readdir(path);
-
-            for (string file in contents_raw) {
-                string entry = path + "/" + file;
-                var stat = self.os.stat(entry);
-                int mode = stat[2];
-                int isdir = 0;
-                ${ band isdir, mode, STAT_ISDIR };
-                int isfile = 0;
-                ${ band isfile, mode, STAT_ISREG };
-                if (file[0] == ".")
-                    continue;
-                if (isfile == STAT_ISREG && self.is_test(entry))
-                    push(contents, entry);
-
-                if (recurse && isdir == STAT_ISDIR)
-                    self.get_dir_contents(entry, recurse, contents);
-            }
-        }
-
         // Determine if the file is a valid test. Probably best to override this in
         // a subclass if you need different behaviors.
         // TODO: Maybe read the shebang preamble to make sure we have the
@@ -91,10 +64,10 @@ namespace Rosella { namespace Harness { namespace TestFile
         function is_test(string filename)
         {
             if (indexof(filename, ".t") == -1)
-                return 0;
+                return;
             if (indexof(filename, ".OLD") != -1)
-                return 0;
-            return 1;
+                return;
+            return filename;
         }
     }
 }}}
