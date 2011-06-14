@@ -159,10 +159,10 @@ Here is a minimal harness written in Winxed:
 Here is a minimal harness written in NQP:
 
     INIT { pir::load_bytecode("rosella/harness.pbc"); }
-    my $factory := Rosella::build(Rosella::Harness::TestRunFactory);
+    my $factory := Rosella::construct(Rosella::Harness::TestRunFactory);
     $factory.add_test_dirs("NQP", "t", :recurse(1));
     my $testrun := $factory.create();
-    my $harness := Rosella::build(Rosella::Harness);
+    my $harness := Rosella::construct(Rosella::Harness);
     my $testview := $harness.default_view();
     $testview.add_run($testrun, 0);
     $harness.run($corerun, $testview);
