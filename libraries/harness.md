@@ -140,7 +140,33 @@ This is an internal class to help organize tests and test files by result.
 
 ### Winxed
 
+Here is a minimal harness written in Winxed:
+
+    function main[main]() {
+        load_bytecode("rosella/harness.pbc");
+        var factory = new Rosella.Harness.TestRun.Factory();
+        var harness = new Rosella.Harness();
+        var view = harness.default_view();
+        factory.add_test_dirs("Winxed", "t", 1:[named("recurse")]);
+        var testrun = factory.create();
+        view.add_run(testrun);
+        harness.run(testrun, view);
+        view.show_results();
+    }
+
 ### NQP-rx
+
+Here is a minimal harness written in NQP:
+
+    INIT { pir::load_bytecode("rosella/harness.pbc"); }
+    my $factory := Rosella::build(Rosella::Harness::TestRunFactory);
+    $factory.add_test_dirs("NQP", "t", :recurse(1));
+    my $testrun := $factory.create();
+    my $harness := Rosella::build(Rosella::Harness);
+    my $testview := $harness.default_view();
+    $testview.add_run($testrun, 0);
+    $harness.run($corerun, $testview);
+    $testview.show_results();
 
 ## Users
 
