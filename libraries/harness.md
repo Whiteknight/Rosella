@@ -162,7 +162,6 @@ the command line:
         var factory = new Rosella.Harness.TestRun.Factory();
         var harness = new Rosella.Harness();
         var view = harness.default_view();
-        factory.add_test_dirs("Winxed", "t", 1:[named("recurse")]);
         var testruns = [];
         for (var dir in args) {
             var testrun = factory.create();
