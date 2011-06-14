@@ -154,6 +154,30 @@ Here is a minimal harness written in Winxed:
         view.show_results();
     }
 
+Here is a version of the harness which takes a list of test directories from
+the command line:
+
+    function main[main](var args) {
+        load_bytecode("rosella/harness.pbc");
+        var factory = new Rosella.Harness.TestRun.Factory();
+        var harness = new Rosella.Harness();
+        var view = harness.default_view();
+        factory.add_test_dirs("Winxed", "t", 1:[named("recurse")]);
+        var testruns = [];
+        for (var dir in args) {
+            var testrun = factory.create();
+            view.add_run(testrun);
+            push(testruns, testrun);
+        }
+        for (var run in testruns) {
+            if (!harness.run(run, view)) {
+                view.show_results();
+                exit(1);
+            }
+        }
+        view.show_results();
+    }
+
 ### NQP-rx
 
 Here is a minimal harness written in NQP:
