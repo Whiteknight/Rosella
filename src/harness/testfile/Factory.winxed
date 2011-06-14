@@ -32,11 +32,12 @@ namespace Rosella { namespace Harness { namespace TestFile
         {
             var tests = [];
             for (string dirpath in dirs) {
-                var rawfiles = [];
                 var dir = new Rosella.FileSystem.Directory(dirpath);
-                using is_test;
-                dir.walk_func(is_test);
-                self.get_dir_contents(dir, recurse, rawfiles);
+                var rawfiles = dir.walk_func(function (string filename) {
+                    if (indexof(filename, ".t") == -1 || indexof(filename, ".OLD") != -1)
+                        return;
+                    return filename;
+                });
                 for (string filename in rawfiles) {
                     var testobj = self.create_typed(test_type, filename);
                     push(tests, testobj);
@@ -62,14 +63,7 @@ namespace Rosella { namespace Harness { namespace TestFile
         // a subclass if you need different behaviors.
         // TODO: Maybe read the shebang preamble to make sure we have the
         //       correct type of file.
-        function is_test(string filename)
-        {
-            if (indexof(filename, ".t") == -1)
-                return;
-            if (indexof(filename, ".OLD") != -1)
-                return;
-            return filename;
-        }
+
     }
 }}}
 

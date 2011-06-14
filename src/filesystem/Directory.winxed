@@ -97,10 +97,8 @@ namespace Rosella { namespace FileSystem
             for (var file in files)
                 visitor.visit_file(file);
             var subdirs = self.get_subdirectories();
-            for (var dir in subdirs) {
-                say(sprintf("Walking subdir: %s", [dir]));
+            for (var dir in subdirs)
                 dir.walk(visitor);
-            }
             visitor.end_directory(self);
             return visitor.result();
         }
