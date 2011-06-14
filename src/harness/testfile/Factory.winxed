@@ -34,6 +34,7 @@ namespace Rosella { namespace Harness { namespace TestFile
             for (string dirpath in dirs) {
                 var rawfiles = [];
                 var dir = new Rosella.FileSystem.Directory(dirpath);
+                using is_test;
                 dir.walk_func(is_test);
                 self.get_dir_contents(dir, recurse, rawfiles);
                 for (string filename in rawfiles) {
