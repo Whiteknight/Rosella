@@ -6,11 +6,16 @@ namespace Rosella { namespace Event
     */
     class Manager
     {
+        const string DEFAULT_QUEUE = "!!!default_queue!!!";
         var events;
+        var queues;
 
         function Manager()
         {
             self.events = {};
+            self.queues = {
+                DEFAULT_QUEUE = new Rosella.Event.Queue(0)
+            };
         }
 
         /* Event Management Routines
@@ -27,6 +32,10 @@ namespace Rosella { namespace Event
         function register_event(string event_name, var event, int merge)
         {
             using Rosella.isa_type;
+            if (!has_merge)
+                merge = 0;
+            if (!has_queue)
+                queue_name = DEFAULT_QUEUE;
 
             if (!isa_type(class Rosella.Event, event)) {
                 using Rosella.Error.invalid;
@@ -62,23 +71,29 @@ namespace Rosella { namespace Event
 
         // Subscribe to an event by name. If the Event does not already exist,
         // it will be created automatically with the given name.
-        function subscribe_object(string event_name, var object,
-                var meth)
+        function subscribe_object(string event_name, var object, var meth,
+                string queue_name [optional], int has_queue [opt_flag])
         {
+            if (!has_queue)
+                queue_name = DEFAULT_QUEUE;
             var event = self.get_event_autocreate(event_name);
+
             int count = event.get_count();
             string id = sprintf("__em_%s_object_%d", [event_name, count]);
-            return event.add_subscriber_object(id, object, meth);
+            return event.add_subscriber_object(id, object, meth, queue_name);
         }
 
         // Subscribe to an event with a pre-made Action.
-        function subscribe_action(string event_name, var action)
+        function subscribe_action(string event_name, var action,
+                string queue_name [optional], int has_queue [opt_flag])
         {
             using Rosella.isa_type;
             if (!isa_type(class Rosella.Action, action)) {
                 using Rosella.Error.invalid;
                 invalid("not a valid action");
             }
+            if (!has_queue)
+                queue_name = DEFAULT_QUEUE;
             var event = self.get_event_autocreate(event_name);
             int count = event.get_count();
             string id = sprintf("__em_%s_action_%d", [event_name, count]);
@@ -110,13 +125,22 @@ namespace Rosella { namespace Event
         */
 
         // Get an event, creating it if necessary
-        function get_event_autocreate(string event_name)
+        function __get_event_autocreate(string event_name)
         {
             if (exists self.events[event_name])
                 return self.events[event_name];
             var event = new Rosella.Event(0);
             self.events[event_name] = event;
             return event;
+        }
+
+        function __get_queue_autocreate(string queue_name)
+        {
+            if (exists self.queues[queue_name])
+                return self.queues[queue_name];
+            var queue = new Rosella.Event.Queue(0);
+            self.queues[queue_name] = queue;
+            return queue;
         }
     }
 }}

@@ -16,59 +16,18 @@ namespace Rosella
     */
     class Event
     {
-        var actions;
+        var manager;
         var current_action_name;
         var current_pos_payload;
         var current_named_payload;
         var handled;
         var id_count;
 
-        function Event(int start_id, var acts [named,slurpy])
+        function Event(var manager, int start_id)
         {
-            self.actions = acts;
+            self.manager = manager;
             self.id_count = start_id;
         }
-
-        /* Subscription Management Routines
-        */
-
-        // Add a new Action to the list of subscribers. Overwrites old entries
-        // without asking.
-        function add_subscriber_action(string id, var action)
-        {
-            if (id == null)
-                id = self.get_new_id();
-            self.actions[id] = action;
-            self.id_count = self.id_count + 1;
-            return id;
-        }
-
-        // Add a new object as a subscriber. The specified method will be
-        // invoked on the subscriber with the Event as an argument
-        function add_subscriber_object(string id, var object, var meth)
-        {
-            var action = new Rosella.Action.Sub(
-                function(var e) {
-                    using Rosella.invoke_method;
-                    invoke_method(object, meth, [e], {});
-                }
-            );
-            return self.add_subscriber_action(id, action);
-        }
-
-        // Remove a subscriber by name
-        function remove_subscriber(string id)
-        {
-            if (exists self.actions[id])
-                delete self.actions[id];
-        }
-
-        // Get an ID number which is unique in this Event. This can be used
-        // for generating non-overlapping action names
-        function get_count() { return self.id_count; }
-
-        // Get the total number of subscribers to this event
-        function num_subscribers() { return int(self.actions); }
 
         /* Payload Routines
             The Event class provides read-only Hash- and Array-like access for
@@ -100,24 +59,18 @@ namespace Rosella
         // Set to 0 at the beginning of the .raise() sequence. The Event
         // continues to execute its member actions until handled is set to 1
         // or until it runs out of actions
-        function handled(int handled)
+        function handled(int handled [optional], int has_h [opt_flag])
         {
-            self.handled = handled;
+            if (has_h)
+                self.handled = handled;
+            return self.handled;
         }
 
-        // Raise the event. The given arguments are packed up into the payload
-        // of this Event object and passed to all subscribers.
-        function raise(var pos [slurpy], var named [slurpy,named])
+        function prepare_to_raise(var pos, var named)
         {
+            self.handled = 0;
             self.current_pos_payload = pos;
             self.current_named_payload = named;
-            self.handled = 0;
-            for (var action in self.actions) {
-                self.current_action_name = action;
-                self.actions[action].execute(self);
-                if (self.handled)
-                    break;
-            }
         }
 
         /* Internal Routines
