@@ -279,4 +279,14 @@ provides:
 
 ## Error Handling and Exceptions
 
+Error handling is done through exceptions.
+
 ### Try/Catch
+
+You can use `try` and `catch` to catch exceptions and examine them.
+
+    try {
+        // something dangerous here
+    } catch (e) {
+        // handle the exception here
+    }
