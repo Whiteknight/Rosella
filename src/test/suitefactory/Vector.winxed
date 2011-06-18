@@ -1,0 +1,64 @@
+namespace Rosella { namespace Test { namespace SuiteFactory
+{
+    class Vector : Rosella.Test.SuiteFactory
+    {
+        var data;
+        var func;
+
+        function Vector(var func, var data, var options)
+        {
+            self.SuiteFactory(null, options);
+            self.data = data;
+            self.func = func;
+        }
+
+        function get_test_methods()
+        {
+            int is_role = 0;
+            var data = self.data;
+            ${ does is_role, data, "array" };
+            if (is_role)
+                return self.get_test_methods_from_array();
+            ${ does is_role, data, "hash" };
+            if (is_role)
+                return self.get_test_methods_from_hash();
+            return self.get_test_method_from_scalar();
+        }
+
+        function __make_test_method(var n, var f, var d)
+        {
+            var func = f;
+            var data = d;
+            var name = n;
+            return function(var obj) {
+                obj.status.verify(name);
+                func(obj, data);
+            };
+        }
+
+        function get_test_methods_from_array()
+        {
+            var test_methods = {};
+            for (int i = 0; i < elements(self.data); i++) {
+                string name = "test " + string(i);
+                test_methods[name] = self.__make_test_method(name, self.func, self.data[i]);
+            }
+            return test_methods;
+        }
+
+        function get_test_methods_from_hash()
+        {
+            var test_methods = {};
+            for (string key in self.data)
+                test_methods[key] = self.__make_test_method(key, self.func, self.data[key]);
+            return test_methods;
+        }
+
+        function get_test_methods_from_scalar()
+        {
+            return {
+                "test" : self.__make_test_method("test", self.func, self.data)
+            };
+        }
+    }
+}}}

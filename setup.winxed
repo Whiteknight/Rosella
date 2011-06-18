@@ -124,6 +124,7 @@ function setup_stable_libraries(var rosella)
         "test/Result",
         "test/Suite",
         "test/SuiteFactory",
+        "test/suitefactory/Vector",
         "test/Test",
         "test/TestCase",
         "test/TestContext",

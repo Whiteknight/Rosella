@@ -19,6 +19,24 @@ namespace Rosella
         // in. Returns 1 if the test was a success, 0 otherwise.
         function test(var test_type, var options [slurpy,named])
         {
+            __default_options(options);
+            var suitefactory = new Rosella.Test.SuiteFactory(test_type, options);
+            var suite = suitefactory.create();
+            var result = suite.run();
+            return result.was_successful();
+        }
+
+        function test_vector(var func, var tests, var options [slurpy,named])
+        {
+            __default_options(options);
+            var suitefactory = new Rosella.Test.SuiteFactory.Vector(func, tests, options);
+            var suite = suitefactory.create();
+            var result = suite.run();
+            return result.was_successful();
+        }
+
+        function __default_options(var options)
+        {
             if (!(exists options["suite_type"]))
                 options["suite_type"] = class Rosella.Test.Suite;
             if (!(exists options["testcase_type"]))
@@ -29,11 +47,6 @@ namespace Rosella
                 options["test_prefix"] = "";
             if (!(exists options["asserter"]))
                 options["asserter"] = new Rosella.Test.Asserter;
-
-            var suitefactory = new Rosella.Test.SuiteFactory(test_type, options);
-            var suite = suitefactory.create();
-            var result = suite.run();
-            return result.was_successful();
         }
 
         // Unconditional fail. Throws a Rosella.Test.Failure
