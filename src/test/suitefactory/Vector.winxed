@@ -40,7 +40,7 @@ namespace Rosella { namespace Test { namespace SuiteFactory
         {
             var test_methods = {};
             for (int i = 0; i < elements(self.data); i++) {
-                string name = "test " + string(i);
+                string name = "test " + string(i + 1);
                 test_methods[name] = self.__make_test_method(name, self.func, self.data[i]);
             }
             return test_methods;

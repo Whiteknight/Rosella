@@ -300,7 +300,7 @@ namespace Rosella { namespace Test
         // Run the test, show that the output (and maybe the error output) matches
         // the values expected. Notice that the strings are matched exactly,
         // including leading and trailing whitespace
-        function output_is(var block, string output,
+        function output_is(var block, var output,
                 string message [optional], int has_msg [opt_flag],
                 string erroutput [named,optional], int has_erroutput [opt_flag])
         {
@@ -326,9 +326,16 @@ namespace Rosella { namespace Test
                 );
             }
 
+            string output_s;
+            int is_array;
+            ${ does is_array, output, "array" };
+            if (is_array)
+                output_s = join("\n", output);
+            else
+                output_s = string(output);
             string out_str = stdout.readall();
-            if (out_str != output)
-                self.fail(sprintf("%s\nExpected: '%s'\nReceived: '%s'", [message, output, out_str]));
+            if (out_str != output_s)
+                self.fail(sprintf("%s\nExpected: '%s'\nReceived: '%s'", [message, output_s, out_str]));
 
             if (!has_erroutput)
                 return;
