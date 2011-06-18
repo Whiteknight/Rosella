@@ -7,7 +7,6 @@ Rosella::Test::test(Test::TestFactory::Test);
 class MyTestCaseSubclass is Rosella::Test::TestCase {
 }
 
-
 class Test::TestFactory::Test {
     method test_BUILD() {
         my $factory := Rosella::construct(Rosella::Test::TestFactory, {});
