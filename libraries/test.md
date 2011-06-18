@@ -52,9 +52,10 @@ execution.
 
 ### Test
 
-The `Rosella.Test` namespace contains the `test` function, which is a facade
-over some of the more complex and configurable portions of the library. For
-most general-case usages, use the `test` function to execute a test class.
+The `Rosella.Test` namespace contains the `test` and `test_vector` functions,
+which are facades over some of the more complex and configurable portions of
+the library. For most general-case usages, use the `test` or `test_vector`
+functions to execute a test class or a test array, respectively.
 
 Most test files will start with something similar to the following preamble:
 
@@ -72,6 +73,8 @@ The code is slightly more verbose in Winxed:
         ...
     }
 
+This setup is used to execute a *test class*. A test class is a class where
+all the methods are treated as independent tests, and executed sequentially.
 The first argument to the `test` function is the type from which to extract
 methods. This is the only required parameter. There are a number of optional
 named parameters which can be provided to change certain aspects of the
@@ -100,6 +103,48 @@ library.
   the prefix is empty and all methods are tests. If you add a prefix, methods
   without the prefix will be ignored (and will not be available for use in
   the test).
+
+Another way to use the library is with the `test_vector` function.
+`test_vector` is used to execute a series of repetitive tests over a
+collection of data. `test_vector` executes a single test method on every item
+in an array or hash. Here's how to set up a test sequence with `test_vector`,
+in NQP:
+
+    Rosella::Test::test_vector(method($item) {
+        # Test logic goes here
+    }, [
+        # Data items go here
+    ]);
+
+For instance, if we want to test out a repetitive sequence of arithmetic
+operations, we could do something like this:
+
+    Rosella::Test::test_vector(method(@items) {
+        $!assert.equal(@items[0] + @items[1], @items[2]);
+    }, [
+        [1, 2, 3],
+        [3, 4, 7],
+        [10, 20, 30]
+    ]);
+
+Similarly, you can use a hash to give names to each test. This example is in
+Winxed:
+
+    function main[main]() {
+        using tester;
+        using Rosella.Test.test_vector;
+        test_vector(function (obj, data) {
+            obj.assert.equal(data[0] + data[1], data[2]);
+        }, {
+            "1 + 2 = 3" : [1, 2, 3],
+            "3 + 4 = 7" : [3, 4, 7],
+            "10 + 20 = 30" : [10, 20, 30]
+        });
+    }
+
+The `test` function executes multiple test methods over a single bit of common
+data (the TestContext). The `test_vector` function executes a single test
+method over an array of data.
 
 ## Public Classes
 
@@ -222,7 +267,13 @@ create Suites.
 ### Test.SuiteFactory
 
 `Rosella.Test.SuiteFactory` is used to create Suite objects and load them with
-a collection of TestCase objects and a TestContext
+a collection of TestCase objects and a TestContext. This is called from
+`Rosella.Test.test`.
+
+### Test.SuiteFactory.Vectory
+
+`Rosella.Test.SuiteFactory.Vector` is used to build a Suite object for
+vectorized tests. This is called from `Rosella.Test.test_vector`.
 
 ### Test.TestCase
 
