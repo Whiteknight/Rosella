@@ -344,5 +344,21 @@ namespace Rosella { namespace Test
             if (errout_str != erroutput)
                 self.fail(message);
         }
+
+        function exists_keyed_str(var h, string k,
+            string message [optional], int has_msg [opt_flag])
+        {
+            message = self.default_message(message, has_msg, sprintf("key '%s' does not exist", [k]));
+            if (!(exists h[k]))
+                self.fail(message);
+        }
+
+        function not_exists_keyed_str(var h, string k,
+            string message [optional], int has_msg [opt_flag])
+        {
+            message = self.default_message(message, has_msg, sprintf("key '%s' does exist", [k]));
+            if (exists h[k])
+                self.fail(message);
+        }
     }
 }}
