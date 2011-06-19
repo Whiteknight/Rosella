@@ -99,6 +99,9 @@ namespace Rosella { namespace Winxed
         // Compile a winxed file to a .pir file
         function compile_to_pir(string winxed_file, string pir_file)
         {
+            using dirname;
+            using mkdir;
+            mkpath(dirname(pir_file), 1:[named("verbose")]);
             string cmd = "winxed --nowarn -o " + pir_file + " -c " + winxed_file;
             int result;
             say(cmd);
@@ -110,6 +113,9 @@ namespace Rosella { namespace Winxed
         // Compile a winxed file down to a .pasm include file
         function compile_to_pasm_include(string winxed_file, string pasm_file)
         {
+            using dirname;
+            using mkdir;
+            mkpath(dirname(pasm_file), 1:[named("verbose")]);
             string cmd = sprintf("winxed --nowarn -o %s --target=include %s",
                     [pasm_file, winxed_file]
             );
@@ -174,6 +180,9 @@ namespace Rosella { namespace Winxed
 
         function concat_files(var source_files, var dest_file)
         {
+            using dirname;
+            using mkdir;
+            mkpath(dirname(dest_file), 1:[named("verbose")]);
             delete_file(dest_file);
             say(sprintf("concat %s = %s", [dest_file, join(", ", source_files)]));
             var dest_fh = new 'FileHandle';
