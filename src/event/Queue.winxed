@@ -2,10 +2,11 @@ namespace Rosella { namespace Event
 {
     class Queue
     {
-        var accept_func;
+        var accept_func;            // Function for accepting events
         var subscribers;            // Event-name -> subscribers hash.
         var generic_subscribers;    // subscribers that subscribe to all events
         var id_count;
+        var enabled;
 
         function Queue(int start_count,
                 var accept [optional], int has_accept [opt_flag])
@@ -14,10 +15,13 @@ namespace Rosella { namespace Event
             self.subscribers = {};
             self.generic_subscribers = {};
             self.id_count = start_count;
+            self.enabled = 1;
         }
 
         function can_raise(string event_name, var event)
         {
+            if (!self.enabled)
+                return 0;
             if (exists self.subscribers[event_name] ||
                     elements(self.generic_subscribers) > 0) {
                 var accept_func = self.accept_func;
@@ -26,6 +30,16 @@ namespace Rosella { namespace Event
                 return 1;
             }
             return 0;
+        }
+
+        function enable(int enable)
+        {
+            self.enabled = enable;
+        }
+
+        function set_accept_rule(var accept_func)
+        {
+            self.accept_func = accept_func;
         }
 
         // Add a new Action to the list of subscribers. Overwrites old entries

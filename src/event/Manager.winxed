@@ -122,18 +122,47 @@ namespace Rosella { namespace Event
         function add_queue(string queue_name,
                 var queue [optional], int has_queue [opt_flag])
         {
+            if (queue_name == null || queue_name == DEFAULT_QUEUE) {
+                self.queues[DEFAULT_QUEUE].enable(1);
+                return;
+            }
+            if (exists self.queues[queue_name])
+                return;
+            if (!has_queue)
+                queue = new Rosella.Event.Queue(0);
+            self.queues[queue_name] = queue;
         }
 
         function remove_queue(string queue_name)
         {
+            if (queue_name == null || queue_name == DEFAULT_QUEUE) {
+                self.queues[DEFAULT_QUEUE].enable(0);
+                return;
+            }
+            if (exists self.queues[queue_name])
+                delete self.queues[queue_name];
+        }
+
+        function queue_accept_rule(string queue_name, var accept_func)
+        {
+            if (queue_name == null)
+                queue_name = DEFAULT_QUEUE;
+            if (exists self.queues[queue_name])
+                self.queues[queue_name].set_accept_func(accept_func);
+        }
+
+        function toggle_queue(string queue_name, int enabled)
+        {
+            if (queue_name == null)
+                queue_name = DEFAULT_QUEUE;
+            self.queues[queue_name].enable(enabled);
         }
 
         /* Raise Event Routines
         */
 
-        // Raise an event by name. If the event is not registered, do nothing.
-        // Otherwise pass on to the Event object itself to notify all
-        // subscribers.
+        // Raise an event by name, triggering all subscriber queues. If the
+        // event is not registered, do nothing.
         function raise_event(string event_name,
                 var args [slurpy], var named [slurpy,named])
         {
@@ -145,6 +174,23 @@ namespace Rosella { namespace Event
                 if (queue.can_raise(event_name, event))
                     queue.raise_event(event_name, event, args, named);
             }
+        }
+
+        // Raise an event by name, only triggering subscribers from a single
+        // Queue.
+        function raise_event_queue(string event_name, string queue_name,
+                var args [slurpy], var named [slurpy,named])
+        {
+            if (!(exists self.events[event_name]))
+                return;
+            if (!(exists self.queues[queue_name]))
+                return;
+            if (queue_name == null)
+                queue_name = DEFAULT_QUEUE;
+            var queue = self.queues[queue_name];
+            var event = self.events[event_name];
+            if (queue.can_raise(event_name, event))
+                queue.raise_event(event_name, event, args, named);
         }
 
         /* Internal Routines
