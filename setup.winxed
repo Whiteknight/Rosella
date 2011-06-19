@@ -395,7 +395,10 @@ function is_test(string path)
 function build_version_file(var rosella)
 {
     using newer;
+    using Rosella.Winxed.Distutils.make_path_for;
+
     string file = "src/_build/_versions.winxed";
+    make_path_for(file);
     int e = 0;
     ${ stat e, file, 0 };
     if (!e || newer("VERSION", file))
