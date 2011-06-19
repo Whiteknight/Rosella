@@ -1,6 +1,8 @@
 using extern "io_ops";
 namespace Rosella { namespace Winxed
 {
+    /* Wrapper routines to add Winxed capabilities to the Parrot Distutils
+       library. */
     namespace Distutils
     {
         /* Public API Functions
@@ -180,6 +182,7 @@ namespace Rosella { namespace Winxed
             return 0;
         }
 
+        // concatenate several files together into a single file.
         function concat_files(var source_files, var dest_file)
         {
             using dirname;
