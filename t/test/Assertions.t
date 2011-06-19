@@ -87,4 +87,32 @@ class AssertionTest {
             }, "This is a test\n", erroutput => "This is NOT an error");
         });
     }
+
+    # Other Assertions
+
+    method exists_keyed_str() {
+        $!assert.expect_pass({
+            my %m := {};
+            %m{"test"} := 1;
+            $!assert.exists_keyed_str(%m, "test");
+        });
+        $!assert.expect_fail({
+            my %m := {};
+            %m{"test"} := 1;
+            $!assert.exists_keyed_str(%m, "no test");
+        });
+    }
+
+    method not_exists_keyed_str() {
+        $!assert.expect_pass({
+            my %m := {};
+            %m{"test"} := 1;
+            $!assert.not_exists_keyed_str(%m, "no test");
+        });
+        $!assert.expect_fail({
+            my %m := {};
+            %m{"test"} := 1;
+            $!assert.not_exists_keyed_str(%m, "test");
+        });
+    }
 }
