@@ -51,7 +51,7 @@ class Test::Suite::Test {
         $ctest.expect_get("status").once.will_return(1);
         my $test := $ctest.mock;
 
-        $suite.run_test("my_test_function", $test, $result);
+        $suite.__run_test("my_test_function", $test, $result);
 
         $cresult.verify();
         $ctest.verify();

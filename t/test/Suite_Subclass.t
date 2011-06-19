@@ -33,7 +33,7 @@ class Test::Suite_Subclass::Test {
         my $test := $ctest.mock;
 
         $!assert.output_is({
-            $suite.run_test("my_test_function", $test, $result);
+            $suite.__run_test("my_test_function", $test, $result);
         }, "Executing test 'my_test_function'\n");
 
         $cresult.verify();
