@@ -1,10 +1,20 @@
 namespace Rosella { namespace Test { namespace SuiteFactory
 {
+    /* Vectorized SuiteFactory
+        This class is a SuiteFactory which creates a suite for a vectorized
+        test file. Vectorized tests are a test where a single function is
+        executed on each item in an array or hash of data. This SuiteFactory
+        creates a test method for each item in the data array.
+    */
     class Vector : Rosella.Test.SuiteFactory
     {
-        var data;
-        var func;
+        var data;   // The data. Can be an array, a hash, or any other scalar
+        var func;   // The function to execute.
 
+        /* Public Methods
+        */
+
+        // Constructor
         function Vector(var func, var data, var options)
         {
             self.SuiteFactory(null, options);
@@ -12,19 +22,24 @@ namespace Rosella { namespace Test { namespace SuiteFactory
             self.func = func;
         }
 
+        // Get a hash of test methods, one for each item in the data aggregate
         function get_test_methods()
         {
             int is_role = 0;
             var data = self.data;
             ${ does is_role, data, "array" };
             if (is_role)
-                return self.get_test_methods_from_array();
+                return self.__get_test_methods_from_array();
             ${ does is_role, data, "hash" };
             if (is_role)
-                return self.get_test_methods_from_hash();
-            return self.get_test_method_from_scalar();
+                return self.__get_test_methods_from_hash();
+            return self.__get_test_method_from_scalar();
         }
 
+        /* Private Helper Methods
+        */
+
+        // Create a closure over the function and the particular datum
         function __make_test_method(var n, var f, var d)
         {
             var func = f;
@@ -36,7 +51,8 @@ namespace Rosella { namespace Test { namespace SuiteFactory
             };
         }
 
-        function get_test_methods_from_array()
+        // The data is an array. Get test methods from that.
+        function __get_test_methods_from_array()
         {
             var test_methods = {};
             for (int i = 0; i < elements(self.data); i++) {
@@ -46,7 +62,8 @@ namespace Rosella { namespace Test { namespace SuiteFactory
             return test_methods;
         }
 
-        function get_test_methods_from_hash()
+        // The data is a hash
+        function __get_test_methods_from_hash()
         {
             var test_methods = {};
             for (string key in self.data)
@@ -54,7 +71,8 @@ namespace Rosella { namespace Test { namespace SuiteFactory
             return test_methods;
         }
 
-        function get_test_methods_from_scalar()
+        // The data is not an array or a hash, treat it as a single value
+        function __get_test_methods_from_scalar()
         {
             return {
                 "test" : self.__make_test_method("test", self.func, self.data)
