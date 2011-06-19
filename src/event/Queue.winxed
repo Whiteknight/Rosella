@@ -115,7 +115,7 @@ namespace Rosella { namespace Event
             do {
                 self.id_count = self.id_count + 1;
                 id = "__subscriber_" + string(self.id_count);
-            } while (exists self.actions[id]);
+            } while (exists self.generic_subscribers[id]);
             return id;
         }
     }

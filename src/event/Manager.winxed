@@ -84,7 +84,8 @@ namespace Rosella { namespace Event
                 queue_name = DEFAULT_QUEUE;
             var event = self.__get_event_autocreate(event_name);
             var queue = self.__get_queue_autocreate(queue_name);
-            return queue.add_subscriber_object(event_name, null, object, meth);
+            string n = null;
+            return queue.add_subscriber_object(event_name, n, object, meth);
         }
 
         // Subscribe to an event with a pre-made Action.
@@ -100,7 +101,8 @@ namespace Rosella { namespace Event
                 queue_name = DEFAULT_QUEUE;
             var event = self.__get_event_autocreate(event_name);
             var queue = self.__get_queue_autocreate(queue_name);
-            return queue.add_subscriber_action(event_name, null, action);
+            string n = null;
+            return queue.add_subscriber_action(event_name, n, action);
         }
 
         // Unsubscribe from an event. Requires the event name and the action
@@ -137,7 +139,8 @@ namespace Rosella { namespace Event
         {
             if (!(exists self.events[event_name]))
                 return;
-            for (var queue in self.queues) {
+            for (string queue_name in self.queues) {
+                var queue = self.queues[queue_name];
                 var event = self.events[event_name];
                 if (queue.can_raise(event_name, event))
                     queue.raise_event(event_name, event, args, named);

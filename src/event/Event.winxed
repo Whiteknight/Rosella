@@ -16,16 +16,14 @@ namespace Rosella
     */
     class Event
     {
-        var manager;
         var current_action_name;
         var current_pos_payload;
         var current_named_payload;
         var handled;
         var id_count;
 
-        function Event(var manager, int start_id)
+        function Event(int start_id)
         {
-            self.manager = manager;
             self.id_count = start_id;
         }
 
