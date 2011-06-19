@@ -79,6 +79,16 @@ namespace Rosella { namespace Winxed
             }
         }
 
+        // Delete a list of files
+        function delete_files(var files)
+        {
+            if (files == null)
+                return;
+
+            for (string file in files)
+                delete_file(file);
+        }
+
         /* Private Helper Functions
             These functions are helpers from the routines above, and should
             probably not be used directly.
@@ -126,15 +136,7 @@ namespace Rosella { namespace Winxed
                 die("exit status: " + result + "\ncommand: " + cmd);
         }
 
-        function delete_files(var files)
-        {
-            if (files == null)
-                return;
-
-            for (string file in files)
-                delete_file(file);
-        }
-
+        // Delete a single file, if it exists
         function delete_file(string file)
         {
             using unlink;
