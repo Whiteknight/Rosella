@@ -53,10 +53,10 @@ namespace Rosella
         */
 
         // Get the name of the currently executing Action. This is only
-        // defined during Event.raise()
+        // defined during Event raise
         function action_name() { return self.current_action_name; }
 
-        // Set to 0 at the beginning of the .raise() sequence. The Event
+        // Set to 0 at the beginning of the raise sequence. The Event
         // continues to execute its member actions until handled is set to 1
         // or until it runs out of actions
         function handled(int handled [optional], int has_h [opt_flag])
@@ -71,6 +71,11 @@ namespace Rosella
             self.handled = 0;
             self.current_pos_payload = pos;
             self.current_named_payload = named;
+        }
+
+        function set_active_subscriber(string name)
+        {
+            self.current_action_name = name;
         }
 
         /* Internal Routines

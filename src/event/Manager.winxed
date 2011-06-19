@@ -14,7 +14,7 @@ namespace Rosella { namespace Event
         {
             self.events = {};
             self.queues = {
-                DEFAULT_QUEUE = new Rosella.Event.Queue(0)
+                DEFAULT_QUEUE : new Rosella.Event.Queue(0)
             };
         }
 
@@ -29,11 +29,10 @@ namespace Rosella { namespace Event
         // together if there is a preexisting event of the same name. In this
         // case, the actions from the new event will be written into the old
         // event, overwriting any existing actions with duplicate ids.
-        function register_event(string event_name, var event, int merge)
+        function register_event(string event_name, var event,
+                string queue_name [optional], int has_queue [opt_flag])
         {
             using Rosella.isa_type;
-            if (!has_merge)
-                merge = 0;
             if (!has_queue)
                 queue_name = DEFAULT_QUEUE;
 
@@ -41,27 +40,34 @@ namespace Rosella { namespace Event
                 using Rosella.Error.invalid;
                 invalid(__FUNCTION__, "not a valid event");
             }
-            var old_event = self.events[event_name];
-            if (old_event != null && merge) {
-                for (var action_name in event.actions) {
-                    var action = event.actions[action_name];
-                    old_event.add_subscriber_action(action_name, action);
-                }
+            var event = self.events[event_name];
+            if (event != null) {
+                using Rosella.Error.invalid;
+                invalid(__FUNCTION__, "Cannot register a new method named " + event_name);
             } else
                 self.events[event_name] = event;
         }
 
-        // Remove an event by name if it exists. If not, do nothing.
-        function remove_event(string event_name)
+        // Remove an event by name if it exists. If the optional "deep"
+        // parameter is provided and is 1, we also remove all subscribers of
+        // that event from all queues
+        function remove_event(string event_name,
+                int deep [optional], int has_deep [opt_flag])
         {
+            if (!has_deep)
+                deep = 0;
             if (exists self.events[event_name])
                 delete self.events[event_name];
+            if (deep) {
+                for (string queue_name in self.queues)
+                    self.queue_name.remove_subscribers_for_event(event_name);
+            }
         }
 
         // Get a count of the number of events in the manager.
         function count_events() { return int(self.events); }
 
-        /* Event Subscriber Management Routines
+        /* Subscriber Management Routines
             Subscribe routines return a unique identifier which can be used
             to identify this specific subscription. The identifier is needed
             if you want to unsubscribe from the event later, or perform any
@@ -76,11 +82,9 @@ namespace Rosella { namespace Event
         {
             if (!has_queue)
                 queue_name = DEFAULT_QUEUE;
-            var event = self.get_event_autocreate(event_name);
-
-            int count = event.get_count();
-            string id = sprintf("__em_%s_object_%d", [event_name, count]);
-            return event.add_subscriber_object(id, object, meth, queue_name);
+            var event = self.__get_event_autocreate(event_name);
+            var queue = self.__get_queue_autocreate(queue_name);
+            return queue.add_subscriber_object(event_name, null, object, meth);
         }
 
         // Subscribe to an event with a pre-made Action.
@@ -94,18 +98,32 @@ namespace Rosella { namespace Event
             }
             if (!has_queue)
                 queue_name = DEFAULT_QUEUE;
-            var event = self.get_event_autocreate(event_name);
-            int count = event.get_count();
-            string id = sprintf("__em_%s_action_%d", [event_name, count]);
-            return event.add_subscriber_action(id, action);
+            var event = self.__get_event_autocreate(event_name);
+            var queue = self.__get_queue_autocreate(queue_name);
+            return queue.add_subscriber_action(event_name, null, action);
         }
 
         // Unsubscribe from an event. Requires the event name and the action
         // id returned from subscribe
-        function unsubscribe(string event_name, string id)
+        function unsubscribe(string event_name, string id,
+                string queue_name [optional], int has_queue [opt_flag])
         {
-            if (exists self.events[event_name])
-                self.events[event_name].remove_subscriber(id);
+            if (!has_queue)
+                queue_name = DEFAULT_QUEUE;
+            if (exists self.queues[queue_name])
+                self.queues[queue_name].remove_subscriber(id);
+        }
+
+        /* Queue Management Routines
+        */
+
+        function add_queue(string queue_name,
+                var queue [optional], int has_queue [opt_flag])
+        {
+        }
+
+        function remove_queue(string queue_name)
+        {
         }
 
         /* Raise Event Routines
@@ -117,8 +135,13 @@ namespace Rosella { namespace Event
         function raise_event(string event_name,
                 var args [slurpy], var named [slurpy,named])
         {
-            if (exists self.events[event_name])
-                self.events[event_name].raise(args:[flat], named:[flat,named]);
+            if (!(exists self.events[event_name]))
+                return;
+            for (var queue in self.queues) {
+                var event = self.events[event_name];
+                if (queue.can_raise(event_name, event))
+                    queue.raise_event(event_name, event, args, named);
+            }
         }
 
         /* Internal Routines

@@ -1,0 +1,122 @@
+namespace Rosella { namespace Event
+{
+    class Queue
+    {
+        var accept_func;
+        var subscribers;            // Event-name -> subscribers hash.
+        var generic_subscribers;    // subscribers that subscribe to all events
+        var id_count;
+
+        function Queue(int start_count,
+                var accept [optional], int has_accept [opt_flag])
+        {
+            self.accept_func = accept;
+            self.subscribers = {};
+            self.generic_subscribers = {};
+            self.id_count = start_count;
+        }
+
+        function can_raise(string event_name, var event)
+        {
+            if (exists self.subscribers[event_name] ||
+                    elements(self.generic_subscribers) > 0) {
+                var accept_func = self.accept_func;
+                if (accept_func != null)
+                    return accept_func(event_name, event);
+                return 1;
+            }
+            return 0;
+        }
+
+        // Add a new Action to the list of subscribers. Overwrites old entries
+        // without asking.
+        function add_subscriber_action(string event_name, string id, var action)
+        {
+            if (id == null)
+                id = self.__get_new_id();
+            if (event_name == null)
+                self.generic_subscribers[id] = action;
+            else {
+                if (!(exists self.subscribers[event_name]))
+                    self.subscribers[event_name] = {};
+                self.subscribers[event_name][id] = action;
+            }
+            self.id_count = self.id_count + 1;
+            return id;
+        }
+
+        // Add a new object as a subscriber. The specified method will be
+        // invoked on the subscriber with the Event as an argument
+        function add_subscriber_object(string event_name, string id, var object, var meth)
+        {
+            var action = new Rosella.Action.Sub(
+                function(var e) {
+                    using Rosella.invoke_method;
+                    invoke_method(object, meth, [e], {});
+                }
+            );
+            return self.add_subscriber_action(event_name, id, action);
+        }
+
+        // Remove a subscriber by name
+        function remove_subscriber(string event_name, string id)
+        {
+            if (event_name == null && exists self.generic_subscribers[id])
+                delete self.generic_subscribers[id];
+            if (event_name != null && exists self.subscribers[event_name]) {
+                var event_queue = self.subscribers[event_name];
+                if (exists event_queue[id])
+                    delete event_queue[id];
+            }
+        }
+
+        function remove_subscribers_for_event(string event_name)
+        {
+            if (event_name == null)
+                self.generic_subscribers = {};
+            else {
+                if (exists self.subscribers[event_name])
+                    self.subscribers[event_name] = {};
+            }
+        }
+
+        // Raise the event. The given arguments are packed up into the payload
+        // of this Event object and passed to all subscribers.
+        function raise_event(string event_name, var event, var pos, var named)
+        {
+            event.prepare_to_raise(pos, named);
+            for (string subscriber_name in self.generic_subscribers) {
+                event.set_active_subscriber(subscriber_name);
+                self.generic_subscribers[subscriber_name].execute(event);
+                if (event.handled())
+                    return;
+            }
+
+            if (!(exists self.subscribers[event_name]))
+                return;
+
+            var event_queue = self.subscribers[event_name];
+            for (string subscriber_name in event_queue) {
+                event.set_active_subscriber(subscriber_name);
+                event_queue[subscriber_name].execute(event);
+                if (event.handled())
+                    return;
+            }
+        }
+
+        /* Internal Routines
+        */
+
+        // Get a new ID name which does not conflict with an existing entry
+        // name
+        function __get_new_id()
+        {
+            string id = null;
+            do {
+                self.id_count = self.id_count + 1;
+                id = "__subscriber_" + string(self.id_count);
+            } while (exists self.actions[id]);
+            return id;
+        }
+    }
+}}
