@@ -90,7 +90,7 @@ namespace Rosella { namespace Event
                 self.generic_subscribers = {};
             else {
                 if (exists self.subscribers[event_name])
-                    self.subscribers[event_name] = {};
+                    delete self.subscribers[event_name];
             }
         }
 

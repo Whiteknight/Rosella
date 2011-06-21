@@ -19,11 +19,21 @@ class Test::Event::Queue {
     }
 
     method can_raise() {
-        $!status.unimplemented("Test this");
+        my $q := Rosella::construct(Rosella::Event::Queue, 0);
+        $!assert.is_false($q.can_raise("Test", "Test"));
+        $q.add_subscriber_action("Test", "Test", Rosella::construct(Rosella::Action::Sub, sub() {}));
+        $!assert.is_true($q.can_raise("Test", "Test"));
     }
 
     method enable() {
-        $!status.unimplemented("Test this");
+        my $q := Rosella::construct(Rosella::Event::Queue, 0);
+        $!assert.is_false($q.can_raise("Test", "Test"));
+        $q.add_subscriber_action("Test", "Test", Rosella::construct(Rosella::Action::Sub, sub() {}));
+        $!assert.is_true($q.can_raise("Test", "Test"));
+        $q.enable(0);
+        $!assert.is_false($q.can_raise("Test", "Test"));
+        $q.enable(1);
+        $!assert.is_true($q.can_raise("Test", "Test"));
     }
 
     method set_accept_rule() {
@@ -54,7 +64,14 @@ class Test::Event::Queue {
     }
 
     method remove_subscribers_for_event() {
-        $!status.unimplemented("Test this");
+        my $q := Rosella::construct(Rosella::Event::Queue, 0);
+        $q.add_subscriber_action("Foo", "Test", Rosella::construct(Rosella::Action::Sub, sub() {}));
+        $q.add_subscriber_action("Bar", "Test", Rosella::construct(Rosella::Action::Sub, sub() {}));
+        $!assert.is_true($q.can_raise("Foo", "Test"));
+        $!assert.is_true($q.can_raise("Bar", "Test"));
+        $q.remove_subscribers_for_event("Foo");
+        $!assert.is_false($q.can_raise("Foo", "Test"));
+        $!assert.is_true($q.can_raise("Bar", "Test"));
     }
 
     method raise_event() {
