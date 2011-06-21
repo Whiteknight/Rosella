@@ -16,7 +16,7 @@ class Test::Event::Manager {
         $!assert.instance_of($em, Rosella::Event::Manager);
     }
 
-    method test_register_event() {
+    method register_event() {
         my $em := Rosella::construct(Rosella::Event::Manager);
         my $count := 0;
         $em.register_event("Test", Rosella::construct(Rosella::Event));
@@ -32,7 +32,7 @@ class Test::Event::Manager {
         $!assert.equal($count, 2, "not equal");
     }
 
-    method test_register_event_multi() {
+    method register_event_multi() {
         my $em := Rosella::construct(Rosella::Event::Manager);
         my $count := 0;
         $em.register_event("Test", Rosella::construct(Rosella::Event));
@@ -56,7 +56,7 @@ class Test::Event::Manager {
         $!assert.equal($count, 6, "not equal");
     }
 
-    method test_register_event_payload() {
+    method register_event_payload() {
         my $em := Rosella::construct(Rosella::Event::Manager);
         my $data := "Hello";
         $em.register_event("Test2", Rosella::construct(Rosella::Event));
@@ -70,7 +70,7 @@ class Test::Event::Manager {
         $!assert.equal($data, "Hello World!", "not equal");
     }
 
-    method test_register_event_namedpayload() {
+    method register_event_namedpayload() {
         my $em := Rosella::construct(Rosella::Event::Manager);
         my $data := "Hello";
         $em.register_event("Test2", Rosella::construct(Rosella::Event));
@@ -138,10 +138,42 @@ class Test::Event::Manager {
         }, "");
     }
 
+    method add_queue() {
+        $!status.unimplemented("Test this");
+    }
+
+    method add_queue_default() {
+        $!status.unimplemented("Test this");
+    }
+
+    method remove_queue() {
+        $!status.unimplemented("Test this");
+    }
+
+    method remove_queue_default() {
+        $!status.unimplemented("Test this");
+    }
+
+    method queue_accept_rule() {
+        $!status.unimplemented("Test this");
+    }
+
+    method toggle_queue() {
+        $!status.unimplemented("Test this");
+    }
+
+    method toggle_queue_default() {
+        $!status.unimplemented("Test this");
+    }
+
     method raise_event() {
         # Nothing should happen. I don't know how to test a negative like
         # that.
         my $em := Rosella::construct(Rosella::Event::Manager);
         $em.raise_event("Foo");
+    }
+
+    method raise_event_queue() {
+        $!status.unimplemented("Test this");
     }
 }

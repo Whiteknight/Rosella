@@ -32,12 +32,15 @@ class Test::Event {
     }
 
     method action_name() {
+        $!status.unimplemented("Test this");
     }
 
     method prepare_to_raise() {
+        $!status.unimplemented("Test this");
     }
 
     method set_active_subscriber() {
+        $!status.unimplemented("Test this");
     }
 }
 

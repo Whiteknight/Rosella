@@ -18,6 +18,18 @@ class Test::Event::Queue {
         $!assert.instance_of($q, Rosella::Event::Queue);
     }
 
+    method can_raise() {
+        $!status.unimplemented("Test this");
+    }
+
+    method enable() {
+        $!status.unimplemented("Test this");
+    }
+
+    method set_accept_rule() {
+        $!status.unimplemented("Test this");
+    }
+
     method add_subscriber_action() {
         my $queue := Rosella::construct(Rosella::Event::Queue, 0);
         $queue.add_subscriber_action("Test", "Test", Rosella::construct(Rosella::Action::Sub, sub() {}));
@@ -39,6 +51,10 @@ class Test::Event::Queue {
     method remove_subscriber_none() {
         my $queue := Rosella::construct(Rosella::Event::Queue, 0);
         $queue.remove_subscriber("Test", "Foo");
+    }
+
+    method remove_subscribers_for_event() {
+        $!status.unimplemented("Test this");
     }
 
     method raise_event() {
