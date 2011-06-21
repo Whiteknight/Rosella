@@ -21,7 +21,10 @@ namespace Rosella
         var current_named_payload;
         var handled;
 
-        function Event() { }
+        function Event()
+        {
+            self.handled = 0;
+        }
 
         /* Payload Routines
             The Event class provides read-only Hash- and Array-like access for
@@ -48,7 +51,12 @@ namespace Rosella
 
         // Get the name of the currently executing Action. This is only
         // defined during Event raise
-        function action_name() { return self.current_action_name; }
+        function action_name(string name [optional], int has_name [opt_flag])
+        {
+            if (has_name)
+                self.current_action_name = name;
+            return self.current_action_name;
+        }
 
         // Set to 0 at the beginning of the raise sequence. The Event
         // continues to execute its member actions until handled is set to 1
@@ -65,11 +73,6 @@ namespace Rosella
             self.handled = 0;
             self.current_pos_payload = pos;
             self.current_named_payload = named;
-        }
-
-        function set_active_subscriber(string name)
-        {
-            self.current_action_name = name;
         }
     }
 }

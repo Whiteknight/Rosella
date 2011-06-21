@@ -111,7 +111,7 @@ namespace Rosella { namespace Event
 
             var event_queue = self.subscribers[event_name];
             for (string subscriber_name in event_queue) {
-                event.set_active_subscriber(subscriber_name);
+                event.action_name(subscriber_name);
                 event_queue[subscriber_name].execute(event);
                 if (event.handled())
                     return;
