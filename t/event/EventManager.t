@@ -1,5 +1,6 @@
 INIT {
     pir::load_bytecode("rosella/test.pbc");
+    pir::load_bytecode("rosella/mockobject.pbc");
     pir::load_bytecode("rosella/event.pbc");
 }
 
@@ -139,7 +140,8 @@ class Test::Event::Manager {
     }
 
     method add_queue() {
-        $!status.unimplemented("Test this");
+        my $em := Rosella::construct(Rosella::Event::Manager);
+        $em.add_queue("Test");
     }
 
     method add_queue_default() {
@@ -147,30 +149,44 @@ class Test::Event::Manager {
     }
 
     method remove_queue() {
-        $!status.unimplemented("Test this");
+        my $em := Rosella::construct(Rosella::Event::Manager);
+        $em.add_queue("Test");
+        $em.remove_queue("Test");
     }
 
     method remove_queue_default() {
-        $!status.unimplemented("Test this");
+        $!status.unimplemented("Test this. Need to add a function to test whether the queue is enabled");
     }
 
     method queue_accept_rule() {
-        $!status.unimplemented("Test this");
-    }
-
-    method toggle_queue() {
-        $!status.unimplemented("Test this");
+        my $em := Rosella::construct(Rosella::Event::Manager);
+        my $accept := sub() {};
+        my $c := Rosella::construct(Rosella::MockObject::Factory).create_typed(Rosella::Event::Queue);
+        $c.expect_method("set_accept_func").once.with_args($accept);
+        my $q := $c.mock;
+        $em.add_queue("Test", $q);
+        $em.queue_accept_rule("Test", $accept);
+        $c.verify;
     }
 
     method toggle_queue_default() {
-        $!status.unimplemented("Test this");
+        $!status.unimplemented("Test this. Need to add a function to test whether the queue is enabled");
     }
 
     method raise_event() {
-        # Nothing should happen. I don't know how to test a negative like
-        # that.
+        my $event := Rosella::construct(Rosella::Event);
         my $em := Rosella::construct(Rosella::Event::Manager);
-        $em.raise_event("Foo");
+        $em.register_event("Test", $event);
+
+        my $c := Rosella::construct(Rosella::MockObject::Factory).create_typed(Rosella::Event::Queue);
+        $c.expect_method("can_raise").once.with_args("Test", $event).will_return(1);
+        # TODO: We need a matcher functionality to mockObject to be able to specify whether
+        # args to be matched need to be .equal or .same.
+        $c.expect_method("raise_event").once.with_any_args();
+        #$em.raise_event("Test",
+
+        #$c.verify;
+        $!status.unimplemented("Finish this");
     }
 
     method raise_event_queue() {
