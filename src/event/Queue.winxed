@@ -48,9 +48,11 @@ namespace Rosella { namespace Event
 
         // Toggle the Queue on or off. A disabled queue cannot pass any
         // events to subscribers.
-        function enable(int enable)
+        function enable(int enable [optional], int has_e [opt_flag])
         {
-            self.enabled = enable;
+            if (has_e)
+                self.enabled = enable;
+            return self.enabled;
         }
 
         // Set a predicate function instance that will be used to determine if

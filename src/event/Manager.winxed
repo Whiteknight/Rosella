@@ -182,12 +182,28 @@ namespace Rosella { namespace Event
         }
 
         // Toggle the specified queue on or off. A queue_name of null is the
-        // default queue.
-        function toggle_queue(string queue_name, int enabled)
+        // default queue. If we are enabling the queue, we can autocreate it
+        // if it doesn't exist. If we are disabling it, we don't autocreate.
+        function toggle_queue(string queue_name,
+                int enabled [optional], int has_e [opt_flag])
         {
             if (queue_name == null)
                 queue_name = DEFAULT_QUEUE;
-            self.queues[queue_name].enable(enabled);
+            if (!has_e) {
+                if (exists self.queues[queue_name])
+                    return self.queues[queue_name].enable();
+                return 0;
+            }
+            if (enabled) {
+                var queue = self.__get_queue_autocreate(queue_name);
+                queue.enable(1);
+                return 1;
+            }
+            else {
+                if (exists self.queues[queue_name])
+                    self.queues[queue_name].enable(0);
+                return 0;
+            }
         }
 
         /* Raise Event Routines
