@@ -63,31 +63,11 @@ namespace Rosella { namespace FileSystem
             return __get_entries(0, 1);
         }
 
+        // Get a list of all entries in this directory. This will be an
+        // intermingled list of File and Directory objects
         function get_entries()
         {
             return __get_entries(1, 1);
-        }
-
-        function __get_entries(int include_files, int include_dirs)
-        {
-            using Rosella.FileSystem.get_os_pmc;
-            using Rosella.FileSystem.is_directory;
-            using Rosella.FileSystem.is_file;
-
-            string path = string(self.path);
-            var names = get_os_pmc().readdir(path);
-            var entries = [];
-
-            for (string name in names) {
-                if (name == "." || name == "..")
-                    continue;
-                name = path + name;
-                if (include_dirs && is_directory(name))
-                    push(entries, new Rosella.FileSystem.Directory(name));
-                else if (include_files && is_file(name))
-                    push(entries, new Rosella.FileSystem.File(name));
-            }
-            return entries;
         }
 
         // Walk this directory recursively using a Visitor object.
@@ -156,6 +136,33 @@ namespace Rosella { namespace FileSystem
             int exist = os.exists(name);
             if (exist)
                 os.rm(name);
+        }
+
+        /* Private Helper Methods
+        */
+
+        // Get a list of entries in the directory. Can be files, directories,
+        // or both.
+        function __get_entries(int include_files, int include_dirs)
+        {
+            using Rosella.FileSystem.get_os_pmc;
+            using Rosella.FileSystem.is_directory;
+            using Rosella.FileSystem.is_file;
+
+            string path = string(self.path);
+            var names = get_os_pmc().readdir(path);
+            var entries = [];
+
+            for (string name in names) {
+                if (name == "." || name == "..")
+                    continue;
+                name = path + name;
+                if (include_dirs && is_directory(name))
+                    push(entries, new Rosella.FileSystem.Directory(name));
+                else if (include_files && is_file(name))
+                    push(entries, new Rosella.FileSystem.File(name));
+            }
+            return entries;
         }
     }
 }}
