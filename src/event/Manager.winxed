@@ -231,10 +231,10 @@ namespace Rosella { namespace Event
         {
             if (!(exists self.events[event_name]))
                 return;
-            if (!(exists self.queues[queue_name]))
-                return;
             if (queue_name == null)
                 queue_name = DEFAULT_QUEUE;
+            if (!(exists self.queues[queue_name]))
+                return;
             var queue = self.queues[queue_name];
             var event = self.events[event_name];
             if (queue.can_raise(event_name, event))
