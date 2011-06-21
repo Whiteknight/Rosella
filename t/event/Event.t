@@ -19,45 +19,6 @@ class Event::Test {
         $!assert.instance_of($m, Rosella::Event);
     }
 
-    method add_subscriber_action() {
-        my $m := Rosella::construct(Rosella::Event, 0);
-        $!assert.equal($m.num_subscribers, 0);
-        $m.add_subscriber_action("Foo",
-            Rosella::construct(Rosella::Action::Sub, sub() {})
-        );
-        $!assert.equal($m.num_subscribers, 1);
-    }
-
-    method add_subscriber_object() {
-        my $m := Rosella::construct(Rosella::Event, 0);
-        my $data := MyTestClass.new();
-        $!assert.equal($m.num_subscribers, 0);
-        $m.add_subscriber_object("Foo", $data, "test_method");
-        $!assert.equal($m.num_subscribers, 1);
-    }
-
-    method remove_subscriber() {
-        my $m := Rosella::construct(Rosella::Event, 0);
-        my $data := MyTestClass.new();
-        $!assert.equal($m.num_subscribers, 0);
-        $m.add_subscriber_object("Foo", $data, "test_method");
-        $!assert.equal($m.num_subscribers, 1);
-        $m.remove_subscriber("Foo");
-        $!assert.equal($m.num_subscribers, 0);
-    }
-
-    method remove_subscriber_none() {
-        my $m := Rosella::construct(Rosella::Event, 0);
-        $!assert.equal($m.num_subscribers, 0);
-        $m.remove_subscriber("Foo");
-        $!assert.equal($m.num_subscribers, 0);
-    }
-
-    method get_count() {
-        my $m := Rosella::construct(Rosella::Event, 0);
-        $!assert.equal($m.get_count, 0);
-    }
-
     method get_pmc_keyed() {
         $!status.unimplemented("This");
     }
@@ -78,21 +39,13 @@ class Event::Test {
         $!status.unimplemented("This");
     }
 
-    method raise() {
-        my $m := Rosella::construct(Rosella::Event, 0);
-        my $data := MyTestClass.new();
-        $m.add_subscriber_object("Foo", $data, "test_method");
-        $!assert.output_is({
-            $m.raise();
-        }, "test_method fired\n");
+    method action_name() {
     }
 
-    method raise_args() {
-        my $m := Rosella::construct(Rosella::Event, 0);
-        my $data := MyTestClass.new();
-        $m.add_subscriber_object("Foo", $data, "test_method_pos_args");
-        $!assert.output_is({
-            $m.raise(1, 2, 3);
-        }, "1,2,3\n");
+    method prepare_to_raise() {
+    }
+
+    method set_active_subscriber() {
     }
 }
+

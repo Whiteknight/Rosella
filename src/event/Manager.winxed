@@ -40,8 +40,7 @@ namespace Rosella { namespace Event
                 using Rosella.Error.invalid;
                 invalid(__FUNCTION__, "not a valid event");
             }
-            var event = self.events[event_name];
-            if (event != null) {
+            if (exists self.events[event_name]) {
                 using Rosella.Error.invalid;
                 invalid(__FUNCTION__, "Cannot register a new method named " + event_name);
             } else
@@ -113,7 +112,7 @@ namespace Rosella { namespace Event
             if (!has_queue)
                 queue_name = DEFAULT_QUEUE;
             if (exists self.queues[queue_name])
-                self.queues[queue_name].remove_subscriber(id);
+                self.queues[queue_name].remove_subscriber(event_name, id);
         }
 
         /* Queue Management Routines
