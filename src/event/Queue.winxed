@@ -1,13 +1,26 @@
 namespace Rosella { namespace Event
 {
+    /* Event Queue Class
+        Queue contains lists of subscribers that might be invoked when an
+        event is raised. There are two types of lists: A generic list for
+        subscribers which receive all events (event_name == null) and named
+        lists for subscribers to particular events by name.
+
+        The basic Queue does not delay events or make them available outside
+        the process or any other advanced features that might be found in a
+        distributed pub/sub system. The default implementation immediately
+        triggers all subscribers that are registered. Additional or more
+        advanced features might be provided in subclasses.
+    */
     class Queue
     {
         var accept_func;            // Function for accepting events
         var subscribers;            // Event-name -> subscribers hash.
         var generic_subscribers;    // subscribers that subscribe to all events
-        var id_count;
-        var enabled;
+        var id_count;               // Counter for producing unique ids
+        var enabled;                // Flag whether we are enabled
 
+        // Constructor
         function Queue(int start_count,
                 var accept [optional], int has_accept [opt_flag])
         {
@@ -18,6 +31,7 @@ namespace Rosella { namespace Event
             self.enabled = 1;
         }
 
+        // Determine if this queue can handle the given event.
         function can_raise(string event_name, var event)
         {
             if (!self.enabled)
@@ -32,11 +46,15 @@ namespace Rosella { namespace Event
             return 0;
         }
 
+        // Toggle the Queue on or off. A disabled queue cannot pass any
+        // events to subscribers.
         function enable(int enable)
         {
             self.enabled = enable;
         }
 
+        // Set a predicate function instance that will be used to determine if
+        // we can handle an exception
         function set_accept_rule(var accept_func)
         {
             self.accept_func = accept_func;
@@ -84,6 +102,9 @@ namespace Rosella { namespace Event
             }
         }
 
+        // Remove all subscribers for the given event, leaving other
+        // subscribers for other events, and generic subscribers untouched.
+        // If event_name is null, all the generic subscribers are cleared.
         function remove_subscribers_for_event(string event_name)
         {
             if (event_name == null)

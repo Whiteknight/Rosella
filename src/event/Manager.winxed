@@ -1,8 +1,28 @@
 namespace Rosella { namespace Event
 {
-    /* Event.Manager acts like a single point of access for storing and firing
-       an entire set of Events. Events can be used without the EventManager,
-       although the interface isn't as friendly.
+    /* Event Manager Class
+        The Event.Manager class is the public API for the Event library. It
+        provides routines for managing and raising events, and for managing
+        lists of subscribers.
+
+        Events are named data containers. When an event is raised, the event
+        is populated with various bits of data and is passed to all
+        subscribers. Subscribers are Actions (from theRosella.Action library)
+        arranged in Queues. Queues are named sets of subscriber actions, which
+        can be used to filter events, toggle groups of subscribers, limit the
+        subscribers that receive certain events, etc.
+
+        Event.Manager contains a default Queue. If no queue name is specified
+        in a subscriber registration call, the default queue is used.
+        Otherwise, a specific queue can be created by name.
+
+        Registering a subscriber to a queue automatically creates the Queue
+        and the Event if they do not already exist. Likewise, most operations
+        should be transparent: If an event or queue does not already exist
+        and it is required, it is created; If an event or queue does not
+        exist, operations like raise on that even will do nothing. The idea
+        is that publishers and subscribers can remain completely unaware of
+        what the other side has done.
     */
     class Manager
     {
@@ -10,6 +30,7 @@ namespace Rosella { namespace Event
         var events;
         var queues;
 
+        // Constructor.
         function Manager()
         {
             self.events = {};
@@ -118,6 +139,11 @@ namespace Rosella { namespace Event
         /* Queue Management Routines
         */
 
+        // Add a new queue by name. If a queue is provided, use that.
+        // otherwise, create a new Rosella.Event.Queue. If the queue already
+        // exists, do nothing. The default queue (queue name == null) cannot
+        // be re-added. Calling add_queue(null) simply enables the default
+        // queue.
         function add_queue(string queue_name,
                 var queue [optional], int has_queue [opt_flag])
         {
@@ -132,6 +158,10 @@ namespace Rosella { namespace Event
             self.queues[queue_name] = queue;
         }
 
+        // Remove the queue by name. If the queue does not already exist, do
+        // nothing. If the default queue is specified with remove_queue(null),
+        // don't delete it. Instead, if it's the default queue, just disable
+        // it.
         function remove_queue(string queue_name)
         {
             if (queue_name == null || queue_name == DEFAULT_QUEUE) {
@@ -142,6 +172,7 @@ namespace Rosella { namespace Event
                 delete self.queues[queue_name];
         }
 
+        // Specify an accept predicate rule for the specified queue.
         function queue_accept_rule(string queue_name, var accept_func)
         {
             if (queue_name == null)
@@ -150,6 +181,8 @@ namespace Rosella { namespace Event
                 self.queues[queue_name].set_accept_func(accept_func);
         }
 
+        // Toggle the specified queue on or off. A queue_name of null is the
+        // default queue.
         function toggle_queue(string queue_name, int enabled)
         {
             if (queue_name == null)
@@ -205,6 +238,7 @@ namespace Rosella { namespace Event
             return event;
         }
 
+        // Get a queue, creating it if it doesn't already exist
         function __get_queue_autocreate(string queue_name)
         {
             if (exists self.queues[queue_name])

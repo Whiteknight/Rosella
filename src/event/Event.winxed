@@ -1,18 +1,12 @@
 namespace Rosella
 {
-    /* Event class. An Event is a collection of subscribers (Rosella.Action).
-       When we raise the event, all the subscribers are notified.
+    /* Event Class.
+        An Event is basically a data object that holds information from the
+        publisher to transmit to various subscribers. When an event is raised,
+        the event and all its data are passed to Queues and, ultimately, to
+        subscribers.
 
-       Events invoke Actions with only a single argument, the Event itself.
-       Actions are allowed to come packaged with their own Action.Arguments
-       to fill out a parameter list, but if an Action.Argument overwrites
-       the first positional argument (:position(0)), it will overwrite the
-       event object being passed.
-
-       When the event is raised, it contains the given arguments as payload.
-       The callee can access those arguments in the Event, introspect other
-       information about the Event, and set it to handled to prevent other
-       Actions from receiving it.
+        See the Queue and Manager class documentation for more details.
     */
     class Event
     {
@@ -21,6 +15,7 @@ namespace Rosella
         var current_named_payload;
         var handled;
 
+        // Constructor
         function Event()
         {
             self.handled = 0;
@@ -32,19 +27,29 @@ namespace Rosella
             directly as a raw Array and Hash.
         */
 
+        // Get named data by name
         function get_pmc_keyed[vtable](var key)
         {
             return self.current_named_payload[key];
         }
 
+        // Get position data by index
         function get_pmc_keyed_int[vtable](int key)
         {
             return self.current_pos_payload[key];
         }
 
-        function positional_payload() { return self.current_pos_payload; }
+        // Get the raw positionals array
+        function positional_payload()
+        {
+            return self.current_pos_payload;
+        }
 
-        function named_payload() { return self.current_named_payload; }
+        // Get the raw named hash
+        function named_payload()
+        {
+            return self.current_named_payload;
+        }
 
         /* Event Raise Routines
         */
@@ -68,6 +73,8 @@ namespace Rosella
             return self.handled;
         }
 
+        // Prepare to raise the event, by providing data to pass to the
+        // subscribers
         function prepare_to_raise(var pos, var named)
         {
             self.handled = 0;
