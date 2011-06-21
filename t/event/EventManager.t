@@ -3,13 +3,13 @@ INIT {
     pir::load_bytecode("rosella/event.pbc");
 }
 
-Rosella::Test::test(Event::EventManager::Test);
+Rosella::Test::test(Test::Event::Manager);
 
 class MyTestClass {
     our method test_subscribe($event?) { pir::say("test_subscribe fired"); }
 }
 
-class Event::EventManager::Test {
+class Test::Event::Manager {
     method test_BUILD() {
         my $em := Rosella::construct(Rosella::Event::Manager);
         $!assert.not_null($em);
@@ -19,7 +19,7 @@ class Event::EventManager::Test {
     method test_register_event() {
         my $em := Rosella::construct(Rosella::Event::Manager);
         my $count := 0;
-        $em.register_event("Test", Rosella::construct(Rosella::Event, 0));
+        $em.register_event("Test", Rosella::construct(Rosella::Event));
         $em.subscribe_action("Test", Rosella::construct(Rosella::Action::Sub,
             sub($event) {
                 $count := $count + 1;
@@ -35,7 +35,7 @@ class Event::EventManager::Test {
     method test_register_event_multi() {
         my $em := Rosella::construct(Rosella::Event::Manager);
         my $count := 0;
-        $em.register_event("Test", Rosella::construct(Rosella::Event, 0));
+        $em.register_event("Test", Rosella::construct(Rosella::Event));
         $em.subscribe_action("Test", Rosella::construct(Rosella::Action::Sub,
             sub($event) {
                 $count := $count + 1;
@@ -59,7 +59,7 @@ class Event::EventManager::Test {
     method test_register_event_payload() {
         my $em := Rosella::construct(Rosella::Event::Manager);
         my $data := "Hello";
-        $em.register_event("Test2", Rosella::construct(Rosella::Event, 0));
+        $em.register_event("Test2", Rosella::construct(Rosella::Event));
         $em.subscribe_action("Test2", Rosella::construct(Rosella::Action::Sub,
             sub($event) {
                 $data := $data ~ $event[0];
@@ -73,7 +73,7 @@ class Event::EventManager::Test {
     method test_register_event_namedpayload() {
         my $em := Rosella::construct(Rosella::Event::Manager);
         my $data := "Hello";
-        $em.register_event("Test2", Rosella::construct(Rosella::Event, 0));
+        $em.register_event("Test2", Rosella::construct(Rosella::Event));
         $em.subscribe_action("Test2", Rosella::construct(Rosella::Action::Sub,
             sub($event) {
                 $data := $data ~ $event{"arg"};
@@ -95,7 +95,7 @@ class Event::EventManager::Test {
         my $em := Rosella::construct(Rosella::Event::Manager);
         my $data := "Hello";
         $!assert.equal($em.count_events, 0);
-        $em.register_event("Foo", Rosella::construct(Rosella::Event, 0), 0);
+        $em.register_event("Foo", Rosella::construct(Rosella::Event), 0);
         $!assert.equal($em.count_events, 1);
         $em.remove_event("Foo");
         $!assert.equal($em.count_events, 0);

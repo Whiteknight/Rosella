@@ -20,12 +20,8 @@ namespace Rosella
         var current_pos_payload;
         var current_named_payload;
         var handled;
-        var id_count;
 
-        function Event(int start_id)
-        {
-            self.id_count = start_id;
-        }
+        function Event() { }
 
         /* Payload Routines
             The Event class provides read-only Hash- and Array-like access for
@@ -74,21 +70,6 @@ namespace Rosella
         function set_active_subscriber(string name)
         {
             self.current_action_name = name;
-        }
-
-        /* Internal Routines
-        */
-
-        // Get a new ID name which does not conflict with an existing entry
-        // name
-        function get_new_id()
-        {
-            string id = null;
-            do {
-                self.id_count = self.id_count + 1;
-                id = "__action_" + string(self.id_count);
-            } while (exists self.actions[id]);
-            return id;
         }
     }
 }

@@ -3,18 +3,10 @@ INIT {
     pir::load_bytecode("rosella/event.pbc");
 }
 
-Rosella::Test::test(Event::Test);
-
-class MyTestClass {
-    method test_method($event) { pir::say("test_method fired"); }
-    method test_method_pos_args($event) {
-        pir::say(pir::sprintf__SSP("%s,%s,%s", [$event[0], $event[1], $event[2]]));
-    }
-}
-
-class Event::Test {
+Rosella::Test::test(Test::Event);
+class Test::Event {
     method test_BUILD() {
-        my $m := Rosella::construct(Rosella::Event, 0);
+        my $m := Rosella::construct(Rosella::Event);
         $!assert.not_null($m);
         $!assert.instance_of($m, Rosella::Event);
     }

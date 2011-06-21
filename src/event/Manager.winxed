@@ -200,7 +200,7 @@ namespace Rosella { namespace Event
         {
             if (exists self.events[event_name])
                 return self.events[event_name];
-            var event = new Rosella.Event(0);
+            var event = new Rosella.Event();
             self.events[event_name] = event;
             return event;
         }
