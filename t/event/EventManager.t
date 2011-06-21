@@ -145,7 +145,10 @@ class Test::Event::Manager {
     }
 
     method add_queue_default() {
-        $!status.unimplemented("Test this");
+        my $em := Rosella::construct(Rosella::Event::Manager);
+        $!assert.is_true($em.toggle_queue(pir::null__S()));
+        $em.add_queue(pir::null__S());
+        $!assert.is_true($em.toggle_queue(pir::null__S()));
     }
 
     method remove_queue() {
@@ -155,7 +158,10 @@ class Test::Event::Manager {
     }
 
     method remove_queue_default() {
-        $!status.unimplemented("Test this. Need to add a function to test whether the queue is enabled");
+        my $em := Rosella::construct(Rosella::Event::Manager);
+        $!assert.is_true($em.toggle_queue(pir::null__S()));
+        $em.remove_queue(pir::null__S());
+        $!assert.is_false($em.toggle_queue(pir::null__S()));
     }
 
     method queue_accept_rule() {
@@ -169,8 +175,36 @@ class Test::Event::Manager {
         $c.verify;
     }
 
+    method toggle_queue() {
+        my $em := Rosella::construct(Rosella::Event::Manager);
+        $em.add_queue("Test");
+        $!assert.is_true($em.toggle_queue("Test"));
+        $em.toggle_queue("Test", 1);
+        $!assert.is_true($em.toggle_queue("Test"));
+        $em.toggle_queue("Test", 0);
+        $!assert.is_false($em.toggle_queue("Test"));
+        $em.toggle_queue("Test", 1);
+        $!assert.is_true($em.toggle_queue("Test"));
+
+    }
+
     method toggle_queue_default() {
-        $!status.unimplemented("Test this. Need to add a function to test whether the queue is enabled");
+        my $em := Rosella::construct(Rosella::Event::Manager);
+        $!assert.is_true($em.toggle_queue(pir::null__S()));
+        $em.toggle_queue(pir::null__S(), 1);
+        $!assert.is_true($em.toggle_queue(pir::null__S()));
+        $em.toggle_queue(pir::null__S(), 0);
+        $!assert.is_false($em.toggle_queue(pir::null__S()));
+        $em.toggle_queue(pir::null__S(), 1);
+        $!assert.is_true($em.toggle_queue(pir::null__S()));
+    }
+
+    method toggle_queue_autocreate() {
+        my $em := Rosella::construct(Rosella::Event::Manager);
+        $em.toggle_queue("Test1", 1);
+        $!assert.is_true($em.toggle_queue("Test1"));
+        $em.toggle_queue("Test2", 0);
+        $!assert.is_false($em.toggle_queue("Test2"));
     }
 
     method raise_event() {
@@ -178,18 +212,30 @@ class Test::Event::Manager {
         my $em := Rosella::construct(Rosella::Event::Manager);
         $em.register_event("Test", $event);
 
-        my $c := Rosella::construct(Rosella::MockObject::Factory).create_typed(Rosella::Event::Queue);
-        $c.expect_method("can_raise").once.with_args("Test", $event).will_return(1);
+        my $cqueue := Rosella::construct(Rosella::MockObject::Factory).create_typed(Rosella::Event::Queue);
         # TODO: We need a matcher functionality to mockObject to be able to specify whether
         # args to be matched need to be .equal or .same.
-        $c.expect_method("raise_event").once.with_any_args();
-        #$em.raise_event("Test",
+        $cqueue.expect_method("can_raise").once.with_any_args.will_return(1);
+        $cqueue.expect_method("raise_event").once.with_any_args();
+        $em.add_queue("Foo", $cqueue.mock);
+        $em.raise_event("Test");
 
-        #$c.verify;
-        $!status.unimplemented("Finish this");
+        $cqueue.verify;
     }
 
     method raise_event_queue() {
-        $!status.unimplemented("Test this");
+        my $event := Rosella::construct(Rosella::Event);
+        my $em := Rosella::construct(Rosella::Event::Manager);
+        $em.register_event("Test", $event);
+
+        my $cqueue := Rosella::construct(Rosella::MockObject::Factory).create_typed(Rosella::Event::Queue);
+        # TODO: We need a matcher functionality to mockObject to be able to specify whether
+        # args to be matched need to be .equal or .same.
+        $cqueue.expect_method("can_raise").once.with_any_args.will_return(1);
+        $cqueue.expect_method("raise_event").once.with_any_args();
+        $em.add_queue("Foo", $cqueue.mock);
+        $em.raise_event_queue("Test", "Foo");
+
+        $cqueue.verify;
     }
 }
