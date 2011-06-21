@@ -46,23 +46,31 @@ None.
 
 ### Event
 
-`Rosella.Event` is the underlying event object. In general you do not want
-to invoke this class directly, because the interface is not designed for nice
-direct use. You should use `Rosella.Event.EventManager` instead to manage a
-named list of Event objects through a nice interface.
+`Rosella.Event` is the underlying event object. It serves as little more than
+data storage, and is not useful by itself. Events are stored by name in a
+`Rosella.Event.Manager` object, and are raised through that interface.
 
-When the Event is raised, all subscribers to that event are notified. In the
-common case, methods on subscriber objects are called with the Event object
-as the first and only parameter. Additional payload data and other data are
-stored in the Event object itself.
+When the Event is raised, status information and parameter values are updated
+in the Event, and it is passed to all available subscribers. The Manager
+object is in charge of passing the Event object to available Queue objects,
+and the Queues use the Event to invoke all available subscribers.
 
-### Event.EventManager
+Event subscribers are Action objects (from `Rosella.Action` library) which
+take the Event as the first and only parameter. The Event object contains the
+named and positional arguments that were passed to `Manager.raise_event`
+method. The Action can read these parameters out of the Event.
 
-`Rosella.Event.EventManager` is used as a centralized mechanism for storing
-and managing a list of Event objects. The EventManager provides a nice
+Event also contains some additional functionality. The method `Event.handled`
+can be used to mark the Event as being handled. Once the Event is marked as
+handled, the raise sequence ends and no additional subscribers are invoked.
+
+### Event.Manager
+
+`Rosella.Event.Manager` is used as a centralized mechanism for storing
+and managing Events and subscribers in Queues. The Manager provides an
 interface for working with events in a general way.
 
-Events in the EventManager are organized by unique string name. Events can be
+Events in the Manager are organized by unique string name. Events can be
 added or removed by name, or new Actions can be subscribed to Events by name.
 The EventManager will automatically create a new Event if one does not already
 exist with the given name. No individual subscriber or publisher needs to be
@@ -70,10 +78,46 @@ aware of the order in which subscriptions occur. A publisher does not need to
 be aware of whether the Event even exists yet or not. An Event not existing is
 treated exactly the same as an Event with zero subscribers.
 
+Subscribers are arranged into named Queues. Queues organize subscribers by the
+Event they subscribe to, and by subscriber name. Queues can selectively
+invoke subscribers depending on properties of the Event. The Manager provides
+a default queue, which can be addressed by passing `null` as the queue name.
+The default queue cannot be deleted or modified, but it can be disabled by
+calling `.toggle_queue(null, 0)`.
+
+When raising an Event, if the method `.raise_event()` is used all Queues
+receive the Event. If `.raise_event_queue()` is used, only a particular named
+Queue receives the Event.
+
+### Event.Queue
+
+`Rosella.Event.Queue` is used to organize subscribers, selectively invoke them
+when an Event is raised, and perform other behaviors as required. Queues break
+subscribers into two groups: event-specific subscribers which only trigger in
+response to specific named Events, and general subscribers which trigger in
+response to all Events passed to the Queue.
+
+The default Queue class pushes Events directly to subcribers. Custom
+subclasses of Queue could store Events until polled by subscribers, or provide
+other behaviors.
+
+The default Queue implementation does not do any delaying, persisting,
+passing Events to distributed program nodes, etc. These are all features that
+you would expect to find in a more heavy-duty pub/sub implementation.
+Custom subclasses of Queue may be used to provide those kinds of behaviors,
+however.
+
 ## Examples
 
 ### Winxed
 
 ### NQP-rx
+
+    my $manager := Rosella::construct(Rosella::Event::Manager);
+    $manager.register_event("Test");
+    $manager.add_subscriber_action("Foo", Rosella::construct(Rosella::Action::Sub,
+        sub($ev) { pir::say("Action Invoked!"); }
+    ));
+    $manager.raise_event("Test");
 
 ## Users
