@@ -1,74 +1,25 @@
 namespace Rosella
 {
-    /* Event class. An Event is a collection of subscribers (Rosella.Action).
-       When we raise the event, all the subscribers are notified.
+    /* Event Class.
+        An Event is basically a data object that holds information from the
+        publisher to transmit to various subscribers. When an event is raised,
+        the event and all its data are passed to Queues and, ultimately, to
+        subscribers.
 
-       Events invoke Actions with only a single argument, the Event itself.
-       Actions are allowed to come packaged with their own Action.Arguments
-       to fill out a parameter list, but if an Action.Argument overwrites
-       the first positional argument (:position(0)), it will overwrite the
-       event object being passed.
-
-       When the event is raised, it contains the given arguments as payload.
-       The callee can access those arguments in the Event, introspect other
-       information about the Event, and set it to handled to prevent other
-       Actions from receiving it.
+        See the Queue and Manager class documentation for more details.
     */
     class Event
     {
-        var actions;
         var current_action_name;
         var current_pos_payload;
         var current_named_payload;
         var handled;
-        var id_count;
 
-        function Event(int start_id, var acts [named,slurpy])
+        // Constructor
+        function Event()
         {
-            self.actions = acts;
-            self.id_count = start_id;
+            self.handled = 0;
         }
-
-        /* Subscription Management Routines
-        */
-
-        // Add a new Action to the list of subscribers. Overwrites old entries
-        // without asking.
-        function add_subscriber_action(string id, var action)
-        {
-            if (id == null)
-                id = self.get_new_id();
-            self.actions[id] = action;
-            self.id_count = self.id_count + 1;
-            return id;
-        }
-
-        // Add a new object as a subscriber. The specified method will be
-        // invoked on the subscriber with the Event as an argument
-        function add_subscriber_object(string id, var object, var meth)
-        {
-            var action = new Rosella.Action.Sub(
-                function(var e) {
-                    using Rosella.invoke_method;
-                    invoke_method(object, meth, [e], {});
-                }
-            );
-            return self.add_subscriber_action(id, action);
-        }
-
-        // Remove a subscriber by name
-        function remove_subscriber(string id)
-        {
-            if (exists self.actions[id])
-                delete self.actions[id];
-        }
-
-        // Get an ID number which is unique in this Event. This can be used
-        // for generating non-overlapping action names
-        function get_count() { return self.id_count; }
-
-        // Get the total number of subscribers to this event
-        function num_subscribers() { return int(self.actions); }
 
         /* Payload Routines
             The Event class provides read-only Hash- and Array-like access for
@@ -76,63 +27,59 @@ namespace Rosella
             directly as a raw Array and Hash.
         */
 
+        // Get named data by name
         function get_pmc_keyed[vtable](var key)
         {
             return self.current_named_payload[key];
         }
 
+        // Get position data by index
         function get_pmc_keyed_int[vtable](int key)
         {
             return self.current_pos_payload[key];
         }
 
-        function positional_payload() { return self.current_pos_payload; }
+        // Get the raw positionals array
+        function positional_payload()
+        {
+            return self.current_pos_payload;
+        }
 
-        function named_payload() { return self.current_named_payload; }
+        // Get the raw named hash
+        function named_payload()
+        {
+            return self.current_named_payload;
+        }
 
         /* Event Raise Routines
         */
 
         // Get the name of the currently executing Action. This is only
-        // defined during Event.raise()
-        function action_name() { return self.current_action_name; }
+        // defined during Event raise
+        function action_name(string name [optional], int has_name [opt_flag])
+        {
+            if (has_name)
+                self.current_action_name = name;
+            return self.current_action_name;
+        }
 
-        // Set to 0 at the beginning of the .raise() sequence. The Event
+        // Set to 0 at the beginning of the raise sequence. The Event
         // continues to execute its member actions until handled is set to 1
         // or until it runs out of actions
-        function handled(int handled)
+        function handled(int handled [optional], int has_h [opt_flag])
         {
-            self.handled = handled;
+            if (has_h)
+                self.handled = handled;
+            return self.handled;
         }
 
-        // Raise the event. The given arguments are packed up into the payload
-        // of this Event object and passed to all subscribers.
-        function raise(var pos [slurpy], var named [slurpy,named])
+        // Prepare to raise the event, by providing data to pass to the
+        // subscribers
+        function prepare_to_raise(var pos, var named)
         {
+            self.handled = 0;
             self.current_pos_payload = pos;
             self.current_named_payload = named;
-            self.handled = 0;
-            for (var action in self.actions) {
-                self.current_action_name = action;
-                self.actions[action].execute(self);
-                if (self.handled)
-                    break;
-            }
-        }
-
-        /* Internal Routines
-        */
-
-        // Get a new ID name which does not conflict with an existing entry
-        // name
-        function get_new_id()
-        {
-            string id = null;
-            do {
-                self.id_count = self.id_count + 1;
-                id = "__action_" + string(self.id_count);
-            } while (exists self.actions[id]);
-            return id;
         }
     }
 }

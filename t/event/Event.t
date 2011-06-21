@@ -3,96 +3,69 @@ INIT {
     pir::load_bytecode("rosella/event.pbc");
 }
 
-Rosella::Test::test(Event::Test);
+sub hash(*%h) { %h }
 
-class MyTestClass {
-    method test_method($event) { pir::say("test_method fired"); }
-    method test_method_pos_args($event) {
-        pir::say(pir::sprintf__SSP("%s,%s,%s", [$event[0], $event[1], $event[2]]));
-    }
-}
-
-class Event::Test {
+Rosella::Test::test(Test::Event);
+class Test::Event {
     method test_BUILD() {
-        my $m := Rosella::construct(Rosella::Event, 0);
+        my $m := Rosella::construct(Rosella::Event);
         $!assert.not_null($m);
         $!assert.instance_of($m, Rosella::Event);
     }
 
-    method add_subscriber_action() {
-        my $m := Rosella::construct(Rosella::Event, 0);
-        $!assert.equal($m.num_subscribers, 0);
-        $m.add_subscriber_action("Foo",
-            Rosella::construct(Rosella::Action::Sub, sub() {})
-        );
-        $!assert.equal($m.num_subscribers, 1);
-    }
-
-    method add_subscriber_object() {
-        my $m := Rosella::construct(Rosella::Event, 0);
-        my $data := MyTestClass.new();
-        $!assert.equal($m.num_subscribers, 0);
-        $m.add_subscriber_object("Foo", $data, "test_method");
-        $!assert.equal($m.num_subscribers, 1);
-    }
-
-    method remove_subscriber() {
-        my $m := Rosella::construct(Rosella::Event, 0);
-        my $data := MyTestClass.new();
-        $!assert.equal($m.num_subscribers, 0);
-        $m.add_subscriber_object("Foo", $data, "test_method");
-        $!assert.equal($m.num_subscribers, 1);
-        $m.remove_subscriber("Foo");
-        $!assert.equal($m.num_subscribers, 0);
-    }
-
-    method remove_subscriber_none() {
-        my $m := Rosella::construct(Rosella::Event, 0);
-        $!assert.equal($m.num_subscribers, 0);
-        $m.remove_subscriber("Foo");
-        $!assert.equal($m.num_subscribers, 0);
-    }
-
-    method get_count() {
-        my $m := Rosella::construct(Rosella::Event, 0);
-        $!assert.equal($m.get_count, 0);
-    }
-
     method get_pmc_keyed() {
-        $!status.unimplemented("This");
+        my $m := Rosella::construct(Rosella::Event);
+        my %a := hash(:a("a"), :b("b"), :c("c"));
+        $m.prepare_to_raise([], %a);
+        $!assert.equal($m{"a"}, "a");
+        $!assert.equal($m{"b"}, "b");
+        $!assert.equal($m{"c"}, "c");
     }
 
     method get_pmc_keyed_int() {
-        $!status.unimplemented("This");
+        my $m := Rosella::construct(Rosella::Event);
+        $m.prepare_to_raise([1, 2, 3, 4], {});
+        $!assert.equal($m[0], 1);
+        $!assert.equal($m[1], 2);
+        $!assert.equal($m[2], 3);
+        $!assert.equal($m[3], 4);
     }
 
     method positional_payload() {
-        $!status.unimplemented("This");
+        my $m := Rosella::construct(Rosella::Event);
+        my $a := [1, 2, 3, 4];
+        $m.prepare_to_raise($a, {});
+        $!assert.same($m.positional_payload, $a);
     }
 
     method named_payload() {
-        $!status.unimplemented("This");
+        my $m := Rosella::construct(Rosella::Event);
+        my $a := {};
+        $m.prepare_to_raise([], $a);
+        $!assert.same($m.named_payload, $a);
     }
 
     method handled() {
-        $!status.unimplemented("This");
+        my $m := Rosella::construct(Rosella::Event);
+        $!assert.is_false($m.handled());
+        $m.handled(0);
+        $!assert.is_false($m.handled());
+        $m.handled(1);
+        $!assert.is_true($m.handled());
+        $m.handled(0);
+        $!assert.is_false($m.handled());
     }
 
-    method raise() {
-        my $m := Rosella::construct(Rosella::Event, 0);
-        my $data := MyTestClass.new();
-        $m.add_subscriber_object("Foo", $data, "test_method");
-        $!assert.output_is({
-            $m.raise();
-        }, "test_method fired\n");
+    method action_name() {
+        my $m := Rosella::construct(Rosella::Event);
+        $!assert.is_null($m.action_name());
+        $m.action_name("Foo");
+        $!assert.equal($m.action_name(), "Foo");
     }
 
-    method raise_args() {
-        my $m := Rosella::construct(Rosella::Event, 0);
-        my $data := MyTestClass.new();
-        $m.add_subscriber_object("Foo", $data, "test_method_pos_args");
-        $!assert.output_is({
-            $m.raise(1, 2, 3);
-        }, "1,2,3\n");
+    method prepare_to_raise() {
+        my $m := Rosella::construct(Rosella::Event);
+        $m.prepare_to_raise([], {});
     }
 }
+

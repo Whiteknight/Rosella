@@ -166,7 +166,8 @@ function setup_stable_libraries(var rosella)
     // Event library. Subscribe to, receive, and publish event notifications.
     setup_winxed_lib(rosella, "event", ["Core", "Action"],
         "event/Event",
-        "event/Manager"
+        "event/Manager",
+        "event/Queue"
     );
 
     // Memoization library. Allows multiple types of transparent Sub
