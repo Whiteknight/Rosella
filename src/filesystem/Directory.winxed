@@ -54,20 +54,20 @@ namespace Rosella { namespace FileSystem
         // subdirectories).
         function get_files()
         {
-            return __get_entries(1, 0);
+            return self.__get_entries(1, 0);
         }
 
         // Get a list of all subdirectories in this directory.
         function get_subdirectories()
         {
-            return __get_entries(0, 1);
+            return self.__get_entries(0, 1);
         }
 
         // Get a list of all entries in this directory. This will be an
         // intermingled list of File and Directory objects
         function get_entries()
         {
-            return __get_entries(1, 1);
+            return self.__get_entries(1, 1);
         }
 
         // Walk this directory recursively using a Visitor object.
