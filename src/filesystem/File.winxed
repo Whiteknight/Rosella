@@ -1,14 +1,31 @@
 namespace Rosella { namespace FileSystem
 {
+    /* File Namespace
+        This namespace provides utilities to set a global FileHandle factory
+        instance, and use it to get instances of FileHandle for various
+        purposes. The user can set a custom factory for creating FileHandles
+        if a subclass or replacement class should be used instead.
+    */
     namespace File
     {
+        const string FILEHANDLE_FACTORY_GLOBAL = "Rosella.FileSystem.FileHandleFactory";
 
+        // Get a FileHandle object from a filehandle factory.
         function get_filehandle()
         {
-            using Rosella.get_default_factory;
-            return get_default_factory().create_typed("FileHandle");
-            var factory = filehandle_factory();
-            return factory.create();
+            using Rosella.get_global;
+            var factory = get_global(FILEHANDLE_FACTORY_GLOBAL);
+            if (factory == null)
+                set_filehandle_factory(new Rosella.ObjectFactory("FileHandle"));
+            while(1)
+                return get_global(FILEHANDLE_FACTORY_GLOBAL).create();
+        }
+
+        // Set the global FileHandle factory to use.
+        function set_filehandle_factory(var factory)
+        {
+            using Rosella.register_global;
+            register_global(FILEHANDLE_FACTORY_GLOBAL, factory);
         }
     }
 
