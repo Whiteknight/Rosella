@@ -41,8 +41,8 @@ function main[main](argv)
 
 function setup_release(var rosella)
 {
-    rosella["pir_winxed"]["setup.pir"] = "setup.winxed";
-    rosella["manifest_includes"].push("setup.pir");
+    //rosella["pir_winxed"]["setup.pir"] = "setup.winxed";
+    //rosella["manifest_includes"].push("setup.pir");
 }
 
 function setup_stable_libraries(var rosella)
