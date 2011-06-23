@@ -19,7 +19,15 @@ namespace Rosella { namespace FileSystem
     class File : Rosella.FileSystem.Entry
     {
         // Constructor
-        function File(string filepath) { self.Entry(filepath); }
+        function File(string filepath,
+                var parent_dir [optional], int has_dir [opt_flag])
+        {
+            if (has_dir) {
+                using Rosella.FileSystem.join_path_parts;
+                filepath = join_path_parts(parent_dir, filepath);
+            }
+            self.Entry(filepath);
+        }
 
         // Open the file for reading, returning the open FileHandle. The user
         // must close the filehandle themselves.

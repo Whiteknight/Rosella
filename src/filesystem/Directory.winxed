@@ -20,15 +20,18 @@ namespace Rosella { namespace FileSystem
     class Directory : Rosella.FileSystem.Entry
     {
         // Constructor. Build a directory with the given path name
-        function Directory(string path) {
+        function Directory(string path)
+        {
             if (path == null || path == "") {
                 using Rosella.Error.invalid;
                 invalid(__FUNCTION__, "Directory needs a valid path");
             }
+            using Rosella.FileSystem.path_separator;
+            string path_sep = path_separator();
             int len = length(path);
             string lastchar = substr(path, len - 1);
-            if (lastchar != "/")
-                path = path + "/";
+            if (lastchar != path_sep)
+                path = path + path_sep;
             self.Entry(path);
         }
 

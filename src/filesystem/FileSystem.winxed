@@ -67,5 +67,12 @@ namespace Rosella
             while(1)
                 return sep;
         }
+
+        // Combine strings together with the platform-specific path separator.
+        function join_path_parts(var parts [slurpy])
+        {
+            string path_sep = path_separator();
+            return join(path_sep, parts);
+        }
     }
 }
