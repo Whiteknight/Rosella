@@ -29,7 +29,7 @@ class Test::Suite_Subclass::Test {
         my $ftest := Rosella::construct(Rosella::MockObject::Factory);
         my $ctest := $ftest.create_typed(MyTestResult);
         $ctest.expect_get("method").once.will_return(my_test_function);
-        $ctest.expect_get("status").once.will_return(1);
+        $ctest.expect_get("status").at_least(1).will_return(1);
         my $test := $ctest.mock;
 
         $!assert.output_is({

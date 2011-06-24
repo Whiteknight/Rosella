@@ -70,7 +70,11 @@ namespace Rosella { namespace Test
             } catch (e) {
                 exception = e;
             }
-            test.status.cleanup();
+            var status = test.status;
+            int can_cleanup;
+            ${ can can_cleanup, status, "cleanup" };
+            if (can_cleanup)
+                status.cleanup();
             self.__report_test_result(test, result, exception);
         }
 
