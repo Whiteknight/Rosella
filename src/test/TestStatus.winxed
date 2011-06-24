@@ -1,17 +1,24 @@
 namespace Rosella { namespace Test
 {
+    /* Test Status class
+        TestStatus keeps track of the status of the currently executing test
+        and can be used to set status information while the test is running.
+    */
     class TestStatus
     {
-        var current_test;
-        var test_name;
-        var test_todo;
-        var suite;
+        var current_test;   // The current test object
+        var test_name;      // The name of the current test
+        var test_todo;      // A to-do message
+        var suite;          // The Suite object
+        var cleanups;       // An array of cleanup routines to run after the test
 
+        // Constructor
         function TestStatus(string test_name, var test)
         {
             self.current_test = test;
             self.test_name = test_name;
             self.test_todo = null;
+            self.cleanups = [];
         }
 
         // Get the displayable name of the test. Should not be null.
@@ -25,6 +32,21 @@ namespace Rosella { namespace Test
         function test_todo()
         {
             return self.test_todo;
+        }
+
+        // Add a cleanup routine to be called after the function executes
+        // regardless of outcome
+        function add_cleanup_routine(var cleanup_func)
+        {
+            push(self.cleanups, cleanup_func);
+        }
+
+        // Execute any cleanup routines
+        function cleanup()
+        {
+            for (var cleanup in self.cleanups)
+                cleanup();
+            self.cleanups = [];
         }
 
         // Get the currently executing TestCase object

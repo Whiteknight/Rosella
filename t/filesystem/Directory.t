@@ -7,13 +7,15 @@ INIT {
 Rosella::Test::test(Test::FileSystem::Directory);
 
 class Test::FileSystem::Directory {
-    sub test_with_mock_os(&setup, &test) {
+    sub test_with_mock_os($status, &setup, &test) {
         my $c := Rosella::construct(Rosella::MockObject::Factory).create_typed("OS");
         &setup($c);
         my $old_os := Rosella::FileSystem::get_os_pmc();
         Rosella::FileSystem::set_os_pmc($c.mock);
+        $status.add_cleanup_routine({
+            Rosella::FileSystem::set_os_pmc($old_os);
+        });
         &test();
-        Rosella::FileSystem::set_os_pmc($old_os);
         $c.verify();
     }
 
@@ -41,7 +43,7 @@ class Test::FileSystem::Directory {
 
     method delete() {
         my $dir := Rosella::construct(Rosella::FileSystem::Directory, "WHARBLEGARBLE");
-        test_with_mock_os(-> $c {
+        test_with_mock_os($!status, -> $c {
             $c.expect_method("exists").once.with_any_args.will_return(1);
             $c.expect_method("rm").once.with_args("WHARBLEGARBLE/");
         }, {
@@ -56,7 +58,7 @@ class Test::FileSystem::Directory {
 
     method rename() {
         my $dir := Rosella::construct(Rosella::FileSystem::Directory, "WHARBLEGARBLE");
-        test_with_mock_os(-> $c {
+        test_with_mock_os($!status, -> $c {
             $c.expect_method("rename").once.with_args("WHARBLEGARBLE/", "FooBar");
         }, {
             $dir.rename("FooBar");
@@ -74,7 +76,7 @@ class Test::FileSystem::Directory {
 
     method create() {
         my $dir := Rosella::construct(Rosella::FileSystem::Directory, "WHARBLEGARBLE");
-        test_with_mock_os(-> $c {
+        test_with_mock_os($!status, -> $c {
             $c.expect_method("exists").once.with_args("WHARBLEGARBLE/").will_return(0);
             $c.expect_method("mkdir").once.with_args("WHARBLEGARBLE/", 493);
         }, {
@@ -137,7 +139,7 @@ class Test::FileSystem::Directory {
 
     method delete_keyed() {
         my $dir := Rosella::construct(Rosella::FileSystem::Directory, "WHARBLEGARBLE");
-        test_with_mock_os(-> $c {
+        test_with_mock_os($!status, -> $c {
             $c.expect_method("exists").once.with_args("WHARBLEGARBLE/foo.txt").will_return(1);
             $c.expect_method("rm").once.with_args("WHARBLEGARBLE/foo.txt");
         }, {

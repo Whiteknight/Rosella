@@ -13,25 +13,29 @@ class TestObjectFactory {
 }
 
 class Test::FileSystem::File {
-    sub test_with_filehandle_mock(&setup, &test) {
+    sub test_with_filehandle_mock($status, &setup, &test) {
         my $c := Rosella::construct(Rosella::MockObject::Factory).create_typed("FileHandle");
         &setup($c);
         my $factory := TestObjectFactory.new();
         Rosella::FileSystem::File::set_filehandle_factory($factory);
         $factory.__set_return($c.mock);
+        $status.add_cleanup_routine({
+            $factory := Rosella::construct(Rosella::ObjectFactory, "FileHandle");
+            Rosella::FileSystem::File::set_filehandle_factory($factory);
+        });
         &test();
-        $factory := Rosella::construct(Rosella::ObjectFactory, "FileHandle");
-        Rosella::FileSystem::File::set_filehandle_factory($factory);
         $c.verify();
     }
 
-    sub test_with_mock_os(&setup, &test) {
+    sub test_with_mock_os($status, &setup, &test) {
         my $c := Rosella::construct(Rosella::MockObject::Factory).create_typed("OS");
         &setup($c);
         my $old_os := Rosella::FileSystem::get_os_pmc();
         Rosella::FileSystem::set_os_pmc($c.mock);
+        $status.add_cleanup_routine({
+            Rosella::FileSystem::set_os_pmc($old_os);
+        });
         &test();
-        Rosella::FileSystem::set_os_pmc($old_os);
         $c.verify();
     }
 
@@ -48,7 +52,7 @@ class Test::FileSystem::File {
 
     method delete() {
         my $file := Rosella::construct(Rosella::FileSystem::File, "foo.txt");
-        test_with_mock_os(-> $c {
+        test_with_mock_os($!status, -> $c {
             $c.expect_method("exists").once.with_args("foo.txt").will_return(1);
             $c.expect_method("rm").once.with_args("foo.txt");
         }, {
@@ -63,7 +67,7 @@ class Test::FileSystem::File {
 
     method rename() {
         my $file := Rosella::construct(Rosella::FileSystem::File, "foo.txt");
-        test_with_mock_os(-> $c {
+        test_with_mock_os($!status, -> $c {
             $c.expect_method("rename").once.with_args("foo.txt", "bar.txt");
         }, {
             $file.rename("bar.txt");
@@ -77,7 +81,7 @@ class Test::FileSystem::File {
 
     method open_read() {
         my $file := Rosella::construct(Rosella::FileSystem::File, "foo.txt");
-        test_with_filehandle_mock(-> $c {
+        test_with_filehandle_mock($!status, -> $c {
             $c.expect_method("open").with_args("foo.txt", "r");
         }, {
             $file.open_read();
@@ -86,7 +90,7 @@ class Test::FileSystem::File {
 
     method open_write() {
         my $file := Rosella::construct(Rosella::FileSystem::File, "foo.txt");
-        test_with_filehandle_mock(-> $c {
+        test_with_filehandle_mock($!status, -> $c {
             $c.expect_method("open").with_args("foo.txt", "w");
         }, {
             $file.open_write();
@@ -95,7 +99,7 @@ class Test::FileSystem::File {
 
     method open_append() {
         my $file := Rosella::construct(Rosella::FileSystem::File, "foo.txt");
-        test_with_filehandle_mock(-> $c {
+        test_with_filehandle_mock($!status, -> $c {
             $c.expect_method("open").with_args("foo.txt", "a");
         }, {
             $file.open_append();
@@ -104,7 +108,7 @@ class Test::FileSystem::File {
 
     method read_all_text() {
         my $file := Rosella::construct(Rosella::FileSystem::File, "foo.txt");
-        test_with_filehandle_mock(-> $c {
+        test_with_filehandle_mock($!status, -> $c {
             $c.expect_method("open").with_args("foo.txt", "r");
             $c.expect_method("readall").with_no_args().will_return("foo\nbar\nbaz");
             $c.expect_method("close").with_no_args;
@@ -116,7 +120,7 @@ class Test::FileSystem::File {
 
     method read_all_lines() {
         my $file := Rosella::construct(Rosella::FileSystem::File, "foo.txt");
-        test_with_filehandle_mock(-> $c {
+        test_with_filehandle_mock($!status, -> $c {
             $c.expect_method("open").with_args("foo.txt", "r");
             $c.expect_method("readall").with_no_args.will_return("foo\nbar\nbaz");
             $c.expect_method("close").with_no_args;
@@ -131,7 +135,7 @@ class Test::FileSystem::File {
 
     method write_all_text() {
         my $file := Rosella::construct(Rosella::FileSystem::File, "foo.txt");
-        test_with_filehandle_mock(-> $c {
+        test_with_filehandle_mock($!status, -> $c {
             $c.expect_method("open").with_args("foo.txt", "w");
             $c.expect_method("print").with_args("foo\nbar\nbaz");
             $c.expect_method("close").with_no_args;
@@ -142,7 +146,7 @@ class Test::FileSystem::File {
 
     method write_all_lines() {
         my $file := Rosella::construct(Rosella::FileSystem::File, "foo.txt");
-        test_with_filehandle_mock(-> $c {
+        test_with_filehandle_mock($!status, -> $c {
             $c.expect_method("open").with_args("foo.txt", "w");
             $c.expect_method("print").with_args("foo\nbar\nbaz");
             $c.expect_method("close").with_no_args;
@@ -153,7 +157,7 @@ class Test::FileSystem::File {
 
     method append_text() {
         my $file := Rosella::construct(Rosella::FileSystem::File, "foo.txt");
-        test_with_filehandle_mock(-> $c {
+        test_with_filehandle_mock($!status, -> $c {
             $c.expect_method("open").with_args("foo.txt", "a");
             $c.expect_method("print").with_args("foo\nbar\nbaz");
             $c.expect_method("close").with_no_args;
@@ -164,7 +168,7 @@ class Test::FileSystem::File {
 
     method copy() {
         my $file := Rosella::construct(Rosella::FileSystem::File, "foo.txt");
-        test_with_filehandle_mock(-> $c {
+        test_with_filehandle_mock($!status, -> $c {
             $c.expect_method("open").with_args("foo.txt", "r");
             $c.expect_method("readall").with_no_args.will_return("foo\nbar\nbaz");
             $c.expect_method("close").with_no_args;
