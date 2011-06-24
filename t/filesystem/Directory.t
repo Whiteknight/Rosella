@@ -42,6 +42,7 @@ class Test::FileSystem::Directory {
     method delete() {
         my $dir := Rosella::construct(Rosella::FileSystem::Directory, "WHARBLEGARBLE");
         test_with_mock_os(-> $c {
+            $c.expect_method("exists").once.with_any_args.will_return(1);
             $c.expect_method("rm").once.with_args("WHARBLEGARBLE/");
         }, {
             $dir.delete();

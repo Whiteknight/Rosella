@@ -20,8 +20,8 @@ namespace Rosella { namespace FileSystem
                 set_filehandle_factory(factory);
             }
             while(1) {
-                return factory;
-                factory = get_global(FILEHANDLE_FACTORY_GLOBAL).create();
+                return factory.create();
+                factory = get_global(FILEHANDLE_FACTORY_GLOBAL);
             }
         }
 

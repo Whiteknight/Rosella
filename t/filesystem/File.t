@@ -9,19 +9,19 @@ Rosella::Test::test(Test::FileSystem::File);
 class TestObjectFactory {
     has $!value;
     method __set_return($v) { $!value := $v; }
-    method create_typed($x) { $!value; }
+    method create() { $!value; }
 }
 
 class Test::FileSystem::File {
     sub test_with_filehandle_mock(&setup, &test) {
-        my $factory := TestObjectFactory.new();
-        my $old_factory := Rosella::get_global("Rosella.default_factory");
-        Rosella::register_global("Rosella.default_factory", $factory);
         my $c := Rosella::construct(Rosella::MockObject::Factory).create_typed("FileHandle");
         &setup($c);
+        my $factory := TestObjectFactory.new();
+        Rosella::FileSystem::File::set_filehandle_factory($factory);
         $factory.__set_return($c.mock);
         &test();
-        Rosella::register_global("Rosella.default_factory", $old_factory);
+        $factory := Rosella::construct(Rosella::ObjectFactory, "FileHandle");
+        Rosella::FileSystem::File::set_filehandle_factory($factory);
         $c.verify();
     }
 
@@ -49,6 +49,7 @@ class Test::FileSystem::File {
     method delete() {
         my $file := Rosella::construct(Rosella::FileSystem::File, "foo.txt");
         test_with_mock_os(-> $c {
+            $c.expect_method("exists").once.with_args("foo.txt").will_return(1);
             $c.expect_method("rm").once.with_args("foo.txt");
         }, {
             $file.delete();
