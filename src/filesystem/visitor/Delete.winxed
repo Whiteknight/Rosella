@@ -6,6 +6,9 @@ namespace Rosella { namespace FileSystem { namespace Visitor
     */
     class Delete : Rosella.FileSystem.Visitor
     {
+        // Constructor
+        function Delete() {}
+
         // Delete the file
         function process(var file)
         {

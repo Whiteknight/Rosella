@@ -21,7 +21,12 @@ namespace Rosella { namespace FileSystem
         function delete()
         {
             using Rosella.FileSystem.get_os_pmc;
-            get_os_pmc().rm(self.path);
+            var os = get_os_pmc();
+            if (!os.exists(self.path)) {
+                using Rosella.Error.invalid;
+                invalid(__FUNCTION__, "Cannot delete an Entry that does not exist");
+            }
+            os.rm(self.path);
         }
 
         // Determine if the file exists. Returns non-zero if it exists, 0

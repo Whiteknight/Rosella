@@ -40,6 +40,10 @@ namespace Rosella { namespace FileSystem
         // contents. Otherwise, only an empty directory can be deleted.
         function delete_recursive()
         {
+            if (!self.exists()) {
+                using Rosella.Error.invalid;
+                invalid(__FUNCTION__, "Cannot delete a Directory that does not exist");
+            }
             var deleter = new Rosella.FileSystem.Visitor.Delete();
             return self.walk(deleter);
         }
