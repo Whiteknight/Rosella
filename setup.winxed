@@ -1,4 +1,5 @@
 using extern "io_ops";
+class OS;
 
 function main[main](argv)
 {
@@ -360,7 +361,7 @@ function do_test()
 function get_all_tests(var rosella, string path)
 {
     loadlib("os");
-    var os = new 'OS';
+    var os = new OS;
     int STAT_ISREG = 0x8000;
     int STAT_ISDIR = 0x4000;
     var contents_raw = os.readdir(path);
