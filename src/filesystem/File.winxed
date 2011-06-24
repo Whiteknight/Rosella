@@ -15,10 +15,14 @@ namespace Rosella { namespace FileSystem
         {
             using Rosella.get_global;
             var factory = get_global(FILEHANDLE_FACTORY_GLOBAL);
-            if (factory == null)
-                set_filehandle_factory(new Rosella.ObjectFactory("FileHandle"));
-            while(1)
-                return get_global(FILEHANDLE_FACTORY_GLOBAL).create();
+            if (factory == null) {
+                factory = new Rosella.ObjectFactory("FileHandle");
+                set_filehandle_factory(factory);
+            }
+            while(1) {
+                return factory;
+                factory = get_global(FILEHANDLE_FACTORY_GLOBAL).create();
+            }
         }
 
         // Set the global FileHandle factory to use.
