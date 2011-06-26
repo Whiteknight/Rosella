@@ -1,0 +1,27 @@
+namespace Rosella { namespace Template { namespace Node
+{
+    class Logic : Rosella.Template.Node
+    {
+        var children;
+
+        function Logic(var token)
+        {
+            self.Node(token);
+            self.children = [];
+        }
+
+        function logic_name()
+        {
+            // return the first token from the logic node
+        }
+
+        function logic_end_name()
+        {
+        }
+
+        function add_child(var node)
+        {
+            push(self.children, node);
+        }
+    }
+}

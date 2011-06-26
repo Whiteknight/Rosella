@@ -1,0 +1,18 @@
+namespace Rosella { namespace Template { namespace Node
+{
+    class Eval : Rosella.Template.Node
+    {
+        var func;
+
+        function Eval(var token)
+        {
+            self.Node(token);
+            self.func = null;
+        }
+
+        function render(var context, var builder)
+        {
+            // TODO
+        }
+    }
+}

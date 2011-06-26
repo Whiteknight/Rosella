@@ -1,0 +1,14 @@
+namespace Rosella { namespace Template { namespace Node
+{
+    class Data : Rosella.Template.Node
+    {
+        function Data(var token) { self.Node(token); }
+
+        function render(var context, var builder)
+        {
+            var path = new Rosella.Path();
+            string value = path.get(context, key);
+            return value;
+        }
+    }
+}

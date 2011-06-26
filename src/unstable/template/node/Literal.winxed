@@ -1,0 +1,12 @@
+namespace Rosella { namespace Template { namespace Node
+{
+    class Literal : Rosella.Template.Node
+    {
+        function Literal(var token) { self.Node(token); }
+
+        function render(var context, var builder)
+        {
+            return self.token.data();
+        }
+    }
+}
