@@ -58,7 +58,8 @@ class Test::Memoize {
                 return $g(+$n - 1) + $g(+$n - 2);
             };
         }))(50);
-        $!assert.equal($answer, 12586269025);
+        # we stringify the int so we don't overflow on 32-bit systems
+        $!assert.equal($answer, "12586269025", "$answer ?= 12586269025");
     }
 
     method memoize_proxy() {
