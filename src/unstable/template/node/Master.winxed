@@ -1,0 +1,24 @@
+namespace Rosella { namespace Template { namespace Node
+{
+    class Master : Rosella.Template.Node
+    {
+        var children;
+
+        function Master()
+        {
+            self.Node(null);
+            self.children = [];
+        }
+
+        function render(var context, var builder)
+        {
+            for (var child in self.children)
+                child.render(context, builder);
+        }
+
+        function add_child(var node)
+        {
+            push(self.children, node);
+        }
+    }
+}}}
