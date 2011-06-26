@@ -16,9 +16,9 @@ namespace Rosella { namespace Template
 
         function generate(string tmpl, var context)
         {
-            var nodes_array = self.__get_nodes_array(tmpl)
+            var nodes_array = self.__get_nodes_array(tmpl);
             var node = self.__create_node_tree(nodes_array);
-            var builder = new ['StringBuilder']
+            var builder = new ['StringBuilder'];
             node.render(context, builder);
             return string(builder);
         }
@@ -57,7 +57,7 @@ namespace Rosella { namespace Template
         function __create_node_tree(var nodes_array)
         {
             var first_node = new Rosella.Template.Node(null);
-            var current_node = first_node
+            var current_node = first_node;
             var parent_nodes = [];
             for (var node in nodes_array) {
                 string type = node.type();

@@ -7,8 +7,9 @@ namespace Rosella { namespace Template { namespace Node
         function render(var context, var builder)
         {
             var path = new Rosella.Path();
+            string key = self.token.data();
             string value = path.get(context, key);
             return value;
         }
     }
-}
+}}}

@@ -24,4 +24,4 @@ namespace Rosella { namespace Template { namespace Node
             push(self.children, node);
         }
     }
-}
+}}}

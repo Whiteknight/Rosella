@@ -9,4 +9,4 @@ namespace Rosella { namespace Template { namespace Node
             return self.token.data();
         }
     }
-}
+}}}

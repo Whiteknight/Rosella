@@ -258,6 +258,15 @@ function setup_experimental_libraries(var rosella)
         "benchmark/Benchmark",
         "benchmark/Result"
     );
+
+    setup_unstable_lib(rosella, "template", ["Core", "Path", "String"],
+        "template/Template",
+        "template/Node",
+        "template/node/Logic",
+        "template/node/Data",
+        "template/node/Eval",
+        "template/node/Literal"
+    );
 }
 
 function setup_utilities(var rosella)

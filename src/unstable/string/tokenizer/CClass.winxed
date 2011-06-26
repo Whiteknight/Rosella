@@ -65,7 +65,7 @@ namespace Rosella { namespace String { namespace Tokenizer
                 ${ find_not_cclass next_idx, curr_cclass, str, 0, len };
                 string chars = self.__get_chars(next_idx);
                 token = self.get_token(chars, curr_cclass);
-            } while(self.skip_whitespace && token.metadata == CCLASS_WHITESPACE);
+            } while(int(self.skip_whitespace) && token.metadata == CCLASS_WHITESPACE);
             return token;
         }
     }

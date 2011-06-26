@@ -12,7 +12,12 @@ namespace Rosella { namespace Template { namespace Node
 
         function render(var context, var builder)
         {
-            // TODO
+            string code = self.token.data();
+            string code_s = sprintf("function EVAL_%d[anon](var context) { string result = ''; %s; return result; }", [self.eval_count, code]);
+            var winxed = compreg("winxed");
+            var func = winxed.compile(code_s);
+            var result = func(context);
+            return result;
         }
     }
-}
+}}}

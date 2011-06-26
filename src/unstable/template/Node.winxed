@@ -19,14 +19,5 @@ namespace Rosella { namespace Template
             using Rosella.Error.must_subclass;
             must_subclass("Template.Node");
         }
-
-        function __eval(string code, var context)
-        {
-            string code_s = sprintf("function EVAL_%d[anon](var context) { string result = ""; %s; return result; }", [self.eval_count, code]);
-            var winxed = compreg("winxed");
-            var func = winxed.compile(code_s);
-            var result = func(context);
-            return result;
-        }
     }
 }}
