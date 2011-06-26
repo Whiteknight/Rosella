@@ -3,21 +3,23 @@ namespace Rosella { namespace Template { namespace Node
     class Eval : Rosella.Template.Node
     {
         var func;
+        var eval_count;
 
         function Eval(var token)
         {
             self.Node(token);
             self.func = null;
+            self.eval_count = 0;
         }
 
         function render(var context, var builder)
         {
             string code = self.token.data();
-            string code_s = sprintf("function EVAL_%d[anon](var context) { string result = ''; %s; return result; }", [self.eval_count, code]);
+            string code_s = sprintf("function EVAL_%d[anon](var output, var context) { %s; }", [self.eval_count, code]);
+            self.eval_count = self.eval_count +1;
             var winxed = compreg("winxed");
             var func = winxed.compile(code_s);
-            var result = func(context);
-            return result;
+            func(builder, context);
         }
     }
 }}}

@@ -6,7 +6,7 @@ namespace Rosella { namespace Template { namespace Node
 
         function render(var context, var builder)
         {
-            return self.token.data();
+            push(builder, self.token.data());
         }
     }
 }}}

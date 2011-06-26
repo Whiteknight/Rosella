@@ -29,7 +29,7 @@ namespace Rosella { namespace Template
             self.tokenizer.add_data(tmpl);
             while (self.tokenizer.has_tokens()) {
                 var t = self.tokenizer.next_token();
-                string type = node.type();
+                string type = t.metadata();
                 var node;
                 switch (type) {
                     case "LiteralText":
@@ -56,7 +56,7 @@ namespace Rosella { namespace Template
 
         function __create_node_tree(var nodes_array)
         {
-            var first_node = new Rosella.Template.Node(null);
+            var first_node = new Rosella.Template.Node.Master();
             var current_node = first_node;
             var parent_nodes = [];
             for (var node in nodes_array) {
