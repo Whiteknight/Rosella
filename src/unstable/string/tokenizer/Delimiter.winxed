@@ -1,0 +1,26 @@
+namespace Rosella { namespace String { namespace Tokenizer
+{
+    class Delimiter : Rosella.String.Tokenizer
+    {
+        var delim;
+
+        function Delimiter(string delim)
+        {
+            self.Tokenizer();
+            self.delim = delim;
+        }
+
+        function lex_next_token()
+        {
+            string data = self.data;
+            string delim = self.delim;
+            int idx = indexof(data, delim);
+            if (idx == -1) {
+                self.data = null;
+                return self.get_token(data, 0);
+            }
+            string chars = self.__get_chars(idx, length(delim));
+            return self.get_token(chars, 0);
+        }
+    }
+}}}

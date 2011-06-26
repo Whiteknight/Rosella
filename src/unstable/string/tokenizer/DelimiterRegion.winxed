@@ -1,0 +1,65 @@
+namespace Rosella { namespace String { namespace Tokenizer
+{
+    class DelimiterRegion : Rosella.String.Tokenizer
+    {
+        const int START_IDX = 0;
+        const int END_IDX = 1;
+        const int KEY_IDX = 2;
+
+        var regions;
+        var default_key;
+
+        function DelimiterRegion(var default_key [optional], int has_key [opt_flag])
+        {
+            self.Tokenizer();
+            self.regions = [];
+            if (!has_key)
+                default_key = null;
+            self.default_key = default_key;
+        }
+
+        function add_region(string start, string end, var key)
+        {
+            push(self.regions, [start, end, key]);
+        }
+
+        function lex_next_token()
+        {
+            string data = self.data;
+            int min = length(data);
+            var min_region = null;
+            for (var region in self.regions) {
+                string start = region[START_IDX];
+                int idx = indexof(data, start);
+                if (idx != -1 && idx < min) {
+                    min = idx;
+                    min_region = region;
+                }
+            }
+            if (min_region == null) {
+                self.data = null;
+                return self.get_token(data, self.default_key);
+            }
+            var region = min_region;
+            int start_idx = min;
+            string end = region[END_IDX];
+            int end_idx = indexof(data, end);
+            if (end_idx == -1) {
+                self.data = null;
+                return self.get_token(data, self.default_key);
+            }
+            string before_text = substr(data, 0, start_idx);
+            start_idx += length(string(region[START_IDX]));
+            string region_text = substr(data, start_idx, end_idx - start_idx);
+            end_idx += length(string(region[END_IDX]));
+            self.data = substr(data, end_idx);
+            if (length(before_text) > 0) {
+                var token = self.get_token(before_text, self.default_key);
+                var next_token = self.get_token(region_text, region[KEY_IDX]);
+                self.unget_token(next_token);
+                return token;
+            } else
+                return self.get_token(region_text, region[KEY_IDX]);
+        }
+    }
+}}}

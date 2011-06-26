@@ -23,6 +23,18 @@ namespace Rosella { namespace String
             }
         }
 
+        function set_data(string str)
+        {
+            self.data = str;
+        }
+
+        function get_all_data()
+        {
+            string d = self.data;
+            self.data = null;
+            return d;
+        }
+
         function map_token(string key, var metadata)
         {
             self.map[key] = self.build_token(key, metadata);
@@ -39,8 +51,8 @@ namespace Rosella { namespace String
 
         function next_token()
         {
-            if (elements(self.tokens) > 1) {
-                string token;
+            if (elements(self.tokens) >= 1) {
+                var token;
                 var tokens = self.tokens;
                 ${ shift token, tokens };
                 return token;
@@ -68,10 +80,25 @@ namespace Rosella { namespace String
             must_subclass("Rosella.String.Tokenizer");
         }
 
-        function unget_token(string token)
+        function unget_token(var token)
         {
             // Do we want this to go onto the front or the back of the list?
             push(self.tokens, token);
+        }
+
+        function __get_chars(int count,
+                int skip [optional], int has_skip [opt_flag])
+        {
+            string str = self.data;
+            int len = length(str);
+            if (count >= len) {
+                self.data = null;
+                return str;
+            }
+            if (!has_skip)
+                skip = 0;
+            self.data = substr(str, count + skip);
+            return substr(str, 0, count);
         }
     }
 }}

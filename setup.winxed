@@ -249,6 +249,8 @@ function setup_experimental_libraries(var rosella)
         "string/String",
         "string/Tokenizer",
         "string/tokenizer/CClass",
+        "string/tokenizer/Delimiter",
+        "string/tokenizer/DelimiterRegion",
         "string/tokenizer/Token"
     );
 

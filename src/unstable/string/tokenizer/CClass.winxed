@@ -35,8 +35,10 @@ namespace Rosella { namespace String { namespace Tokenizer
     class CClass : Rosella.String.Tokenizer
     {
         var cclasses;
+        var skip_whitespace;
 
-        function CClass(var cclasses [optional], int has_cclasses [opt_flag])
+        function CClass(var cclasses [optional], int has_cclasses [opt_flag],
+            int skip_whitespace [named,optional], int has_skip [opt_flag])
         {
             self.Tokenizer();
             self.tokens = [];
@@ -45,6 +47,9 @@ namespace Rosella { namespace String { namespace Tokenizer
                 self.cclasses = cclasses;
             else
                 self.cclasses = null;
+            if (!has_skip)
+                skip_whitespace = 0;
+            self.skip_whitespace = skip_whitespace;
         }
 
         function lex_next_token()
@@ -54,22 +59,14 @@ namespace Rosella { namespace String { namespace Tokenizer
             int curr_cclass = private_get_first_cclass(str, self.cclasses);
             if (curr_cclass == 0)
                 return self.get_token(self.get_chars(1), curr_cclass);
-            int next_idx = 0;
-            ${ find_not_cclass next_idx, curr_cclass, str, 0, len };
-            string chars = self.get_chars(next_idx);
-            return self.get_token(chars, curr_cclass);
-        }
-
-        function get_chars(int count)
-        {
-            string str = self.data;
-            int len = length(str);
-            if (count >= len) {
-                self.data = null;
-                return str;
-            }
-            self.data = substr(str, count);
-            return substr(str, 0, count);
+            var token = null;
+            do {
+                int next_idx = 0;
+                ${ find_not_cclass next_idx, curr_cclass, str, 0, len };
+                string chars = self.__get_chars(next_idx);
+                token = self.get_token(chars, curr_cclass);
+            } while(self.skip_whitespace && token.metadata == CCLASS_WHITESPACE);
+            return token;
         }
     }
 }}}
