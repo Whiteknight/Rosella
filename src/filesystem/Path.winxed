@@ -1,0 +1,51 @@
+namespace Rosella { namespace FileSystem
+{
+    namespace Path
+    {
+        function get_all_parts(string path)
+        {
+            var details = {};
+            using Rosella.FileSystem.path_separator;
+            string pathsep = path_separator();
+            var pathparts = split(pathsep, path);
+            string entryname = pop(pathparts);
+            var entryparts = split(".", entryname);
+
+            if (elements(entryparts) > 1)
+                details["extension"] = pop(entryparts);
+            else
+                details["extension"] = "";
+            details["shortname_noext"] = join(".", entryparts);
+            details["fullpath"] = path;
+            details["shortname"] = entryname;
+            details["pathseparator"] = pathsep;
+            details["basepath_parts"] = pathparts;
+            details["basepath"] = join(pathsep, pathparts);
+        }
+
+        function get_extension(string path)
+        {
+            return get_all_parts(path)["extension"];
+        }
+
+        function get_base_path(string path)
+        {
+            return get_all_parts(path)["basepath"];
+        }
+
+        function get_base_path_parts(string path)
+        {
+            return get_all_parts(path)["basepath"];
+        }
+
+        function get_short_name(string path)
+        {
+            return get_all_parts(path)["shortname"];
+        }
+
+        function get_short_name_no_ext(string path)
+        {
+            return get_all_parts(path)["shortname_noext"];
+        }
+    }
+}
