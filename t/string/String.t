@@ -6,6 +6,10 @@ INIT {
 Rosella::Test::test(Test::String);
 
 class Test::String {
+    method get_character_class() {
+        $!status.unimplemented("Test this");
+    }
+
     method first_not_cclass() {
         $!status.unimplemented("Test this");
     }
@@ -72,5 +76,21 @@ class Test::String {
 
     method replace_all() {
         $!assert.equal(Rosella::String::replace_all("test", "est", "ask"), "task");
+    }
+
+    method replace_first() {
+        $!status.unimplemented("Test this");
+    }
+
+    method replace_skip() {
+        $!status.unimplemented("Test this");
+    }
+
+    method indexof_start() {
+        $!status.unimplemented("Test this");
+    }
+
+    method indexof_end() {
+        $!status.unimplemented("Test this");
     }
 }
