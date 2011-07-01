@@ -1,0 +1,28 @@
+class Test_<# class.name #>
+{
+    function test_sanity()
+    {
+        self.assert.is_true(1);
+    }
+
+    function test_new() {
+        var obj = new <# class.name #>();
+        self.assert.not_null(obj);
+        self.assert.instance_of(obj, class <# class.name #>);
+    }
+
+    <% for method in class.methods %>
+    function method_<# method #>() {
+        self.status.verify("default test for <# method #>");
+        var obj = new <# class.name #>();
+         var result = obj.<# method #>();
+    }
+    <% endfor %>
+}
+
+function main[main]()
+{
+    load_bytecode("rosella/test.pbc");
+    using Rosella.Test.test;
+    test(class <# class.name #>);
+}

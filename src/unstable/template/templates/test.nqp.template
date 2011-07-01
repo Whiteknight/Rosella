@@ -1,0 +1,22 @@
+class Test::<# class.name #> {
+    method test_sanity() {
+        $!assert.is_true(1);
+    }
+
+    method test_new() {
+        my $obj := <# class.name #>.new();
+        $!assert.not_null($obj);
+        $!assert.instance_of($obj, <# class.name #>);
+    }
+
+    <% for method in class.methods %>
+    method method_<# method #>() {
+        $!status.verify("default test for <# method #>");
+        my $obj := <# class.name #>.new();
+        my $result := $obj.<# method #>();
+    }
+    <% endfor %>
+}
+
+Rosella::Test::test(<# class.name #>);
+INIT { pir::load_bytecode("rosella/test.pbc"); }
