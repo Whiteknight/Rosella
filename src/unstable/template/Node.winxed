@@ -19,5 +19,11 @@ namespace Rosella { namespace Template
             using Rosella.Error.must_subclass;
             must_subclass("Template.Node");
         }
+
+        function assemble(var parent_nodes, var current_node)
+        {
+            current_node.add_child(self);
+            return current_node;
+        }
     }
 }}

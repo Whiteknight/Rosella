@@ -16,7 +16,7 @@ namespace Rosella { namespace Template
 
         function setup_region_types()
         {
-            self.node_factory.register_type("LiteralRegion", class Rosella.Template.Node.Literal);
+            self.node_factory.register_type("LiteralText", class Rosella.Template.Node.Literal);
 
             self.tokenizer.add_region("<%", "%>", "EvalRegion");
             self.node_factory.register_type("EvalRegion", class Rosella.Template.Node.Eval);
@@ -55,27 +55,7 @@ namespace Rosella { namespace Template
             var current_node = first_node;
             var parent_nodes = [];
             for (var node in nodes_array) {
-                string type = node.type();
-                switch (type) {
-                    case "LiteralText":
-                    case "EvalRegion":
-                    case "DataRegion":
-                        current_node.add_child(node);
-                        break;
-                    case "LogicRegion":
-                        string func = node.logic_name();
-                        if (func == string(current_node.logic_end_name()))
-                            current_node = pop(parent_nodes);
-                        else {
-                            push(parent_nodes, current_node);
-                            current_node = node;
-                        }
-                        break;
-                    default:
-                        using Rosella.Error.invalid;
-                        invalid(__FUNCTION__, "Unknown type: " + type);
-                        break;
-                }
+                current_node = node.assemble(parent_nodes, current_node);
             }
             return first_node;
         }

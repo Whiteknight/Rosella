@@ -260,6 +260,7 @@ function setup_experimental_libraries(var rosella)
     );
 
     setup_unstable_lib(rosella, "template", ["Core", "Path", "String"],
+        "template/Includes",
         "template/Template",
         "template/Node",
         "template/node/Master",

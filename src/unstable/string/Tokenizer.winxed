@@ -62,6 +62,16 @@ namespace Rosella { namespace String
             return null;
         }
 
+        function all_tokens()
+        {
+            var tokens = [];
+            while (self.has_tokens()) {
+                var t = self.next_token();
+                push(tokens, t);
+            }
+            return tokens;
+        }
+
         function get_token(string text, var metadata)
         {
             if (exists self.map[text])

@@ -9,7 +9,6 @@ namespace Rosella { namespace Template { namespace Node
             using Rosella.String.trim;
             var path = new Rosella.Path();
             string key = trim(self.token.data());
-            say("Data.render(key): " + key);
             string value = path.get(context, key);
             push(builder, value);
         }
