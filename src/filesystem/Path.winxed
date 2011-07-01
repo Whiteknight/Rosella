@@ -1,10 +1,12 @@
 namespace Rosella { namespace FileSystem
 {
-    namespace Path
+    class Path
     {
-        function get_all_parts(string path)
+        var details;
+
+        function Path(string path)
         {
-            var details = {};
+            self.details = {};
             using Rosella.FileSystem.path_separator;
             string pathsep = path_separator();
             var pathparts = split(pathsep, path);
@@ -12,40 +14,40 @@ namespace Rosella { namespace FileSystem
             var entryparts = split(".", entryname);
 
             if (elements(entryparts) > 1)
-                details["extension"] = pop(entryparts);
+                self.details["extension"] = pop(entryparts);
             else
-                details["extension"] = "";
-            details["shortname_noext"] = join(".", entryparts);
-            details["fullpath"] = path;
-            details["shortname"] = entryname;
-            details["pathseparator"] = pathsep;
-            details["basepath_parts"] = pathparts;
-            details["basepath"] = join(pathsep, pathparts);
+                self.details["extension"] = "";
+            self.details["shortname_noext"] = join(".", entryparts);
+            self.details["fullpath"] = path;
+            self.details["shortname"] = entryname;
+            self.details["pathseparator"] = pathsep;
+            self.details["basepath_parts"] = pathparts;
+            self.details["basepath"] = join(pathsep, pathparts);
         }
 
-        function get_extension(string path)
+        function extension()
         {
-            return get_all_parts(path)["extension"];
+            return self.details["extension"];
         }
 
-        function get_base_path(string path)
+        function base_path()
         {
-            return get_all_parts(path)["basepath"];
+            return self.details["basepath"];
         }
 
-        function get_base_path_parts(string path)
+        function base_path_parts()
         {
-            return get_all_parts(path)["basepath"];
+            return self.details["basepath"];
         }
 
-        function get_short_name(string path)
+        function short_name()
         {
-            return get_all_parts(path)["shortname"];
+            return self.details["shortname"];
         }
 
-        function get_short_name_no_ext(string path)
+        function short_name_no_ext()
         {
-            return get_all_parts(path)["shortname_noext"];
+            return self.details["shortname_noext"];
         }
     }
 }

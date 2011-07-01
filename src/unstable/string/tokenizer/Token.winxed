@@ -1,21 +1,37 @@
 namespace Rosella { namespace String { namespace Tokenizer
 {
+    /* Token Class
+        This is a simple data object to be returned from a tokenizer. Every
+        token has a copy of the string data, a type name, and arbitrary
+        metadata.
+    */
     class Token
     {
-        var data;
-        var metadata;
+        var data;       // The string data found by the Tokenizer
+        var metadata;   // Arbitrary user metadata
+        var type_name;  // The type name
 
-        function Token(var data, var metadata)
+        // Constructor
+        function Token(string type_name, var data, var metadata)
         {
+            self.type_name = type_name;
             self.data = data;
             self.metadata = metadata;
         }
 
+        // Get the type name string
+        function type_name()
+        {
+            return self.type_name;
+        }
+
+        // Get the data string
         function data()
         {
             return self.data;
         }
 
+        // Get the metadata object;
         function metadata()
         {
             return self.metadata;

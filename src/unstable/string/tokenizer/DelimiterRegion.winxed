@@ -1,14 +1,19 @@
 namespace Rosella { namespace String { namespace Tokenizer
 {
+    /* DelimiterRegion Tokenizer
+        Break an input string into distinct regions by searching for region
+        delimiters.
+    */
     class DelimiterRegion : Rosella.String.Tokenizer
     {
         const int START_IDX = 0;
         const int END_IDX = 1;
         const int KEY_IDX = 2;
 
-        var regions;
-        var default_key;
+        var regions;        // A list of region delimiters to search for.
+        var default_key;    // The key to use for tokens which are not in a region
 
+        // Constructor
         function DelimiterRegion(var default_key [optional], int has_key [opt_flag])
         {
             self.Tokenizer();
@@ -18,11 +23,14 @@ namespace Rosella { namespace String { namespace Tokenizer
             self.default_key = default_key;
         }
 
+        // Add a new region to the search list.
         function add_region(string start, string end, var key)
         {
             push(self.regions, [start, end, key]);
         }
 
+        // Get the next token. Search for the first delimiter from the list of
+        // registered delimiters, and return all text from that region.
         function lex_next_token()
         {
             string data = self.data;

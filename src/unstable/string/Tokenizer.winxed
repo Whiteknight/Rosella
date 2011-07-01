@@ -1,11 +1,20 @@
 namespace Rosella { namespace String
 {
+    /* Tokenizer Base Class
+        Tokenizers break strings up into tokens according to predefined rules,
+        starting with the start of the string and creating tokens until the
+        input data is exhausted.
+
+        This class is the abstract parent type of various tokenizers. Do not
+        use this type directly, use a subclass instead.
+    */
     class Tokenizer
     {
-        var tokens;
-        var data;
-        var map;
+        var tokens; // An array of available tokens
+        var data;   // The input data. Typically a string
+        var map;    // A map of pre-defined tokens.
 
+        // Constructor
         function Tokenizer()
         {
             self.tokens = [];
@@ -13,6 +22,10 @@ namespace Rosella { namespace String
             self.map = {};
         }
 
+        /* Public API Functions
+        */
+
+        // Add more string data to the end of the current input sequence.
         function add_data(string str)
         {
             if (self.data == null)
@@ -23,11 +36,14 @@ namespace Rosella { namespace String
             }
         }
 
+        // Set the current data, replacing the previous value.
         function set_data(string str)
         {
             self.data = str;
         }
 
+        // Get the remaining data out of the tokenizer, and empty the tokenizer
+        // input buffer.
         function get_all_data()
         {
             string d = self.data;
@@ -35,11 +51,15 @@ namespace Rosella { namespace String
             return d;
         }
 
-        function map_token(string key, var metadata)
+        // Create a token mapping. When the given input sequence is encountered,
+        // return the predefined token instead of creating a new one.
+        function map_token(string typename, string key, var metadata)
         {
-            self.map[key] = self.build_token(key, metadata);
+            self.map[key] = self.__build_token(typename, key, metadata);
         }
 
+        // Determine if we have tokens or input data still to be processed.
+        // returns 1 if there is data, 0 otherwise
         function has_tokens()
         {
             if (elements(self.tokens) > 0)
@@ -49,7 +69,8 @@ namespace Rosella { namespace String
             return 0;
         }
 
-        function next_token()
+        // Get a token from the input data.
+        function get_token()
         {
             if (elements(self.tokens) >= 1) {
                 var token;
@@ -62,6 +83,8 @@ namespace Rosella { namespace String
             return null;
         }
 
+        // Completely tokenize the entire input and return all tokens as an
+        // array
         function all_tokens()
         {
             var tokens = [];
@@ -72,30 +95,44 @@ namespace Rosella { namespace String
             return tokens;
         }
 
-        function get_token(string text, var metadata)
-        {
-            if (exists self.map[text])
-                return self.map[text];
-            return self.build_token(text, metadata);
-        }
-
-        function build_token(string text, var metadata)
-        {
-            return new Rosella.String.Tokenizer.Token(text, metadata);
-        }
-
+        // Use lexing rules to get the next token from the beginning of the
+        // input data. Must be subclassed
         function lex_next_token()
         {
             using Rosella.Error.must_subclass;
             must_subclass("Rosella.String.Tokenizer");
         }
 
+        // Unget a token, pushing it onto a queue for later retrieval
         function unget_token(var token)
         {
-            // Do we want this to go onto the front or the back of the list?
             push(self.tokens, token);
         }
 
+        /* Private / Protected Methods
+            These methods are private helpers or internal methods and should
+            only be used here and by subclasses.
+        */
+
+        // Get a new token for the given input text. Search the map first, and
+        // create a new token otherwise.
+        function __new_token(string text, var metadata)
+        {
+            if (exists self.map[text])
+                return self.map[text];
+            string string_null = null;
+            return self.__build_token(string_null, text, metadata);
+        }
+
+        // Create a new token. Can be subclassed to create tokens of a new
+        // type. By default, creates a Rosella.String.Tokenizer.Token.
+        function __build_token(string typename, string text, var metadata)
+        {
+            return new Rosella.String.Tokenizer.Token(typename, text, metadata);
+        }
+
+        // Helper routine. Get the first n characters from the front of the
+        // input data.
         function __get_chars(int count,
                 int skip [optional], int has_skip [opt_flag])
         {

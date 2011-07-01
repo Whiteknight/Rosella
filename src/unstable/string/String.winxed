@@ -1,7 +1,30 @@
 namespace Rosella
 {
+    /* String Namespace
+        This namespace contains a number of utility functions for working with
+        strings. Some of the utility functions are provided as built-ins by
+        various languages such as NQP. These are provided as a way to be
+        language-neutral and immune to possible future changes in language and
+        core VM behaviors.
+    */
     namespace String
     {
+        // Look up the character class ID number by name.
+        function get_character_class(string name)
+        {
+            switch (name) {
+                // TODO: Add other options
+                case "word": return CCLASS_WORD;
+                case "numeric": return CCLASS_NUMERIC;
+                case "whitespace": return CCLASS_WHITESPACE;
+                case "punctuation": return CCLASS_PUNCTUATION;
+                case "graphical": return CCLASS_GRAPHICAL;
+                default:
+                    using Rosella.Error.invalid;
+                    invalid(__FUNCTION__, "Could not find character class '" + name + "'");
+            }
+        }
+
         // Find the first instance of something not in the class. Return -1
         // if all characters are in the class
         function first_not_cclass(string str, int cclass)
@@ -14,6 +37,8 @@ namespace Rosella
             return idx;
         }
 
+        // Trim items off the start of the string that match the given cclass.
+        // defaults to CCLASS_WHITESPACE
         function trim_start(string str, int cclass [optional], int has_cclass [opt_flag])
         {
             if (!has_cclass)
@@ -44,6 +69,8 @@ namespace Rosella
             return idx;
         }
 
+        // Trim items off the end of the string which match the given cclass.
+        // defaults to CCLASS_WHITESPACE
         function trim_end(string str, int cclass [optional], int has_cclass [opt_flag])
         {
             if (!has_cclass)
@@ -65,6 +92,8 @@ namespace Rosella
             return substr(str, 0, idx);
         }
 
+        // Trim characters from both the start and end of the string which
+        // match the given character class. Defaults to CCLASS_WHITESPACE
         function trim(string str, int cclass [optional], int has_cclass [opt_flag])
         {
             if (!has_cclass)
@@ -78,12 +107,82 @@ namespace Rosella
             return substr(str, start_idx, end_idx - start_idx);
         }
 
+        // sprintf wrapper function
         function sprintf(string format, var args [slurpy])
         {
             return sprintf(format, args);
         }
 
-        function pad_internal(string str, int total_width, string char)
+        // Pad the start of the string with the given substring. Default
+        // pad is " "
+        function pad_start(string str, int total_width,
+                string char [optional], int has_char [opt_flag])
+        {
+            if (!has_char)
+                char = " ";
+            string pad = __create_pad(str, total_width, char);
+            return pad + str;
+        }
+
+        // Pad the end of the string with the given substring. Default
+        // pad is " "
+        function pad_end(string str, int total_width,
+                string char [optional], int has_char [opt_flag])
+        {
+            if (!has_char)
+                char = " ";
+            string pad = __create_pad(str, total_width, char);
+            return str + pad;
+        }
+
+        // Remove the given number of characters from the start of the string.
+        function remove_start(string str, int start)
+        {
+            return substr(str, start);
+        }
+
+        // Remove the given number of characters from the end of the string.
+        function remove_end(string str, int count)
+        {
+            return substr(str, 0, count);
+        }
+
+        // Remove a block of characters from the middle of the string
+        function remove_middle(string str, int start, int count)
+        {
+            // TODO: bounds check
+            string first_half = substr(str, 0, start);
+            string second_half = substr(str, start + count);
+            return first_half + second_half;
+        }
+
+        // Replace all instances of a substring with a given substring
+        function replace_all(string str, string target, string subst)
+        {
+            return join(subst, split(target, str));
+        }
+
+        function replace_first(string str, string target, string subst, int count)
+        {
+        }
+
+        function replace_skip(string str, string target, string subst, int skip)
+        {
+        }
+
+        function indexof_start(string str, string substring)
+        {
+        }
+
+        function indexof_end(string str, string substring)
+        {
+        }
+
+        /* Internal Helper Functions
+        */
+
+        // Create the padding strings necessary for pad_left and pad_right
+        function __create_pad(string str, int total_width, string char)
         {
             int len = length(str);
 
@@ -99,47 +198,6 @@ namespace Rosella
                 return pad;
             }
             return "";
-        }
-
-        function pad_left(string str, int total_width,
-                string char [optional], int has_char [opt_flag])
-        {
-            if (!has_char)
-                char = " ";
-            string pad = pad_internal(str, total_width, char);
-            return pad + str;
-        }
-
-        function pad_right(string str, int total_width,
-                string char [optional], int has_char [opt_flag])
-        {
-            if (!has_char)
-                char = " ";
-            string pad = pad_internal(str, total_width, char);
-            return str + pad;
-        }
-
-        function remove_start(string str, int start)
-        {
-            return substr(str, start);
-        }
-
-        function remove_end(string str, int count)
-        {
-            return substr(str, 0, count);
-        }
-
-        function remove_middle(string str, int start, int count)
-        {
-            // TODO: bounds check
-            string first_half = substr(str, 0, start);
-            string second_half = substr(str, start + count);
-            return first_half + second_half;
-        }
-
-        function replace(string str, string target, string subst)
-        {
-            return join(subst, split(target, str));
         }
     }
 }

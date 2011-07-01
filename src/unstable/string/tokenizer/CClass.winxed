@@ -1,9 +1,12 @@
 namespace Rosella { namespace String { namespace Tokenizer
 {
+    /* CClass Utility Namespace
+        These functions are helper routines for CClass Tokenizer
+    */
     namespace CClass
     {
         // Get a default list of character classes, if none are provided
-        function private_get_default_cclasses()
+        function __get_default_cclasses()
         {
             var cclasses = new 'ResizableIntegerArray';
             cclasses[0] = CCLASS_WORD;
@@ -14,40 +17,12 @@ namespace Rosella { namespace String { namespace Tokenizer
                 yield(cclasses);
         }
 
-        function get_named_classes(var names)
-        {
-            var cclasses = new 'ResizableIntegerArray';
-            for (string name in names) {
-                switch (name) {
-                    case "word":
-                        push(cclasses, CCLASS_WORD);
-                        break;
-                    case "numeric":
-                        push(cclasses, CCLASS_NUMERIC);
-                        break;
-                    case "whitespace":
-                        push(cclasses, CCLASS_WHITESPACE);
-                        break;
-                    case "punctuation":
-                        push(cclasses, CCLASS_PUNCTUATION);
-                        break;
-                    case "graphical":
-                        push(cclasses, CCLASS_GRAPHICAL);
-                        break;
-                    default:
-                        using Rosella.Error.invalid;
-                        invalid(__FUNCTION__, "Could not find character class '" + name + "'");
-                }
-            }
-            return cclasses;
-        }
-
         // From the provided list, determine the first character class that
         // matches the first character in the string
-        function private_get_first_cclass(string str, var cclasses [optional], int has_cclasses [opt_flag])
+        function __get_first_cclass(string str, var cclasses [optional], int has_cclasses [opt_flag])
         {
             if (!has_cclasses || cclasses == null)
-                cclasses = private_get_default_cclasses();
+                cclasses = __get_default_cclasses();
             int num_classes = elements(cclasses);
             for (int i = 0; i < num_classes; i++) {
                 int first_is_cclass = 0;
@@ -60,10 +35,14 @@ namespace Rosella { namespace String { namespace Tokenizer
         }
     }
 
+    /* CClass Tokenizer. Uses Parrot's build-in CCLASS functionality to break
+        an input string into a sequence of tokens by character class.
+    */
     class CClass : Rosella.String.Tokenizer
     {
-        var cclasses;
+        var cclasses; // Array of CCLASS identifiers to search for.
 
+        // Constructor
         function CClass(var cclasses [optional], int has_cclasses [opt_flag])
         {
             self.Tokenizer();
@@ -72,22 +51,22 @@ namespace Rosella { namespace String { namespace Tokenizer
             if (has_cclasses)
                 self.cclasses = cclasses;
             else
-                self.cclasses = null;
+                self.cclasses = __get_default_cclasses();
         }
 
+        // Lex a new token
         function lex_next_token()
         {
             string str = self.data;
             int len = length(str);
-            int curr_cclass = private_get_first_cclass(str, self.cclasses);
+            int curr_cclass = __get_first_cclass(str, self.cclasses);
             if (curr_cclass == 0)
-                return self.get_token(self.__get_chars(1), curr_cclass);
+                return self.__new_token(self.__get_chars(1), curr_cclass);
             var token = null;
             int next_idx = 0;
             ${ find_not_cclass next_idx, curr_cclass, str, 0, len };
             string chars = self.__get_chars(next_idx);
-            token = self.get_token(chars, curr_cclass);
-            return token;
+            return self.__new_token(chars, curr_cclass);
         }
     }
 }}}
