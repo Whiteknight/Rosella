@@ -1,7 +1,7 @@
 using extern "io_ops";
 class OS;
 
-function main[main](argv)
+function setup_main(var argv)
 {
     setup_distutils();
     var rosella = {
@@ -474,4 +474,15 @@ namespace Rosella { namespace __PRIVATE_Versions
     file.print(string(code));
     file.close();
     say("done.");
+}
+
+function main[main](var argv)
+{
+    try {
+        setup_main(argv);
+    } catch (e) {
+        say(e["message"]);
+        for (string bt in e.backtrace_strings())
+            say(bt);
+    }
 }
