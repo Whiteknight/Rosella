@@ -42,20 +42,20 @@ class Test::String {
         $!assert.equal(Rosella::String::sprintf("%d %f %s", 1, 3.14, "test"), pir::sprintf__SSP("%d %f %s", [1, 3.14, "test"]));
     }
 
-    method pad_left() {
-        $!assert.equal(Rosella::String::pad_left("test", 6), "  test");
+    method pad_start() {
+        $!assert.equal(Rosella::String::pad_start("test", 6), "  test");
     }
 
-    method pad_left_char() {
-        $!assert.equal(Rosella::String::pad_left("test", 6, "A"), "AAtest");
+    method pad_start_char() {
+        $!assert.equal(Rosella::String::pad_start("test", 6, "A"), "AAtest");
     }
 
-    method pad_right() {
-        $!assert.equal(Rosella::String::pad_right("test", 6), "test  ");
+    method pad_end() {
+        $!assert.equal(Rosella::String::pad_end("test", 6), "test  ");
     }
 
-    method pad_right_char() {
-        $!assert.equal(Rosella::String::pad_right("test", 6, "A"), "testAA");
+    method pad_end_char() {
+        $!assert.equal(Rosella::String::pad_end("test", 6, "A"), "testAA");
     }
 
     method remove_start() {
@@ -70,7 +70,7 @@ class Test::String {
         $!assert.equal(Rosella::String::remove_middle("test", 1, 2), "tt");
     }
 
-    method replace() {
-        $!assert.equal(Rosella::String::replace("test", "est", "ask"), "task");
+    method replace_all() {
+        $!assert.equal(Rosella::String::replace_all("test", "est", "ask"), "task");
     }
 }

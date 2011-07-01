@@ -181,7 +181,7 @@ namespace Rosella
         /* Internal Helper Functions
         */
 
-        // Create the padding strings necessary for pad_left and pad_right
+        // Create the padding strings necessary for pad_start and pad_end
         function __create_pad(string str, int total_width, string char)
         {
             int len = length(str);

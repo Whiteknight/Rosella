@@ -17,9 +17,10 @@ class Test::String::Tokenizer::CClass {
 
     method map_token() {
         my $cc := Rosella::construct(Rosella::String::Tokenizer::CClass);
-        $cc.map_token("test", "testvalue");
+        $cc.map_token("typename", "test", "testvalue");
         $cc.add_data("test");
-        my $t := $cc.next_token;
+        my $t := $cc.get_token;
+        $!assert.equal($t.type_name, "typename");
         $!assert.equal($t.data, "test");
         $!assert.equal($t.metadata, "testvalue");
     }
@@ -29,22 +30,23 @@ class Test::String::Tokenizer::CClass {
         $!assert.is_false($cc.has_tokens);
     }
 
-    method next_token() {
+    method get_token() {
         my $cc := Rosella::construct(Rosella::String::Tokenizer::CClass);
         $cc.add_data("test");
-        my $t := $cc.next_token;
+        my $t := $cc.get_token;
         $!assert.equal($t.data, "test");
     }
 
-    method get_token() {
+    method __new_token() {
     }
 
-    method get_token_mapped() {
+    method __new_token_mapped() {
     }
 
-    method build_token() {
+    method __build_token() {
         my $cc := Rosella::construct(Rosella::String::Tokenizer::CClass);
-        my $t := $cc.build_token("Foo", "Bar");
+        my $t := $cc.__build_token("TypeName", "Foo", "Bar");
+        $!assert.equal($t.type_name, "TypeName");
         $!assert.equal($t.data, "Foo");
         $!assert.equal($t.metadata, "Bar");
     }
