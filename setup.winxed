@@ -266,7 +266,8 @@ function setup_experimental_libraries(var rosella)
         "template/node/Logic",
         "template/node/Data",
         "template/node/Eval",
-        "template/node/Literal"
+        "template/node/Literal",
+        "template/NodeFactory"
     );
 }
 
