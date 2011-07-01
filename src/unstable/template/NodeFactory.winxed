@@ -1,0 +1,37 @@
+namespace Rosella { namespace Template
+{
+    class NodeFactory : Rosella.ObjectFactory
+    {
+        var types;
+
+        function NodeFactory()
+        {
+            self.types = {};
+        }
+
+        function register_type(string key, var type)
+        {
+            using Rosella.get_type_class;
+            self.types[key] = get_type_class(type);
+        }
+
+        function create(var token)
+        {
+            string key = token.metadata();
+            if (!(exists self.types[key])) {
+                using Rosella.Error.invalid;
+                invalid(__FUNCTION__, "type " + key + " not registered");
+            }
+            var type_class = self.types[key];
+            using Rosella.construct;
+            var node = construct(type_class, token);
+            return node;
+        }
+
+        function create_typed(var type)
+        {
+            using Rosella.invalid;
+            invalid(__FUNCTION__, "Cannot create_typed with NodeFactory. Use a key instead");
+        }
+    }
+}}

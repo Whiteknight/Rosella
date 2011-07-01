@@ -4,14 +4,28 @@ namespace Rosella { namespace Template
     {
         var tokenizer;
         var eval_count;
+        var node_factory;
 
         function Engine()
         {
             self.tokenizer = new Rosella.String.Tokenizer.DelimiterRegion("LiteralText");
-            self.tokenizer.add_region("<%", "%>", "EvalRegion");
-            self.tokenizer.add_region("<#", "#>", "DataRegion");
-            self.tokenizer.add_region("<$", "$>", "LogicRegion");
+            self.node_factory = new Rosella.Template.NodeFactory();
             self.eval_count = 0;
+            self.setup_region_types();
+        }
+
+        function setup_region_types()
+        {
+            self.node_factory.register_type("LiteralRegion", class Rosella.Template.Node.Literal);
+
+            self.tokenizer.add_region("<%", "%>", "EvalRegion");
+            self.node_factory.register_type("EvalRegion", class Rosella.Template.Node.Eval);
+
+            self.tokenizer.add_region("<#", "#>", "DataRegion");
+            self.node_factory.register_type("DataRegion", class Rosella.Template.Node.Data);
+
+            self.tokenizer.add_region("<$", "$>", "LogicRegion");
+            self.node_factory.register_type("LogicRegion", class Rosella.Template.Node.Logic);
         }
 
         function generate(string tmpl, var context)
@@ -29,26 +43,7 @@ namespace Rosella { namespace Template
             self.tokenizer.add_data(tmpl);
             while (self.tokenizer.has_tokens()) {
                 var t = self.tokenizer.next_token();
-                string type = t.metadata();
-                var node;
-                switch (type) {
-                    case "LiteralText":
-                        node = new Rosella.Template.Node.Literal(t);
-                        break;
-                    case "EvalRegion":
-                        node = new Rosella.Template.Node.Eval(t);
-                        break;
-                    case "DataRegion":
-                        node = new Rosella.Template.Node.Data(t);
-                        break;
-                    case "LogicRegion":
-                        node = new Rosella.Template.Node.Logic(t);
-                        break;
-                    default:
-                        using Rosella.Error.invalid;
-                        invalid(__FUNCTION__, "Unknown type: " + type);
-                        break;
-                }
+                var node = self.node_factory.create(t);
                 push(nodes_array, node);
             }
             return nodes_array;
