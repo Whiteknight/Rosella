@@ -14,7 +14,7 @@ namespace Rosella
         // implemented yet.
         function not_implemented(string func)
         {
-            throw_error("(%s) : Not implemented", class_name, func);
+            throw_error("(%s) : Not implemented", func);
         }
 
         // Error when we are attempting an invalid operation

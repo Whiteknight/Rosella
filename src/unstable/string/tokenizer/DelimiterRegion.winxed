@@ -46,7 +46,7 @@ namespace Rosella { namespace String { namespace Tokenizer
             }
             if (min_region == null) {
                 self.data = null;
-                return self.get_token(data, self.default_key);
+                return self.__new_token(data, self.default_key);
             }
             var region = min_region;
             int start_idx = min;
@@ -54,7 +54,7 @@ namespace Rosella { namespace String { namespace Tokenizer
             int end_idx = indexof(data, end);
             if (end_idx == -1) {
                 self.data = null;
-                return self.get_token(data, self.default_key);
+                return self.__new_token(data, self.default_key);
             }
             string before_text = substr(data, 0, start_idx);
             start_idx += length(string(region[START_IDX]));
@@ -62,12 +62,12 @@ namespace Rosella { namespace String { namespace Tokenizer
             end_idx += length(string(region[END_IDX]));
             self.data = substr(data, end_idx);
             if (length(before_text) > 0) {
-                var token = self.get_token(before_text, self.default_key);
-                var next_token = self.get_token(region_text, region[KEY_IDX]);
+                var token = self.__new_token(before_text, self.default_key);
+                var next_token = self.__new_token(region_text, region[KEY_IDX]);
                 self.unget_token(next_token);
                 return token;
             } else
-                return self.get_token(region_text, region[KEY_IDX]);
+                return self.__new_token(region_text, region[KEY_IDX]);
         }
     }
 }}}

@@ -25,10 +25,10 @@ namespace Rosella { namespace String { namespace Tokenizer
             int idx = indexof(data, delim);
             if (idx == -1) {
                 self.data = null;
-                return self.get_token(data, 0);
+                return self.__new_token(data, 0);
             }
             string chars = self.__get_chars(idx, length(delim));
-            return self.get_token(chars, 0);
+            return self.__new_token(chars, 0);
         }
     }
 }}}

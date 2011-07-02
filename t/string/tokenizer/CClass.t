@@ -37,12 +37,6 @@ class Test::String::Tokenizer::CClass {
         $!assert.equal($t.data, "test");
     }
 
-    method __new_token() {
-    }
-
-    method __new_token_mapped() {
-    }
-
     method __build_token() {
         my $cc := Rosella::construct(Rosella::String::Tokenizer::CClass);
         my $t := $cc.__build_token("TypeName", "Foo", "Bar");
@@ -52,8 +46,17 @@ class Test::String::Tokenizer::CClass {
     }
 
     method lex_next_token() {
+        my $cc := Rosella::construct(Rosella::String::Tokenizer::CClass);
+        $cc.set_data("foo = bar + baz");
+        $!assert.equal($cc.get_token().data(), "foo");
+        $!assert.equal($cc.get_token().data(), " ");
+        $!assert.equal($cc.get_token().data(), "=");
+        $!assert.equal($cc.get_token().data(), " ");
+        $!assert.equal($cc.get_token().data(), "bar");
+        $!assert.equal($cc.get_token().data(), " ");
+        $!assert.equal($cc.get_token().data(), "+");
+        $!assert.equal($cc.get_token().data(), " ");
+        $!assert.equal($cc.get_token().data(), "baz");
     }
 
-    method unget_token() {
-    }
 }
