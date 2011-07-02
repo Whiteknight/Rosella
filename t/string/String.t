@@ -7,15 +7,33 @@ Rosella::Test::test(Test::String);
 
 class Test::String {
     method get_character_class() {
-        $!status.unimplemented("Test this");
+        my $cc := Rosella::String::get_character_class("whitespace");
+        $!assert.not_equal($cc, 0);
+        $cc := Rosella::String::get_character_class("word");
+        $!assert.not_equal($cc, 0);
+        $cc := Rosella::String::get_character_class("numeric");
+        $!assert.not_equal($cc, 0);
+        $cc := Rosella::String::get_character_class("graphical");
+        $!assert.not_equal($cc, 0);
+        $cc := Rosella::String::get_character_class("punctuation");
+        $!assert.not_equal($cc, 0);
+        $!assert.throws({
+            $cc := Rosella::String::get_character_class("LOL whatever");
+        });
     }
 
     method first_not_cclass() {
-        $!status.unimplemented("Test this");
+        my $i := Rosella::String::first_not_cclass("   test", Rosella::String::get_character_class("whitespace"));
+        $!assert.equal($i, 3);
+        $i := Rosella::String::first_not_cclass("   ", Rosella::String::get_character_class("whitespace"));
+        $!assert.equal($i, -1);
     }
 
     method last_not_cclass() {
-        $!status.unimplemented("Test this");
+        my $i := Rosella::String::last_not_cclass("test   ", Rosella::String::get_character_class("whitespace"));
+        $!assert.equal($i, 4);
+        $i := Rosella::String::last_not_cclass("   ", Rosella::String::get_character_class("whitespace"));
+        $!assert.equal($i, -1);
     }
 
     method trim_start() {
@@ -23,7 +41,10 @@ class Test::String {
     }
 
     method trim_start_cclass() {
-        $!status.unimplemented("Need test with optional cclass argument");
+        my $s := Rosella::String::trim_start("   test   ", Rosella::String::get_character_class("whitespace"));
+        $!assert.equal($s, "test   ");
+        $s := Rosella::String::trim_start("   test   ", Rosella::String::get_character_class("word"));
+        $!assert.equal($s, "   test   ");
     }
 
     method trim_end() {
@@ -31,7 +52,10 @@ class Test::String {
     }
 
     method trim_end_cclass() {
-        $!status.unimplemented("Need test with optional cclass argument");
+        my $s := Rosella::String::trim_end("   test   ", Rosella::String::get_character_class("whitespace"));
+        $!assert.equal($s, "   test");
+        $s := Rosella::String::trim_end("   test   ", Rosella::String::get_character_class("word"));
+        $!assert.equal($s, "   test   ");
     }
 
     method trim() {
@@ -39,7 +63,10 @@ class Test::String {
     }
 
     method trim_cclass() {
-        $!status.unimplemented("Need test with optional cclass argument");
+        my $s := Rosella::String::trim("   test   ", Rosella::String::get_character_class("whitespace"));
+        $!assert.equal($s, "test");
+        $s := Rosella::String::trim_end("   test   ", Rosella::String::get_character_class("word"));
+        $!assert.equal($s, "   test   ");
     }
 
     method sprintf() {
