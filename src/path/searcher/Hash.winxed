@@ -5,6 +5,8 @@ namespace Rosella { namespace Path { namespace Searcher
     */
     class Hash
     {
+        function Hash() { }
+
         // We can search any hash-like object. Right now, those are denoted
         // by the "does 'hash'" role.
         function can_search(var obj)

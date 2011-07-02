@@ -33,16 +33,14 @@ namespace Rosella
         function Path(var searchers [slurpy],
                 string separator [optional,named], int has_sep [opt_flag])
         {
-            using Rosella.build;
-
             if (has_sep)
                 self.separator = separator;
             else
                 self.separator = ".";
             if (elements(searchers) == 0) {
                 self.searchers = [];
-                self.searchers[0] = build(class Rosella.Path.Searcher.Hash);
-                self.searchers[1] = build(class Rosella.Path.Searcher.Attribute);
+                self.searchers[0] = new Rosella.Path.Searcher.Hash();
+                self.searchers[1] = new Rosella.Path.Searcher.Attribute();
             }
             else
                 self.searchers = searchers;

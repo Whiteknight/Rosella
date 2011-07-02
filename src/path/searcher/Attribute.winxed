@@ -5,6 +5,8 @@ namespace Rosella { namespace Path { namespace Searcher
     */
     class Attribute
     {
+        function Attribute() { }
+
         // We can search any object which has attributes
         function can_search(var obj)
         {
