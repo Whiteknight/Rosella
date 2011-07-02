@@ -75,6 +75,7 @@ tested and documented.
 9.  Winxed (rosella/winxed.pbc)
 10. Memoize (rosella/memoize.pbc)
 11. Query (rosella/query.pbc)
+12. FileSystem (rosella/filesystem.pbc)
 
 ## Libraries in Development
 

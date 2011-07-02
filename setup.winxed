@@ -27,9 +27,6 @@ function setup_main(var argv)
         "manifest_includes" : ["CREDITS", "README.md", "setup.winxed"]
     };
 
-    if (argv[1] == "test")
-        do_test();
-
     setup_release(rosella);
     setup_stable_libraries(rosella);
     setup_experimental_libraries(rosella);
@@ -480,6 +477,8 @@ namespace Rosella { namespace __PRIVATE_Versions
 
 function main[main](var argv)
 {
+    if (argv[1] == "test")
+        do_test();
     try {
         setup_main(argv);
     } catch (e) {

@@ -45,9 +45,7 @@ if (pir::elements(@argv)) {
         "t/action",
         "t/container",
         "t/event",
-        "t/prototype",
         "t/query",
-        "t/path",
         "t/proxy",
         "t/mockobject",
         "t/memoize",
@@ -61,6 +59,8 @@ if (pir::elements(@argv)) {
     # Unstable library tests
     $factory.add_test_dirs("NQP",
         "t/string",
+        "t/path",
+        "t/prototype",
         :recurse(1)
     );
     $run := $factory.create();
@@ -76,4 +76,4 @@ for @test_runs -> $run {
     }
 }
 $testview.show_results();
-pir::exit(0);
+#pir::exit(0);
