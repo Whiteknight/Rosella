@@ -17,7 +17,49 @@ method performs the search, returning a value.
 
 ## Concepts
 
+### Search Strings
+
+Search strings are used to find a value in a nested aggregate. Elements in a
+search string are separated by a separator sequence. If we have a value in
+a nested hash of hashes, we can find it like this:
+
+    my $r := %data{"foo"}{"bar"};
+
+OR, we can use Path with a single search string with both keys joined by a
+separator:
+
+    my $r := $path.get(%data, "foo.bar");
+
+Notice that the Path library avoids the semipredicate problem where a hash
+key can contain the separator character:
+
+    my %data := {};
+    %data{"foo.bar"} := "hello!";
+    my $r := %data{"foo"}{"bar"};       // WRONG! Won't find it
+    $r := $path.get(%data, "foo.bar");  // Right! Still works!
+
+Path does a recursive search through the search string itself, splitting at
+the separator characters and searching for increasingly long segments of it.
+
+If we have a search string "a.b.c.d", Path will search for the keys in order:
+
+    "a.b.c.d"
+    "a.b.c"
+    "a.b"
+    "a"
+
+Until it finds a match. When it does find a match, it recurses into the result
+and continues searching for the remainder of the string. Notice that this is
+not optimally efficient. Many combinations may be searched before the value is
+found. If you know exactly where the data is located, it is usually much more
+efficient to simply fetch it yourself. However, if you do not know where data
+may be located, such as is the case with user input, or if the format of the
+data is subject to change, the Path library gives you a level of abstraction
+to keep your code working.
+
 ## Namespaces
+
+None.
 
 ## Classes
 
