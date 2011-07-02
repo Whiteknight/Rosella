@@ -119,8 +119,12 @@ namespace Rosella
         // remainder
         function get_next_search_string(string full_path, string search_text)
         {
-            int idx = search_text.reverse_index(self.separator, 0);
-            string remainder = substr(full_path, idx + 1);
+            string separator = self.separator;
+            int idx = search_text.reverse_index(separator, 0);
+            if (idx == -1)
+                return -1, "", search_text;
+            int next_idx = idx + length(separator);
+            string remainder = substr(full_path, next_idx);
             search_text = substr(search_text, 0, idx);
             return idx, remainder, search_text;
         }
