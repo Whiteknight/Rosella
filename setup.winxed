@@ -190,6 +190,7 @@ function setup_stable_libraries(var rosella)
         "query/queryable/InPlace"
     );
 
+    // A library for working with files and directories
     setup_winxed_lib(rosella, "filesystem", ["Core"],
         "filesystem/Includes",
         "filesystem/Entry",
@@ -202,6 +203,14 @@ function setup_stable_libraries(var rosella)
         "filesystem/visitor/List",
         ["filesystem/Constants"]:[named("constants")]
     );
+
+    // Search for values in nested aggregates
+    setup_winxed_lib(rosella, "path", ["Core"],
+        "path/Path",
+        "path/Searcher",
+        "path/searcher/Hash",
+        "path/searcher/Attribute"
+    );
 }
 
 function setup_experimental_libraries(var rosella)
@@ -212,13 +221,6 @@ function setup_experimental_libraries(var rosella)
         "prototype/Manager",
         "prototype/manager/Entry",
         "prototype/manager/ObjectCloner"
-    );
-
-    setup_unstable_lib(rosella, "path", ["Core"],
-        "path/Path",
-        "path/Searcher",
-        "path/searcher/Hash",
-        "path/searcher/Attribute"
     );
 
     // A library for creating and using cheap, transparent decorator
