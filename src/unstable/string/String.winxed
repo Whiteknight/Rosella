@@ -164,18 +164,26 @@ namespace Rosella
 
         function replace_first(string str, string target, string subst, int count)
         {
+            using Rosella.Error.not_implemented;
+            not_implemented(__FUNCTION__);
         }
 
         function replace_skip(string str, string target, string subst, int skip)
         {
+            using Rosella.Error.not_implemented;
+            not_implemented(__FUNCTION__);
         }
 
         function indexof_start(string str, string substring)
         {
+            using Rosella.Error.not_implemented;
+            not_implemented(__FUNCTION__);
         }
 
         function indexof_end(string str, string substring)
         {
+            using Rosella.Error.not_implemented;
+            not_implemented(__FUNCTION__);
         }
 
         /* Internal Helper Functions

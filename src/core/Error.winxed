@@ -12,9 +12,9 @@ namespace Rosella
 
         // Error that we are attempting to use a feature which is not
         // implemented yet.
-        function not_implemented(string class_name, string func)
+        function not_implemented(string func)
         {
-            throw_error("(%s.%s) : Not implemented", class_name, func);
+            throw_error("(%s) : Not implemented", class_name, func);
         }
 
         // Error when we are attempting an invalid operation
