@@ -23,6 +23,10 @@ method performs the search, returning a value.
 
 ### Path
 
+The `Rosella.Path` class is the primary actor and the user-visible interface
+for the Path library. It holds the state information and user-specified
+options for searching for data
+
 ### Path.Searcher
 
 ### Path.Searcher.Attribute
