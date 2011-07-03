@@ -18,4 +18,12 @@ class Test::String::Tokenizer::Delimiter {
         $!assert.equal($t.get_token.data, "bar");
         $!assert.equal($t.get_token.data, "baz");
     }
+
+    method get_tokens_no_content() {
+        my $t := Rosella::construct(Rosella::String::Tokenizer::Delimiter, ",");
+        $t.add_data(",,");
+        $!assert.equal($t.get_token.data, "");
+        $!assert.equal($t.get_token.data, "");
+        $!assert.is_false($t.has_tokens);
+    }
 }
