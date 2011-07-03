@@ -76,6 +76,8 @@ tested and documented.
 10. Memoize (rosella/memoize.pbc)
 11. Query (rosella/query.pbc)
 12. FileSystem (rosella/filesystem.pbc)
+13. Path (rosella/path.pbc)
+14. String (rosella/string.pbc)
 
 ## Libraries in Development
 
