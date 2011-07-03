@@ -1,4 +1,4 @@
-class Test_<# class.name #>
+class Test_<# class.cleanname #>
 {
     function test_sanity()
     {
@@ -6,23 +6,23 @@ class Test_<# class.name #>
     }
 
     function test_new() {
-        var obj = new <# class.name #>();
+        var obj = new <# class.winxedname #>();
         self.assert.not_null(obj);
-        self.assert.instance_of(obj, class <# class.name #>);
+        self.assert.instance_of(obj, class <# class.winxedname #>);
     }
 
-    <% for method in class.methods %>
+    <$ for method in class.methods $>
     function method_<# method #>() {
         self.status.verify("default test for <# method #>");
-        var obj = new <# class.name #>();
+        var obj = new <# class.winxedname #>();
          var result = obj.<# method #>();
     }
-    <% endfor %>
+    <$ endfor $>
 }
 
 function main[main]()
 {
     load_bytecode("rosella/test.pbc");
     using Rosella.Test.test;
-    test(class <# class.name #>);
+    test(class <# class.winxedname #>);
 }
