@@ -34,6 +34,11 @@ namespace Rosella { namespace String { namespace Tokenizer
         function lex_next_token()
         {
             string data = self.data;
+
+            // First, loop over the array of all regions, looking for the one
+            // with the closest opening sequence. If we can't find any
+            // opening sequence at all, the whole rest of the string is a
+            // default region.
             int min = length(data);
             var min_region = null;
             for (var region in self.regions) {
@@ -48,18 +53,28 @@ namespace Rosella { namespace String { namespace Tokenizer
                 self.data = null;
                 return self.__new_token(data, self.default_key);
             }
+
+            // Next, look for the closing sequence. If we cannot find it, the
+            // input is malformed.
             var region = min_region;
-            int start_idx = min;
+            string start = region[START_IDX];
             string end = region[END_IDX];
+            int start_idx = min;
             int end_idx = indexof(data, end);
             if (end_idx == -1) {
-                self.data = null;
-                return self.__new_token(data, self.default_key);
+                using Rosella.Error.invalid;
+                invalid(__FUNCTION__, sprintf("Unclosed region '%s'. Expected '%s'", region));
             }
+
+            // Extract substrings for the data leading up to the region, which
+            // will be default text, and the data inside the region itself.
+            // This could be one token (if there is no data leading up to the
+            // region) or two tokens. If two, create them both and unget the
+            // second to hold until later.
             string before_text = substr(data, 0, start_idx);
-            start_idx += length(string(region[START_IDX]));
+            start_idx += length(start);
             string region_text = substr(data, start_idx, end_idx - start_idx);
-            end_idx += length(string(region[END_IDX]));
+            end_idx += length(end);
             self.data = substr(data, end_idx);
             if (length(before_text) > 0) {
                 var token = self.__new_token(before_text, self.default_key);

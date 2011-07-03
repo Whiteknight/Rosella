@@ -26,5 +26,11 @@ class Test::String::Tokenizer::DelimiterRegion {
         $!assert.equal($t.get_token.data, "/b");
     }
 
-
+    method get_tokens_unclosed_region() {
+        $!assert.throws({
+            my $t := Rosella::construct(Rosella::String::Tokenizer::DelimiterRegion, "foo");
+            $t.add_region("<", ">", "bar");
+            $t.add_data("this is <b");
+        });
+    }
 }
