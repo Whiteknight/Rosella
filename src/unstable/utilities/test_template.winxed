@@ -1,15 +1,20 @@
+const string TEMPLATE_FILE_FMT = "src/unstable/template/templates/%s.%s.template";
+
 function main[main](var args)
 {
     load_bytecode("rosella/template.pbc");
     load_bytecode("rosella/filesystem.pbc");
 
-    if (elements(args) != 4) {
+    if (elements(args) < 3) {
         show_help();
         exit(0);
     }
+    string programname = args.shift();
+    string mode = args.shift();
+    string language = args.shift();
 
     try {
-        test_template_main(args[1], args[2], args[3]);
+        template_main(mode, language, args);
     } catch (e) {
         say(e["message"]);
         for (string bt in e.backtrace_strings())
@@ -17,7 +22,51 @@ function main[main](var args)
     }
 }
 
-function test_template_main(string testtype, string libname, string classname)
+function template_main(string mode, string language, args)
+{
+    string template;
+    var context;
+    switch (mode) {
+        case "harness":
+            template = get_template_text("test_harness", language);
+            context = harness_template_context(template, args);
+            break;
+        case "test":
+            template = get_template_text("test", language);
+            context = test_template_context(language, args[0], args[1]);
+            break;
+        default:
+            show_help();
+    }
+    var engine = new Rosella.Template.Engine();
+    string output = engine.generate(template, context);
+    say(output);
+}
+
+function get_template_text(string type, string lang)
+{
+    string filename = sprintf(TEMPLATE_FILE_FMT, [type, lang]);
+    var file = new Rosella.FileSystem.File(filename);
+    if (!file.exists()) {
+        say(sprintf("Cannot find %s template for language '%s'", [type, lang]));
+        show_help();
+        exit(0);
+    }
+    return file.read_all_text();
+}
+
+
+function harness_template_context(string template, var dirs)
+{
+    var context = {
+        "test" : {
+            "dirs" : dirs
+        }
+    };
+    return context;
+}
+
+function test_template_context(string template, string libname, string classname)
 {
     load_bytecode(libname);
     using Rosella.get_type_class;
@@ -26,7 +75,6 @@ function test_template_main(string testtype, string libname, string classname)
     var targetclass = get_type_class(split(".", classname));
     var methods = targetclass.methods();
 
-    string template = get_template(testtype);
     var context = {
         "class" : {
             "name" : classname,
@@ -36,31 +84,20 @@ function test_template_main(string testtype, string libname, string classname)
             "methods" : methods
         }
     };
-    var engine = new Rosella.Template.Engine();
-    string output = engine.generate(template, context);
-    say(output);
-}
-
-const string TEMPLATE_FILE_FMT = "src/unstable/template/templates/test.%s.template";
-
-function get_template(string testtype)
-{
-    string filename = sprintf(TEMPLATE_FILE_FMT, [testtype]);
-    var file = new Rosella.FileSystem.File(filename);
-    if (!file.exists()) {
-        say("Cannot find template file for '" + testtype + "'");
-        show_help();
-        exit(0);
-    }
-    return file.read_all_text();
+    return context;
 }
 
 function show_help()
 {
     string text = <<:
-winxed test_template.winxed [winxed|nqp] <.pbc_file> <class_name>
-Creates a stub test file from a library/classname combination, following a
-preexisting template.
+winxed test_template.winxed harness <lang> <dirs...>
+    Create a test harness
+
+winxed test_template.winxed test <lang> <.pbc_file> <class_name>
+    Creates a stub test file for an existing library class
+
+Options:
+    <lang> one of "nqp" or "winxed"
 :>>
 ;
     say(text);

@@ -1,0 +1,16 @@
+INIT { pir::load_bytecode("rosella/harness.pbc"); }
+
+my $factory := Rosella::construct(Rosella::Harness::TestRun::Factory);
+my $harness := Rosella::construct(Rosella::Harness);
+my $testview := $harness.default_view();
+
+$factory.add_test_dirs("NQP",
+<$ for dir in test.dirs $>"<# dir #>",
+<$ endfor $>
+    :recursive(1)
+);
+
+my $run := $factory.create();
+$testview.add_run($run, 0);
+$harness.run($run, $testview);
+$testview.show_results();

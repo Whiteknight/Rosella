@@ -1,0 +1,16 @@
+function main[main](var args)
+{
+    load_bytecode("rosella/harness.pbc");
+    var factory = new Rosella.Harness.TestRun.Factory();
+    var harness = new Rosella.Harness();
+    var view = harness.default_view();
+
+    factory.add_test_dirs("Winxed", <$ for dir in test.dirs $>
+        "<# dir #>",<$ endfor $>
+        1:[named("recursive")]
+    );
+    var run = factory.create();
+    view.add_run(run, 0);
+    harness.run(run, view);
+    view.show_results();
+}
