@@ -12,7 +12,21 @@ working with strings and text in Parrot.
 
 ### Character Classes
 
+Character classes are numeric identifiers that represent certain types of
+characters in a string. Parrot defines a list of these identifiers for things
+like "word", "whitespace", "alphabetic", "numeric", "punctuation" and other
+classes. Several routines in the String library work with these identifiers
+for identifying characters of a particular type in a string.
+
 ### Tokenizers
+
+Tokenizers break a sequence of input data into into a stream of objects called
+Tokens. Each Token contains the segment of the input data that generated it,
+a type name, and arbitrary metadata.
+
+Tokenizers are lazy and support several semantics which would be useful for
+building higher-level utilities such as lexical analyzers, parsers, and other
+types of programs.
 
 ## Namespaces
 
