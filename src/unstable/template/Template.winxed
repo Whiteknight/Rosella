@@ -28,11 +28,12 @@ namespace Rosella { namespace Template
             self.node_factory.register_type("LogicRegion", class Rosella.Template.Node.Logic);
         }
 
-        function generate(string tmpl, var context)
+        function generate(string tmpl, var user_context)
         {
             var nodes_array = self.__get_nodes_array(tmpl);
             var node = self.__create_node_tree(nodes_array);
             var builder = new ['StringBuilder'];
+            var context = new Rosella.Template.Context(user_context);
             node.render(context, builder);
             return string(builder);
         }
@@ -42,7 +43,7 @@ namespace Rosella { namespace Template
             var nodes_array = [];
             self.tokenizer.add_data(tmpl);
             while (self.tokenizer.has_tokens()) {
-                var t = self.tokenizer.next_token();
+                var t = self.tokenizer.get_token();
                 var node = self.node_factory.create(t);
                 push(nodes_array, node);
             }
@@ -54,9 +55,8 @@ namespace Rosella { namespace Template
             var first_node = new Rosella.Template.Node.Master();
             var current_node = first_node;
             var parent_nodes = [];
-            for (var node in nodes_array) {
+            for (var node in nodes_array)
                 current_node = node.assemble(parent_nodes, current_node);
-            }
             return first_node;
         }
     }

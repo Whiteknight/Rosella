@@ -7,9 +7,8 @@ namespace Rosella { namespace Template { namespace Node
         function render(var context, var builder)
         {
             using Rosella.String.trim;
-            var path = new Rosella.Path();
             string key = trim(self.token.data());
-            string value = path.get(context, key);
+            string value = context.get_value(key);
             push(builder, value);
         }
     }

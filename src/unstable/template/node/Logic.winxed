@@ -8,14 +8,13 @@ namespace Rosella { namespace Template { namespace Node
 
         function Logic(var token)
         {
+            using Rosella.String.get_character_class;
+
             self.Node(token);
             self.children = [];
-            var parts = [];
-            using Rosella.String.Tokenizer.CClass.get_named_classes;
-            var cclasses = get_named_classes(["graphical", "whitespace"]);
+            var cclasses = [get_character_class("graphical"), get_character_class("whitespace")];
             var tokenizer = new Rosella.String.Tokenizer.CClass(cclasses);
-            string contents = token.data();
-            tokenizer.add_data(contents);
+            tokenizer.add_data(token.data());
             self.__parse(tokenizer.all_tokens());
         }
 
@@ -94,21 +93,47 @@ namespace Rosella { namespace Template { namespace Node
             renderer(self.children, context, builder);
         }
 
+        const string HASH_KEY_VARNAME = "__KEY__";
+
         function __parse_for(var tokens)
         {
+            if (elements(tokens) != 3 || string(tokens[1]) != "in") {
+                using Rosella.Error.invalid;
+                invalid(__FUNCTION__, "Syntax of for loop is 'for <var> in <src>'");
+            }
+
             string varname = tokens[0];
-            string in_text = tokens[1];
+            if (varname == HASH_KEY_VARNAME) {
+                using Rosella.Error.invalid;
+                invalid(__FUNCTION__, "Cannot use '" + HASH_KEY_VARNAME + "' as the name of a loop variable");
+            }
+
             string sourcename = tokens[2];
-            var renderer = function(var children, var ctx, var sb) {
-                var path = new Rosella.Path();
-                var values = path.get(ctx, sourcename);
-                for (var value in values) {
-                    ctx[varname] = value;
-                    for (var child in children)
-                        child.render(ctx, sb);
+            self.renderer = function(var children, var ctx, var sb) {
+                var values = ctx.get_value(sourcename);
+                if (values == null) {
+                    using Rosella.Error.invalid;
+                    invalid(__FUNCTION__, "no value at '" + sourcename + "'");
+                }
+                int does_hash;
+                ${ does does_hash, values, "hash" };
+                if (does_hash) {
+                    for (string key in values) {
+                        var value = values[key];
+                        ctx.set_temporary(varname, value);
+                        ctx.set_temporary(HASH_KEY_VARNAME, key);
+                        for (var child in children)
+                            child.render(ctx, sb);
+                    }
+                } else {
+                    ctx.set_temporary(HASH_KEY_VARNAME, "");
+                    for (var value in values) {
+                        ctx.set_temporary(varname, value);
+                        for (var child in children)
+                            child.render(ctx, sb);
+                    }
                 }
             };
-            self.renderer = renderer;
         }
     }
 }}}

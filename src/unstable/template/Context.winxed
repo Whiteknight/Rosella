@@ -1,0 +1,28 @@
+namespace Rosella { namespace Template
+{
+    class Context
+    {
+        var user_context;
+        var temps;
+        var path;
+
+        function Context(var user_context)
+        {
+            self.user_context = user_context;
+            self.temps = {};
+            self.path = new Rosella.Path();
+        }
+
+        function set_temporary(string key, var value)
+        {
+            self.temps[key] = value;
+        }
+
+        function get_value(string key)
+        {
+            if (exists self.temps[key])
+                return self.temps[key];
+            return self.path.get(self.user_context, key);
+        }
+    }
+}}
