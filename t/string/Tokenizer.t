@@ -74,5 +74,4 @@ class Test::String::Tokenizer {
         my @k := $t.all_tokens;
         $!assert.equal(+@k, 5);
     }
-
 }
