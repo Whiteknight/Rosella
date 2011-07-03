@@ -51,6 +51,7 @@ if (pir::elements(@argv)) {
         "t/memoize",
         "t/filesystem",
         "t/path",
+        "t/string",
         :recurse(1)
     );
     $run := $factory.create();
@@ -59,7 +60,7 @@ if (pir::elements(@argv)) {
 
     # Unstable library tests
     $factory.add_test_dirs("NQP",
-        "t/string",
+
         "t/prototype",
         :recurse(1)
     );

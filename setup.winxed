@@ -211,6 +211,17 @@ function setup_stable_libraries(var rosella)
         "path/searcher/Hash",
         "path/searcher/Attribute"
     );
+
+    // String handling and tokenizing library
+    setup_winxed_lib(rosella, "string", ["Core"],
+        "string/Includes",
+        "string/String",
+        "string/Tokenizer",
+        "string/tokenizer/CClass",
+        "string/tokenizer/Delimiter",
+        "string/tokenizer/DelimiterRegion",
+        "string/tokenizer/Token"
+    );
 }
 
 function setup_experimental_libraries(var rosella)
@@ -241,16 +252,6 @@ function setup_experimental_libraries(var rosella)
         "lazy/Builder",
         "lazy/Controller",
         "lazy/Factory"
-    );
-
-    setup_unstable_lib(rosella, "string", ["Core"],
-        "string/Includes",
-        "string/String",
-        "string/Tokenizer",
-        "string/tokenizer/CClass",
-        "string/tokenizer/Delimiter",
-        "string/tokenizer/DelimiterRegion",
-        "string/tokenizer/Token"
     );
 
     setup_unstable_lib(rosella, "benchmark", [],

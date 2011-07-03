@@ -14,7 +14,7 @@ path: 1 Stable
 prototype: 0 Alpha
 proxy: 2 Stable
 query: 1 Stable
-string: 0 Alpha
+string: 1 Stable
 template: 0 Alpha
 test: 3 Stable
 winxed: 2 Stable
