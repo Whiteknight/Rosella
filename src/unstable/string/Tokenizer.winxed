@@ -89,7 +89,7 @@ namespace Rosella { namespace String
         {
             var tokens = [];
             while (self.has_tokens()) {
-                var t = self.next_token();
+                var t = self.get_token();
                 push(tokens, t);
             }
             return tokens;
