@@ -12,10 +12,10 @@ class Test_<# class.cleanname #>
     }
 
     <$ for method in class.methods $>
-    function method_<# method #>() {
-        self.status.verify("default test for <# method #>");
+    function method_<# __KEY__ #>() {
+        self.status.verify("default test for <# __KEY__ #>");
         var obj = new <# class.winxedname #>();
-         var result = obj.<# method #>();
+         var result = obj.<# __KEY__ #>();
     }
     <$ endfor $>
 }
