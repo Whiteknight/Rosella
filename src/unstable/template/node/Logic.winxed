@@ -9,8 +9,8 @@ namespace Rosella { namespace Template { namespace Node
                     return new Rosella.Template.Node.Logic.For(tokens);
                 case "if":
                     return new Rosella.Template.Node.Logic.If(tokens);
-                //case "unless":
-                    //return new Rosella.Template.Node.Logic.Unless(tokens);
+                case "unless":
+                    return new Rosella.Template.Node.Logic.Unless(tokens);
                 case "else":
                     return new Rosella.Template.Node.Logic.ChildlessLogicNode();
                 default:
@@ -18,7 +18,6 @@ namespace Rosella { namespace Template { namespace Node
                         using Rosella.Error.invalid;
                         invalid(__FUNCTION__, "Unknown logic block '" + type + "'");
                     }
-                    say("returning NULL for node type " + type);
                     return null;
             }
         }
@@ -146,6 +145,22 @@ namespace Rosella { namespace Template { namespace Node
             }
         }
 
+        class Unless : Rosella.Template.Node.Logic.If
+        {
+            function Unless(var tokens) { self.If(tokens); }
+
+            function render(var ctx, var sb)
+            {
+                if (!self.__satisfied(ctx)) {
+                    for (var child in self.then_children)
+                        child.render(ctx, sb);
+                } else {
+                    for (var child in self.else_children)
+                        child.render(ctx, sb);
+                }
+            }
+        }
+
         class For : Rosella.Template.Node.Logic.InnerLogicNode
         {
             const string HASH_KEY_VARNAME = "__KEY__";
@@ -229,6 +244,7 @@ namespace Rosella { namespace Template { namespace Node
                         child.render(ctx, sb);
                     num_items--;
                     is_last = num_items == 1;
+                    is_first = 0;
                 }
             }
 

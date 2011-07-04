@@ -60,8 +60,11 @@ if (pir::elements(@argv)) {
 
     # Unstable library tests
     $factory.add_test_dirs("NQP",
-
         "t/prototype",
+        :recurse(1)
+    );
+    $factory.add_test_dirs("Winxed",
+        "t/template",
         :recurse(1)
     );
     $run := $factory.create();
