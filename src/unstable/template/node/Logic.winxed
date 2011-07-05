@@ -1,296 +1,8 @@
 namespace Rosella { namespace Template { namespace Node
 {
-    namespace Logic
-    {
-        function get_inner_node(string type, var tokens)
-        {
-            switch (type) {
-                case "for":
-                    return new Rosella.Template.Node.Logic.For(tokens);
-                case "if":
-                    return new Rosella.Template.Node.Logic.If(tokens);
-                case "unless":
-                    return new Rosella.Template.Node.Logic.Unless(tokens);
-                case "else":
-                    return new Rosella.Template.Node.Logic.ChildlessLogicNode();
-                case "include":
-                    return new Rosella.Template.Node.Logic.Include(tokens);
-                default:
-                    if (substr(type, 0, 3) != "end") {
-                        using Rosella.Error.invalid;
-                        invalid(__FUNCTION__, "Unknown logic block '" + type + "'");
-                    }
-                    return null;
-            }
-        }
-
-        class InnerLogicNode
-        {
-            function add_child(var node)
-            {
-                using Rosella.Error.must_subclass;
-                must_subclass(__FUNCTION__);
-            }
-
-            function render(var ctx, var sb)
-            {
-                using Rosella.Error.must_subclass;
-                must_subclass(__FUNCTION__);
-            }
-
-            function can_have_children() { return 1; }
-        }
-
-        class ChildlessLogicNode : Rosella.Template.Node.Logic.InnerLogicNode
-        {
-            function ChildlessLogicNode() { }
-
-            function can_have_children() { return 0; }
-        }
-
-        class If : Rosella.Template.Node.Logic.InnerLogicNode
-        {
-            const int THEN_MODE = 0;
-            const int ELSE_MODE = 1;
-            var then_children;
-            var else_children;
-            var name_a;
-            var name_b;
-            var op;
-            var mode;
-
-            function If(var tokens)
-            {
-                int num_tokens = elements(tokens);
-                if (num_tokens != 1 && num_tokens != 3) {
-                    using Rosella.Error.invalid;
-                    invalid(__FUNCTION__, "Syntax of IF node is 'if <var>' or 'if <var> <op> <var>'");
-                }
-                self.then_children = [];
-                self.else_children = [];
-                self.mode = THEN_MODE;
-                self.name_a = tokens[0];
-                if (num_tokens == 3) {
-                    self.op = tokens[1];
-                    self.name_b = tokens[2];
-                }
-            }
-
-            function add_child(var node)
-            {
-                int is_logic = 0;
-                ${ can is_logic, node, "logic_name" };
-                if (is_logic && node.logic_name() == "else") {
-                    if (self.mode == ELSE_MODE) {
-                        using Rosella.Error.invalid;
-                        invalid(__FUNCTION__, "Can only have one ELSE node in an IF block");
-                    }
-                    self.mode = ELSE_MODE;
-                } else {
-                    if (self.mode == THEN_MODE)
-                        push(self.then_children, node);
-                    else
-                        push(self.else_children, node);
-                }
-            }
-
-            function render(var ctx, var sb)
-            {
-                if (self.__satisfied(ctx)) {
-                    for (var child in self.then_children)
-                        child.render(ctx, sb);
-                } else {
-                    for (var child in self.else_children)
-                        child.render(ctx, sb);
-                }
-            }
-
-            function __satisfied(var ctx)
-            {
-                var val_a = self.__get_value(self.name_a, ctx);
-                string op;
-                var val_b;
-                if (self.op == null)
-                    op = "?";
-                else {
-                    op = self.op;
-                    val_b = self.__get_value(self.name_b, ctx);
-                }
-                switch (op) {
-                    case "?" :
-                        if (val_a)
-                            return 1;
-                        return 0;
-                    case "==": return val_a == val_b;
-                    case ">=": return val_a >= val_b;
-                    case "<=": return val_a <= val_b;
-                    case ">" : return val_a > val_b;
-                    case "<" : return val_a < val_b;
-                    default:
-                        using Rosella.Error.invalid;
-                        invalid(__FUNCTION__, "Unknown operator '" + op + "'");
-                }
-            }
-
-            function __get_value(string key, var ctx)
-            {
-                using Rosella.String.get_character_class;
-                using Rosella.String.first_not_cclass;
-                int numeric = get_character_class("numeric");
-                if (first_not_cclass(key, numeric) == -1)
-                    return int(key);
-                string first_char = substr(key, 0, 1);
-                string last_char = substr(key, length(key) - 1, 1);
-                if ((first_char == '"' && last_char == '"') || (first_char == "'" && last_char == "'"))
-                    return substr(key, 1, length(key) - 2);
-                return ctx.get_value(key);
-            }
-        }
-
-        class Unless : Rosella.Template.Node.Logic.If
-        {
-            function Unless(var tokens) { self.If(tokens); }
-
-            function render(var ctx, var sb)
-            {
-                if (!self.__satisfied(ctx)) {
-                    for (var child in self.then_children)
-                        child.render(ctx, sb);
-                } else {
-                    for (var child in self.else_children)
-                        child.render(ctx, sb);
-                }
-            }
-        }
-
-        class For : Rosella.Template.Node.Logic.InnerLogicNode
-        {
-            const string HASH_KEY_VARNAME = "__KEY__";
-            const string FIRST_VARNAME = "__FIRST__";
-            const string LAST_VARNAME = "__LAST__";
-            var children;
-            var varname;
-            var srcname;
-
-            function For(var tokens)
-            {
-                if (elements(tokens) != 3 || string(tokens[1]) != "in") {
-                    using Rosella.Error.invalid;
-                    invalid(__FUNCTION__, "Syntax of for loop is 'for <var> in <src>'");
-                }
-                self.varname = tokens[0];
-                if (self.varname == HASH_KEY_VARNAME) {
-                    using Rosella.Error.invalid;
-                    invalid(__FUNCTION__, "Cannot use '" + HASH_KEY_VARNAME + "' as the name of a loop variable");
-                }
-                self.srcname = tokens[2];
-                self.children = [];
-            }
-
-            function add_child(var node)
-            {
-                push(self.children, node);
-            }
-
-            function render(var ctx, var sb)
-            {
-                var values = ctx.get_value(self.srcname);
-                if (values == null) {
-                    using Rosella.Error.invalid;
-                    invalid(__FUNCTION__, "no value at '" + string(self.srcname) + "'");
-                }
-
-                int does_it;
-                ${ does does_it, values, "hash" };
-                if (does_it)
-                    self.__render_hash(ctx, sb, values);
-                else {
-                    ${ does does_it, values, "array" };
-                    if (does_it)
-                        self.__render_array(ctx, sb, values);
-                    else
-                        self.__render_scalar(ctx, sb, values);
-                }
-            }
-
-            function __render_hash(var ctx, var sb, var values)
-            {
-                int is_first = 1;
-                int is_last = 0;
-                int num_items = elements(values);
-                for (string key in values) {
-                    var value = values[key];
-                    ctx.set_temporary(self.varname, value);
-                    ctx.set_temporary(HASH_KEY_VARNAME, key);
-                    ctx.set_temporary(FIRST_VARNAME, is_first);
-                    ctx.set_temporary(LAST_VARNAME, is_last);
-                    for (var child in self.children)
-                        child.render(ctx, sb);
-                    is_first = 0;
-                    num_items--;
-                    is_last = num_items == 1;
-                }
-            }
-
-            function __render_array(var ctx, var sb, var values)
-            {
-                int is_first = 1;
-                int is_last = 0;
-                int num_items = elements(values);
-                ctx.set_temporary(HASH_KEY_VARNAME, "");
-                for (var value in values) {
-                    ctx.set_temporary(self.varname, value);
-                    ctx.set_temporary(FIRST_VARNAME, is_first);
-                    ctx.set_temporary(LAST_VARNAME, is_last);
-                    for (var child in self.children)
-                        child.render(ctx, sb);
-                    num_items--;
-                    is_last = num_items == 1;
-                    is_first = 0;
-                }
-            }
-
-            function __render_scalar(var ctx, var sb, var value)
-            {
-                ctx.set_temporary(FIRST_VARNAME, 1);
-                ctx.set_temporary(LAST_VARNAME, 1);
-                ctx.set_temporary(self.varname, value);
-                for (var child in self.children)
-                    child.render(ctx, sb);
-            }
-        }
-
-        class Include : Rosella.Template.Node.Logic.ChildlessLogicNode
-        {
-            var filename;
-
-            function Include(var tokens)
-            {
-                if (elements(tokens) != 1) {
-                    using Rosella.Error.invalid;
-                    invalid(__FUNCTION__, "Include requires exactly 1 argument");
-                }
-                self.filename = tokens[0];
-            }
-
-            function render(var ctx, var sb)
-            {
-                var file = new Rosella.FileSystem.File(self.filename);
-                if (!file.exists()) {
-                    using Rosella.Error.invalid;
-                    invalid(__FUNCTION__, "File " + string(self.filename) + " does not exist");
-                }
-                string text = file.read_all_text();
-                var engine = new Rosella.Template.Engine();
-                string output = engine.generate(text, ctx);
-                push(sb, output);
-            }
-        }
-    }
-
     class Logic : Rosella.Template.Node
     {
-        var inner_node;
+        var handler;
         var logic_name;
 
         function Logic(var token)
@@ -308,7 +20,8 @@ namespace Rosella { namespace Template { namespace Node
                     push(tokens, token.data());
             }
             self.logic_name = tokens.shift();
-            self.inner_node = get_inner_node(self.logic_name, tokens);
+            var factory = new Rosella.Template.Handler.Factory();
+            self.handler = factory.create(self.logic_name, tokens);
         }
 
         function logic_name()
@@ -323,7 +36,7 @@ namespace Rosella { namespace Template { namespace Node
 
         function assemble(var parent_nodes, var current_node)
         {
-            if (self.inner_node != null && !self.inner_node.can_have_children())
+            if (self.handler != null && !self.handler.can_have_children())
                 current_node.add_child(self);
             else if (self.is_logic_end() &&
                 string(self.logic_name) == string(current_node.logic_end_name()))
@@ -346,24 +59,24 @@ namespace Rosella { namespace Template { namespace Node
 
         function add_child(var node)
         {
-            if (self.inner_node == null) {
+            if (self.handler == null) {
                 using Rosella.Error.invalid;
-                invalid(__FUNCTION__, "Cannot add child, no inner node (" + string(self.logic_name) + ")");
+                invalid(__FUNCTION__, "Cannot add child, no handler (" + string(self.logic_name) + ")");
             }
-            if (!self.inner_node.can_have_children()) {
+            if (!self.handler.can_have_children()) {
                 using Rosella.Error.invalid;
                 invalid(__FUNCTION__, "Cannot add child");
             }
-            self.inner_node.add_child(node);
+            self.handler.add_child(node);
         }
 
         function render(var context, var builder)
         {
-            if (self.inner_node == null) {
+            if (self.handler == null) {
                 using Rosella.Error.invalid;
-                invalid(__FUNCTION__, "Cannot render, no inner node");
+                invalid(__FUNCTION__, "Cannot render, no handler");
             }
-            self.inner_node.render(context, builder);
+            self.handler.render(context, builder);
         }
     }
 }}}

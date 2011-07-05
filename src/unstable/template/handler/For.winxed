@@ -1,0 +1,99 @@
+namespace Rosella { namespace Template { namespace Handler
+{
+    class For : Rosella.Template.Handler
+    {
+        const string HASH_KEY_VARNAME = "__KEY__";
+        const string FIRST_VARNAME = "__FIRST__";
+        const string LAST_VARNAME = "__LAST__";
+        var children;
+        var varname;
+        var srcname;
+
+        function For(var tokens)
+        {
+            if (elements(tokens) != 3 || string(tokens[1]) != "in") {
+                using Rosella.Error.invalid;
+                invalid(__FUNCTION__, "Syntax of for loop is 'for <var> in <src>'");
+            }
+            self.varname = tokens[0];
+            if (self.varname == HASH_KEY_VARNAME) {
+                using Rosella.Error.invalid;
+                invalid(__FUNCTION__, "Cannot use '" + HASH_KEY_VARNAME + "' as the name of a loop variable");
+            }
+            self.srcname = tokens[2];
+            self.children = [];
+        }
+
+        function add_child(var node)
+        {
+            push(self.children, node);
+        }
+
+        function render(var ctx, var sb)
+        {
+            var values = ctx.get_value(self.srcname);
+            if (values == null) {
+                using Rosella.Error.invalid;
+                invalid(__FUNCTION__, "no value at '" + string(self.srcname) + "'");
+            }
+
+            int does_it;
+            ${ does does_it, values, "hash" };
+            if (does_it)
+                self.__render_hash(ctx, sb, values);
+            else {
+                ${ does does_it, values, "array" };
+                if (does_it)
+                    self.__render_array(ctx, sb, values);
+                else
+                    self.__render_scalar(ctx, sb, values);
+            }
+        }
+
+        function __render_hash(var ctx, var sb, var values)
+        {
+            int is_first = 1;
+            int is_last = 0;
+            int num_items = elements(values);
+            for (string key in values) {
+                var value = values[key];
+                ctx.set_temporary(self.varname, value);
+                ctx.set_temporary(HASH_KEY_VARNAME, key);
+                ctx.set_temporary(FIRST_VARNAME, is_first);
+                ctx.set_temporary(LAST_VARNAME, is_last);
+                for (var child in self.children)
+                    child.render(ctx, sb);
+                is_first = 0;
+                num_items--;
+                is_last = num_items == 1;
+            }
+        }
+
+        function __render_array(var ctx, var sb, var values)
+        {
+            int is_first = 1;
+            int is_last = 0;
+            int num_items = elements(values);
+            ctx.set_temporary(HASH_KEY_VARNAME, "");
+            for (var value in values) {
+                ctx.set_temporary(self.varname, value);
+                ctx.set_temporary(FIRST_VARNAME, is_first);
+                ctx.set_temporary(LAST_VARNAME, is_last);
+                for (var child in self.children)
+                    child.render(ctx, sb);
+                num_items--;
+                is_last = num_items == 1;
+                is_first = 0;
+            }
+        }
+
+        function __render_scalar(var ctx, var sb, var value)
+        {
+            ctx.set_temporary(FIRST_VARNAME, 1);
+            ctx.set_temporary(LAST_VARNAME, 1);
+            ctx.set_temporary(self.varname, value);
+            for (var child in self.children)
+                child.render(ctx, sb);
+        }
+    }
+}}}

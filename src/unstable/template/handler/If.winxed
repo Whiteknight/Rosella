@@ -1,0 +1,118 @@
+namespace Rosella { namespace Template { namespace Handler
+{
+    class If : Rosella.Template.Handler
+    {
+        const int THEN_MODE = 0;
+        const int ELSE_MODE = 1;
+        var then_children;
+        var else_children;
+        var name_a;
+        var name_b;
+        var op;
+        var mode;
+
+        function If(var tokens)
+        {
+            int num_tokens = elements(tokens);
+            if (num_tokens != 1 && num_tokens != 3) {
+                using Rosella.Error.invalid;
+                invalid(__FUNCTION__, "Syntax of IF node is 'if <var>' or 'if <var> <op> <var>'");
+            }
+            self.then_children = [];
+            self.else_children = [];
+            self.mode = THEN_MODE;
+            self.name_a = tokens[0];
+            if (num_tokens == 3) {
+                self.op = tokens[1];
+                self.name_b = tokens[2];
+            }
+        }
+
+        function add_child(var node)
+        {
+            int is_logic = 0;
+            ${ can is_logic, node, "logic_name" };
+            if (is_logic && node.logic_name() == "else") {
+                if (self.mode == ELSE_MODE) {
+                    using Rosella.Error.invalid;
+                    invalid(__FUNCTION__, "Can only have one ELSE node in an IF block");
+                }
+                self.mode = ELSE_MODE;
+            } else {
+                if (self.mode == THEN_MODE)
+                    push(self.then_children, node);
+                else
+                    push(self.else_children, node);
+            }
+        }
+
+        function render(var ctx, var sb)
+        {
+            if (self.__satisfied(ctx)) {
+                for (var child in self.then_children)
+                    child.render(ctx, sb);
+            } else {
+                for (var child in self.else_children)
+                    child.render(ctx, sb);
+            }
+        }
+
+        function __satisfied(var ctx)
+        {
+            var val_a = self.__get_value(self.name_a, ctx);
+            string op;
+            var val_b;
+            if (self.op == null)
+                op = "?";
+            else {
+                op = self.op;
+                val_b = self.__get_value(self.name_b, ctx);
+            }
+            switch (op) {
+                case "?" :
+                    if (val_a)
+                        return 1;
+                    return 0;
+                case "==": return val_a == val_b;
+                case ">=": return val_a >= val_b;
+                case "<=": return val_a <= val_b;
+                case ">" : return val_a > val_b;
+                case "<" : return val_a < val_b;
+                default:
+                    using Rosella.Error.invalid;
+                    invalid(__FUNCTION__, "Unknown operator '" + op + "'");
+            }
+        }
+
+        function __get_value(string key, var ctx)
+        {
+            using Rosella.String.get_character_class;
+            using Rosella.String.first_not_cclass;
+            int numeric = get_character_class("numeric");
+            if (first_not_cclass(key, numeric) == -1)
+                return int(key);
+            string first_char = substr(key, 0, 1);
+            string last_char = substr(key, length(key) - 1, 1);
+            if ((first_char == '"' && last_char == '"') || (first_char == "'" && last_char == "'"))
+                return substr(key, 1, length(key) - 2);
+            return ctx.get_value(key);
+        }
+    }
+
+    class Unless : Rosella.Template.Handler.If
+    {
+        function Unless(var tokens) { self.If(tokens); }
+
+        function render(var ctx, var sb)
+        {
+            if (!self.__satisfied(ctx)) {
+                for (var child in self.then_children)
+                    child.render(ctx, sb);
+            } else {
+                for (var child in self.else_children)
+                    child.render(ctx, sb);
+            }
+        }
+    }
+}}}
+

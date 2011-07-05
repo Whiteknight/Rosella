@@ -1,0 +1,29 @@
+namespace Rosella { namespace Template
+{
+    class Handler
+    {
+        function add_child(var node)
+        {
+            using Rosella.Error.must_subclass;
+            must_subclass(__FUNCTION__);
+        }
+
+        function render(var ctx, var sb)
+        {
+            using Rosella.Error.must_subclass;
+            must_subclass(__FUNCTION__);
+        }
+
+        function can_have_children() { return 1; }
+    }
+
+    namespace Handler
+    {
+        class Childless : Rosella.Template.Handler
+        {
+            function Childless() { }
+
+            function can_have_children() { return 0; }
+        }
+    }
+}}
