@@ -259,7 +259,7 @@ function setup_experimental_libraries(var rosella)
         "benchmark/Result"
     );
 
-    setup_unstable_lib(rosella, "template", ["Core", "Path", "String"],
+    setup_unstable_lib(rosella, "template", ["Core", "Path", "String", "FileSystem"],
         "template/Includes",
         "template/Template",
         "template/Context",
