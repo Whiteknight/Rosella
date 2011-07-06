@@ -2,35 +2,69 @@ namespace Rosella { namespace Template
 {
     class Engine
     {
-        var tokenizer;
-        var eval_count;
-        var node_factory;
+        const string DEFAULT_REGION_NAME = "!!!LiteralRegion!!!";
+        var default_nodeclass;
+        var regions;
 
         function Engine()
         {
-            self.tokenizer = new Rosella.String.Tokenizer.DelimiterRegion("LiteralText");
-            self.node_factory = new Rosella.Template.Node.Factory();
-            self.eval_count = 0;
-            self.setup_region_types();
+            self.default_nodeclass = class Rosella.Template.Node.Literal;
+            self.regions = {
+                "Eval" : ["<%", "%>", class Rosella.Template.Node.Eval],
+                "Data" : ["<#", "#>", class Rosella.Template.Node.Data],
+                "Logic" : ["<$", "$>", class Rosella.Template.Node.Logic]
+            };
         }
 
-        function setup_region_types()
+        function setup_region_types(var tokenizer, var node_factory)
         {
-            self.node_factory.register_type("LiteralText", class Rosella.Template.Node.Literal);
+            node_factory.register_type(DEFAULT_REGION_NAME, self.default_nodeclass);
 
-            self.tokenizer.add_region("<%", "%>", "EvalRegion");
-            self.node_factory.register_type("EvalRegion", class Rosella.Template.Node.Eval);
+            for (string region in self.regions) {
+                var region_data = self.regions[region];
+                tokenizer.add_region(region_data[0], region_data[1], region);
+                node_factory.register_type(region, region_data[2]);
+            }
+        }
 
-            self.tokenizer.add_region("<#", "#>", "DataRegion");
-            self.node_factory.register_type("DataRegion", class Rosella.Template.Node.Data);
+        function add_region(string name, string start, string end, var node_class)
+        {
+            self.regions[name] = [start, end, node_class];
+        }
 
-            self.tokenizer.add_region("<$", "$>", "LogicRegion");
-            self.node_factory.register_type("LogicRegion", class Rosella.Template.Node.Logic);
+        function remove_region(string name)
+        {
+            if (exists self.regions[name])
+                delete self.regions[name];
+        }
+
+        function set_region_delimiters(string name, string start, string end)
+        {
+            if (!(exists self.regions[name])) {
+                using Rosella.Error.invalid;
+                invalid(__FUNCTION__, "Region " + name + " not found");
+            }
+            var region = self.regions[name];
+            region[0] = start;
+            region[1] = end;
+        }
+
+        function set_region_nodeclass(string name, var node_class)
+        {
+            if (!(exists self.regions[name])) {
+                using Rosella.Error.invalid;
+                invalid(__FUNCTION__, "Region " + name + " not found");
+            }
+            var region = self.regions[name];
+            region[2] = node_class;
         }
 
         function generate(string tmpl, var user_context)
         {
-            var nodes_array = self.__get_nodes_array(tmpl);
+            var tokenizer = new Rosella.String.Tokenizer.DelimiterRegion(DEFAULT_REGION_NAME);
+            var node_factory = new Rosella.Template.Node.Factory();
+            self.setup_region_types(tokenizer, node_factory);
+            var nodes_array = self.__get_nodes_array(tokenizer, node_factory, tmpl);
             var node = self.__create_node_tree(nodes_array);
             var builder = new ['StringBuilder'];
             var context = new Rosella.Template.Context(user_context);
@@ -49,13 +83,13 @@ namespace Rosella { namespace Template
             self.generate(tmpl, user_context);
         }
 
-        function __get_nodes_array(string tmpl)
+        function __get_nodes_array(var tokenizer, var node_factory, string tmpl)
         {
             var nodes_array = [];
-            self.tokenizer.add_data(tmpl);
-            while (self.tokenizer.has_tokens()) {
-                var t = self.tokenizer.get_token();
-                var node = self.node_factory.create(t);
+            tokenizer.add_data(tmpl);
+            while (tokenizer.has_tokens()) {
+                var t = tokenizer.get_token();
+                var node = node_factory.create(t);
                 push(nodes_array, node);
             }
             return nodes_array;
