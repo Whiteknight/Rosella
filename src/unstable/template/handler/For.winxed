@@ -15,10 +15,11 @@ namespace Rosella { namespace Template { namespace Handler
                 using Rosella.Error.invalid;
                 invalid(__FUNCTION__, "Syntax of for loop is 'for <var> in <src>'");
             }
-            self.varname = tokens[0];
-            if (self.varname == HASH_KEY_VARNAME) {
+            string varname = tokens[0];
+            self.varname = varname;
+            if (substr(varname, 0, 2) == "__" && substr(varname, length(varname) - 2, 2) == "__") {
                 using Rosella.Error.invalid;
-                invalid(__FUNCTION__, "Cannot use '" + HASH_KEY_VARNAME + "' as the name of a loop variable");
+                invalid(__FUNCTION__, "Variable names starting and ending with double underscores are reserved");
             }
             self.srcname = tokens[2];
             self.children = [];
