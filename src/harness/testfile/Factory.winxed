@@ -33,11 +33,15 @@ namespace Rosella { namespace Harness { namespace TestFile
             var tests = [];
             for (string dirpath in dirs) {
                 var dir = new Rosella.FileSystem.Directory(dirpath);
-                var rawfiles = dir.walk_func(function (string filename) {
-                    if (indexof(filename, ".t") == -1 || indexof(filename, ".OLD") != -1)
-                        return;
-                    return filename;
-                });
+                var rawfiles;
+                if (recurse) {
+                    rawfiles = dir.walk_func(function (string filename) {
+                        if (indexof(filename, ".t") == -1 || indexof(filename, ".OLD") != -1)
+                            return;
+                        return filename;
+                    });
+                } else
+                    rawfiles = dir.get_files();
                 for (string filename in rawfiles) {
                     var testobj = self.create_typed(test_type, filename);
                     push(tests, testobj);
