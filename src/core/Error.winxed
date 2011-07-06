@@ -18,8 +18,9 @@ namespace Rosella
         }
 
         // Error when we are attempting an invalid operation
-        function invalid(string caller, string msg)
+        function invalid(string caller, string msg, var args [slurpy])
         {
+            msg = sprintf(msg, args);
             throw_error("Invalid Operation in %s: %s", caller, msg);
         }
 
@@ -32,7 +33,7 @@ namespace Rosella
             );
         }
 
-        // Thow a rosella error
+        // Throw a rosella error
         function throw_error(string msg, var args [slurpy])
         {
             string real_msg = sprintf(msg, args);

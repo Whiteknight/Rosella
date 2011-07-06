@@ -20,8 +20,8 @@ namespace Rosella
                 self.target_type = null;
         }
 
-        // Create an object. The default implementation throws an error.
-        // subclasses may do something different
+        // If the default target type is set, call .create_typed with it.
+        // Otherwise, throw an error.
         function create(var pos [slurpy], var named [slurpy,named])
         {
             if (self.target_type != null)

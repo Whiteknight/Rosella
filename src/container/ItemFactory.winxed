@@ -20,7 +20,7 @@ namespace Rosella { namespace Container
         function create(var p [slurpy], var n [named,slurpy])
         {
             var item = self.protected_resolve_instance();
-            self.private_initialize(item);
+            self.__initialize(item);
             return item;
         }
 
@@ -31,14 +31,16 @@ namespace Rosella { namespace Container
         {
             using Rosella.construct;
             var object = construct(type, p:[flat], n:[flat,named]);
-            self.private_initialize(object);
+            self.__initialize(object);
             return object;
         }
 
         /* Private Internal Routines
         */
 
-        function private_initialize(var object)
+        // Initialize the new object by executing all initializer actions on
+        // it.
+        function __initialize(var object)
         {
             if (self.method_initializers == null)
                 return;

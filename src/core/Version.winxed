@@ -33,6 +33,7 @@ namespace Rosella
         version_hash[lib] = ver;
     }
 
+    /* Version object. Stores information about a library version */
     class Version
     {
         var name;

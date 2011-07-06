@@ -9,7 +9,8 @@ namespace Rosella
 
     const string DEFAULT_FACTORY_GLOBAL = "Rosella.default_factory";
 
-    // Get the hash of globals.
+    // Get the hash of globals. Private routine. Should not be called
+    // externally
     function __get_globals()
     {
         var globals = {

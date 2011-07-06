@@ -27,7 +27,6 @@ namespace Rosella
         {
             var bt = ex.backtrace();
             return __format_backtrace(bt);
-
         }
 
         // private routine. Format backtrace information into an array of
