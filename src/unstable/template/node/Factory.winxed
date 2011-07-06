@@ -1,10 +1,10 @@
-namespace Rosella { namespace Template
+namespace Rosella { namespace Template { namespace Node
 {
-    class NodeFactory : Rosella.ObjectFactory
+    class Factory : Rosella.ObjectFactory
     {
         var types;
 
-        function NodeFactory()
+        function Factory()
         {
             self.types = {};
         }
@@ -34,4 +34,4 @@ namespace Rosella { namespace Template
             invalid(__FUNCTION__, "Cannot create_typed with NodeFactory. Use a key instead");
         }
     }
-}}
+}}}

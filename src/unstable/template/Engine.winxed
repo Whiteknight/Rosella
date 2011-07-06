@@ -9,7 +9,7 @@ namespace Rosella { namespace Template
         function Engine()
         {
             self.tokenizer = new Rosella.String.Tokenizer.DelimiterRegion("LiteralText");
-            self.node_factory = new Rosella.Template.NodeFactory();
+            self.node_factory = new Rosella.Template.Node.Factory();
             self.eval_count = 0;
             self.setup_region_types();
         }

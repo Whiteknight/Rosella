@@ -261,7 +261,7 @@ function setup_experimental_libraries(var rosella)
 
     setup_unstable_lib(rosella, "template", ["Core", "Path", "String", "FileSystem"],
         "template/Includes",
-        "template/Template",
+        "template/Engine",
         "template/Context",
         "template/Handler",
         "template/handler/Factory",
@@ -269,12 +269,12 @@ function setup_experimental_libraries(var rosella)
         "template/handler/If",
         "template/handler/Include",
         "template/Node",
+        "template/node/Factory",
         "template/node/Master",
         "template/node/Logic",
         "template/node/Data",
         "template/node/Eval",
-        "template/node/Literal",
-        "template/NodeFactory"
+        "template/node/Literal"
     );
 }
 
