@@ -38,6 +38,17 @@ namespace Rosella { namespace Template
             return string(builder);
         }
 
+        function generate_from_file(string tmpl_filename, var user_context)
+        {
+            var file = new Rosella.FileSystem.File(tmpl_filename);
+            if (!file.exists()) {
+                using Rosella.Error.invalid;
+                invalid(__FUNCTION__, "Template file " + tmpl_filename + " does not exist");
+            }
+            string tmpl = file.read_all_text();
+            self.generate(tmpl, user_context);
+        }
+
         function __get_nodes_array(string tmpl)
         {
             var nodes_array = [];
