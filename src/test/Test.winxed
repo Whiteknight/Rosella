@@ -46,6 +46,20 @@ namespace Rosella
             return result.was_successful();
         }
 
+        function make_suite(var test_type, var options [slurpy,named])
+        {
+            __default_options(options);
+            var suitefactory = new Rosella.Test.SuiteFactory(test_type, options);
+            return suitefactory.create();
+        }
+
+        function make_suite_vector(var func, var tests, var options [slurpy,named])
+        {
+            __default_options(options);
+            var suitefactory = new Rosella.Test.SuiteFactory.Vector(func, tests, options);
+            return suitefactory.create();
+        }
+
         /* Private or Internal Routines
         */
 
