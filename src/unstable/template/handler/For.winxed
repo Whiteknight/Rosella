@@ -78,8 +78,8 @@ namespace Rosella { namespace Template { namespace Handler
         function __render_array(var ctx, var sb, var values)
         {
             int is_first = 1;
-            int is_last = 0;
             int num_items = elements(values);
+            int is_last = num_items == 1;
             ctx.set_temporary(HASH_KEY_VARNAME, "");
             for (var value in values) {
                 ctx.set_temporary(self.varname, value);
