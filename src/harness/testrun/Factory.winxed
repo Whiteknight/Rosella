@@ -46,9 +46,9 @@ namespace Rosella { namespace Harness { namespace TestRun
         }
 
         // Add an individual test file
-        function add_test_files(string loader, var files [slurpy])
+        function add_test_files(string testfile_type_s, var files [slurpy])
         {
-            var testfile_type = self.testfile_types[testfile_type];
+            var testfile_type = self.testfile_types[testfile_type_s];
             var tests = self.testfile_factory.create_tests_from_files(testfile_type, files);
             self.add_tests(tests);
         }
