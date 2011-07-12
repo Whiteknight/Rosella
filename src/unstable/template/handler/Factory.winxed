@@ -22,6 +22,8 @@ namespace Rosella { namespace Template { namespace Handler
                     return new Rosella.Template.Handler.Childless();
                 case "include":
                     return new Rosella.Template.Handler.Include(tokens);
+                case "set":
+                    return new Rosella.Template.Handler.Set(tokens);
                 default:
                     if (substr(type, 0, 3) != "end") {
                         using Rosella.Error.invalid;
