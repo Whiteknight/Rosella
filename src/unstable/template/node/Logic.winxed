@@ -31,7 +31,7 @@ namespace Rosella { namespace Template { namespace Node
 
         function logic_end_name()
         {
-            return sprintf("end%s", [self.logic_name]);
+            return Winxed_Builtins.sprintf("end%s", [self.logic_name]);
         }
 
         function assemble(var parent_nodes, var current_node)

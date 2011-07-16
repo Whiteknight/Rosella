@@ -110,7 +110,7 @@ namespace Rosella
         // sprintf wrapper function
         function sprintf(string format, var args [slurpy])
         {
-            return sprintf(format, args);
+            return Winxed_Builtins.sprintf(format, args);
         }
 
         // Pad the start of the string with the given substring. Default

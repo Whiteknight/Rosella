@@ -42,7 +42,7 @@ namespace Rosella
                 var annotations = bt[i]["annotations"];
                 string filename = annotations["file"];
                 int lineno = annotations["line"];
-                bts[i] = sprintf("Called from '%s' (%s : %d)", [subname, filename, lineno]);
+                bts[i] = Winxed_Builtins.sprintf("Called from '%s' (%s : %d)", [subname, filename, lineno]);
                 if (sub == null)
                     break;
             }
