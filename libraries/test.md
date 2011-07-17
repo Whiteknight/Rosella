@@ -240,8 +240,7 @@ Whatever you pass as the "asserter" argument will be passed directly to the
 subclass which either overrides any of the default methods or avoids them
 entirely, your tests will not be able to use the features discussed below.
 
-Here are some examples of common assertions in NQP. Winxed examples are
-similar
+Here are some examples of common assertions in NQP:
 
     $!assert.fail("whoops!");        # Unconditional failure
     $!assert.equal("A", "A");        # Test for equality
@@ -261,6 +260,12 @@ similar
     $!assert.throws_nothing({
         say("No problem!");
     });
+
+Here are some Winxed examples:
+
+    self.assert.not_null(foo);      # Assert foo is not null
+    self.assert.defined(foo);       # Assert foo is defined
+    self.assert.equal(x,42);        # Assert x equals 42
 
 There are some assertions which are used to prove the value of the test. These
 are meta-assertions, and are used primarily to prove the correct behavior of
