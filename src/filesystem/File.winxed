@@ -134,7 +134,7 @@ namespace Rosella { namespace FileSystem
         function path_obj()
         {
             string path = self.path;
-            return new Rosella.FileSystem.Path(path);
+            return new Rosella.FileSystem.FilePath(path);
         }
     }
 }}

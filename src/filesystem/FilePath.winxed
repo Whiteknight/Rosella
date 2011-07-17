@@ -1,10 +1,10 @@
 namespace Rosella { namespace FileSystem
 {
-    class Path
+    class FilePath
     {
         var details;
 
-        function Path(string path)
+        function FilePath(string path)
         {
             self.details = {};
             using Rosella.FileSystem.path_separator;
