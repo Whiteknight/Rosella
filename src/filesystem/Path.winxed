@@ -30,12 +30,14 @@ namespace Rosella { namespace FileSystem
             return self.details["extension"];
         }
 
-        function base_path()
+        function full_base_path()
         {
-            return self.details["basepath"];
+            using Rosella.FileSystem.Directory.current_directory;
+            var cwd = current_directory();
+            return string(cwd) + string(self.details["basepath"]);
         }
 
-        function base_path_parts()
+        function relative_base_path()
         {
             return self.details["basepath"];
         }
