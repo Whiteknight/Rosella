@@ -40,6 +40,12 @@ Winxed is a language compiler for Parrot with a syntax similar to JavaScript.
 Rosella libraries are written in Winxed, although they should be usable by
 any software written in any language targetting Parrot.
 
+If you update the source code of your local Rosella git repo and want to build
+the updated version, make sure to run the clean target before recompiling to
+avoid strange errors caused by partial recompilation:
+
+    winxed setup.winxed clean build test install
+
 ## Using Rosella Release
 
 The Rosella release tarball ships with all the `.pir` files from the
@@ -113,4 +119,3 @@ request a feature addition or put together a patch to add it.
 Rosella is influenced by a number of other libraries and technologies. A list
 of contributors and specific points of influence will be listed in the
 "CREDITS" file.
-
