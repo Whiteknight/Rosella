@@ -29,6 +29,25 @@ namespace Rosella
             return __format_backtrace(bt);
         }
 
+        // Execute a function. Catch any exceptions and print the message and
+        // backtrace out to a specified handle. If no handle is specified,
+        // use stdout.
+        function try_report(var sub, var handle [optional],
+                int has_handle [opt_flag])
+        {
+            if (!has_handle)
+                handle = getstdout();
+            try {
+                sub();
+            } catch (e) {
+
+                handle.print(e["message"]);
+                handle.print("\n");
+                for (string bt in get_backtrace_ex_strings(e))
+                    handle.print(Winxed_Builtins.sprintf("%s\n", [bt]));
+            }
+        }
+
         // private routine. Format backtrace information into an array of
         // human-readable strings
         function __format_backtrace(var bt)

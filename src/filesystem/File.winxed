@@ -128,5 +128,13 @@ namespace Rosella { namespace FileSystem
             file.write_all_text(txt);
             return file;
         }
+
+        // Get a Rosella.FileSystem.Path object to get path information about
+        // the filename
+        function path_obj()
+        {
+            string path = self.path;
+            return new Rosella.FileSystem.Path(path);
+        }
     }
 }}

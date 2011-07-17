@@ -36,8 +36,8 @@ namespace Rosella { namespace Harness { namespace TestFile
                 var rawfiles;
                 if (recurse) {
                     rawfiles = dir.walk_func(function (var file) {
-                        string filename = string(file);
-                        if (indexof(filename, ".t") == -1 || indexof(filename, ".OLD") != -1)
+                        var path = file.path_obj();
+                        if (path.extension() != "t")
                             return;
                         return file;
                     });
@@ -45,8 +45,8 @@ namespace Rosella { namespace Harness { namespace TestFile
                     var allfiles = dir.get_files();
                     rawfiles = [];
                     for (var file in allfiles) {
-                        string filename = string(file);
-                        if (indexof(filename, ".t") != -1 && indexof(filename, ".OLD") == -1)
+                        var path = file.path_obj();
+                        if (path.extension() == "t")
                             push(rawfiles, file);
                     }
                 }
@@ -66,6 +66,11 @@ namespace Rosella { namespace Harness { namespace TestFile
         {
             var tests = [];
             for (string filename in filenames) {
+                var file = new Rosella.FileSystem.File(filename);
+                if (!file.exists()) {
+                    using Rosella.Error.invalid;
+                    invalid(__FUNCTION__, "file '%s' does not exist", filename);
+                }
                 var testobj = self.create_typed(test_type, filename);
                 push(tests, testobj);
             }

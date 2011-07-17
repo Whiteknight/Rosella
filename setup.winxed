@@ -197,6 +197,7 @@ function setup_stable_libraries(var rosella)
         "filesystem/Directory",
         "filesystem/File",
         "filesystem/FileSystem",
+        "filesystem/Path",
         "filesystem/Visitor",
         "filesystem/visitor/Delete",
         "filesystem/visitor/Function",

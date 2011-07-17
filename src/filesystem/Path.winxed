@@ -10,11 +10,11 @@ namespace Rosella { namespace FileSystem
             using Rosella.FileSystem.path_separator;
             string pathsep = path_separator();
             var pathparts = split(pathsep, path);
-            string entryname = pop(pathparts);
+            string entryname = pathparts.pop();
             var entryparts = split(".", entryname);
 
             if (elements(entryparts) > 1)
-                self.details["extension"] = pop(entryparts);
+                self.details["extension"] = entryparts.pop();
             else
                 self.details["extension"] = "";
             self.details["shortname_noext"] = join(".", entryparts);
@@ -50,4 +50,4 @@ namespace Rosella { namespace FileSystem
             return self.details["shortname_noext"];
         }
     }
-}
+}}
