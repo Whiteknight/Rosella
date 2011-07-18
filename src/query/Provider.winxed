@@ -31,6 +31,7 @@ namespace Rosella { namespace Query
                 yield provider;
         }
 
+        // lightly-optimized implementation of Quicksort.
         function qsort(var d, int s, int n, var cmp)
         {
             int last = n-1;
@@ -208,6 +209,8 @@ namespace Rosella { namespace Query
             must_subclass("Rosella::Query::Provider");
         }
 
+        // Convert the aggregate to an array and sort it, according to the
+        // comparison function given.
         function sort(var data, var func)
         {
             var new_data = self.to_array(data);
