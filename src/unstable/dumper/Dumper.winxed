@@ -1,0 +1,48 @@
+namespace Rosella
+{
+    class Dumper
+    {
+        var role_dumpers;
+        var type_dumpers;
+        var fallback_dumper;
+
+        function Dumper()
+        {
+            self.role_dumpers = {
+                "array" : new Rosella.Dumper.DumpHandler.Array(),
+                "hash"  : new Rosella.Dumper.DumpHandler.Hash()
+            };
+            self.type_dumpers = {};
+            self.fallback_dumper = new Rosella.Dumper.DumpHandler();
+        }
+
+        function dump(var obj)
+        {
+            var sb = new "StringBuilder";
+            self.__dump_recursive(obj, sb, "");
+            return string(sb);
+        }
+
+        function __dump_recurse(var obj, var sb, string prefix)
+        {
+            string type = typeof(obj);
+            for (string key in self.type_dumpers)
+            {
+                if (type == key) {
+                    self.type_dumpers[key].dump(self, obj, prefix, prefix + "\t", sb);
+                    return;
+                }
+            }
+            for (string role in self.role_dumpers)
+            {
+                int does_it = 0;
+                ${ does does_it, obj, role };
+                if (does_it) {
+                    self.role_dumpers[role].dump(self, obj, prefix, prefix + "\t", sb);
+                    return;
+                }
+            }
+            self.fallback_dumper.dump(self, obj, prefix, prefix + "\t", sb);
+        }
+    }
+}

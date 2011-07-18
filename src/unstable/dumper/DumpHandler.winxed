@@ -1,0 +1,21 @@
+namespace Rosella { namespace Dumper
+{
+    class DumpHandler
+    {
+        function can_dump(var obj)
+        {
+            return 1;
+        }
+
+        function dump(var dump, var obj, string pprefix, string prefix, var sb)
+        {
+            try {
+                string txt = string(obj);
+                push(sb, Winxed_Builtins.sprintf("'%s'", [txt]));
+            } catch {
+                int addr;
+                push(sb, Winxed_Builtins.sprintf("PMC (%s)", [typeof(obj)]);
+            }
+        }
+    }
+}}
