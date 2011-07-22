@@ -1,51 +1,51 @@
 $load "rosella/core.pbc";
 
-//namespace Rosella {
+namespace Rosella {
     // src/core/Rosella.winxed
-    //function alloc;
-    //function build;
-    //function construct;
-    //function get_type_name;
-    //function get_type_class;
-    //function isa_type;
-    //function find_named_method;
-    //function invoke_method;
+    extern function alloc;
+    extern function build;
+    extern function construct;
+    extern function get_type_name;
+    extern function get_type_class;
+    extern function isa_type;
+    extern function find_named_method;
+    extern function invoke_method;
 
     // src/core/Error.winxed
-    //namespace Error;
-    //{
-        //function must_subclass;
-        //function not_implemented;
-        //function invalid;
-        //function invalid_type;
-    //}
+    namespace Error
+    {
+        extern function must_subclass;
+        extern function not_implemented;
+        extern function invalid;
+        extern function invalid_type;
+    }
 
     // src/core/Globals.winxed
-    //function get_global;
-    //function register_global;
-    //function get_default_factory;
+    extern function get_global;
+    extern function register_global;
+    extern function get_default_factory;
 
     // src/core/IO.winxed
-    //namespace IO;
-    //{
-        //function swap_handles;
-        //function sayf;
-        //function printf;
-    //}
+    namespace IO
+    {
+        extern function swap_handles;
+        extern function sayf;
+        extern function printf;
+    }
 
     // src/core/ObjectFactory.winxed
-    //class ObjectFactory;
+    class ObjectFactory;
 
     // src/core/Parrot.winxed
-    //namespace Parrot;
-    //{
-        //function get_config_hash;
-        //function get_backtrace_strings;
-        //function get_backtrace_ex_strings;
-    //}
+    namespace Parrot
+    {
+        extern function get_config_hash;
+        extern function get_backtrace_strings;
+        extern function get_backtrace_ex_strings;
+    }
 
     // src/core/Version.winxed
-    //function get_version_hash;
-    //function get_version;
-    //class Version;
-//}
+    extern function get_version_hash;
+    extern function get_version;
+    class Version;
+}
