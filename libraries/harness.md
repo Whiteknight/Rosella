@@ -149,7 +149,7 @@ Here is a minimal harness written in Winxed:
         var view = harness.default_view();
         factory.add_test_dirs("Winxed", "t", 1:[named("recurse")]);
         var testrun = factory.create();
-        view.add_run(testrun);
+        view.add_run(testrun, 0);
         harness.run(testrun, view);
         view.show_results();
     }
@@ -165,7 +165,7 @@ the command line:
         var testruns = [];
         for (var dir in args) {
             var testrun = factory.create();
-            view.add_run(testrun);
+            view.add_run(testrun, 0);
             push(testruns, testrun);
         }
         for (var run in testruns) {
