@@ -28,7 +28,30 @@ class Action::Argument::Test {
         $!assert.equal($pos, 7);
     }
 
-    method test_verify_all_arguments() {
-        $!status.unimplemented("Write a test for verify_all_arguments");
+    method resolve_value_FAIL() {
+        my $arg := Rosella::construct(Rosella::Action::Argument);
+        $!assert.throws({
+            my $foo := $arg.resolve_value();
+        });
+    }
+
+    method verify_all_arguments() {
+        $!assert.throws_nothing({
+            Rosella::Action::Argument::verify_all_arguments("", []);
+        });
+
+        $!assert.throws_nothing({
+            Rosella::Action::Argument::verify_all_arguments("", [
+                Rosella::construct(Rosella::Action::Argument)
+            ]);
+        });
+    }
+
+    method verify_all_arguments_FAIL() {
+        $!assert.throws({
+            Rosella::Action::Argument::verify_all_arguments("", [
+                Rosella::construct(Rosella::Version)
+            ]);
+        });
     }
 }

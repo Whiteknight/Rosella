@@ -20,10 +20,8 @@ namespace Rosella
         function Action(var method,
                 var args [optional], int has_args [opt_flag])
         {
-            if (method == null) {
-                using Rosella.Error.invalid;
-                invalid(__FUNCTION__, "Subroutine is null");
-            }
+            if (method == null)
+                Rosella.Error.invalid(__FUNCTION__, "Subroutine is null");
             self.method = method;
             if (has_args) {
                 using Rosella.Action.Argument.verify_all_arguments;
@@ -69,8 +67,7 @@ namespace Rosella
         // Perform the actual action. This must be done in a subclass.
         function execute_initializer(var obj, var pos, var named)
         {
-            using Rosella.Error.must_subclass;
-            must_subclass("Rosella.Action");
+            Rosella.Error.must_subclass("Rosella.Action");
         }
     }
 }

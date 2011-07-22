@@ -9,10 +9,8 @@ namespace Rosella { namespace Action
             for (var arg in args) {
                 int is_argument = 0;
                 ${ can is_argument, arg, "resolve_to" };
-                if (!is_argument) {
-                    using Rosella.Error.invalid_type;
-                    invalid_type(caller, "Argument", typeof(arg));
-                }
+                if (!is_argument)
+                    Rosella.Error.invalid_type(caller, "Argument", typeof(arg));
             }
         }
     }
@@ -74,8 +72,7 @@ namespace Rosella { namespace Action
         // Get the actual value. This happens in a subclass.
         function resolve_value()
         {
-            using Rosella.Error.must_subclass;
-            must_subclass("Rosella.Action.Argument");
+            Rosella.Error.must_subclass("Rosella.Action.Argument");
         }
     }
 }}

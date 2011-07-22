@@ -9,8 +9,7 @@ namespace Rosella { namespace Action
         // Execute the method on the object, passing the parameters
         function execute_initializer(var obj, var pos, var named)
         {
-            using Rosella.invoke_method;
-            invoke_method(obj, self.method, pos, named);
+            Rosella.invoke_method(obj, self.method, pos, named);
         }
     }
 }}

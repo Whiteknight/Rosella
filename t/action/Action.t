@@ -10,6 +10,22 @@ class ActionTest {
     method test_BUILD() {
         my $action := Rosella::construct(Rosella::Action, "foo", []);
         $!assert.instance_of($action, Rosella::Action, "Is not an Action");
+
+        $action := Rosella::construct(Rosella::Action, "foo");
+        $!assert.instance_of($action, Rosella::Action, "Is not an Action");
+    }
+
+    method test_BUILD_FAILS() {
+        $!assert.throws({
+            my $null := pir::null__p();
+            my $action := Rosella::construct(Rosella::Action, $null);
+        });
+
+        $!assert.throws({
+            my $action := Rosella::construct(Rosella::Action, "foo", [
+                Rosella::construct(Rosella::Version)
+            ]);
+        });
     }
 
     method prepare_args_empty() {
