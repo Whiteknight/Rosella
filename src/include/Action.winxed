@@ -1,1 +1,26 @@
 $load "rosella/action.pbc";
+
+namespace Rosella
+{
+    // src/action/Action.winxed
+    class Action;
+
+    namespace Action
+    {
+        // src/action/Argument.winxed
+        class Argument;
+        namespace Argument
+        {
+            extern function verify_all_arguments;
+
+            // src/action/argument/Instance.winxed
+            class Instance;
+        }
+
+        // src/action/action/Method.winxed
+        class Method;
+
+        // src/action/action/Sub.winxed
+        class Sub;
+    }
+}
