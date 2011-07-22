@@ -65,8 +65,7 @@ namespace Rosella { namespace Container
         // Get a fresh, uninitialized instance object. This must be subclassed
         function protected_resolve_instance()
         {
-            using Rosella.Error.must_subclass;
-            must_subclass("Rosella.ItemFactory.protected_resolve_instance");
+            Rosella.Error.must_subclass(__FUNCTION__);
         }
     }
 }}

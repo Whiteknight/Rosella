@@ -9,15 +9,10 @@ namespace Rosella { namespace Container { namespace ItemFactory
 
         function FactoryMethod(var sub, var inits, var arg_inits)
         {
-            if (sub == null) {
-                using Rosella.Error.invalid;
-                invalid(__FUNCTION__,
-                    "sub may not be null. It must be an invokable object"
-                );
-            }
+            if (sub == null)
+                Rosella.Error.invalid(__FUNCTION__, "sub may not be null. It must be an invokable object");
             self.sub = sub;
-            using Rosella.Action.Argument.verify_all_arguments;
-            verify_all_arguments(__FUNCTION__, arg_inits);
+            Rosella.Action.Argument.verify_all_arguments(__FUNCTION__, arg_inits);
             self.arg_initializers = arg_inits;
             self.protected_method_initializers(inits);
         }

@@ -9,10 +9,8 @@ namespace Rosella { namespace Container { namespace ItemFactory
 
         function ParrotClass(var class_obj, var init, var inits)
         {
-            if (class_obj == null) {
-                using Rosella.Error.invalid;
-                invalid(__FUNCTION__, "class_obj may not be null");
-            }
+            if (class_obj == null)
+                Rosella.Error.invalid(__FUNCTION__, "class_obj may not be null");
             self.class_obj = class_obj;
             self.init_pmc = init;
             self.protected_method_initializers(inits);
