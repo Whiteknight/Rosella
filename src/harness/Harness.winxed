@@ -9,6 +9,8 @@ namespace Rosella
     */
     class Harness
     {
+        function Harness() { }
+
         /* Routines for Running the Harness
         */
 
