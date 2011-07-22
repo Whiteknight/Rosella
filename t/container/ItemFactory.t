@@ -6,19 +6,23 @@ INIT {
 Rosella::Test::test(Container::ItemFactory::Test);
 
 class Container::ItemFactory::Test {
-    method test_create() {
-        $!status.unimplemented("test create with no initializers");
+    method test_BUILD() {
+        my $factory := Rosella::construct(Rosella::Container::ItemFactory);
+        $!assert.not_null($factory);
     }
 
-    method test_create_initializers() {
-        $!status.unimplemented("test create with initializers");
+    method create() {
+        $!assert.throws({
+            my $factory := Rosella::construct(Rosella::Container::ItemFactory);
+            my $item := $factory.create();
+        });
     }
 
-    method test_create_typed() {
+    method create_typed() {
         $!status.unimplemented("test create_typed with no initializers");
     }
 
-    method test_create_typed_initializers() {
+    method create_typed_initializers() {
         $!status.unimplemented("test create with initializers");
     }
 }

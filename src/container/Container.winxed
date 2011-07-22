@@ -126,7 +126,7 @@ namespace Rosella
         }
 
         // Register a type instance. The type key is provided explicitly
-        function register_instance(var type, var instance,
+        function register_instance_type(var type, var instance,
                 var meth_inits [named,optional], int have_inits [opt_flag])
         {
             string name = Rosella.get_type_name(type);
@@ -175,7 +175,7 @@ namespace Rosella
                 return self.library[name].create(pos:[flat], named:[flat,named]);
             var obj = self.resolve_create(type, pos:[flat], named:[flat,named]);
             if (self.options["auto_register"])
-                self.register_instance(type, obj);
+                self.register_instance_type(type, obj);
             return obj;
         }
 
