@@ -1,1 +1,4 @@
-$load "rosella/string.pbc";
+function __load_string[anon, load, init]()
+{
+    Rosella.load_bytecode_file("rosella/string.pbc", "load");
+}

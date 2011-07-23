@@ -8,13 +8,15 @@ namespace Rosella
     */
 
     const string DEFAULT_FACTORY_GLOBAL = "Rosella.default_factory";
+    const string DEFAULT_LIBREGISTRY_GLOBAL = "Rosella.default_libregistry";
 
     // Get the hash of globals. Private routine. Should not be called
     // externally
     function __get_globals()
     {
         var globals = {
-            DEFAULT_FACTORY_GLOBAL : new Rosella.ObjectFactory()
+            DEFAULT_FACTORY_GLOBAL : new Rosella.ObjectFactory(),
+            DEFAULT_LIBREGISTRY_GLOBAL : {}
         };
         while (1)
             yield globals;
@@ -40,5 +42,41 @@ namespace Rosella
     function get_default_factory()
     {
         return __get_globals()[DEFAULT_FACTORY_GLOBAL];
+    }
+
+    function load_bytecode_file(string file,
+            string trigger [optional], int has_trigger [opt_flag])
+    {
+        var reg = __get_globals()[DEFAULT_LIBREGISTRY_GLOBAL];
+        if (exists reg[file])
+            return reg[file];
+
+        var packfileview;
+        ${ load_bytecode packfileview, file };
+        reg[file] = packfileview;
+        if (!has_trigger)
+            trigger = "";
+        if (trigger != "" && trigger != "") {
+            var subs = packfileview.subs_by_flag(trigger);
+            for (var sub in subs)
+                sub();
+        }
+        return packfileview;
+    }
+
+    function unload_bytecode(string file)
+    {
+        var reg = __get_globals()[DEFAULT_LIBREGISTRY_GLOBAL];
+        if (exists reg[file])
+            delete reg[file];
+        // TODO: Should we destroy the PackfileView?
+    }
+
+    function register_bytecode(string file, var pbc)
+    {
+        var reg = __get_globals()[DEFAULT_LIBREGISTRY_GLOBAL];
+        if (exists reg[file])
+            Rosella.Error.invalid(__FUNCTION__, "Cannot re-register bytecode %s", file);
+        reg[file] = pbc;
     }
 }

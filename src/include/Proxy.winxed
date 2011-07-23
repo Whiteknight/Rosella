@@ -1,1 +1,4 @@
-$load "rosella/proxy.pbc";
+function __load_proxy[anon, load, init]()
+{
+    Rosella.load_bytecode_file("rosella/proxy.pbc", "load");
+}
