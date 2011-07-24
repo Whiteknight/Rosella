@@ -16,8 +16,7 @@ namespace Rosella { namespace Template
 
         function render(var context, var builder)
         {
-            using Rosella.Error.must_subclass;
-            must_subclass("Template.Node");
+            Rosella.Error.must_subclass("Template.Node");
         }
 
         function assemble(var parent_nodes, var current_node)

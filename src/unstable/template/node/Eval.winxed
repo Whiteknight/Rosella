@@ -15,7 +15,7 @@ namespace Rosella { namespace Template { namespace Node
         function render(var context, var builder)
         {
             string code = self.token.data();
-            string code_s = Winxed_Builtins.sprintf("function EVAL_%d[anon](var output, var context) { %s; }", [self.eval_count, code]);
+            string code_s = Rosella.String.sprintf("function EVAL_%d[anon](var output, var context) { %s; }", self.eval_count, code);
             self.eval_count = self.eval_count +1;
             var winxed = compreg("winxed");
             var func = winxed.compile(code_s);

@@ -4,33 +4,23 @@ namespace Rosella { namespace Template { namespace Handler
     {
         var handler_types;
 
-        function Factory()
+        function Factory(var type_hash)
         {
-            self.handler_types = {};
+            self.handler_types = type_hash;
         }
 
         function create(string type, var tokens)
         {
-            switch (type) {
-                case "for":
-                    return new Rosella.Template.Handler.For(tokens);
-                case "if":
-                    return new Rosella.Template.Handler.If(tokens);
-                case "unless":
-                    return new Rosella.Template.Handler.Unless(tokens);
-                case "else":
-                    return new Rosella.Template.Handler.Childless();
-                case "include":
-                    return new Rosella.Template.Handler.Include(tokens);
-                case "set":
-                    return new Rosella.Template.Handler.Set(tokens);
-                default:
-                    if (substr(type, 0, 3) != "end") {
-                        using Rosella.Error.invalid;
-                        invalid(__FUNCTION__, "Unknown logic block '" + type + "'");
-                    }
+            var handler = null;
+            if (length(type) > 3 && substr(type, 0, 3) == "end") {
+                string start_name = substr(type, 3);
+                if (exists self.handler_types[start_name])
                     return null;
+                Rosella.Error.invalid(__FUNCTION__, "End for unknown logic type %s (%s)", start_name, type);
             }
+            if (exists self.handler_types[type])
+                return Rosella.construct(self.handler_types[type], tokens);
+            Rosella.Error.invalid(__FUNCTION__, "Unknown logic type %s", type);
         }
     }
 }}}

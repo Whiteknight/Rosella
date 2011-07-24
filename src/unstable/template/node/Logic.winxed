@@ -5,23 +5,29 @@ namespace Rosella { namespace Template { namespace Node
         var handler;
         var logic_name;
 
-        function Logic(var token)
+        function Logic(var token, var handler_factory)
         {
-            using Rosella.String.get_character_class;
-
             self.Node(token);
-            var cclasses = [get_character_class("graphical"), get_character_class("whitespace")];
+            var tokens = self.parse(token.data());
+            self.logic_name = tokens.shift();
+            self.handler = handler_factory.create(self.logic_name, tokens);
+        }
+
+        function parse(string text)
+        {
+            var cclasses = [
+                Rosella.String.get_character_class("graphical"),
+                Rosella.String.get_character_class("whitespace")
+            ];
             var tokenizer = new Rosella.String.Tokenizer.CClass(cclasses);
-            tokenizer.add_data(token.data());
+            tokenizer.add_data(text);
             var tokens_raw = tokenizer.all_tokens();
             var tokens = [];
             for (var token in tokens_raw) {
                 if (int(token.metadata()) != CCLASS_WHITESPACE)
                     push(tokens, token.data());
             }
-            self.logic_name = tokens.shift();
-            var factory = new Rosella.Template.Handler.Factory();
-            self.handler = factory.create(self.logic_name, tokens);
+            return tokens;
         }
 
         function logic_name()
@@ -59,23 +65,17 @@ namespace Rosella { namespace Template { namespace Node
 
         function add_child(var node)
         {
-            if (self.handler == null) {
-                using Rosella.Error.invalid;
-                invalid(__FUNCTION__, "Cannot add child, no handler (" + string(self.logic_name) + ")");
-            }
-            if (!self.handler.can_have_children()) {
-                using Rosella.Error.invalid;
-                invalid(__FUNCTION__, "Cannot add child");
-            }
+            if (self.handler == null)
+                Rosella.Error.invalid(__FUNCTION__, "Cannot add child, no handler (%s)", self.logic_name);
+            if (!self.handler.can_have_children())
+                Rosella.Error.invalid(__FUNCTION__, "Cannot add child");
             self.handler.add_child(node);
         }
 
         function render(var context, var builder)
         {
-            if (self.handler == null) {
-                using Rosella.Error.invalid;
-                invalid(__FUNCTION__, "Cannot render, no handler");
-            }
+            if (self.handler == null)
+                Rosella.Error.invalid(__FUNCTION__, "Cannot render '%s', no handler", self.logic_name);
             self.handler.render(context, builder);
         }
     }

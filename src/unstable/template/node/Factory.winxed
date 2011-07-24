@@ -3,15 +3,20 @@ namespace Rosella { namespace Template { namespace Node
     class Factory : Rosella.ObjectFactory
     {
         var types;
+        var handler_factories;
 
         function Factory()
         {
             self.types = {};
+            self.handler_factories = {};
         }
 
-        function register_type(string key, var type)
+        function register_type(string key, var type,
+                var handlers [optional], int has_handlers [opt_flag])
         {
             self.types[key] = Rosella.get_type_class(type);
+            if (has_handlers)
+                self.handler_factories[key] = new Rosella.Template.Handler.Factory(handlers);
         }
 
         function create(var token)
@@ -20,12 +25,19 @@ namespace Rosella { namespace Template { namespace Node
             if (!(exists self.types[key]))
                 Rosella.Error.invalid(__FUNCTION__, "type %s not registered", key);
             var type_class = self.types[key];
+            if (exists self.handler_factories[key])
+                return self.create_typed(type_class, token, self.handler_factories[key]);
             return self.create_typed(type_class, token);
         }
 
-        function create_typed(var type_class, var token)
+        function create_typed(var type_class, var token,
+                var handler_factory [optional], int has_factory [opt_flag])
         {
-            var node = Rosella.construct(type_class, token);
+            var node;
+            if (has_factory)
+                node = Rosella.construct(type_class, token, handler_factory);
+            else
+                node = Rosella.construct(type_class, token);
             return node;
         }
     }

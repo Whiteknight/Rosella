@@ -1,1 +1,24 @@
 $load "rosella/string.pbc";
+
+namespace Rosella {
+    namespace String {
+        // src/string/String.winxed
+        extern function get_character_class;
+        extern function first_not_cclass;
+        extern function last_not_cclass;
+        extern function trim_start;
+        extern function trim_end;
+        extern function trim;
+        extern function sprintf;
+        extern function pad_start;
+        extern function pad_end;
+        extern function remove_start;
+        extern function remove_end;
+        extern function remove_middle;
+        extern function replace_all;
+        extern function replace_first;
+        extern function replace_skip;
+        extern function indexof_start;
+        extern function indexof_end;
+    }
+}

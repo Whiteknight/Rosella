@@ -14,10 +14,8 @@ namespace Rosella { namespace Template { namespace Handler
         function If(var tokens)
         {
             int num_tokens = elements(tokens);
-            if (num_tokens != 1 && num_tokens != 3) {
-                using Rosella.Error.invalid;
-                invalid(__FUNCTION__, "Syntax of IF node is 'if <var>' or 'if <var> <op> <var>'");
-            }
+            if (num_tokens != 1 && num_tokens != 3)
+                Rosella.Error.invalid(__FUNCTION__, "Syntax of IF node is 'if <var>' or 'if <var> <op> <var>'");
             self.then_children = [];
             self.else_children = [];
             self.mode = THEN_MODE;
@@ -33,10 +31,8 @@ namespace Rosella { namespace Template { namespace Handler
             int is_logic = 0;
             ${ can is_logic, node, "logic_name" };
             if (is_logic && node.logic_name() == "else") {
-                if (self.mode == ELSE_MODE) {
-                    using Rosella.Error.invalid;
-                    invalid(__FUNCTION__, "Can only have one ELSE node in an IF block");
-                }
+                if (self.mode == ELSE_MODE)
+                    Rosella.Error.invalid(__FUNCTION__, "Can only have one ELSE node in an IF block");
                 self.mode = ELSE_MODE;
             } else {
                 if (self.mode == THEN_MODE)
@@ -79,17 +75,14 @@ namespace Rosella { namespace Template { namespace Handler
                 case ">" : return val_a > val_b;
                 case "<" : return val_a < val_b;
                 default:
-                    using Rosella.Error.invalid;
-                    invalid(__FUNCTION__, "Unknown operator '" + op + "'");
+                    Rosella.Error.invalid(__FUNCTION__, "Unknown operator '" + op + "'");
             }
         }
 
         function __get_value(string key, var ctx)
         {
-            using Rosella.String.get_character_class;
-            using Rosella.String.first_not_cclass;
-            int numeric = get_character_class("numeric");
-            if (first_not_cclass(key, numeric) == -1)
+            int numeric = Rosella.String.get_character_class("numeric");
+            if (Rosella.String.first_not_cclass(key, numeric) == -1)
                 return int(key);
             string first_char = substr(key, 0, 1);
             string last_char = substr(key, length(key) - 1, 1);

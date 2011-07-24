@@ -12,7 +12,16 @@ namespace Rosella { namespace Template
             self.regions = {
                 "Eval" : ["<%", "%>", class Rosella.Template.Node.Eval],
                 "Data" : ["<#", "#>", class Rosella.Template.Node.Data],
-                "Logic" : ["<$", "$>", class Rosella.Template.Node.Logic]
+                "Logic" : ["<$", "$>", class Rosella.Template.Node.Logic,
+                    {
+                        "for":     class Rosella.Template.Handler.For,
+                        "if":      class Rosella.Template.Handler.If,
+                        "unless":  class Rosella.Template.Handler.Unless,
+                        "else":    class Rosella.Template.Handler.Childless,
+                        "include": class Rosella.Template.Handler.Include,
+                        "set":     class Rosella.Template.Handler.Set
+                    }
+                ]
             };
         }
 
@@ -23,7 +32,10 @@ namespace Rosella { namespace Template
             for (string region in self.regions) {
                 var region_data = self.regions[region];
                 tokenizer.add_region(region_data[0], region_data[1], region);
-                node_factory.register_type(region, region_data[2]);
+                if (elements(region_data) == 4)
+                    node_factory.register_type(region, region_data[2], region_data[3]);
+                else
+                    node_factory.register_type(region, region_data[2]);
             }
         }
 
@@ -40,10 +52,8 @@ namespace Rosella { namespace Template
 
         function set_region_delimiters(string name, string start, string end)
         {
-            if (!(exists self.regions[name])) {
-                using Rosella.Error.invalid;
-                invalid(__FUNCTION__, "Region " + name + " not found");
-            }
+            if (!(exists self.regions[name]))
+                Rosella.Error.invalid(__FUNCTION__, "Region " + name + " not found");
             var region = self.regions[name];
             region[0] = start;
             region[1] = end;
@@ -51,10 +61,8 @@ namespace Rosella { namespace Template
 
         function set_region_nodeclass(string name, var node_class)
         {
-            if (!(exists self.regions[name])) {
-                using Rosella.Error.invalid;
-                invalid(__FUNCTION__, "Region " + name + " not found");
-            }
+            if (!(exists self.regions[name]))
+                Rosella.Error.invalid(__FUNCTION__, "Region " + name + " not found");
             var region = self.regions[name];
             region[2] = node_class;
         }
@@ -75,10 +83,8 @@ namespace Rosella { namespace Template
         function generate_from_file(string tmpl_filename, var user_context)
         {
             var file = new Rosella.FileSystem.File(tmpl_filename);
-            if (!file.exists()) {
-                using Rosella.Error.invalid;
-                invalid(__FUNCTION__, "Template file " + tmpl_filename + " does not exist");
-            }
+            if (!file.exists())
+                Rosella.Error.invalid(__FUNCTION__, "Template file " + tmpl_filename + " does not exist");
             string tmpl = file.read_all_text();
             self.generate(tmpl, user_context);
         }

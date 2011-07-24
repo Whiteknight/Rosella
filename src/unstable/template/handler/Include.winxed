@@ -6,20 +6,16 @@ namespace Rosella { namespace Template { namespace Handler
 
         function Include(var tokens)
         {
-            if (elements(tokens) != 1) {
-                using Rosella.Error.invalid;
-                invalid(__FUNCTION__, "Include requires exactly 1 argument");
-            }
+            if (elements(tokens) != 1)
+                Rosella.Error.invalid(__FUNCTION__, "Include requires exactly 1 argument");
             self.filename = tokens[0];
         }
 
         function render(var ctx, var sb)
         {
             var file = new Rosella.FileSystem.File(self.filename);
-            if (!file.exists()) {
-                using Rosella.Error.invalid;
-                invalid(__FUNCTION__, "File " + string(self.filename) + " does not exist");
-            }
+            if (!file.exists())
+                Rosella.Error.invalid(__FUNCTION__, "File '%s' does not exist", self.filename);
             string text = file.read_all_text();
             var engine = new Rosella.Template.Engine();
             string output = engine.generate(text, ctx);

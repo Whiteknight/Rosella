@@ -11,16 +11,12 @@ namespace Rosella { namespace Template { namespace Handler
 
         function For(var tokens)
         {
-            if (elements(tokens) != 3 || string(tokens[1]) != "in") {
-                using Rosella.Error.invalid;
-                invalid(__FUNCTION__, "Syntax of for loop is 'for <var> in <src>'");
-            }
+            if (elements(tokens) != 3 || string(tokens[1]) != "in")
+                Rosella.Error.invalid(__FUNCTION__, "Syntax of for loop is 'for <var> in <src>'");
             string varname = tokens[0];
             self.varname = varname;
-            if (substr(varname, 0, 2) == "__" && substr(varname, length(varname) - 2, 2) == "__") {
-                using Rosella.Error.invalid;
-                invalid(__FUNCTION__, "Variable names starting and ending with double underscores are reserved");
-            }
+            if (substr(varname, 0, 2) == "__" && substr(varname, length(varname) - 2, 2) == "__")
+                Rosella.Error.invalid(__FUNCTION__, "Variable names starting and ending with double underscores are reserved");
             self.srcname = tokens[2];
             self.children = [];
         }
@@ -33,10 +29,8 @@ namespace Rosella { namespace Template { namespace Handler
         function render(var ctx, var sb)
         {
             var values = ctx.get_value(self.srcname);
-            if (values == null) {
-                using Rosella.Error.invalid;
-                invalid(__FUNCTION__, "no value at '" + string(self.srcname) + "'");
-            }
+            if (values == null)
+                Rosella.Error.invalid(__FUNCTION__, "no value at '" + string(self.srcname) + "'");
 
             int does_it;
             ${ does does_it, values, "hash" };

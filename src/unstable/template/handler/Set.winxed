@@ -11,10 +11,8 @@ namespace Rosella { namespace Template { namespace Handler
             int numtks = elements(tokens);
             string varname = tokens[0];
             self.varname = varname;
-            if (substr(varname, 0, 2) == "__" && substr(varname, length(varname) - 2, 2) == "__") {
-                using Rosella.Error.invalid;
-                invalid(__FUNCTION__, "Variable names starting and ending with double underscores are reserved");
-            }
+            if (substr(varname, 0, 2) == "__" && substr(varname, length(varname) - 2, 2) == "__")
+                Rosella.Error.invalid(__FUNCTION__, "Variable names starting and ending with double underscores are reserved");
 
             if (numtks == 1) {
                 self.sourcename = null;
@@ -24,10 +22,8 @@ namespace Rosella { namespace Template { namespace Handler
                 self.sourcename = tokens[2];
                 self.children = null;
             }
-            else {
-                using Rosella.Error.invalid;
-                invalid(__FUNCTION__, "Syntax of set is 'set <var>' or 'set <var> as <value>'");
-            }
+            else
+                Rosella.Error.invalid(__FUNCTION__, "Syntax of set is 'set <var>' or 'set <var> as <value>'");
         }
 
         function can_have_children()
