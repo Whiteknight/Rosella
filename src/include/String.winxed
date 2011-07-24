@@ -20,5 +20,22 @@ namespace Rosella {
         extern function replace_skip;
         extern function indexof_start;
         extern function indexof_end;
+
+        // src/string/Tokenizer.winxed
+        class Tokenizer;
+
+        namespace Tokenizer {
+            // src/string/tokenizer/CClass.winxed
+            class CClass;
+
+            // src/string/tokenizer/Delimiter.winxed
+            class Delimiter;
+
+            // src/string/tokenizer/DelimiterRegion.winxed
+            class DelimiterRegion;
+
+            // src/string/tokenizer/Token.winxed
+            class Token;
+        }
     }
 }
