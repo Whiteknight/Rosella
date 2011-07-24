@@ -1,10 +1,16 @@
 namespace Rosella { namespace Template { namespace Node
 {
+    /* Logic Node
+        Logic nodes provide logical constructs such as loops and conditionals.
+        Logic nodes keep track of certain information, and pass logical
+        rendering to Handler objects.
+    */
     class Logic : Rosella.Template.Node
     {
         var handler;
         var logic_name;
 
+        // Constructor
         function Logic(var token, var handler_factory)
         {
             self.Node(token);
@@ -13,6 +19,7 @@ namespace Rosella { namespace Template { namespace Node
             self.handler = handler_factory.create(self.logic_name, tokens);
         }
 
+        // Parse the tag contents. Return an array of string arguments
         function parse(string text)
         {
             var cclasses = [
@@ -30,16 +37,19 @@ namespace Rosella { namespace Template { namespace Node
             return tokens;
         }
 
+        // The logic name of this tag
         function logic_name()
         {
             return self.logic_name;
         }
 
+        // The name of the coresponding end tag
         function logic_end_name()
         {
             return Winxed_Builtins.sprintf("end%s", [self.logic_name]);
         }
 
+        // Assemble the node by pushing child nodes into it.
         function assemble(var parent_nodes, var current_node)
         {
             if (self.handler != null && !self.handler.can_have_children())
@@ -55,6 +65,8 @@ namespace Rosella { namespace Template { namespace Node
             return current_node;
         }
 
+        // True if this node is an end node for a child-bearing node. False
+        // otherwise.
         function is_logic_end()
         {
             string name = self.logic_name;
@@ -63,6 +75,7 @@ namespace Rosella { namespace Template { namespace Node
             return 0;
         }
 
+        // Add a child node to this one, if the handler takes children.
         function add_child(var node)
         {
             if (self.handler == null)
@@ -72,6 +85,7 @@ namespace Rosella { namespace Template { namespace Node
             self.handler.add_child(node);
         }
 
+        // Render this node. Rendering requires a Handler
         function render(var engine, var context, var builder)
         {
             if (self.handler == null)

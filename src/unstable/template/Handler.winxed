@@ -1,26 +1,39 @@
 namespace Rosella { namespace Template
 {
+    /* Handler abstract parent type
+        This is the abstract parent type of the logic handlers. Do not use
+        this class directly.
+    */
     class Handler
     {
+        // Add a child node
         function add_child(var node)
         {
             Rosella.Error.must_subclass(__FUNCTION__);
         }
 
-        function render(var ctx, var sb)
+        // Render contents
+        function render(var engine, var ctx, var sb)
         {
             Rosella.Error.must_subclass(__FUNCTION__);
         }
 
+        // This node can have children (Default)
         function can_have_children() { return 1; }
     }
 
     namespace Handler
     {
+        /* Childless Handler abstract parent type
+            This is an abstract parent type of logic handlers which have no
+            children nodes.
+        */
         class Childless : Rosella.Template.Handler
         {
+            // Constructor. Do nothing.
             function Childless(var tokens) { }
 
+            // This handler does not have child nodes
             function can_have_children() { return 0; }
         }
     }

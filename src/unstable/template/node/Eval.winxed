@@ -1,16 +1,23 @@
 namespace Rosella { namespace Template { namespace Node
 {
+    /* Code Evaluation
+        Compile and execute an arbitrary snippet of code. By default, it uses
+        the Winxed compiler.
+    */
     class Eval : Rosella.Template.Node
     {
         var func;
         const string EVAL_BASE_NAME = "Template_Node_Eval";
 
+        // Constructor
         function Eval(var token)
         {
             self.Node(token);
             self.func = null;
         }
 
+        // Render the node. Compile and execute the code, and put any output
+        // into the output stream
         function render(var engine, var context, var builder)
         {
             if (self.func == null) {
@@ -24,6 +31,8 @@ namespace Rosella { namespace Template { namespace Node
                 push(builder, result);
         }
 
+        // Compile the code snippet. By default it uses the Winxed compiler
+        // if available. Subclass this to get different behavior.
         function compile_func(string code)
         {
             string code_s = Rosella.String.sprintf("function __%s__EVAL[anon](var engine, var output, var context) { %s; }", EVAL_BASE_NAME, code);

@@ -1,17 +1,26 @@
 namespace Rosella { namespace Template
 {
+    /* Template Engine
+        This is the main driver type for generating output from templates
+    */
     class Engine
     {
         const string DEFAULT_REGION_NAME = "!!!LiteralRegion!!!";
         var default_nodeclass;
         var regions;
 
+        // constructor
         function Engine()
         {
             self.default_nodeclass = class Rosella.Template.Node.Literal;
             self.regions = self.setup_default_regions();
         }
 
+        /* Helper Routines.
+            Subclass these to get different behavior
+        */
+
+        // Set up the default region definitions
         function setup_default_regions()
         {
             return {
@@ -30,6 +39,8 @@ namespace Rosella { namespace Template
             };
         }
 
+        // Take the region definitions and setup a tokenizer and node
+        // factory
         function setup_region_types(var tokenizer, var node_factory)
         {
             node_factory.register_type(DEFAULT_REGION_NAME, self.default_nodeclass);
@@ -44,17 +55,24 @@ namespace Rosella { namespace Template
             }
         }
 
+        /* Setup / Configuration Routines
+            These set up the details of the engine
+        */
+
+        // Add a new region by name
         function add_region(string name, string start, string end, var node_class)
         {
             self.regions[name] = [start, end, node_class];
         }
 
+        // Remove a region type by name
         function remove_region(string name)
         {
             if (exists self.regions[name])
                 delete self.regions[name];
         }
 
+        // Set new delimiters for an existing region
         function set_region_delimiters(string name, string start, string end)
         {
             if (!(exists self.regions[name]))
@@ -64,6 +82,7 @@ namespace Rosella { namespace Template
             region[1] = end;
         }
 
+        // Set a new node type for an existing region
         function set_region_nodeclass(string name, var node_class)
         {
             if (!(exists self.regions[name]))
@@ -72,6 +91,11 @@ namespace Rosella { namespace Template
             region[2] = node_class;
         }
 
+        /* Text Generation Methods
+            These are the main driver methods of the Engine.
+        */
+
+        // Generate output from a template text string
         function generate(string tmpl, var user_context)
         {
             var tokenizer = new Rosella.String.Tokenizer.DelimiterRegion(DEFAULT_REGION_NAME);
@@ -81,10 +105,11 @@ namespace Rosella { namespace Template
             var node = self.__create_node_tree(nodes_array);
             var builder = new ['StringBuilder'];
             var context = new Rosella.Template.Context(user_context);
-            node.render(context, builder);
+            node.render(self, context, builder);
             return string(builder);
         }
 
+        // Generate output from a filename containing a template
         function generate_from_file(string tmpl_filename, var user_context)
         {
             var file = new Rosella.FileSystem.File(tmpl_filename);
@@ -94,6 +119,10 @@ namespace Rosella { namespace Template
             self.generate(tmpl, user_context);
         }
 
+        /* Private Helper Methods
+        */
+
+        // Tokenize the template and create a stream of nodes
         function __get_nodes_array(var tokenizer, var node_factory, string tmpl)
         {
             var nodes_array = [];
@@ -106,6 +135,7 @@ namespace Rosella { namespace Template
             return nodes_array;
         }
 
+        // Compose an array of nodes into a parse tree
         function __create_node_tree(var nodes_array)
         {
             var first_node = new Rosella.Template.Node.Master();

@@ -1,9 +1,15 @@
 namespace Rosella { namespace Template { namespace Node
 {
+    /* Data Node
+        Take a key, and insert the context contents from that key into the
+        output stream
+    */
     class Data : Rosella.Template.Node
     {
+        // Constructor.
         function Data(var token) { self.Node(token); }
 
+        // Get the value from the context and push it onto the output stream
         function render(var engine, var context, var builder)
         {
             string key = Rosella.String.trim(self.token.data());

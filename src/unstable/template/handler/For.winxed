@@ -1,5 +1,9 @@
 namespace Rosella { namespace Template { namespace Handler
 {
+    /* For loop Handler
+        Logic of the For loop construct. Can be used to loop over arrays or
+        hash objects from the context
+    */
     class For : Rosella.Template.Handler
     {
         const string HASH_KEY_VARNAME = "__KEY__";
@@ -9,6 +13,7 @@ namespace Rosella { namespace Template { namespace Handler
         var varname;
         var srcname;
 
+        // Constructor. Quick syntax sanity checks.
         function For(var tokens)
         {
             if (elements(tokens) != 3 || string(tokens[1]) != "in")
@@ -21,11 +26,13 @@ namespace Rosella { namespace Template { namespace Handler
             self.children = [];
         }
 
+        // Add a child node.
         function add_child(var node)
         {
             push(self.children, node);
         }
 
+        // Render. Loop over data and render children for each
         function render(var engine, var ctx, var sb)
         {
             var values = ctx.get_value(self.srcname);
@@ -51,6 +58,11 @@ namespace Rosella { namespace Template { namespace Handler
             ctx.set_temporary(LAST_VARNAME, old_last);
         }
 
+        /* Internal Helper Routines
+            These methods are used to render for particular input types
+        */
+
+        // Render when the input data is a hash.
         function __render_hash(var engine, var ctx, var sb, var values)
         {
             int is_first = 1;
@@ -70,6 +82,7 @@ namespace Rosella { namespace Template { namespace Handler
             }
         }
 
+        // Render when the input data is an array
         function __render_array(var engine, var ctx, var sb, var values)
         {
             int is_first = 1;
@@ -88,6 +101,7 @@ namespace Rosella { namespace Template { namespace Handler
             }
         }
 
+        // Render when the input data is a scalar
         function __render_scalar(var engine, var ctx, var sb, var value)
         {
             ctx.set_temporary(FIRST_VARNAME, 1);

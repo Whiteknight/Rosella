@@ -1,5 +1,8 @@
 namespace Rosella { namespace Template { namespace Handler
 {
+    /* Handler Factory
+        Get a new Handler object by name.
+    */
     class Factory : Rosella.ObjectFactory
     {
         var handler_types;

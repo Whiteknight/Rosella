@@ -1,5 +1,9 @@
 namespace Rosella { namespace Template { namespace Handler
 {
+    /* Conditional If/Else Handler
+        Performs conditional logic, showing certain content only if a given
+        condition is met.
+    */
     class If : Rosella.Template.Handler
     {
         const int THEN_MODE = 0;
@@ -11,6 +15,7 @@ namespace Rosella { namespace Template { namespace Handler
         var op;
         var mode;
 
+        // Constructor. Basic syntax check
         function If(var tokens)
         {
             int num_tokens = elements(tokens);
@@ -26,6 +31,8 @@ namespace Rosella { namespace Template { namespace Handler
             }
         }
 
+        // Add a child. Add it to either the "then" or the "else" section, as
+        // required.
         function add_child(var node)
         {
             int is_logic = 0;
@@ -42,6 +49,7 @@ namespace Rosella { namespace Template { namespace Handler
             }
         }
 
+        // Render children, depending on the state of the condition
         function render(var engine, var ctx, var sb)
         {
             if (self.__satisfied(ctx)) {
@@ -53,6 +61,10 @@ namespace Rosella { namespace Template { namespace Handler
             }
         }
 
+        /* Internal Helper Methods
+        */
+
+        // Determine if the condition is satisfied
         function __satisfied(var ctx)
         {
             var val_a = self.__get_value(self.name_a, ctx);
@@ -79,6 +91,7 @@ namespace Rosella { namespace Template { namespace Handler
             }
         }
 
+        // Get a value from one of the operands.
         function __get_value(string key, var ctx)
         {
             int numeric = Rosella.String.get_character_class("numeric");
@@ -92,6 +105,9 @@ namespace Rosella { namespace Template { namespace Handler
         }
     }
 
+    /* Inverse Conditional
+        Same as If Handler, but opposite
+    */
     class Unless : Rosella.Template.Handler.If
     {
         function Unless(var tokens) { self.If(tokens); }

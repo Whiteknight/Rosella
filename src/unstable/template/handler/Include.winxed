@@ -1,9 +1,13 @@
 namespace Rosella { namespace Template { namespace Handler
 {
+    /* Sub-Template including
+        Include template text from another file.
+    */
     class Include : Rosella.Template.Handler.Childless
     {
         var filename;
 
+        // Constructor
         function Include(var tokens)
         {
             if (elements(tokens) != 1)
@@ -11,6 +15,8 @@ namespace Rosella { namespace Template { namespace Handler
             self.filename = tokens[0];
         }
 
+        // Get template text from the file and pass it to the template
+        // engine
         function render(var engine, var ctx, var sb)
         {
             var file = new Rosella.FileSystem.File(self.filename);

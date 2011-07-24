@@ -1,11 +1,18 @@
 namespace Rosella { namespace Template
 {
+    /* Data Context Wrapper
+        Provides access to the user data. User data is considered read-only
+        during the evaluation of the template. Data set is stored in a
+        separate hash. When looking up a value to read, the temporary data
+        hash is searched first, followed by the user data.
+    */
     class Context
     {
         var user_context;
         var temps;
         var path;
 
+        // Constructor
         function Context(var user_context)
         {
             self.user_context = user_context;
@@ -13,11 +20,14 @@ namespace Rosella { namespace Template
             self.path = new Rosella.Path();
         }
 
+        // Set a temporary value by name
         function set_temporary(string key, var value)
         {
             self.temps[key] = value;
         }
 
+        // Get a value by name. Search local temporaries first, user data
+        // second
         function get_value(string key)
         {
             if (exists self.temps[key])
@@ -25,11 +35,13 @@ namespace Rosella { namespace Template
             return self.path.get(self.user_context, key);
         }
 
+        // keyed access wrapper. Redirect to set_temporary
         function set_pmc_keyed[vtable](var key, var value)
         {
             self.set_temporary(key, value);
         }
 
+        // keyed access wrapper. Redirect to get_value
         function get_pmc_keyed[vtable](var key)
         {
             return self.get_value(key);
