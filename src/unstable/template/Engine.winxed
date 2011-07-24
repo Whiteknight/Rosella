@@ -9,7 +9,12 @@ namespace Rosella { namespace Template
         function Engine()
         {
             self.default_nodeclass = class Rosella.Template.Node.Literal;
-            self.regions = {
+            self.regions = self.setup_default_regions();
+        }
+
+        function setup_default_regions()
+        {
+            return {
                 "Eval" : ["<%", "%>", class Rosella.Template.Node.Eval],
                 "Data" : ["<#", "#>", class Rosella.Template.Node.Data],
                 "Logic" : ["<$", "$>", class Rosella.Template.Node.Logic,
