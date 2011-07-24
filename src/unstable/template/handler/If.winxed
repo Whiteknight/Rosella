@@ -42,7 +42,7 @@ namespace Rosella { namespace Template { namespace Handler
             }
         }
 
-        function render(var ctx, var sb)
+        function render(var engine, var ctx, var sb)
         {
             if (self.__satisfied(ctx)) {
                 for (var child in self.then_children)
@@ -75,7 +75,7 @@ namespace Rosella { namespace Template { namespace Handler
                 case ">" : return val_a > val_b;
                 case "<" : return val_a < val_b;
                 default:
-                    Rosella.Error.invalid(__FUNCTION__, "Unknown operator '" + op + "'");
+                    Rosella.Error.invalid(__FUNCTION__, "Unknown operator '%s'", op);
             }
         }
 
@@ -96,14 +96,14 @@ namespace Rosella { namespace Template { namespace Handler
     {
         function Unless(var tokens) { self.If(tokens); }
 
-        function render(var ctx, var sb)
+        function render(var engine, var ctx, var sb)
         {
             if (!self.__satisfied(ctx)) {
                 for (var child in self.then_children)
-                    child.render(ctx, sb);
+                    child.render(engine, ctx, sb);
             } else {
                 for (var child in self.else_children)
-                    child.render(ctx, sb);
+                    child.render(engine, ctx, sb);
             }
         }
     }

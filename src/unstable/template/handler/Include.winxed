@@ -11,13 +11,12 @@ namespace Rosella { namespace Template { namespace Handler
             self.filename = tokens[0];
         }
 
-        function render(var ctx, var sb)
+        function render(var engine, var ctx, var sb)
         {
             var file = new Rosella.FileSystem.File(self.filename);
             if (!file.exists())
                 Rosella.Error.invalid(__FUNCTION__, "File '%s' does not exist", self.filename);
             string text = file.read_all_text();
-            var engine = new Rosella.Template.Engine();
             string output = engine.generate(text, ctx);
             push(sb, output);
         }

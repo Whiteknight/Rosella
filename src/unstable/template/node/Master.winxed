@@ -10,10 +10,10 @@ namespace Rosella { namespace Template { namespace Node
             self.children = [];
         }
 
-        function render(var context, var builder)
+        function render(var engine, var context, var builder)
         {
             for (var child in self.children)
-                child.render(context, builder);
+                child.render(engine, context, builder);
         }
 
         function add_child(var node)

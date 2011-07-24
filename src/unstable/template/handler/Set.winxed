@@ -39,12 +39,12 @@ namespace Rosella { namespace Template { namespace Handler
                 push(self.children, node);
         }
 
-        function render(var ctx, var sb)
+        function render(var engine, var ctx, var sb)
         {
             if (self.sourcename == null && self.children != null) {
                 var inner_sb = new "StringBuilder";
                 for (var child in self.children)
-                    child.render(ctx, inner_sb);
+                    child.render(engine, ctx, inner_sb);
                 string text = string(inner_sb);
                 ctx.set_temporary(self.varname, text);
             }

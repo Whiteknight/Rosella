@@ -14,7 +14,7 @@ namespace Rosella { namespace Template
             return self.token.metadata();
         }
 
-        function render(var context, var builder)
+        function render(var engine, var context, var builder)
         {
             Rosella.Error.must_subclass("Template.Node");
         }

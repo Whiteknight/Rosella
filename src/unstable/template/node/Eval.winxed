@@ -11,7 +11,7 @@ namespace Rosella { namespace Template { namespace Node
             self.func = null;
         }
 
-        function render(var context, var builder)
+        function render(var engine, var context, var builder)
         {
             if (self.func == null) {
                 string code = self.token.data();
@@ -19,14 +19,14 @@ namespace Rosella { namespace Template { namespace Node
             }
             var func = self.func;
             var results;
-            :(results [slurpy]) = func(builder, context);
+            :(results [slurpy]) = func(engine, builder, context);
             for (string result in results)
                 push(builder, result);
         }
 
         function compile_func(string code)
         {
-            string code_s = Rosella.String.sprintf("function __%s__EVAL[anon](var output, var context) { %s; }", EVAL_BASE_NAME, code);
+            string code_s = Rosella.String.sprintf("function __%s__EVAL[anon](var engine, var output, var context) { %s; }", EVAL_BASE_NAME, code);
             var winxed = compreg("winxed");
             return winxed.compile(code_s);
         }

@@ -4,7 +4,7 @@ namespace Rosella { namespace Template { namespace Node
     {
         function Literal(var token) { self.Node(token); }
 
-        function render(var context, var builder)
+        function render(var engine, var context, var builder)
         {
             push(builder, self.token.data());
         }

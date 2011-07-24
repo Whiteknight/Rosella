@@ -72,11 +72,11 @@ namespace Rosella { namespace Template { namespace Node
             self.handler.add_child(node);
         }
 
-        function render(var context, var builder)
+        function render(var engine, var context, var builder)
         {
             if (self.handler == null)
                 Rosella.Error.invalid(__FUNCTION__, "Cannot render '%s', no handler", self.logic_name);
-            self.handler.render(context, builder);
+            self.handler.render(engine, context, builder);
         }
     }
 }}}
