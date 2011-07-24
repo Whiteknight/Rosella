@@ -1,1 +1,4 @@
 $load "rosella/filesystem.pbc";
+
+namespace Rosella {
+}
