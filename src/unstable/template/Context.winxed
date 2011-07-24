@@ -24,5 +24,15 @@ namespace Rosella { namespace Template
                 return self.temps[key];
             return self.path.get(self.user_context, key);
         }
+
+        function set_pmc_keyed[vtable](var key, var value)
+        {
+            self.set_temporary(key, value);
+        }
+
+        function get_pmc_keyed[vtable](var key)
+        {
+            return self.get_value(key);
+        }
     }
 }}
