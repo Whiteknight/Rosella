@@ -54,10 +54,10 @@ namespace Rosella { namespace Template { namespace Handler
         {
             if (self.__satisfied(ctx)) {
                 for (var child in self.then_children)
-                    child.render(ctx, sb);
+                    child.render(engine, ctx, sb);
             } else {
                 for (var child in self.else_children)
-                    child.render(ctx, sb);
+                    child.render(engine, ctx, sb);
             }
         }
 
