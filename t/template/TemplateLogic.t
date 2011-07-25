@@ -98,5 +98,6 @@ function __test_data() { return {
     // Repeat
     "Repeat empty" : ["<$ repeat 1 to 1 $><# __INDEX__ #><$ endrepeat $>", {}, "1"],
     "Repeat forward" : ["<$ repeat 1 to 5 $><# __INDEX__ #><$ endrepeat $>", {}, "12345"],
-    "Repeat backwards" : ["<$ repeat 5 to 1 $><# __INDEX__ #><$ endrepeat $>", {}, "54321"]
+    "Repeat backwards" : ["<$ repeat 5 to 1 $><# __INDEX__ #><$ endrepeat $>", {}, "54321"],
+    "Repeat ctx" : ["<$ repeat foo to bar $><# __INDEX__ #><$ endrepeat $>", {"foo" : 1, "bar" : 5}, "12345"]
 };}
