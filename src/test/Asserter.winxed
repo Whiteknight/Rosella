@@ -27,14 +27,12 @@ namespace Rosella { namespace Test
             var exception [optional,named], int has_ex [opt_flag]
             )
         {
-            using Rosella.Test.internal_fail;
-
             if (!has_is_i)
                 is_internal = 0;
             if (!has_ex)
                 exception = null;
 
-            internal_fail(why, is_internal, exception);
+            Rosella.Test.internal_fail(why, is_internal, exception);
         }
 
         /* Assertion Functions
@@ -140,8 +138,7 @@ namespace Rosella { namespace Test
         function instance_of(var obj, var type, string message [optional], int has_msg [opt_flag])
         {
             message = self.default_message(message, has_msg, "object is not instance_of");
-            using Rosella.get_type_class;
-            var class_obj = get_type_class(type);
+            var class_obj = Rosella.get_type_class(type);
             int it_isa = 0;
             ${ isa it_isa, obj, class_obj };
             if (!it_isa)
@@ -151,8 +148,7 @@ namespace Rosella { namespace Test
         function not_instance_of(var obj, var type, string message [optional], int has_msg [opt_flag])
         {
             message = self.default_message(message, has_msg, "object is instance_of");
-            using Rosella.get_type_class;
-            var class_obj = get_type_class(type);
+            var class_obj = Rosella.get_type_class(type);
             int it_isa = 0;
             ${ isa it_isa, obj, class_obj };
             if (it_isa)
@@ -304,20 +300,19 @@ namespace Rosella { namespace Test
                 string message [optional], int has_msg [opt_flag],
                 string erroutput [named,optional], int has_erroutput [opt_flag])
         {
-            using Rosella.IO.swap_handles;
             message = self.default_message(message, has_msg, "output did not match");
             var stdout = new "StringHandle";
             stdout.open("Rosella.Test.Assert.stdout", "rw");
             var stderr = new "StringHandle";
             stderr.open("Rosella.Test.Assert.stderr", "rw");
-            var save_handles = swap_handles({"stdout": stdout, "stderr": stderr});
+            var save_handles = Rosella.IO.swap_handles({"stdout": stdout, "stderr": stderr});
             var exception = null;
             try {
                 block();
             } catch (e) {
                 exception = e;
             }
-            swap_handles(save_handles);
+            Rosella.IO.swap_handles(save_handles);
 
             if (exception != null) {
                 say(exception);

@@ -61,7 +61,7 @@ namespace Rosella { namespace Test
             return self.suite;
         }
 
-                // Mark the currently-executing test as TODOd
+        // Mark the currently-executing test as TODOd
         function todo(string msg)
         {
             self.test_todo = msg;
@@ -77,8 +77,7 @@ namespace Rosella { namespace Test
         function unimplemented(string msg)
         {
             self.test_todo = msg;
-            using Rosella.Test.internal_fail;
-            internal_fail("Unimplemented: " + msg, 1, null);
+            Rosella.Test.internal_fail("Unimplemented: " + msg, 1, null);
         }
     }
 }}
