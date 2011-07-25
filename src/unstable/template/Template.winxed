@@ -1,0 +1,19 @@
+namespace Rosella
+{
+    namespace Template
+    {
+        const string TEMPLATE_PATH = "rosella/data/templates";
+
+        function get_standard_template_file(string shortname)
+        {
+            string filepath = Rosella.FileSystem.join_path_parts(TEMPLATE_PATH, shortname);
+            if (Rosella.FileSystem.is_file(filepath))
+                return filepath;
+            var config = Rosella.Parrot.get_config_hash();
+            filepath = Rosella.FileSystem.join_path_parts(config["datadir"], filepath);
+            if (Rosella.FileSystem.is_file(filepath))
+                return filepath;
+            Rosella.Error.invalid(__FUNCTION__, "Cannot find standard template '%s'", shortname);
+        }
+    }
+}
