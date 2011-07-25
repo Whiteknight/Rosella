@@ -16,6 +16,7 @@ namespace Rosella { namespace Template
         {
             self.default_nodeclass = class Rosella.Template.Node.Literal;
             self.regions = self.setup_default_regions();
+            self.recurse_level = DEFAULT_RECURSE_LIMIT;
         }
 
         /* Helper Routines.
@@ -98,40 +99,32 @@ namespace Rosella { namespace Template
         */
 
         // Generate output from a template text string
-        function generate(string tmpl, var user_context)
+        function generate(string tmpl, var user_data)
         {
-            var tokenizer = new Rosella.String.Tokenizer.DelimiterRegion(DEFAULT_REGION_NAME);
-            var node_factory = new Rosella.Template.Node.Factory();
-            self.setup_region_types(tokenizer, node_factory);
-            var nodes_array = self.__get_nodes_array(tokenizer, node_factory, tmpl);
-            var node = self.__create_node_tree(nodes_array);
-            var builder = new ['StringBuilder'];
-            var context = new Rosella.Template.Context(user_context);
-            node.render(self, context, builder);
-            return string(builder);
+            var context = self.__get_context_object(user_data);
+            return self.__generate_internal(tmpl, context);
         }
 
         // Generate output from a filename containing a template
-        function generate_from_file(string tmpl_filename, var user_context)
+        function generate_from_file(string tmpl_filename, var user_data)
         {
-            var file = new Rosella.FileSystem.File(tmpl_filename);
-            if (!file.exists())
-                Rosella.Error.invalid(__FUNCTION__, "Template file " + tmpl_filename + " does not exist");
-            string tmpl = file.read_all_text();
-            self.generate(tmpl, user_context);
-        }
-
-        function try_recurse(var func)
-        {
-            if (self.recursion_limit == 0)
-                return;
-            self.recursion_limit = self.recursion_limit - 1;
-            func();
-            self.recursion_limit = self.recursion_limit + 1;
+            var context = self.__get_context_object(user_data);
+            string tmpl = self.__get_template_from_file(tmpl_filename);
+            return self.__generate_internal(tmpl, context);
         }
 
         /* Private Helper Methods
         */
+
+        function __get_context_object(var data)
+        {
+            var context_class = class Rosella.Template.Context;
+            int isa_context = 0;
+            ${ isa isa_context, data, context_class };
+            if (isa_context)
+                return data;
+            return new Rosella.Template.Context(data);
+        }
 
         // Tokenize the template and create a stream of nodes
         function __get_nodes_array(var tokenizer, var node_factory, string tmpl)
@@ -155,6 +148,35 @@ namespace Rosella { namespace Template
             for (var node in nodes_array)
                 current_node = node.assemble(parent_nodes, current_node);
             return first_node;
+        }
+
+        // Get the text of a template from a file given by file name
+        function __get_template_from_file(string filename)
+        {
+            var file = new Rosella.FileSystem.File(filename);
+            if (!file.exists())
+                Rosella.Error.invalid(__FUNCTION__, "Template file '%s' does not exist", filename);
+            return file.read_all_text();
+        }
+
+        // Generate the output given the template text and the Context object
+        // Performs automatic recursion depth checking.
+        function __generate_internal(string tmpl, var context)
+        {
+            if (self.recurse_level == 0)
+                return;
+            self.recurse_level--;
+
+            var tokenizer = new Rosella.String.Tokenizer.DelimiterRegion(DEFAULT_REGION_NAME);
+            var node_factory = new Rosella.Template.Node.Factory();
+            self.setup_region_types(tokenizer, node_factory);
+            var nodes_array = self.__get_nodes_array(tokenizer, node_factory, tmpl);
+            var node = self.__create_node_tree(nodes_array);
+            var builder = new ['StringBuilder'];
+            node.render(self, context, builder);
+
+            self.recurse_level++;
+            return string(builder);
         }
     }
 }}

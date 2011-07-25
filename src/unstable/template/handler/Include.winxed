@@ -19,11 +19,7 @@ namespace Rosella { namespace Template { namespace Handler
         // engine
         function render(var engine, var ctx, var sb)
         {
-            var file = new Rosella.FileSystem.File(self.filename);
-            if (!file.exists())
-                Rosella.Error.invalid(__FUNCTION__, "File '%s' does not exist", self.filename);
-            string text = file.read_all_text();
-            string output = engine.generate(text, ctx);
+            string output = engine.generate_from_file(self.filename, ctx);
             push(sb, output);
         }
     }
