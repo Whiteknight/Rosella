@@ -6,8 +6,10 @@ namespace Rosella { namespace Template
     class Engine
     {
         const string DEFAULT_REGION_NAME = "!!!LiteralRegion!!!";
+        const int DEFAULT_RECURSE_LIMIT = 10;
         var default_nodeclass;
         var regions;
+        var recurse_level;
 
         // constructor
         function Engine()
@@ -117,6 +119,15 @@ namespace Rosella { namespace Template
                 Rosella.Error.invalid(__FUNCTION__, "Template file " + tmpl_filename + " does not exist");
             string tmpl = file.read_all_text();
             self.generate(tmpl, user_context);
+        }
+
+        function try_recurse(var func)
+        {
+            if (self.recursion_limit == 0)
+                return;
+            self.recursion_limit = self.recursion_limit - 1;
+            func();
+            self.recursion_limit = self.recursion_limit + 1;
         }
 
         /* Private Helper Methods
