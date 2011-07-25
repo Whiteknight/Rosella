@@ -37,14 +37,11 @@ namespace Rosella { namespace MockObject
         // Get a new proxy factory for the given type. For internal use only.
         function get_mock_factory_internal(var type_to_mock, var opts)
         {
-            using Rosella.get_type_name;
-
-            string type_name = get_type_name(type_to_mock);
+            string type_name = Rosella.get_type_name(type_to_mock);
             if (exists self.proxy_factories[type_name])
                 return self.proxy_factories[type_name];
 
             var builders = self.get_builder_types(opts);
-
             var factory = new Rosella.Proxy.Factory(type_to_mock, builders);
             self.proxy_factories[type_name] = factory;
             return factory;
@@ -53,7 +50,6 @@ namespace Rosella { namespace MockObject
         // Get a default array of builders based on a hash of options.
         function get_builder_types(var opts)
         {
-            using Rosella.Proxy.Builder.get_builders;
             var builder_types = [
                 "MethodIntercept",
                 "AttributeIntercept"
@@ -69,7 +65,7 @@ namespace Rosella { namespace MockObject
             if (exists opts["array"] && opts["array"] == 1)
                 push(builder_types, "Array");
 
-            return get_builders(builder_types);
+            return Rosella.Proxy.Builder.get_builders(builder_types);
         }
     }
 }}

@@ -6,8 +6,7 @@ namespace Rosella { namespace MockObject { namespace Expectation
     {
         function match(var pos, var named)
         {
-            using Rosella.Error.must_subclass;
-            must_subclass("Rosella.MockObject.Expectation.With");
+            Rosella.Error.must_subclass("Rosella.MockObject.Expectation.With");
         }
     }
 
