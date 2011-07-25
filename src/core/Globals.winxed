@@ -44,6 +44,31 @@ namespace Rosella
         return __get_globals()[DEFAULT_FACTORY_GLOBAL];
     }
 
+    /* Bytecode Management Functions
+    */
+
+    // Initialize the Rosella library, loading in any necessary files.
+    function initialize_rosella(var core, var libs [slurpy])
+    {
+        var globals = __get_globals();
+        var reg = globals[DEFAULT_LIBREGISTRY_GLOBAL];
+        if (!(exists globals["rosella/core.pbc"])) {
+            init_bytecode(core, "load");
+            globals["rosella/core.pbc"] = core;
+        }
+
+        for (string shortlib in libs) {
+            string lib = "rosella/" + shortlib + ".pbc";
+            if (exists (reg[lib]))
+                continue;
+            var packfileview;
+            ${ load_bytecode packfileview, lib };
+            init_bytecode(packfileview, "load");
+            reg[lib] = packfileview;
+        }
+    }
+
+    // Load in the bytecode library to the registry, for storage
     function load_bytecode_file(string file,
             string trigger [optional], int has_trigger [opt_flag])
     {
@@ -54,16 +79,20 @@ namespace Rosella
         var packfileview;
         ${ load_bytecode packfileview, file };
         reg[file] = packfileview;
-        if (!has_trigger)
-            trigger = "";
-        if (trigger != "" && trigger != "") {
-            var subs = packfileview.subs_by_flag(trigger);
-            for (var sub in subs)
-                sub();
-        }
+        if (has_trigger && trigger != "" && trigger != null)
+            init_bytecode(packfileview, trigger);
         return packfileview;
     }
 
+    // Initialize the bytecode, executing subs with the given trigger
+    function init_bytecode(var pf, string trigger)
+    {
+        var subs = pf.subs_by_flag(trigger);
+        for (var sub in subs)
+            sub();
+    }
+
+    // Remove bytecode from the cache.
     function unload_bytecode(string file)
     {
         var reg = __get_globals()[DEFAULT_LIBREGISTRY_GLOBAL];
@@ -72,6 +101,7 @@ namespace Rosella
         // TODO: Should we destroy the PackfileView?
     }
 
+    // Add bytecode to the cache
     function register_bytecode(string file, var pbc)
     {
         var reg = __get_globals()[DEFAULT_LIBREGISTRY_GLOBAL];
