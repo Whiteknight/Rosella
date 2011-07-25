@@ -11,13 +11,13 @@ class Test_<# class.cleanname #>
         self.assert.instance_of(obj, class <# class.winxedname #>);
     }
 
-    <$ for method in class.methods $>
-    function method_<# __KEY__ #>() {
+<$ for method in class.methods $>
+    function <# __KEY__ #>() {
         self.status.verify("default test for <# __KEY__ #>");
         var obj = new <# class.winxedname #>();
-         var result = obj.<# __KEY__ #>();
+        var result = obj.<# __KEY__ #>();
     }
-    <$ endfor $>
+<$ endfor $>
 }
 
 function main[main]()

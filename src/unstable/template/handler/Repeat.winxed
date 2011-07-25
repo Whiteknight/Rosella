@@ -1,0 +1,44 @@
+namespace Rosella { namespace Template { namespace Handler
+{
+    class Repeat : Rosella.Template.Handler
+    {
+        var start;
+        var end;
+        var children;
+        const string IDX_VARNAME = "__INDEX__";
+
+        function Repeat(var tokens)
+        {
+            if (elements(tokens) != 3 || tokens[1] != "to")
+                Rosella.Error.invalid(__FUNCTION__, "Syntax of repeat loop is 'repeat <start> to <stop>'");
+            self.start = int(tokens[0]);
+            self.end = int(tokens[2]);
+            self.children = [];
+        }
+
+        // Add a child node.
+        function add_child(var node)
+        {
+            push(self.children, node);
+        }
+
+        // Render. Loop over data and render children for each
+        function render(var engine, var ctx, var sb)
+        {
+            int start = int(self.start);
+            int end = int(self.end);
+            int direction = 1;
+            if (start == end)
+                return;
+            if (end < start)
+                direction = -1;
+            var old_idx = ctx.get_value(IDX_VARNAME);
+            for (int i = start; i - direction != end; i += direction) {
+                ctx.set_temporary(IDX_VARNAME, i);
+                for (var child in self.children)
+                    child.render(engine, ctx, sb);
+            }
+            ctx.set_temporary(IDX_VARNAME, old_idx);
+        }
+    }
+}}}

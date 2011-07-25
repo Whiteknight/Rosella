@@ -1,4 +1,4 @@
-const string TEMPLATE_FILE_FMT = "src/unstable/template/templates/%s.%s.template";
+const string TEMPLATE_FILE_FMT = "%s.%s.template";
 
 function main[main](var args)
 {
@@ -13,13 +13,10 @@ function main[main](var args)
     string mode = args.shift();
     string language = args.shift();
 
-    try {
+    using Rosella.Parrot.try_report;
+    try_report(function() {
         template_main(mode, language, args);
-    } catch (e) {
-        say(e["message"]);
-        for (string bt in e.backtrace_strings())
-            say(bt);
-    }
+    });
 }
 
 function template_main(string mode, string language, args)
@@ -45,7 +42,9 @@ function template_main(string mode, string language, args)
 
 function get_template_text(string type, string lang)
 {
+    using Rosella.Template.get_standard_template_file;
     string filename = sprintf(TEMPLATE_FILE_FMT, [type, lang]);
+    filename = get_standard_template_file(filename);
     var file = new Rosella.FileSystem.File(filename);
     if (!file.exists()) {
         say(sprintf("Cannot find %s template for language '%s'", [type, lang]));

@@ -269,6 +269,7 @@ function setup_experimental_libraries(var rosella)
         "template/Handler",
         "template/handler/Factory",
         "template/handler/For",
+        "template/handler/Repeat",
         "template/handler/If",
         "template/handler/Include",
         "template/handler/Set",

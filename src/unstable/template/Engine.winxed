@@ -32,6 +32,7 @@ namespace Rosella { namespace Template
                 "Logic" : ["<$", "$>", class Rosella.Template.Node.Logic,
                     {
                         "for":     class Rosella.Template.Handler.For,
+                        "repeat":  class Rosella.Template.Handler.Repeat,
                         "if":      class Rosella.Template.Handler.If,
                         "unless":  class Rosella.Template.Handler.Unless,
                         "else":    class Rosella.Template.Handler.Childless,
