@@ -116,6 +116,9 @@ namespace Rosella { namespace Template
         /* Private Helper Methods
         */
 
+        // Get a context object. If the data is already a context object, we
+        // are probably recursing, so return it directly. Otherwise create a
+        // new Template.Context.
         function __get_context_object(var data)
         {
             var context_class = class Rosella.Template.Context;
