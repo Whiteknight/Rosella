@@ -14,8 +14,7 @@ namespace Rosella { namespace Harness { namespace TestFile
         function Factory(var testfile_type)
         {
             self.ObjectFactory(testfile_type);
-            loadlib("os");
-            self.os = new 'OS';
+            self.os = Rosella.FileSystem.get_os_pmc();
         }
 
         // Make a suitable TestFile object for the given file.

@@ -1,1 +1,55 @@
 $load "rosella/proxy.pbc";
+
+namespace Rosella {
+    namespace Proxy {
+        // src/proxy/Proxy.winxed
+        extern function is_proxy;
+        extern function get_private_attr_name;
+        extern function add_proxy_class_private_attr;
+        extern function get_proxy_private_attr;
+        extern function set_proxy_private_attr;
+        extern function add_vtable_override;
+
+        // src/proxy/Builder.winxed
+        class Builder;
+        namespace Builder {
+            extern function get_builders;
+
+            // src/proxy/builder/Array.winxed
+            class Array;
+
+            // src/proxy/builder/AttributeIntercept.winxed
+            class AttributeIntercept;
+
+            // src/proxy/builder/Immitate.winxed
+            class Imitate;
+
+            // src/proxy/builder/Immutable.winxed
+            class Immutable;
+
+            // src/proxy/builder/InvokeIntercept.winxed
+            class InvokeIntercept;
+
+            // src/proxy/builder/MethodIntercept.winxed
+            class MethodIntercept;
+
+            // src/proxy/builder/Passthrough.winxed
+            class Passthrough;
+
+            // src/proxy/builder/PMCKeyedHash.winxed
+            class PMCKeyedHash;
+
+            // src/proxy/builder/ProxyData.winxed
+            class ProxyData;
+
+            // src/proxy/builder/StringKeyedHash.winxed
+            class StringKeyedHash;
+        }
+
+        // src/proxy/Controller.winxed
+        class Controller;
+
+        // src/proxy/Factory.winxed
+        class Factory;
+    }
+}
