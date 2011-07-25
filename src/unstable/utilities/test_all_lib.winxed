@@ -1,0 +1,34 @@
+"src/unstable/template/templates/%s.%s.template"
+
+function get_template_text(string lang)
+{
+    string filename = sprintf(TEMPLATE_FILE_FMT, [type, lang]);
+    var file = new Rosella.FileSystem.File(filename);
+    if (!file.exists()) {
+        say(sprintf("Cannot find %s template for language '%s'", [type, lang]));
+        show_help();
+        exit(0);
+    }
+    return file.read_all_text();
+}
+
+function test_template_context(string template, string libname, string classname)
+{
+    load_bytecode(libname);
+    using Rosella.get_type_class;
+    using Rosella.String.replace_all;
+
+    var targetclass = get_type_class(split(".", classname));
+    var methods = targetclass.methods();
+
+    var context = {
+        "class" : {
+            "name" : classname,
+            "cleanname" : replace_all(classname, ".", "_"),
+            "winxedname" : classname,
+            "perlname" : replace_all(classname, ".", "::"),
+            "methods" : methods
+        }
+    };
+    return context;
+}
