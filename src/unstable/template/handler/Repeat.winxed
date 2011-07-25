@@ -6,6 +6,8 @@ namespace Rosella { namespace Template { namespace Handler
         var end;
         var children;
         const string IDX_VARNAME = "__INDEX__";
+        const string FIRST_VARNAME = "__FIRST__";
+        const string LAST_VARNAME = "__LAST__";
 
         function Repeat(var tokens)
         {
@@ -29,8 +31,12 @@ namespace Rosella { namespace Template { namespace Handler
             int end = int(self.__get_value(self.end, ctx));
             int direction = 1;
             var old_idx = ctx.get_value(IDX_VARNAME);
+            var old_first = ctx.get_value(FIRST_VARNAME);
+            var old_last = ctx.get_value(LAST_VARNAME);
             if (start == end) {
                 ctx.set_temporary(IDX_VARNAME, start);
+                ctx.set_temporary(FIRST_VARNAME, 1);
+                ctx.set_temporary(LAST_VARNAME, 1);
                 for (var child in self.children)
                     child.render(engine, ctx, sb);
                 ctx.set_temporary(IDX_VARNAME, old_idx);
@@ -40,11 +46,15 @@ namespace Rosella { namespace Template { namespace Handler
                 direction = -1;
 
             for (int i = start; i - direction != end; i += direction) {
+                ctx.set_temporary(FIRST_VARNAME, i == start);
+                ctx.set_temporary(LAST_VARNAME, i == end);
                 ctx.set_temporary(IDX_VARNAME, i);
                 for (var child in self.children)
                     child.render(engine, ctx, sb);
             }
             ctx.set_temporary(IDX_VARNAME, old_idx);
+            ctx.set_temporary(FIRST_VARNAME, old_first);
+            ctx.set_temporary(LAST_VARNAME, old_last);
         }
 
         // Get a value from one of the operands.
