@@ -28,11 +28,17 @@ namespace Rosella { namespace Template { namespace Handler
             int start = int(self.start);
             int end = int(self.end);
             int direction = 1;
-            if (start == end)
+            var old_idx = ctx.get_value(IDX_VARNAME);
+            if (start == end) {
+                ctx.set_temporary(IDX_VARNAME, start);
+                for (var child in self.children)
+                    child.render(engine, ctx, sb);
+                ctx.set_temporary(IDX_VARNAME, old_idx);
                 return;
+            }
             if (end < start)
                 direction = -1;
-            var old_idx = ctx.get_value(IDX_VARNAME);
+
             for (int i = start; i - direction != end; i += direction) {
                 ctx.set_temporary(IDX_VARNAME, i);
                 for (var child in self.children)

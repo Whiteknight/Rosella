@@ -93,5 +93,10 @@ function __test_data() { return {
         "<$ for foo in bar $><# __KEY__ #><# foo #><$ endfor $>",
         {"bar" : {"a" : 1, "b" : 2, "c" : 3}},
         "a1b2c3"
-    ]
+    ],
+
+    // Repeat
+    "Repeat empty" : ["<$ repeat 1 to 1 $><# __INDEX__ #><$ endrepeat $>", {}, "1"],
+    "Repeat forward" : ["<$ repeat 1 to 5 $><# __INDEX__ #><$ endrepeat $>", {}, "12345"],
+    "Repeat backwards" : ["<$ repeat 5 to 1 $><# __INDEX__ #><$ endrepeat $>", {}, "54321"]
 };}
