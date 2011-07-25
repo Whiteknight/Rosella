@@ -10,14 +10,23 @@ class Test_<# class.cleanname #>
         self.assert.not_null(obj);
         self.assert.instance_of(obj, class <# class.winxedname #>);
     }
-
 <$ for method in class.methods $>
+    <%
+        string key = context.get_value("__KEY__");
+        var method = context.get_value("class.methods")[key];
+        int arity = method.arity();
+        context.set_temporary("method_arity", arity - 1);
+    %>
     function <# __KEY__ #>() {
         self.status.verify("default test for <# __KEY__ #>");
         var obj = new <# class.winxedname #>();
-        var result = obj.<# __KEY__ #>();
-    }
-<$ endfor $>
+<$ unless method_arity == 0 $><$ repeat 0 to method_arity $>
+        var arg_<# __INDEX__ #> = null;<$ endrepeat $><$ endunless $>
+        <$ if method_arity == 0 $>var result = obj.<# __KEY__ #>();<$ else $>
+        var result = obj.<# __KEY__ #>(<$ repeat 0 to method_arity $>
+                arg_<# __INDEX__ #><$ unless __LAST__ $>, <$ endunless $><$ endrepeat $>
+        );<$ endif $>
+    }<$ endfor $>
 }
 
 function main[main]()
