@@ -74,23 +74,20 @@ namespace Rosella { namespace Query
         // Map the data
         function map(var data, var func)
         {
-            using Rosella.Error.must_subclass;
-            must_subclass("Rosella::Query::Provider");
+            Rosella.Error.must_subclass("Rosella::Query::Provider");
         }
 
         // Filter the data
         function filter(var data, var func,
                 int limit [optional], int has_limit [opt_flag])
         {
-            using Rosella.Error.must_subclass;
-            must_subclass("Rosella::Query::Provider");
+            Rosella.Error.must_subclass("Rosella::Query::Provider");
         }
 
         // Fold the data
         function fold(var seed, var data, var func)
         {
-            using Rosella.Error.must_subclass;
-            must_subclass("Rosella::Query::Provider");
+            Rosella.Error.must_subclass("Rosella::Query::Provider");
         }
 
         // Return a count of elements. If a predicate is provided, return a
@@ -124,10 +121,8 @@ namespace Rosella { namespace Query
         {
             if (has_func)
                 data = self.filter(data, func);
-            if (self.count(data) != 1) {
-                using Rosella.Error.invalid;
-                invalid(__FUNCTION__, "Aggregate has more than one entry");
-            }
+            if (self.count(data) != 1)
+                Rosella.Error.invalid(__FUNCTION__, "Aggregate has more than one entry");
             return self.unwrap_first(data);
         }
 
@@ -139,10 +134,8 @@ namespace Rosella { namespace Query
                 data = self.take(data, 1, func);
             else
                 data = self.take(data, 1);
-            if (self.count(data) < 1) {
-                using Rosella.Error.invalid;
-                invalid(__FUNCTION__, "Aggregate does not have at least one entry");
-            }
+            if (self.count(data) < 1)
+                Rosella.Error.invalid(__FUNCTION__, "Aggregate does not have at least one entry");
             return self.unwrap_first(data);
         }
 
@@ -168,15 +161,13 @@ namespace Rosella { namespace Query
         // Take from the data
         function take(var data, int count, var func [optional], int has_func [opt_flag])
         {
-            using Rosella.Error.must_subclass;
-            must_subclass("Rosella::Query::Provider");
+            Rosella.Error.must_subclass("Rosella::Query::Provider");
         }
 
         // Skip some of the data
         function skip(var data, int count, var func [optional], int has_func [opt_flag])
         {
-            using Rosella.Error.must_subclass;
-            must_subclass("Rosella::Query::Provider");
+            Rosella.Error.must_subclass("Rosella::Query::Provider");
         }
 
         // Combine two aggregates
@@ -185,28 +176,24 @@ namespace Rosella { namespace Query
                 var key_func [optional], int has_key_func [opt_flag],
                 var dispute [optional], int has_dispute [opt_flag])
         {
-            using Rosella.Error.must_subclass;
-            must_subclass("Rosella::Query::Provider");
+            Rosella.Error.must_subclass("Rosella::Query::Provider");
         }
 
         function unwrap_first(var data)
         {
-            using Rosella.Error.must_subclass;
-            must_subclass("Rosella::Query::Provider");
+            Rosella.Error.must_subclass("Rosella::Query::Provider");
         }
 
         // Convert to an array
         function to_array(var data)
         {
-            using Rosella.Error.must_subclass;
-            must_subclass("Rosella::Query::Provider");
+            Rosella.Error.must_subclass("Rosella::Query::Provider");
         }
 
         // Convert to a hash
         function to_hash(var data, var func)
         {
-            using Rosella.Error.must_subclass;
-            must_subclass("Rosella::Query::Provider");
+            Rosella.Error.must_subclass("Rosella::Query::Provider");
         }
 
         // Convert the aggregate to an array and sort it, according to the
