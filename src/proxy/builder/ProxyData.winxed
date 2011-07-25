@@ -1,19 +1,24 @@
 namespace Rosella { namespace Proxy { namespace Builder
 {
+    /* Add Additional Attributes
+        ProxyData is a Proxy.Builder which can be used to add arbitrary named
+        private attributes to a proxy class
+    */
     class ProxyData : Rosella.Proxy.Builder
     {
         var extra_fields;
 
+        // Constructor
         function ProxyData(var fields [slurpy])
         {
             self.extra_fields = fields;
         }
 
+        // For each attribute, add it to the class
         function setup_proxy_class(var target_class, var proxy_class)
         {
-            using Rosella.Proxy.add_proxy_class_private_attr;
             for (string field in self.extra_fields)
-                add_proxy_class_private_attr(proxy_class, field);
+                Rosella.Proxy.add_proxy_class_private_attr(proxy_class, field);
         }
     }
 }}}
