@@ -1,0 +1,32 @@
+// Automatically generated test for NameSpace <# ns.name #>
+class Test_<# ns.cleanname #>
+{
+    function test_sanity()
+    {
+        self.assert.is_true(1);
+    }
+
+<$ for subobj in ns.subs $>
+    <%
+        string key = context.get_value("__KEY__");
+        var sub = context.get_value("ns.subs")[key];
+        int arity = method.arity();
+        context.set_temporary("sub_arity", arity - 1);
+    %>
+    function <# __KEY__ #>() {
+        self.status.verify("default test for <# ns.name #>.<# __KEY__ #>");
+<$ unless sub_arity == 0 $><$ repeat 0 to sub_arity $>
+        var arg_<# __INDEX__ #> = null;<$ endrepeat $><$ endunless $>
+        using <# ns.name #>.<# __KEY__ #>;
+        <$ if sub_arity == 0 $>var result = <# __KEY__ #>();<$ else $>
+        var result = <# __KEY__ #>(<$ repeat 0 to method_arity $>arg_<# __INDEX__ #><$ unless __LAST__ $>, <$ endunless $><$ endrepeat $>);<$ endif $>
+    }<$ endfor $>
+}
+
+function main[main]()
+{
+    load_bytecode("rosella/test.pbc");
+    load_bytecode("<# ns.ownerlib #>");
+    using Rosella.Test.test;
+    test(class Test_<# ns.winxedname #>);
+}

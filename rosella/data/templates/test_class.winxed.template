@@ -1,3 +1,4 @@
+// Automatically generated test for Class <# class.name #>
 class Test_<# class.cleanname #>
 {
     function test_sanity()
@@ -18,7 +19,7 @@ class Test_<# class.cleanname #>
         context.set_temporary("method_arity", arity - 1);
     %>
     function <# __KEY__ #>() {
-        self.status.verify("default test for <# __KEY__ #>");
+        self.status.verify("default test for <# class.name #>.<# __KEY__ #>");
         var obj = new <# class.winxedname #>();
 <$ unless method_arity == 0 $><$ repeat 0 to method_arity $>
         var arg_<# __INDEX__ #> = null;<$ endrepeat $><$ endunless $>
@@ -30,6 +31,7 @@ class Test_<# class.cleanname #>
 function main[main]()
 {
     load_bytecode("rosella/test.pbc");
+    load_bytecode("<# class.ownerlib #>");
     using Rosella.Test.test;
-    test(class <# class.winxedname #>);
+    test(class Test_<# class.cleanname #>);
 }

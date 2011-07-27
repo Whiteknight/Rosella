@@ -20,7 +20,8 @@ namespace Rosella { namespace FileSystem
     class Directory : Rosella.FileSystem.Entry
     {
         // Constructor. Build a directory with the given path name
-        function Directory(string path)
+        function Directory(string path,
+                var parent_dir [optional], int has_parent [opt_flag])
         {
             if (path == null || path == "") {
                 using Rosella.Error.invalid;
@@ -32,6 +33,8 @@ namespace Rosella { namespace FileSystem
             string lastchar = substr(path, len - 1);
             if (lastchar != path_sep)
                 path = path + path_sep;
+            if (has_parent)
+                path = string(parent_dir) + path;
             self.Entry(path);
         }
 

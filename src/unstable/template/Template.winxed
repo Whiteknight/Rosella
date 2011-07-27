@@ -15,5 +15,12 @@ namespace Rosella
                 return filepath;
             Rosella.Error.invalid(__FUNCTION__, "Cannot find standard template '%s'", shortname);
         }
+
+        function get_standard_template_text(string shortname)
+        {
+            string filename = get_standard_template_file(shortname);
+            var file = new Rosella.FileSystem.File(filename);
+            return file.read_all_text();
+        }
     }
 }

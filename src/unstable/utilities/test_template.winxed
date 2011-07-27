@@ -19,7 +19,7 @@ function main[main](var args)
     });
 }
 
-function template_main(string mode, string language, args)
+function template_main(string mode, string language, var args)
 {
     string template;
     var context;
