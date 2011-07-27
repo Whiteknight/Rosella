@@ -6,7 +6,8 @@ class Test_<# class.cleanname #>
         self.assert.is_true(1);
     }
 
-    function test_new() {
+    function test_new()
+    {
         var obj = new <# class.winxedname #>();
         self.assert.not_null(obj);
         self.assert.instance_of(obj, class <# class.winxedname #>);
@@ -19,7 +20,8 @@ class Test_<# class.cleanname #>
         context.set_temporary("has_method_arity", (arity - 2) != -1);
     %>
 
-    function <# __KEY__ #>() {
+    function <# __KEY__ #>()
+    {
         self.status.verify("Test <# class.name #>.<# __KEY__ #>()");
         var obj = new <# class.winxedname #>();
 <$ if has_method_arity $><$ repeat 0 to method_arity $>

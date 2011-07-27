@@ -13,7 +13,8 @@ class Test_<# ns.cleanname #>
         context.set_temporary("has_sub_arity", arity != -1);
     %>
 
-    function <# subobj #>() {
+    function <# subobj #>()
+    {
         self.status.verify("Test <# ns.name #>.<# subobj #>()");
         using <# ns.name #>.<# subobj #>;
         <$ unless has_sub_arity $>var result = <# subobj #>();<$ else $><$ repeat 0 to sub_arity $>

@@ -6,6 +6,9 @@ namespace Rosella { namespace Template
     */
     class Handler
     {
+        // Empty constructor. Should probably never be used
+        function Handler() { }
+
         // Add a child node
         function add_child(var node)
         {
