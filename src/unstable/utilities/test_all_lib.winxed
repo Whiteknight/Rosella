@@ -48,13 +48,15 @@ function main[main](var args)
 {
     load_bytecode("rosella/core.pbc");
     load_bytecode("rosella/filesystem.pbc");
-    load_bytecode("rosella/template.pbc");
 
     string program_name = args.shift();
     string libpath = args.shift();
+    if (libpath != "rosella/template.pbc")
+        load_bytecode("rosella/template.pbc");
     string folder = args.shift();
     using Rosella.Parrot.try_report;
     try_report(function() {
+        using LibLoader.try_load_lib;
         var lib = try_load_lib(libpath);
         var entries = get_lib_entries(lib);
         output_test_files(libpath, entries, folder);
@@ -132,17 +134,20 @@ function get_class_context(string libname, string nsname, string classname, var 
     return context;
 }
 
-function try_load_lib(string libpath)
+namespace LibLoader [HLL]
 {
-    Rosella.IO.printf("Loading library '%s'...", libpath);
-    var pf = new 'PackfileView';
-    pf.read_from_file(libpath);
-    if (pf == null) {
-        Rosella.IO.sayf("FAIL.");
-        Rosella.Error.invalid(__FUNCTION__, "Cannot load '%s'", libpath);
+    function try_load_lib(string libpath)
+    {
+        var pf = new 'PackfileView';
+        pf.read_from_file(libpath);
+        for (var sub in pf.subs_by_flag('init'))
+            sub();
+        if (pf == null) {
+            Rosella.IO.sayf("FAIL.");
+            Rosella.Error.invalid(__FUNCTION__, "Cannot load '%s'", libpath);
+        }
+        return pf;
     }
-    Rosella.IO.sayf("Done.");
-    return pf;
 }
 
 function get_lib_entries(var lib)

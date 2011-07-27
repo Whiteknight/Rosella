@@ -10,7 +10,7 @@ class Test_<# ns.cleanname #>
     <%
         string key = context.get_value("__KEY__");
         var sub = context.get_value("ns.subs")[key];
-        int arity = method.arity();
+        int arity = sub.arity();
         context.set_temporary("sub_arity", arity - 1);
     %>
     function <# __KEY__ #>() {
