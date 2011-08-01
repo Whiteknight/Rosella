@@ -1,27 +1,12 @@
-// Automatically generated test for Class Rosella.Template.Handler.If
 class Test_Rosella_Template_Handler_If
 {
-    function test_sanity()
-    {
-        self.assert.is_true(1);
-    }
-
     function test_new() {
         var obj = new Rosella.Template.Handler.If();
         self.assert.not_null(obj);
         self.assert.instance_of(obj, class Rosella.Template.Handler.If);
     }
 
-
-    function If() {
-        self.status.verify("Test Rosella.Template.Handler.If.If()");
-        var obj = new Rosella.Template.Handler.If();
-
-        var arg_0 = null;
-        var result = obj.If(arg_0);
-    }
-
-    function add_child() {
+   function add_child() {
         self.status.verify("Test Rosella.Template.Handler.If.add_child()");
         var obj = new Rosella.Template.Handler.If();
 

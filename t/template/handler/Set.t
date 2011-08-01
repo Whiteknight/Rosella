@@ -1,24 +1,9 @@
-// Automatically generated test for Class Rosella.Template.Handler.Set
 class Test_Rosella_Template_Handler_Set
 {
-    function test_sanity()
-    {
-        self.assert.is_true(1);
-    }
-
     function test_new() {
         var obj = new Rosella.Template.Handler.Set();
         self.assert.not_null(obj);
         self.assert.instance_of(obj, class Rosella.Template.Handler.Set);
-    }
-
-
-    function Set() {
-        self.status.verify("Test Rosella.Template.Handler.Set.Set()");
-        var obj = new Rosella.Template.Handler.Set();
-
-        var arg_0 = null;
-        var result = obj.Set(arg_0);
     }
 
     function can_have_children() {
