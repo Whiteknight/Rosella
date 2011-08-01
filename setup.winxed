@@ -302,8 +302,9 @@ function setup_utilities(var rosella)
 function setup_data_files(var rosella)
 {
     rosella["inst_data"] = [
-        "rosella/data/templates/test.nqp.template",
-        "rosella/data/templates/test.winxed.template",
+        "rosella/data/templates/test_class.nqp.template",
+        "rosella/data/templates/test_class.winxed.template",
+        "rosella/data/templates/test_ns.winxed.template",
         "rosella/data/templates/test_harness.nqp.template",
         "rosella/data/templates/test_harness.winxed.template"
     ];
