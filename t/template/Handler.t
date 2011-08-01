@@ -33,7 +33,18 @@ class Test_Rosella_Template_Handler
         var obj = new Rosella.Template.Handler();
 
         var result = obj.can_have_children();
-        self.assert.is_true(result);
+        self.assert.is_false(result);
+    }
+
+    function __save_ctx_values() {
+        var obj = new Rosella.Template.Handler();
+        var ctx = new Rosella.Template.Context({"Foo" : "bar", "Baz" : "fie"});
+        obj.__save_ctx_values(function() {
+            ctx.set_temporary("Foo", "a");
+            ctx.set_temporary("Bar", "b");
+        }, ctx, "Foo");
+        self.assert.equal(ctx["Foo"], "bar");
+        self.assert.equal(ctx["Bar"], "b");
     }
 }
 

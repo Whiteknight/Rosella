@@ -24,6 +24,8 @@ namespace Rosella { namespace Template
         // This node can have children (Default)
         function can_have_children() { return 0; }
 
+        // Execute a routine, saving away a list of values from the context
+        // to prevent them from being clobbered
         function __save_ctx_values(var func, var ctx, var keys [slurpy])
         {
             var saved = {};
