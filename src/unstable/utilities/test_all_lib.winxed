@@ -48,6 +48,7 @@ function main[main](var args)
 {
     load_bytecode("rosella/core.pbc");
     load_bytecode("rosella/filesystem.pbc");
+    load_bytecode("rosella/template.pbc");
 
     string program_name = args.shift();
     string libpath = args.shift();
@@ -69,7 +70,7 @@ function output_test_files(string libname, var entries, string folderpath)
     string class_tmpl = Rosella.Template.get_standard_template_file("test_class.winxed.template");
     string ns_tmpl = Rosella.Template.get_standard_template_file("test_ns.winxed.template");
     for (string nsname in entries) {
-        Rosella.IO.sayf("START NameSpace '%s':", nsname);
+        Rosella.IO.sayf("START NameSpace '%s'", nsname);
         var classes = entries[nsname].classes;
         var subs = entries[nsname].subs;
         if (elements(subs) > 0) {
@@ -92,7 +93,7 @@ function output_test_files(string libname, var entries, string folderpath)
                 Rosella.IO.sayf("\tBuilt Class test file %s", string(classfile));
             }
         }
-        Rosella.IO.sayf("END NameSpace '%s':", nsname);
+        Rosella.IO.sayf("END NameSpace '%s'", nsname);
     }
 }
 

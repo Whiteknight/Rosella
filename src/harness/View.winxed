@@ -59,7 +59,7 @@ namespace Rosella { namespace Harness
         function end_test(var test)
         {
             if (test.result != null)
-                sayf("not ok (%s)", test.result);
+                Rosella.IO.sayf("not ok (%s)", test.result);
             else
                 say("ok");
             string error_details = test.error_details();
