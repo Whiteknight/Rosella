@@ -3,7 +3,7 @@ namespace Rosella { namespace Template { namespace Handler
     /* Sub-Template including
         Include template text from another file.
     */
-    class Include : Rosella.Template.Handler.Childless
+    class Include : Rosella.Template.Handler
     {
         var filename;
 

@@ -49,6 +49,9 @@ namespace Rosella { namespace Template { namespace Handler
             }
         }
 
+        // Can have children
+        function can_have_children() { return 1; }
+
         // Render children, depending on the state of the condition
         function render(var engine, var ctx, var sb)
         {

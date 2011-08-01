@@ -3,7 +3,7 @@ namespace Rosella { namespace Template { namespace Handler
     /* Temporary Variable Set
         Set a value into a temporary variable
     */
-    class Set : Rosella.Template.Handler
+    class Set : Rosella.Template.Handler.Children
     {
         var varname;
         var sourcename;
@@ -20,12 +20,10 @@ namespace Rosella { namespace Template { namespace Handler
 
             if (numtks == 1) {
                 self.sourcename = null;
-                self.children = [];
+                self.Children();
             }
-            else if (numtks == 3 && tokens[1] == "as") {
+            else if (numtks == 3 && tokens[1] == "as")
                 self.sourcename = tokens[2];
-                self.children = null;
-            }
             else
                 Rosella.Error.invalid(__FUNCTION__, "Syntax of set is 'set <var>' or 'set <var> as <value>'");
         }
@@ -39,21 +37,13 @@ namespace Rosella { namespace Template { namespace Handler
             return 1;
         }
 
-        // Add a child node
-        function add_child(var node)
-        {
-            if (self.children != null)
-                push(self.children, node);
-        }
-
         // Render. This node type doesn't have any output. Rendering it
         // performs the assignment
         function render(var engine, var ctx, var sb)
         {
             if (self.sourcename == null && self.children != null) {
                 var inner_sb = new "StringBuilder";
-                for (var child in self.children)
-                    child.render(engine, ctx, inner_sb);
+                self.__render_children(engine, ctx, inner_sb);
                 string text = string(inner_sb);
                 ctx.set_temporary(self.varname, text);
             }
