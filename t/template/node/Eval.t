@@ -1,28 +1,15 @@
-// Automatically generated test for Class Rosella.Template.Node.Eval
 class Test_Rosella_Template_Node_Eval
 {
-    function test_sanity()
-    {
-        self.assert.is_true(1);
-    }
-
     function test_new() {
-        var obj = new Rosella.Template.Node.Eval();
+        var token = new Rosella.String.Tokenizer.Token("foo", "bar", "baz");
+        var obj = new Rosella.Template.Node.Eval(token);
         self.assert.not_null(obj);
         self.assert.instance_of(obj, class Rosella.Template.Node.Eval);
     }
 
-
-    function Eval() {
-        self.status.verify("Test Rosella.Template.Node.Eval.Eval()");
-        var obj = new Rosella.Template.Node.Eval();
-
-        var arg_0 = null;
-        var result = obj.Eval(arg_0);
-    }
-
     function render() {
         self.status.verify("Test Rosella.Template.Node.Eval.render()");
+        self.status.unimplemented("Test this");
         var obj = new Rosella.Template.Node.Eval();
 
         var arg_0 = null;
@@ -33,6 +20,7 @@ class Test_Rosella_Template_Node_Eval
 
     function compile_func() {
         self.status.verify("Test Rosella.Template.Node.Eval.compile_func()");
+        self.status.unimplemented("Test this");
         var obj = new Rosella.Template.Node.Eval();
 
         var arg_0 = null;

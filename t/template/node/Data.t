@@ -1,28 +1,17 @@
-// Automatically generated test for Class Rosella.Template.Node.Data
 class Test_Rosella_Template_Node_Data
 {
-    function test_sanity()
-    {
-        self.assert.is_true(1);
-    }
-
     function test_new() {
-        var obj = new Rosella.Template.Node.Data();
+        var token = new Rosella.String.Tokenizer.Token("Foo", "Bar", "Baz");
+        var obj = new Rosella.Template.Node.Data(token);
         self.assert.not_null(obj);
         self.assert.instance_of(obj, class Rosella.Template.Node.Data);
     }
 
-
-    function Data() {
-        self.status.verify("Test Rosella.Template.Node.Data.Data()");
-        var obj = new Rosella.Template.Node.Data();
-
-        var arg_0 = null;
-        var result = obj.Data(arg_0);
-    }
-
     function render() {
         self.status.verify("Test Rosella.Template.Node.Data.render()");
+        self.status.unimplemented("Find a way to test this");
+
+        var token = new Rosella.String.Tokenizer.Token("Foo", "Bar", "Baz");
         var obj = new Rosella.Template.Node.Data();
 
         var arg_0 = null;

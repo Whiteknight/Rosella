@@ -1,27 +1,14 @@
-// Automatically generated test for Class Rosella.Template.Node.Master
 class Test_Rosella_Template_Node_Master
 {
-    function test_sanity()
-    {
-        self.assert.is_true(1);
-    }
-
     function test_new() {
         var obj = new Rosella.Template.Node.Master();
         self.assert.not_null(obj);
         self.assert.instance_of(obj, class Rosella.Template.Node.Master);
     }
 
-
-    function Master() {
-        self.status.verify("Test Rosella.Template.Node.Master.Master()");
-        var obj = new Rosella.Template.Node.Master();
-
-        var result = obj.Master();
-    }
-
     function render() {
         self.status.verify("Test Rosella.Template.Node.Master.render()");
+        self.status.unimplemented("Test this");
         var obj = new Rosella.Template.Node.Master();
 
         var arg_0 = null;
@@ -32,6 +19,7 @@ class Test_Rosella_Template_Node_Master
 
     function add_child() {
         self.status.verify("Test Rosella.Template.Node.Master.add_child()");
+        self.status.unimplemented("Test this");
         var obj = new Rosella.Template.Node.Master();
 
         var arg_0 = null;

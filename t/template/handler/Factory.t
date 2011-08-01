@@ -15,13 +15,13 @@ class Test_Rosella_Template_Handler_Factory
     function create() {
         self.status.verify("Test Rosella.Template.Handler.Factory.create()");
         var obj = new Rosella.Template.Handler.Factory({
-            "Foo": class Rosella.Template.Handler.Childless
+            "Foo": class Rosella.Template.Handler.Children
         });
 
         var arg_0 = "Foo";
         var arg_1 = [];
         var result = obj.create(arg_0, arg_1);
-        self.assert.instance_of(result, class Rosella.Template.Handler.Childless);
+        self.assert.instance_of(result, class Rosella.Template.Handler.Children);
     }
 
     function create_FAIL() {
