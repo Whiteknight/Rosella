@@ -53,14 +53,12 @@ namespace Rosella {
 
 function __load_core[anon, load, init]()
 {
-    string filename = "rosella/core.pbc";
-    using Rosella.register_bytecode;
-    if (register_bytecode == null) {
-        var packfile;
-        ${ load_bytecode packfile, filename };
-        var subs = packfile.subs_by_flag("load");
+    var core;
+    ${ load_bytecode core, "rosella/core.pbc" };
+    if (!core.is_initialized("load")) {
+        core.mark_initialized("load");
+        var subs = core.subs_by_flag("load");
         for (var sub in subs)
             sub();
-        Rosella.register_bytecode(filename, packfile);
     }
 }

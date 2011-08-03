@@ -8,15 +8,13 @@ namespace Rosella
     */
 
     const string DEFAULT_FACTORY_GLOBAL = "Rosella.default_factory";
-    const string DEFAULT_LIBREGISTRY_GLOBAL = "Rosella.default_libregistry";
 
     // Get the hash of globals. Private routine. Should not be called
     // externally
     function __get_globals()
     {
         var globals = {
-            DEFAULT_FACTORY_GLOBAL : new Rosella.ObjectFactory(),
-            DEFAULT_LIBREGISTRY_GLOBAL : {}
+            DEFAULT_FACTORY_GLOBAL : new Rosella.ObjectFactory()
         };
         while (1)
             yield globals;
@@ -48,65 +46,44 @@ namespace Rosella
     */
 
     // Initialize the Rosella library, loading in any necessary files.
-    function initialize_rosella(var core, var libs [slurpy])
+    function initialize_rosella(var libs [slurpy])
     {
-        var globals = __get_globals();
-        var reg = globals[DEFAULT_LIBREGISTRY_GLOBAL];
-        if (!(exists globals["rosella/core.pbc"])) {
-            init_bytecode(core, "load");
-            globals["rosella/core.pbc"] = core;
-        }
+        var core = load_bytecode_raw("rosella/core.pbc");
+        init_bytecode(core, "load");
 
         for (string shortlib in libs) {
             string lib = "rosella/" + shortlib + ".pbc";
-            if (exists (reg[lib]))
-                continue;
-            var packfileview;
-            ${ load_bytecode packfileview, lib };
-            init_bytecode(packfileview, "load");
-            reg[lib] = packfileview;
+            var pf = load_bytecode_raw(lib);
+            init_bytecode(pf, "load");
         }
+    }
+
+    function load_bytecode_raw(string name)
+    {
+        Rosella.IO.sayf("load_bytecode_raw('%s')", name);
+        var packfileview;
+        ${ load_bytecode packfileview, name };
+        return packfileview;
     }
 
     // Load in the bytecode library to the registry, for storage
     function load_bytecode_file(string file,
             string trigger [optional], int has_trigger [opt_flag])
     {
-        var reg = __get_globals()[DEFAULT_LIBREGISTRY_GLOBAL];
-        if (exists reg[file])
-            return reg[file];
-
-        var packfileview;
-        ${ load_bytecode packfileview, file };
-        reg[file] = packfileview;
+        var pf = load_bytecode_raw(file);
         if (has_trigger && trigger != "" && trigger != null)
-            init_bytecode(packfileview, trigger);
-        return packfileview;
+            init_bytecode(pf, trigger);
+        return pf;
     }
 
     // Initialize the bytecode, executing subs with the given trigger
     function init_bytecode(var pf, string trigger)
     {
-        var subs = pf.subs_by_flag(trigger);
-        for (var sub in subs)
-            sub();
-    }
-
-    // Remove bytecode from the cache.
-    function unload_bytecode(string file)
-    {
-        var reg = __get_globals()[DEFAULT_LIBREGISTRY_GLOBAL];
-        if (exists reg[file])
-            delete reg[file];
-        // TODO: Should we destroy the PackfileView?
-    }
-
-    // Add bytecode to the cache
-    function register_bytecode(string file, var pbc)
-    {
-        var reg = __get_globals()[DEFAULT_LIBREGISTRY_GLOBAL];
-        if (exists reg[file])
-            Rosella.Error.invalid(__FUNCTION__, "Cannot re-register bytecode %s", file);
-        reg[file] = pbc;
+        if (!pf.is_initialized(trigger)) {
+            var subs = pf.subs_by_flag(trigger);
+            for (var sub in subs)
+                sub();
+            pf.mark_initialized(trigger);
+        }
     }
 }
