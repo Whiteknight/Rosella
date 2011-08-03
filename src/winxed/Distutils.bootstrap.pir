@@ -6,6 +6,12 @@
 .namespace [ 'Rosella'; 'Winxed'; 'Distutils' ]
 
 .sub 'winxed_setup' :subid('WSubId_1')
+.const 'Sub' WSubId_5 = "WSubId_5"
+.const 'Sub' WSubId_6 = "WSubId_6"
+.const 'Sub' WSubId_7 = "WSubId_7"
+.const 'Sub' WSubId_2 = "WSubId_2"
+.const 'Sub' WSubId_3 = "WSubId_3"
+.const 'Sub' WSubId_4 = "WSubId_4"
 # Body
 # {
 # predefined load_bytecode
@@ -15,25 +21,19 @@
 .annotate 'line', 17
     get_hll_global $P1, 'register_step_before'
 .annotate 'line', 19
-.const 'Sub' WSubId_5 = 'WSubId_5'
     $P1("build", WSubId_5)
 .annotate 'line', 20
-.const 'Sub' WSubId_6 = 'WSubId_6'
     $P1("build", WSubId_6)
 .annotate 'line', 21
-.const 'Sub' WSubId_7 = 'WSubId_7'
     $P1("build", WSubId_7)
 .annotate 'line', 23
-.const 'Sub' $P3 = 'WSubId_2'
-    newclosure $P2, $P3
+    set $P2, WSubId_2
     $P1("clean", $P2)
 .annotate 'line', 26
-.const 'Sub' $P3 = 'WSubId_3'
-    newclosure $P2, $P3
+    set $P2, WSubId_3
     $P1("clean", $P2)
 .annotate 'line', 29
-.const 'Sub' $P3 = 'WSubId_4'
-    newclosure $P2, $P3
+    set $P2, WSubId_4
     $P1("clean", $P2)
 # }
 .annotate 'line', 32
@@ -43,10 +43,10 @@
 
 .sub '' :anon :subid('WSubId_2') :outer('WSubId_1')
         .param pmc __ARG_1 :named :slurpy
+.const 'Sub' WSubId_8 = "WSubId_8"
 # Body
 # {
 .annotate 'line', 24
-.const 'Sub' WSubId_8 = 'WSubId_8'
     $P1 = __ARG_1["winxed_winxed"]
     WSubId_8($P1)
 # }
@@ -57,10 +57,10 @@
 
 .sub '' :anon :subid('WSubId_3') :outer('WSubId_1')
         .param pmc __ARG_2 :named :slurpy
+.const 'Sub' WSubId_8 = "WSubId_8"
 # Body
 # {
 .annotate 'line', 27
-.const 'Sub' WSubId_8 = 'WSubId_8'
     $P1 = __ARG_2["pir_winxed"]
     WSubId_8($P1)
 # }
@@ -71,10 +71,10 @@
 
 .sub '' :anon :subid('WSubId_4') :outer('WSubId_1')
         .param pmc __ARG_3 :named :slurpy
+.const 'Sub' WSubId_8 = "WSubId_8"
 # Body
 # {
 .annotate 'line', 30
-.const 'Sub' WSubId_8 = 'WSubId_8'
     $P1 = __ARG_3["include_winxed"]
     WSubId_8($P1)
 # }
@@ -102,6 +102,8 @@
 
 .sub 'build_winxed_files' :subid('WSubId_5')
         .param pmc __ARG_1 :named :slurpy
+.const 'Sub' WSubId_9 = "WSubId_9"
+.const 'Sub' WSubId_10 = "WSubId_10"
 # Body
 # {
 .annotate 'line', 51
@@ -112,8 +114,8 @@
 .annotate 'line', 53
     .return()
   __label_1: # endif
-.const 'Sub' WSubId_9 = "WSubId_9"
 .annotate 'line', 55
+    if_null $P1, __label_3
     iter $P2, $P1
     set $P2, 0
   __label_2: # for iteration
@@ -124,12 +126,10 @@
 # winxed_file: $S2
     $S2 = $P1[$S1]
 .annotate 'line', 57
-.const 'Sub' WSubId_9 = 'WSubId_9'
     $P3 = WSubId_9($S2, $S1)
     if_null $P3, __label_4
     unless $P3 goto __label_4
 .annotate 'line', 58
-.const 'Sub' WSubId_10 = 'WSubId_10'
     WSubId_10($S2, $S1)
   __label_4: # endif
 # }
@@ -143,6 +143,8 @@
 
 .sub 'build_winxed_const_includes' :subid('WSubId_6')
         .param pmc __ARG_1 :named :slurpy
+.const 'Sub' WSubId_9 = "WSubId_9"
+.const 'Sub' WSubId_11 = "WSubId_11"
 # Body
 # {
 .annotate 'line', 66
@@ -153,8 +155,8 @@
 .annotate 'line', 68
     .return()
   __label_1: # endif
-.const 'Sub' WSubId_9 = "WSubId_9"
 .annotate 'line', 70
+    if_null $P1, __label_3
     iter $P2, $P1
     set $P2, 0
   __label_2: # for iteration
@@ -165,12 +167,10 @@
 # winxed_file: $S2
     $S2 = $P1[$S1]
 .annotate 'line', 72
-.const 'Sub' WSubId_9 = 'WSubId_9'
     $P3 = WSubId_9($S2, $S1)
     if_null $P3, __label_4
     unless $P3 goto __label_4
 .annotate 'line', 73
-.const 'Sub' WSubId_11 = 'WSubId_11'
     WSubId_11($S2, $S1)
   __label_4: # endif
 # }
@@ -184,6 +184,8 @@
 
 .sub 'build_concat_winxed_files' :subid('WSubId_7')
         .param pmc __ARG_1 :named :slurpy
+.const 'Sub' WSubId_12 = "WSubId_12"
+.const 'Sub' WSubId_13 = "WSubId_13"
 # Body
 # {
 .annotate 'line', 81
@@ -194,8 +196,8 @@
 .annotate 'line', 83
     .return()
   __label_1: # endif
-.const 'Sub' WSubId_12 = "WSubId_12"
 .annotate 'line', 86
+    if_null $P1, __label_3
     iter $P3, $P1
     set $P3, 0
   __label_2: # for iteration
@@ -206,12 +208,10 @@
 # var source_files: $P2
     $P2 = $P1[$S1]
 .annotate 'line', 88
-.const 'Sub' WSubId_12 = 'WSubId_12'
     $P4 = WSubId_12($P2, $S1)
     if_null $P4, __label_4
     unless $P4 goto __label_4
 .annotate 'line', 89
-.const 'Sub' WSubId_13 = 'WSubId_13'
     WSubId_13($P2, $S1)
   __label_4: # endif
 # }
@@ -225,6 +225,7 @@
 
 .sub 'delete_files' :subid('WSubId_8')
         .param pmc __ARG_1
+.const 'Sub' WSubId_14 = "WSubId_14"
 # Body
 # {
 .annotate 'line', 96
@@ -233,13 +234,13 @@
     .return()
   __label_1: # endif
 .annotate 'line', 99
+    if_null __ARG_1, __label_3
     iter $P1, __ARG_1
     set $P1, 0
   __label_2: # for iteration
     unless $P1 goto __label_3
     shift $S1, $P1
 .annotate 'line', 100
-.const 'Sub' WSubId_14 = 'WSubId_14'
     WSubId_14($S1)
     goto __label_2
   __label_3: # endfor
@@ -284,14 +285,14 @@
 .sub 'compile_to_pir' :subid('WSubId_10')
         .param string __ARG_1
         .param string __ARG_2
+.const 'Sub' WSubId_15 = "WSubId_15"
 # Body
 # {
 .annotate 'line', 123
-.const 'Sub' WSubId_15 = 'WSubId_15'
     WSubId_15(__ARG_2)
 .annotate 'line', 124
 # cmd: $S1
-    concat $S1, "winxed --nowarn -o ", __ARG_2
+    concat $S1, "winxed -o ", __ARG_2
     concat $S1, $S1, " -c "
     concat $S1, $S1, __ARG_1
 .annotate 'line', 125
@@ -322,10 +323,10 @@
 .sub 'compile_to_pasm_include' :subid('WSubId_11')
         .param string __ARG_1
         .param string __ARG_2
+.const 'Sub' WSubId_15 = "WSubId_15"
 # Body
 # {
 .annotate 'line', 135
-.const 'Sub' WSubId_15 = 'WSubId_15'
     WSubId_15(__ARG_2)
 .annotate 'line', 136
 # cmd: $S1
@@ -417,6 +418,7 @@
     .return(1)
   __label_2: # endif
 .annotate 'line', 171
+    if_null __ARG_1, __label_4
     iter $P2, __ARG_1
     set $P2, 0
   __label_3: # for iteration
@@ -474,13 +476,13 @@
 .sub 'concat_files' :subid('WSubId_13')
         .param pmc __ARG_1
         .param pmc __ARG_2
+.const 'Sub' WSubId_15 = "WSubId_15"
+.const 'Sub' WSubId_14 = "WSubId_14"
 # Body
 # {
 .annotate 'line', 193
-.const 'Sub' WSubId_15 = 'WSubId_15'
     WSubId_15(__ARG_2)
 .annotate 'line', 194
-.const 'Sub' WSubId_14 = 'WSubId_14'
     WSubId_14(__ARG_2)
 .annotate 'line', 195
     root_new $P3, ['parrot';'ResizablePMCArray']
@@ -499,6 +501,7 @@
 .annotate 'line', 197
     $P1.'open'(__ARG_2, "w")
 .annotate 'line', 198
+    if_null __ARG_1, __label_2
     iter $P5, __ARG_1
     set $P5, 0
   __label_1: # for iteration

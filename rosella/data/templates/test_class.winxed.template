@@ -1,0 +1,40 @@
+// Automatically generated test for Class <# class.name #>
+class Test_<# class.cleanname #>
+{
+    function test_sanity()
+    {
+        self.assert.is_true(1);
+    }
+
+    function test_new()
+    {
+        var obj = new <# class.winxedname #>();
+        self.assert.not_null(obj);
+        self.assert.instance_of(obj, class <# class.winxedname #>);
+    }
+<$ for method in class.methods $><%
+        string key = context.get_value("__KEY__");
+        var method = context.get_value("class.methods")[key];
+        int arity = method.arity();
+        context.set_temporary("method_arity", arity - 2);
+        context.set_temporary("has_method_arity", (arity - 2) != -1);
+    %>
+
+    function <# __KEY__ #>()
+    {
+        self.status.verify("Test <# class.name #>.<# __KEY__ #>()");
+        var obj = new <# class.winxedname #>();
+<$ if has_method_arity $><$ repeat 0 to method_arity $>
+        var arg_<# __INDEX__ #> = null;<$ endrepeat $>
+        var result = obj.<# __KEY__ #>(<$ repeat 0 to method_arity $>arg_<# __INDEX__ #><$ unless __LAST__ $>, <$ endunless $><$ endrepeat $>);<$ else $>
+        var result = obj.<# __KEY__ #>();<$ endif $>
+    }<$ endfor $>
+}
+
+function main[main]()
+{
+    load_bytecode("rosella/test.pbc");
+    load_bytecode("<# class.ownerlib #>");
+    using Rosella.Test.test;
+    test(class Test_<# class.cleanname #>);
+}

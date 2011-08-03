@@ -14,7 +14,11 @@ my @test_runs := [];
 
 if (pir::elements(@argv)) {
     for @argv -> $dir {
-        $factory.add_test_dirs("NQP", "t/$dir", :recurse(1));
+        my $type := "NQP";
+        if ($dir eq "template") {
+            $type := "Winxed";
+        }
+        $factory.add_test_dirs($type, "t/$dir", :recurse(1));
         my $run := $factory.create();
         pir::push(@test_runs, $run);
         $testview.add_run($run, 0);

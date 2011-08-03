@@ -1,29 +1,73 @@
 namespace Rosella { namespace Template
 {
+    /* Handler abstract parent type
+        This is the abstract parent type of the logic handlers. Do not use
+        this class directly.
+    */
     class Handler
     {
+        // Empty constructor.
+        function Handler(var tokens [optional]) { }
+
+        // Add a child node
         function add_child(var node)
         {
-            using Rosella.Error.must_subclass;
-            must_subclass(__FUNCTION__);
+            Rosella.Error.invalid(__FUNCTION__, "Default Template.Handler does not allow child nodes");
         }
 
-        function render(var ctx, var sb)
+        // Render contents
+        function render(var engine, var ctx, var sb)
         {
-            using Rosella.Error.must_subclass;
-            must_subclass(__FUNCTION__);
+            Rosella.Error.must_subclass(__FUNCTION__);
         }
 
-        function can_have_children() { return 1; }
+        // This node can have children (Default)
+        function can_have_children() { return 0; }
+
+        // Execute a routine, saving away a list of values from the context
+        // to prevent them from being clobbered
+        function __save_ctx_values(var func, var ctx, var keys [slurpy])
+        {
+            var saved = {};
+            for (string key in keys)
+                saved[key] = ctx.get_value(key);
+
+            func();
+
+            for (string key in keys)
+                ctx.set_temporary(key, saved[key]);
+        }
     }
 
     namespace Handler
     {
-        class Childless : Rosella.Template.Handler
+        /* Handler type that is able to contain child nodes
+        */
+        class Children : Rosella.Template.Handler
         {
-            function Childless() { }
+            var children;
 
-            function can_have_children() { return 0; }
+            // Constructor.
+            function Children(var tokens [optional])
+            {
+                self.children = [];
+            }
+
+            // This handler does have child nodes
+            function can_have_children() { return 1; }
+
+            // Add a child node.
+            function add_child(var node)
+            {
+                push(self.children, node);
+            }
+
+            // Render the contents of all children
+            function __render_children(var engine, var ctx, var sb)
+            {
+                for (var child in self.children)
+                    child.render(engine, ctx, sb);
+            }
         }
     }
 }}

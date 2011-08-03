@@ -27,7 +27,7 @@ namespace Rosella { namespace MockObject
         // user
         function to_string() {
             if (self.name == null)
-                return ("Null (unmatchable) expectation");
+                return "Null (unmatchable) expectation";
             return sprintf("Expected '%s' (n %s %d times)",
                 [self.name, self.quantity_modifier, self.quantity]
             );
@@ -95,7 +95,7 @@ namespace Rosella { namespace MockObject
         function __can_set_will()
         {
             if (self.will != null)
-                die("Cannot set Will behavior twice");
+                Rosella.Error.invalid("Cannot set Will behavior twice");
         }
 
         /* Arguments
@@ -140,7 +140,7 @@ namespace Rosella { namespace MockObject
         function __verify_can_set_args()
         {
             if (self.with != null)
-                die("You cannot specify arguments twice");
+                Rosella.Error.invalid("You cannot specify arguments twice");
         }
 
         /* Internal Methods
@@ -170,8 +170,7 @@ namespace Rosella { namespace MockObject
         // a match
         function __can_match_internal(string type, string name, var pos, var named)
         {
-            using Rosella.Error.must_subclass;
-            must_subclass("Rosella.MockObject.Expectation");
+            Rosella.Error.must_subclass("Rosella.MockObject.Expectation");
         }
 
         // mark this expectation matched, and reduce the quantity available.

@@ -11,14 +11,11 @@ namespace Rosella { namespace Memoize
         // original function
         function invoke(var proxy, var p, var n)
         {
-            using Rosella.Proxy.get_proxy_private_attr;
-            var cache = get_proxy_private_attr(proxy, "memoize_cache");
-            var func = get_proxy_private_attr(proxy, "target_object");
+            var cache = Rosella.Proxy.get_proxy_private_attr(proxy, "memoize_cache");
+            var func = Rosella.Proxy.get_proxy_private_attr(proxy, "target_object");
 
-            if (cache == null) {
-                using Rosella.Error.invalid;
-                invalid(__FUNCTION__, "no cache in memoize proxy");
-            }
+            if (cache == null)
+                Rosella.Error.invalid(__FUNCTION__, "no cache in memoize proxy");
 
             var cache_item = cache.get_item(p, n);
             if (cache_item.valid)

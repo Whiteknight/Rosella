@@ -23,8 +23,7 @@ namespace Rosella { namespace Test
         function create_typed(var type, var test_name, var test_method,
                 var p [slurpy], var n [slurpy,named])
         {
-            using Rosella.construct;
-            var test = construct(type);
+            var test = Rosella.construct(type);
             var asserter = self.options["asserter"];
             var status = new Rosella.Test.TestStatus(test_name, test_method);
             var context = self.options["context"];

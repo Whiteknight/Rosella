@@ -8,6 +8,7 @@ namespace Rosella {
     extern function isa_type;
     extern function find_named_method;
     extern function invoke_method;
+    extern function get_unique_count;
 
     // src/core/Error.winxed
     namespace Error

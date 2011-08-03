@@ -8,10 +8,8 @@ namespace Rosella
             int is_p = 0;
             try {
                 var factory = get_proxy_private_attr(obj, "proxy_factory");
-                if (factory != null) {
-                    var factory_class = class Rosella.Proxy.Factory;
-                    ${ isa is_p, factory, factory_class };
-                }
+                if (factory != null)
+                    is_p = Rosella.isa_type(class Rosella.Proxy.Factory, factory);
             } catch (e) {
                 is_p = 0;
             }
@@ -25,6 +23,7 @@ namespace Rosella
             return "!!!" + attr;
         }
 
+        // Add a private proxy attribute to the proxy class
         function add_proxy_class_private_attr(var proxy_class, string attr)
         {
             attr = get_private_attr_name(attr);
@@ -42,6 +41,7 @@ namespace Rosella
             return value;
         }
 
+        // Set the value of a private proxy attribute
         function set_proxy_private_attr(var proxy, string attr, var value)
         {
             attr = get_private_attr_name(attr);
@@ -49,11 +49,11 @@ namespace Rosella
             ${ setattribute proxy, class_obj, attr, value };
         }
 
+        // Add a vtable override
         function add_vtable_override(var proxy_class, string name, var override)
         {
             var overrides = null;
             ${ inspect overrides, proxy_class, "vtable_overrides" };
-            say("setting vtable override " + name);
             overrides[name] = override;
         }
     }

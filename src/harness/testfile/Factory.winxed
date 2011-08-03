@@ -14,15 +14,13 @@ namespace Rosella { namespace Harness { namespace TestFile
         function Factory(var testfile_type)
         {
             self.ObjectFactory(testfile_type);
-            loadlib("os");
-            self.os = new 'OS';
+            self.os = Rosella.FileSystem.get_os_pmc();
         }
 
         // Make a suitable TestFile object for the given file.
         function create_typed(var type, string filename)
         {
-            using Rosella.construct;
-            return construct(type, filename);
+            return Rosella.construct(type, filename);
         }
 
         // Return a list of TestFile objects from a list of directories.
@@ -67,10 +65,8 @@ namespace Rosella { namespace Harness { namespace TestFile
             var tests = [];
             for (string filename in filenames) {
                 var file = new Rosella.FileSystem.File(filename);
-                if (!file.exists()) {
-                    using Rosella.Error.invalid;
-                    invalid(__FUNCTION__, "file '%s' does not exist", filename);
-                }
+                if (!file.exists())
+                    Rosella.Error.invalid(__FUNCTION__, "file '%s' does not exist", filename);
                 var testobj = self.create_typed(test_type, filename);
                 push(tests, testobj);
             }

@@ -1,3 +1,47 @@
+namespace Rosella {
+    namespace FileSystem {
+        // src/filesystem/FileSystem.winxed
+        extern function get_os_pmc;
+        extern function set_os_pmc;
+        extern function is_file;
+        extern function is_directory;
+        extern function path_separator;
+        extern function join_path_parts;
+
+        // src/filesystem/Directory.winxed
+        class Directory;
+        namespace Directory {
+            extern function current_directory;
+        }
+
+        // src/filesystem/Entry.winxed
+        class Entry;
+
+        // src/filesystem/FilePath.winxed
+        class FilePath;
+
+        // src/filesystem/File.winxed
+        class File;
+        namespace File {
+            extern function get_filehandle;
+            extern function set_filehandle_factory;
+        }
+
+        // src/filesystem/Visitor.winxed
+        class Visitor;
+        namespace Visitor {
+            // src/filesystem/visitor/Delete.winxed
+            class Delete;
+
+            // src/filesystem/visitor/Function.winxed
+            class Function;
+
+            // src/filesystem/visitor/List.winxed
+            class List;
+        }
+    }
+}
+
 function __load_filesystem[anon, load, init]()
 {
     Rosella.load_bytecode_file("rosella/filesystem.pbc", "load");

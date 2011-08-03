@@ -32,7 +32,7 @@ namespace Rosella { namespace Proxy
                 else if (builder == "Array")
                     push(array, new Rosella.Proxy.Builder.Array);
                 else
-                    die("Do not know builder type " + builder);
+                    Rosella.Error.invalid(__FUNCTION__, "Do not know builder type " + builder);
             }
             return array;
         }

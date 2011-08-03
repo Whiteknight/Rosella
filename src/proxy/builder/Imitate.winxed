@@ -21,8 +21,7 @@ namespace Rosella { namespace Proxy { namespace Builder
 
         function intercept_does[nsentry](string role)
         {
-            using Rosella.Proxy.get_proxy_private_attr;
-            var controller = get_proxy_private_attr(self, "proxy_controller");
+            var controller = Rosella.Proxy.get_proxy_private_attr(self, "proxy_controller");
             if (controller != null)
                 return controller.does(self, role);
             return 0;
@@ -30,8 +29,7 @@ namespace Rosella { namespace Proxy { namespace Builder
 
         function intercept_isa[nsentry](string name)
         {
-            using Rosella.Proxy.get_proxy_private_attr;
-            var controller = get_proxy_private_attr(self, "proxy_controller");
+            var controller = Rosella.Proxy.get_proxy_private_attr(self, "proxy_controller");
             if (controller != null)
                 return controller.isa(self, name);
             return 0;
@@ -39,8 +37,7 @@ namespace Rosella { namespace Proxy { namespace Builder
 
         function intercept_isa_pmc[nsentry](var parent)
         {
-            using Rosella.Proxy.get_proxy_private_attr;
-            var controller = get_proxy_private_attr(self, "proxy_controller");
+            var controller = Rosella.Proxy.get_proxy_private_attr(self, "proxy_controller");
             if (controller != null)
                 return controller.isa_pmc(self, parent);
             return 0;

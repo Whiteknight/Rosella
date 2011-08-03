@@ -22,7 +22,6 @@ namespace Rosella { namespace Test
         // Create a Suite of the given type
         function create_typed(var type, var p [slurpy], var n [slurpy,named])
         {
-            using Rosella.construct;
             var testfactory = new Rosella.Test.TestFactory(self.options);
             var test_methods = self.get_test_methods();
             var tests = {};
@@ -30,7 +29,7 @@ namespace Rosella { namespace Test
                 var testcase = testfactory.create(test, test_methods[test]);
                 tests[test] = testcase;
             }
-            var suite = construct(type, tests, self.options["test_context"]);
+            var suite = Rosella.construct(type, tests, self.options["test_context"]);
             return suite;
         }
 
@@ -38,10 +37,8 @@ namespace Rosella { namespace Test
         // methods which match the prefix.
         function get_test_methods()
         {
-            using Rosella.get_type_class;
-
             var seen_methods = {};
-            var class_obj = get_type_class(self.test_type);
+            var class_obj = Rosella.get_type_class(self.test_type);
             var mro = class_obj.inspect("all_parents");
             var test_methods = {};
             for (var parent in mro) {

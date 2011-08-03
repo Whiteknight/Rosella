@@ -6,12 +6,10 @@ namespace Rosella { namespace Test
         // exception is not a Failure, return null
         function get_exception_failure(var ex)
         {
-            using Rosella.isa_type;
-
             var payload = ex.payload;
             if (payload == null)
                 return null;
-            if (isa_type(class Rosella.Test.Failure, payload))
+            if (Rosella.isa_type(class Rosella.Test.Failure, payload))
                 return payload;
             return null;
         }

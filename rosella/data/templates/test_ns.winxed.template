@@ -1,0 +1,32 @@
+// Automatically generated test for NameSpace <# ns.name #>
+class Test_<# ns.cleanname #>
+{
+    function test_sanity()
+    {
+        self.assert.is_true(1);
+    }
+
+    // Tests for Functions<$ for subobj in ns.subs $><%
+        var sub = context.get_value("subobj");
+        int arity = sub.arity();
+        context.set_temporary("sub_arity", arity - 1);
+        context.set_temporary("has_sub_arity", arity != -1);
+    %>
+
+    function <# subobj #>()
+    {
+        self.status.verify("Test <# ns.name #>.<# subobj #>()");
+        using <# ns.name #>.<# subobj #>;
+        <$ unless has_sub_arity $>var result = <# subobj #>();<$ else $><$ repeat 0 to sub_arity $>
+        var arg_<# __INDEX__ #> = null;<$ endrepeat $>
+        var result = <# subobj #>(<$ repeat 0 to sub_arity $>arg_<# __INDEX__ #><$ unless __LAST__ $>, <$ endunless $><$ endrepeat $>);<$ endunless $>
+    }<$ endfor $>
+}
+
+function main[main]()
+{
+    load_bytecode("rosella/test.pbc");
+    load_bytecode("<# ns.ownerlib #>");
+    using Rosella.Test.test;
+    test(class Test_<# ns.cleanname #>);
+}

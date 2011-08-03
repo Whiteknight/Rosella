@@ -24,8 +24,7 @@ namespace Rosella { namespace Harness { namespace TestRun
 
         function create_typed(var testrun_type, var p [slurpy], var n [slurpy,named])
         {
-            using Rosella.construct;
-            var testrun = construct(testrun_type, self.tests);
+            var testrun = Rosella.construct(testrun_type, self.tests);
             self.tests = [];
             return testrun;
         }

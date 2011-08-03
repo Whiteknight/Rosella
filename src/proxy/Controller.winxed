@@ -31,8 +31,7 @@ namespace Rosella { namespace Proxy
 
         function does(var proxy, string role)
         {
-            using Rosella.Proxy.get_proxy_private_attr;
-            var class_obj = get_proxy_private_attr(proxy, "target_class");
+            var class_obj = Rosella.Proxy.get_proxy_private_attr(proxy, "target_class");
             if (class_obj != null)
                 return class_obj.does(role);
             return 0;
@@ -40,8 +39,7 @@ namespace Rosella { namespace Proxy
 
         function isa(var proxy, string type)
         {
-            using Rosella.Proxy.get_proxy_private_attr;
-            var class_obj = get_proxy_private_attr(proxy, "target_class");
+            var class_obj = Rosella.Proxy.get_proxy_private_attr(proxy, "target_class");
             if (class_obj != null)
                 return class_obj.isa(type);
             return 0;
@@ -49,8 +47,7 @@ namespace Rosella { namespace Proxy
 
         function isa_pmc(var proxy, var type)
         {
-            using Rosella.Proxy.get_proxy_private_attr;
-            var class_obj = get_proxy_private_attr(proxy, "target_class");
+            var class_obj = Rosella.Proxy.get_proxy_private_attr(proxy, "target_class");
             int isa_type = 0;
             if (class_obj != null)
                 ${ isa isa_type, class_obj, type };
@@ -65,8 +62,7 @@ namespace Rosella { namespace Proxy
 
         function find_method(var proxy, string name)
         {
-            using Rosella.Proxy.get_proxy_private_attr;
-            var class_obj = get_proxy_private_attr(proxy, "target_class");
+            var class_obj = Rosella.Proxy.get_proxy_private_attr(proxy, "target_class");
             if (class_obj == null)
                 return null;
             var method = class_obj.find_method(name);

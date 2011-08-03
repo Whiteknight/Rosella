@@ -31,6 +31,7 @@ function setup_main(var argv)
     setup_stable_libraries(rosella);
     setup_experimental_libraries(rosella);
     setup_utilities(rosella);
+    setup_data_files(rosella);
 
     get_all_tests(rosella, "t");
     argv.shift();
@@ -262,11 +263,13 @@ function setup_experimental_libraries(var rosella)
 
     setup_unstable_lib(rosella, "template", ["Core", "Path", "String", "FileSystem"],
         "template/Includes",
+        "template/Template",
         "template/Engine",
         "template/Context",
         "template/Handler",
         "template/handler/Factory",
         "template/handler/For",
+        "template/handler/Repeat",
         "template/handler/If",
         "template/handler/Include",
         "template/handler/Set",
@@ -294,6 +297,17 @@ function setup_utilities(var rosella)
         rosella["pbc_pir"][pbc_file] = pir_file;
         rosella["installable_pbc"][util] = pbc_file;
     }
+}
+
+function setup_data_files(var rosella)
+{
+    rosella["inst_data"] = [
+        "rosella/data/templates/test_class.nqp.template",
+        "rosella/data/templates/test_class.winxed.template",
+        "rosella/data/templates/test_ns.winxed.template",
+        "rosella/data/templates/test_harness.nqp.template",
+        "rosella/data/templates/test_harness.winxed.template"
+    ];
 }
 
 function setup_winxed_lib(var rosella, string name, var includes, var files [slurpy],

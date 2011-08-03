@@ -27,20 +27,14 @@ namespace Rosella { namespace Query
         {
             var provider = null;
             using Rosella.Query.is_array;
-            if (is_array(data)) {
-                using Rosella.Query.Provider.get_array_provider;
-                provider = get_array_provider();
-            } else {
-                using Rosella.Query.is_hash;
-                if (is_hash(data)) {
-                    using Rosella.Query.Provider.get_hash_provider;
-                    provider = get_hash_provider();
-                }
+            if (is_array(data))
+                provider = Rosella.Query.Provider.get_array_provider();
+            else {
+                if (Rosella.Query.is_hash(data))
+                    provider = Rosella.Query.Provider.get_hash_provider();
             }
-            if (provider == null) {
-                using Rosella.Query.Provider.get_scalar_provider;
-                provider = get_scalar_provider(data);
-            }
+            if (provider == null)
+                provider = Rosella.Query.Provider.get_scalar_provider(data);
             return provider;
         }
 

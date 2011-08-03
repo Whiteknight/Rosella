@@ -57,14 +57,11 @@ namespace Rosella { namespace Event
             if (!has_queue)
                 queue_name = DEFAULT_QUEUE;
 
-            if (!isa_type(class Rosella.Event, event)) {
-                using Rosella.Error.invalid;
-                invalid(__FUNCTION__, "not a valid event");
-            }
-            if (exists self.events[event_name]) {
-                using Rosella.Error.invalid;
-                invalid(__FUNCTION__, "Cannot register a new method named " + event_name);
-            } else
+            if (!isa_type(class Rosella.Event, event))
+                Rosella.Error.invalid(__FUNCTION__, "not a valid event");
+            if (exists self.events[event_name])
+                Rosella.Error.invalid(__FUNCTION__, "Cannot register a new method named " + event_name);
+            else
                 self.events[event_name] = event;
         }
 
@@ -113,10 +110,8 @@ namespace Rosella { namespace Event
                 string queue_name [optional], int has_queue [opt_flag])
         {
             using Rosella.isa_type;
-            if (!isa_type(class Rosella.Action, action)) {
-                using Rosella.Error.invalid;
-                invalid("not a valid action");
-            }
+            if (!isa_type(class Rosella.Action, action))
+                Rosella.Error.invalid("not a valid action");
             if (!has_queue)
                 queue_name = DEFAULT_QUEUE;
             var event = self.__get_event_autocreate(event_name);
