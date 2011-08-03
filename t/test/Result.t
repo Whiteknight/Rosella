@@ -1,9 +1,9 @@
 INIT {
-    pir::load_bytecode("rosella/test.pbc");
+    my $rosella := pir::load_bytecode__PS("rosella/core.pbc");
+    Rosella::initialize_rosella("test", "mockobject");
     # I would rather not use MockObject to test Test, since the former
     # depends on the latter. However, there is no other good way to test
     # Result
-    pir::load_bytecode("rosella/mockobject.pbc");
 }
 
 Rosella::Test::test(Test::Result::Test);

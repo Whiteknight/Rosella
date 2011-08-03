@@ -60,7 +60,6 @@ namespace Rosella
 
     function load_bytecode_raw(string name)
     {
-        Rosella.IO.sayf("load_bytecode_raw('%s')", name);
         var packfileview;
         ${ load_bytecode packfileview, name };
         return packfileview;
