@@ -1,10 +1,10 @@
 namespace Rosella
 {
-    /* Global Instance Registry
+    /* Global Instance and Bytecode Registry
         The routines in this file are used to establish a registry for global
         instances. This is useful for situations where we would like to keep
         a single instance of a type around globally, or be able to inject
-        global behavior at runtime
+        global behavior at runtime.
     */
 
     const string DEFAULT_FACTORY_GLOBAL = "Rosella.default_factory";
@@ -12,11 +12,11 @@ namespace Rosella
 
     // Get the hash of globals. Private routine. Should not be called
     // externally
-    function __get_globals()
+    function __get_globals[anon]()
     {
         var globals = {
-            DEFAULT_FACTORY_GLOBAL : new Rosella.ObjectFactory(),
-            DEFAULT_LIBREGISTRY_GLOBAL : {}
+            DEFAULT_LIBREGISTRY_GLOBAL : {},
+            DEFAULT_FACTORY_GLOBAL : new Rosella.ObjectFactory()
         };
         while (1)
             yield globals;
@@ -44,6 +44,60 @@ namespace Rosella
         return __get_globals()[DEFAULT_FACTORY_GLOBAL];
     }
 
+    /* Bytecode Registry Routines
+        These routines are used to load, initialize, and register bytecode
+        libraries.
+    */
+
+    /* Flag to determine if Rosella Core is initialized. This is a
+     * transitional artifact, during the load_bytecode_s deprecation in
+     * Parrot. If loaded with load_bytecode_s, all the :load routines will
+     * already have run. Otherwise, they will need to be run manually.
+     */
+    function __rosella_is_initialized[anon]()
+    {
+        say("initializing");
+        yield 0;
+        while (1)
+            yield 1;
+    }
+
+    // Main Rosella setup routine. Setup the core library, initializing if
+    // necessary. Also, load any necessary rosella libraries by short name
+    function setup_rosella(var libs [slurpy])
+    {
+        const string CORE_FILENAME = "rosella/core.pbc";
+        var core_pf = load_bytecode_raw(CORE_FILENAME);
+        if (__rosella_is_initialized() == 0) {
+            var subs = core_pf.subs_by_flag("load");
+            for (var sub in subs)
+                sub();
+        }
+        var reg = __get_globals()[DEFAULT_LIBREGISTRY_GLOBAL];
+        if (!(exists reg[CORE_FILENAME]))
+            reg[CORE_FILENAME] = core_pf;
+
+        for (string lib in libs)
+            load_bytecode_file("rosella/" + lib + ".pbc");
+    }
+
+    // Load a single Rosella component library, by name
+    function load_rosella_library(string lib)
+    {
+        say("loading " + lib);
+        load_bytecode_file("rosella/" + lib + ".pbc", "load");
+    }
+
+    // Load a raw packfile object. Do not initialize it
+    function load_bytecode_raw(string file)
+    {
+        var packfileview;
+        ${ load_bytecode packfileview, file };
+        return packfileview;
+    }
+
+    // Load a bytecode file. Register it to prevent re-loading. Initialize
+    // with the given trigger, if given.
     function load_bytecode_file(string file,
             string trigger [optional], int has_trigger [opt_flag])
     {
@@ -51,32 +105,13 @@ namespace Rosella
         if (exists reg[file])
             return reg[file];
 
-        var packfileview;
-        ${ load_bytecode packfileview, file };
+        var packfileview = load_bytecode_raw(file);
         reg[file] = packfileview;
-        if (!has_trigger)
-            trigger = "";
-        if (trigger != "" && trigger != "") {
+        if (has_trigger && trigger != null && trigger != "") {
             var subs = packfileview.subs_by_flag(trigger);
             for (var sub in subs)
                 sub();
         }
         return packfileview;
-    }
-
-    function unload_bytecode(string file)
-    {
-        var reg = __get_globals()[DEFAULT_LIBREGISTRY_GLOBAL];
-        if (exists reg[file])
-            delete reg[file];
-        // TODO: Should we destroy the PackfileView?
-    }
-
-    function register_bytecode(string file, var pbc)
-    {
-        var reg = __get_globals()[DEFAULT_LIBREGISTRY_GLOBAL];
-        if (exists reg[file])
-            Rosella.Error.invalid(__FUNCTION__, "Cannot re-register bytecode %s", file);
-        reg[file] = pbc;
     }
 }

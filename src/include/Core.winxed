@@ -56,6 +56,8 @@ function __load_core[anon, load, init]()
     // The first time we load the bytecode, register it with core. That way
     // we force it to initialize and have a record to prevent it from
     // initializing again.
+    say("loading core");
     using Rosella.load_bytecode_file;
-    load_bytecode_file(filename, "init");
+    load_bytecode_file("rosella/core.pbc", "load");
+
 }
