@@ -13,9 +13,7 @@ namespace Rosella
         // Get an OS PMC from the Parrot distribution. Register it as a global
         function get_os_pmc()
         {
-            using Rosella.get_global;
-
-            var os = get_global(OS_PMC_GLOBAL);
+            var os = Rosella.Globals.get_global(OS_PMC_GLOBAL);
             if (os == null) {
                 loadlib("os");
                 os = new OS;
@@ -23,7 +21,7 @@ namespace Rosella
             }
             while (1) {
                 yield os;
-                os = get_global(OS_PMC_GLOBAL);
+                os = Rosella.Globals.get_global(OS_PMC_GLOBAL);
             }
         }
 
@@ -31,8 +29,7 @@ namespace Rosella
         // operations.
         function set_os_pmc(var os)
         {
-            using Rosella.register_global;
-            register_global(OS_PMC_GLOBAL, os);
+            Rosella.Globals.register_global(OS_PMC_GLOBAL, os);
         }
 
         // Determine if the given path is a file. Returns 0 if not, non-zero

@@ -16,9 +16,9 @@ namespace Rosella
         // instance can typically be used without causing too many problems.
         function default_mock_factory()
         {
-            var temp = Rosella.get_global(DEFAULT_MOCK_FACTORY_KEY);
+            var temp = Rosella.Globals.get_global(DEFAULT_MOCK_FACTORY_KEY);
             if (temp == null)
-                Rosella.register_global(DEFAULT_MOCK_FACTORY_KEY, new Rosella.MockObject.Factory());
+                Rosella.Globals.register_global(DEFAULT_MOCK_FACTORY_KEY, new Rosella.MockObject.Factory());
             yield temp;
             while(1)
                 yield temp;
@@ -29,7 +29,7 @@ namespace Rosella
         // behavior, but can have negative effects if used improperly.
         function set_default_mock_factory(var factory)
         {
-            Rosella.register_global(DEFAULT_MOCK_FACTORY_KEY, factory);
+            Rosella.Globals.register_global(DEFAULT_MOCK_FACTORY_KEY, factory);
         }
 
         // Use the default MockObject.Factory instance to create a new

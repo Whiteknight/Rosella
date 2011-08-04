@@ -1,36 +1,36 @@
 namespace Rosella
 {
-    const string VERSION_HASH_NAME = "Rosella.version_hash";
-
-    // Private routine to provide a persistant global variable to store
-    // version numbers in
-    function get_version_hash()
+    namespace Version
     {
-        using Rosella.register_global;
-        using Rosella.get_global;
+        const string VERSION_HASH_NAME = "Rosella.version_hash";
 
-        register_global(VERSION_HASH_NAME, {});
-        while (1)
-            yield get_global(VERSION_HASH_NAME);
-    }
+        // Private routine to provide a persistant global variable to store
+        // version numbers in
+        function get_version_hash()
+        {
+            Rosella.Globals.register_global(VERSION_HASH_NAME, {});
+            while (1)
+                yield Rosella.Globals.get_global(VERSION_HASH_NAME);
+        }
 
-    // Get the version string for the specified library. Return null if the
-    // library is not found.
-    function get_version(string lib)
-    {
-        var version_hash = get_version_hash();
-        if (exists version_hash[lib])
-            return version_hash[lib];
-        return new Rosella.Version(lib, -1, "UNKNOWN");
-    }
+        // Get the version string for the specified library. Return null if the
+        // library is not found.
+        function get_version(string lib)
+        {
+            var version_hash = get_version_hash();
+            if (exists version_hash[lib])
+                return version_hash[lib];
+            return new Rosella.Version(lib, -1, "UNKNOWN");
+        }
 
-    // internal routine for setting a library version. Don't call this one
-    // yourself. For internal use only.
-    function internal_set_version(string lib, var vernum, var verstate)
-    {
-        var version_hash = get_version_hash();
-        var ver = new Rosella.Version(lib, vernum, verstate);
-        version_hash[lib] = ver;
+        // internal routine for setting a library version. Don't call this one
+        // yourself. For internal use only.
+        function internal_set_version(string lib, var vernum, var verstate)
+        {
+            var version_hash = get_version_hash();
+            var ver = new Rosella.Version(lib, vernum, verstate);
+            version_hash[lib] = ver;
+        }
     }
 
     /* Version object. Stores information about a library version */

@@ -13,23 +13,21 @@ namespace Rosella { namespace FileSystem
         // Get a FileHandle object from a filehandle factory.
         function get_filehandle()
         {
-            using Rosella.get_global;
-            var factory = get_global(FILEHANDLE_FACTORY_GLOBAL);
+            var factory = Rosella.Globals.get_global(FILEHANDLE_FACTORY_GLOBAL);
             if (factory == null) {
                 factory = new Rosella.ObjectFactory("FileHandle");
                 set_filehandle_factory(factory);
             }
             while(1) {
-                return factory.create();
-                factory = get_global(FILEHANDLE_FACTORY_GLOBAL);
+                yield factory.create();
+                factory = Rosella.Globals.get_global(FILEHANDLE_FACTORY_GLOBAL);
             }
         }
 
         // Set the global FileHandle factory to use.
         function set_filehandle_factory(var factory)
         {
-            using Rosella.register_global;
-            register_global(FILEHANDLE_FACTORY_GLOBAL, factory);
+            Rosella.Globals.register_global(FILEHANDLE_FACTORY_GLOBAL, factory);
         }
     }
 
