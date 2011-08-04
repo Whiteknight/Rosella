@@ -82,12 +82,9 @@ namespace Rosella
         function proxy_cache(var proxy,
                 var cache [optional], int has_cache [opt_flag])
         {
-            using Rosella.Proxy.get_proxy_private_attr;
-            var old_cache = get_proxy_private_attr(proxy, "memoize_cache");
-            if (has_cache) {
-                using Rosella.Proxy.set_proxy_private_attr;
-                set_proxy_private_attr(proxy, "memoize_cache", cache);
-            }
+            var old_cache = Rosella.Proxy.get_proxy_private_attr(proxy, "memoize_cache");
+            if (has_cache)
+                Rosella.Proxy.set_proxy_private_attr(proxy, "memoize_cache", cache);
             return old_cache;
         }
 
@@ -95,26 +92,21 @@ namespace Rosella
         function proxy_function(var proxy,
                 var func [optional], int has_func [opt_flag])
         {
-            using Rosella.Proxy.get_proxy_private_attr;
-            var old_func = get_proxy_private_attr(proxy, "target_object");
-            if (has_func) {
-                using Rosella.Proxy.set_proxy_private_attr;
-                set_proxy_private_attr(proxy, "target_object", func);
-            }
+            var old_func = Rosella.Proxy.get_proxy_private_attr(proxy, "target_object");
+            if (has_func)
+                Rosella.Proxy.set_proxy_private_attr(proxy, "target_object", func);
             return old_func;
         }
 
         // Determine if a given object is a memoize proxy.
         function is_memoize_proxy(var obj)
         {
-            using Rosella.Proxy.is_proxy;
-            if (!is_proxy(obj))
+            if (!Rosella.Proxy.is_proxy(obj))
                 return 0;
 
             int is_mp = 0;
             try {
-                using Rosella.Proxy.get_proxy_private_attr;
-                var cache = get_proxy_private_attr(obj, "memoize_cache");
+                var cache = Rosella.Proxy.get_proxy_private_attr(obj, "memoize_cache");
                 if (cache != null) {
                     var cache_class = class Rosella.Memoize.Cache;
                     ${ isa is_mp, cache, cache_class };
@@ -136,13 +128,10 @@ namespace Rosella
         function memoize_method(var type, string method_name,
                 var cache [optional], int has_cache [opt_flag])
         {
-            using Rosella.get_type_class;
-            var type_class = get_type_class(type);
+            var type_class = Rosella.get_type_class(type);
             var method = type_class.find_method(method_name);
-            if (method == null) {
-                using Rosella.invalid;
-                invalid(__FUNCTION__, "The method does not exist");
-            }
+            if (method == null)
+                Rosella.Error.invalid(__FUNCTION__, "The method does not exist");
 
             // Don't re-memoize a memoized function
             if (is_memoize_proxy(method))
@@ -161,20 +150,16 @@ namespace Rosella
         // original value
         function unmemoize_method(var type, string method_name)
         {
-            using Rosella.get_type_class;
-            var type_class = get_type_class(type);
+            var type_class = Rosella.get_type_class(type);
             var proxy = type_class.find_method(method_name);
-            if (proxy == null) {
-                using Rosella.invalid;
-                invalid(__FUNCTION__, "The method does not exist");
-            }
+            if (proxy == null)
+                Rosella.Error.invalid(__FUNCTION__, "The method does not exist");
 
             // Don't try to un-memoize a non-proxy
             if (!is_memoize_proxy(proxy))
                 return;
 
-            using Rosella.Proxy.get_proxy_private_attr;
-            var method = get_proxy_private_attr(proxy, "target_object");
+            var method = Rosella.Proxy.get_proxy_private_attr(proxy, "target_object");
             type_class.clear_method_cache();
             type_class.remove_method(method_name);
             type_class.add_method(method_name, method);

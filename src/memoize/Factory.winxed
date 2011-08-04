@@ -23,20 +23,17 @@ namespace Rosella { namespace Memoize
         function create(var func,
                 var cache [named,optional], int has_cache [opt_flag])
         {
-            using Rosella.Proxy.set_proxy_private_attr;
-
             if (!has_cache)
                 cache = new Rosella.Memoize.Cache.SimpleString();
             var proxy = self.proxy_factory.create(self.controller, func);
-            set_proxy_private_attr(proxy, "memoize_cache", cache);
+            Rosella.Proxy.set_proxy_private_attr(proxy, "memoize_cache", cache);
             return proxy;
         }
 
         // Cannot create_typed. All memoizing proxies are Subs
         function create_typed(var type, var p [slurpy], var n [slurpy,named])
         {
-            using Rosella.Error.invalid;
-            invalid(__FUNCTION__, "Cannot create_typed with Memoize.Factory");
+            Rosella.Error.invalid(__FUNCTION__, "Cannot create_typed with Memoize.Factory");
         }
     }
 }}

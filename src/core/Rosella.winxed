@@ -95,10 +95,9 @@ namespace Rosella
     // Get the Parrot Class PMC associated with the type.
     function get_type_class(var type)
     {
-        if (type == null) {
-            using Rosella.Error.invalid;
-            invalid(__FUNCTION__, "type may not be null");
-        }
+        if (type == null)
+            Rosella.Error.invalid(__FUNCTION__, "type may not be null");
+
         if (type instanceof "P6metaclass")
             return type.get_parrotclass(type);
         if (type instanceof "P6protoobject")
@@ -116,10 +115,9 @@ namespace Rosella
     // Determine if the given object is an instance of the given type.
     function isa_type(var type, var object)
     {
-        if (type == null) {
-            using Rosella.Error.invalid;
-            invalid(__FUNCTION__, "type may not be null");
-        }
+        if (type == null)
+            Rosella.Error.invalid(__FUNCTION__, "type may not be null");
+
         int is_type = 0;
         var class_test = get_type_class(type);
         ${ isa is_type, object, class_test };
@@ -137,10 +135,9 @@ namespace Rosella
     // failure.
     function find_named_method(var object, string meth_name)
     {
-        if (object == null || meth_name == null) {
-            using Rosella.Error.invalid;
-            invalid(__FUNCTION__, "object and meth_name may not be null");
-        }
+        if (object == null || meth_name == null)
+            Rosella.Error.invalid(__FUNCTION__, "object and meth_name may not be null");
+
         int can_do = 0;
         ${ can can_do, object, meth_name };
         if (!can_do)
@@ -155,10 +152,8 @@ namespace Rosella
     {
         if (method instanceof 'String') {
             var real_method = find_method(obj, method);
-            if (real_method == null) {
-                using Rosella.Error.invalid;
-                invalid(__FUNCTION__, "Cannot find method '" + string(method) + "'");
-            }
+            if (real_method == null)
+                Rosella.Error.invalid(__FUNCTION__, "Cannot find method '" + string(method) + "'");
             method = real_method;
         }
         return obj.*method(p:[flat], n:[flat,named]);

@@ -1,3 +1,20 @@
+namespace Rosella
+{
+    // src/path/Path.winxed;
+    class Path;
+
+    // src/path/Searcher.winxed
+    class Searcher;
+    namespace Searcher
+    {
+        // src/path/searcher/Attribute.winxed
+        class Attribute;
+
+        // src/path/searcher/Hash.winxed
+        class Hash;
+    }
+}
+
 function __load_path[anon, load, init]()
 {
     Rosella.load_bytecode_file("rosella/path.pbc", "load");

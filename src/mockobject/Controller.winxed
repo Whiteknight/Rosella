@@ -73,8 +73,6 @@ namespace Rosella { namespace MockObject
         // met.
         function verify()
         {
-            using Rosella.Test.internal_fail;
-
             var missed_expectations = [];
             for (var expect in self.expectations) {
                 if (!expect.__satisfied())
@@ -88,7 +86,7 @@ namespace Rosella { namespace MockObject
             string errmsg = "Not all expectations have been met!";
             for (var missed in missed_expectations)
                 errmsg = errmsg + "\n\t" + string(missed.to_string());
-            internal_fail(errmsg, 0, null);
+            Rosella.Test.internal_fail(errmsg, 0, null);
         }
 
         /* Controller Methods
@@ -107,12 +105,10 @@ namespace Rosella { namespace MockObject
                 self.unmatched("method '" + name + "'");
             var controller = self;
             var name_pmc = name; // needs to be a PMC to be lexically scoped
-            return function(var pos [slurpy], var named [slurpy,named])
-                    {
-                        var dummy = null;
-                        ${ shift dummy, pos }; // remove the invocant. We know it's the mock
-                        return controller.match_function(name_pmc, pos, named);
-                    };
+            return function(var pos [slurpy], var named [slurpy,named]) {
+                pos.shift(); // remove the invocant. We know it's the mock
+                return controller.match_function(name_pmc, pos, named);
+            };
         }
 
         // Callback when the mock receives a get_attr_str request
@@ -120,8 +116,7 @@ namespace Rosella { namespace MockObject
         {
             var expectations = self.available_expectations();
             for (var expect in expectations) {
-                var n = null; // winxed doesn't like putting null,null in the arglist
-                if (expect.__can_match("get", name, n, n))
+                if (expect.__can_match("get", name, null, null))
                     return self.complete_expectation(expect);
             }
             self.unmatched("get_attr '" + name + "'");
@@ -162,12 +157,11 @@ namespace Rosella { namespace MockObject
         // inside find_method instead of after we invoke the method.
         function have_method_expectations(string name)
         {
-            using Rosella.isa_type;
             var expect_method = class Rosella.MockObject.Expectation.Method;
             int count = 0;
 
             for (var expect in self.expectations) {
-                if (isa_type(expect_method, expect) && expect.name == name && expect.__available())
+                if (Rosella.isa_type(expect_method, expect) && expect.name == name && expect.__available())
                     return 1;
             }
             return 0;
@@ -176,8 +170,7 @@ namespace Rosella { namespace MockObject
         // Fail the test because we could not match
         function unmatched(string type)
         {
-            using Rosella.Test.internal_fail;
-            internal_fail("Can not match " + type, 0, null);
+            Rosella.Test.internal_fail("Can not match " + type, 0, null);
         }
 
         // Attempt to match a method invoke to an expectation.

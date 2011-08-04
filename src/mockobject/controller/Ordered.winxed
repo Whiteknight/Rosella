@@ -9,7 +9,7 @@ namespace Rosella { namespace MockObject { namespace Controller
 
         // Mark the expectation complete, and if necessary shift it off the
         // front of the list. Keep shifting until we get to the one that was
-        // satisfied. If the expectation is still
+        // satisfied.
         function complete_expectation(var expect)
         {
             expect.__match();
@@ -18,12 +18,12 @@ namespace Rosella { namespace MockObject { namespace Controller
 
             // Shift off all the ones on the list before the match
             while (expect !== expectations[0])
-                ${ shift dummy, expectations };
+                expectations.shift();
 
             // If this one is still available, keep it. Otherwise, remove it
             // so we can continue.
             if (!expect.__available())
-                ${ shift dummy, expectations };
+                expectations.shift();
 
             return expect.__run_will_behavior();
         }
@@ -34,14 +34,12 @@ namespace Rosella { namespace MockObject { namespace Controller
         // return the second item.
         function available_expectations()
         {
-            int num_expects = 0;
-            var expectations = self.expectations;
-            ${ elements num_expects, expectations };
+            int num_expects = elements(self.expectations);
             if (num_expects == 0)
                 return [];
-            var available_expects = [expectations[0]];
-            if (num_expects > 1 && expectations[0].__satisfied())
-                available_expects[1] = expectations[1];
+            var available_expects = [self.expectations[0]];
+            if (num_expects > 1 && self.expectations[0].__satisfied())
+                available_expects[1] = self.expectations[1];
             return available_expects;
         }
     }

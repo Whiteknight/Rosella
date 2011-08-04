@@ -1,5 +1,9 @@
 namespace Rosella { namespace Template { namespace Handler
 {
+    /* Conditional If/Else Handler
+        Performs conditional logic, showing certain content only if a given
+        condition is met.
+    */
     class If : Rosella.Template.Handler
     {
         const int THEN_MODE = 0;
@@ -11,13 +15,12 @@ namespace Rosella { namespace Template { namespace Handler
         var op;
         var mode;
 
+        // Constructor. Basic syntax check
         function If(var tokens)
         {
             int num_tokens = elements(tokens);
-            if (num_tokens != 1 && num_tokens != 3) {
-                using Rosella.Error.invalid;
-                invalid(__FUNCTION__, "Syntax of IF node is 'if <var>' or 'if <var> <op> <var>'");
-            }
+            if (num_tokens != 1 && num_tokens != 3)
+                Rosella.Error.invalid(__FUNCTION__, "Syntax of IF node is 'if <var>' or 'if <var> <op> <var>'");
             self.then_children = [];
             self.else_children = [];
             self.mode = THEN_MODE;
@@ -28,15 +31,15 @@ namespace Rosella { namespace Template { namespace Handler
             }
         }
 
+        // Add a child. Add it to either the "then" or the "else" section, as
+        // required.
         function add_child(var node)
         {
             int is_logic = 0;
             ${ can is_logic, node, "logic_name" };
             if (is_logic && node.logic_name() == "else") {
-                if (self.mode == ELSE_MODE) {
-                    using Rosella.Error.invalid;
-                    invalid(__FUNCTION__, "Can only have one ELSE node in an IF block");
-                }
+                if (self.mode == ELSE_MODE)
+                    Rosella.Error.invalid(__FUNCTION__, "Can only have one ELSE node in an IF block");
                 self.mode = ELSE_MODE;
             } else {
                 if (self.mode == THEN_MODE)
@@ -46,17 +49,25 @@ namespace Rosella { namespace Template { namespace Handler
             }
         }
 
-        function render(var ctx, var sb)
+        // Can have children
+        function can_have_children() { return 1; }
+
+        // Render children, depending on the state of the condition
+        function render(var engine, var ctx, var sb)
         {
             if (self.__satisfied(ctx)) {
                 for (var child in self.then_children)
-                    child.render(ctx, sb);
+                    child.render(engine, ctx, sb);
             } else {
                 for (var child in self.else_children)
-                    child.render(ctx, sb);
+                    child.render(engine, ctx, sb);
             }
         }
 
+        /* Internal Helper Methods
+        */
+
+        // Determine if the condition is satisfied
         function __satisfied(var ctx)
         {
             var val_a = self.__get_value(self.name_a, ctx);
@@ -79,17 +90,15 @@ namespace Rosella { namespace Template { namespace Handler
                 case ">" : return val_a > val_b;
                 case "<" : return val_a < val_b;
                 default:
-                    using Rosella.Error.invalid;
-                    invalid(__FUNCTION__, "Unknown operator '" + op + "'");
+                    Rosella.Error.invalid(__FUNCTION__, "Unknown operator '%s'", op);
             }
         }
 
+        // Get a value from one of the operands.
         function __get_value(string key, var ctx)
         {
-            using Rosella.String.get_character_class;
-            using Rosella.String.first_not_cclass;
-            int numeric = get_character_class("numeric");
-            if (first_not_cclass(key, numeric) == -1)
+            int numeric = Rosella.String.get_character_class("numeric");
+            if (Rosella.String.first_not_cclass(key, numeric) == -1)
                 return int(key);
             string first_char = substr(key, 0, 1);
             string last_char = substr(key, length(key) - 1, 1);
@@ -99,18 +108,21 @@ namespace Rosella { namespace Template { namespace Handler
         }
     }
 
+    /* Inverse Conditional
+        Same as If Handler, but opposite
+    */
     class Unless : Rosella.Template.Handler.If
     {
         function Unless(var tokens) { self.If(tokens); }
 
-        function render(var ctx, var sb)
+        function render(var engine, var ctx, var sb)
         {
             if (!self.__satisfied(ctx)) {
                 for (var child in self.then_children)
-                    child.render(ctx, sb);
+                    child.render(engine, ctx, sb);
             } else {
                 for (var child in self.else_children)
-                    child.render(ctx, sb);
+                    child.render(engine, ctx, sb);
             }
         }
     }

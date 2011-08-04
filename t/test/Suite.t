@@ -1,6 +1,6 @@
 INIT {
-    pir::load_bytecode("rosella/test.pbc");
-    pir::load_bytecode("rosella/mockobject.pbc");
+    my $rosella := pir::load_bytecode__PS("rosella/core.pbc");
+    Rosella::initialize_rosella("test", "mockobject");
 }
 
 Rosella::Test::test(Test::Suite::Test);

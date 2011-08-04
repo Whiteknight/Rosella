@@ -40,10 +40,9 @@ namespace Rosella { namespace Test
         // to the relevant methods on the Listener.
         function add_failure(var test, var context, var ex)
         {
-            using Rosella.isa_type;
             self.num_failures = self.num_failures + 1;
 
-            if (isa_type("String", ex)) {
+            if (Rosella.isa_type("String", ex)) {
                 self.notify_listeners("add_failure_msg", test, context, ex);
                 return;
             }

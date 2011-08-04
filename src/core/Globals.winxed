@@ -8,14 +8,12 @@ namespace Rosella
     */
 
     const string DEFAULT_FACTORY_GLOBAL = "Rosella.default_factory";
-    const string DEFAULT_LIBREGISTRY_GLOBAL = "Rosella.default_libregistry";
 
     // Get the hash of globals. Private routine. Should not be called
     // externally
     function __get_globals[anon]()
     {
         var globals = {
-            DEFAULT_LIBREGISTRY_GLOBAL : {},
             DEFAULT_FACTORY_GLOBAL : new Rosella.ObjectFactory()
         };
         while (1)
@@ -44,74 +42,47 @@ namespace Rosella
         return __get_globals()[DEFAULT_FACTORY_GLOBAL];
     }
 
-    /* Bytecode Registry Routines
-        These routines are used to load, initialize, and register bytecode
-        libraries.
+    /* Bytecode Management Functions
     */
 
-    /* Flag to determine if Rosella Core is initialized. This is a
-     * transitional artifact, during the load_bytecode_s deprecation in
-     * Parrot. If loaded with load_bytecode_s, all the :load routines will
-     * already have run. Otherwise, they will need to be run manually.
-     */
-    function __rosella_is_initialized[anon]()
+    // Initialize the Rosella library, loading in any necessary files.
+    function initialize_rosella(var libs [slurpy])
     {
-        say("initializing");
-        yield 0;
-        while (1)
-            yield 1;
-    }
+        var core = load_bytecode_raw("rosella/core.pbc");
+        init_bytecode(core, "load");
 
-    // Main Rosella setup routine. Setup the core library, initializing if
-    // necessary. Also, load any necessary rosella libraries by short name
-    function setup_rosella(var libs [slurpy])
-    {
-        const string CORE_FILENAME = "rosella/core.pbc";
-        var core_pf = load_bytecode_raw(CORE_FILENAME);
-        if (__rosella_is_initialized() == 0) {
-            var subs = core_pf.subs_by_flag("load");
-            for (var sub in subs)
-                sub();
+        for (string shortlib in libs) {
+            string lib = "rosella/" + shortlib + ".pbc";
+            var pf = load_bytecode_raw(lib);
+            init_bytecode(pf, "load");
         }
-        var reg = __get_globals()[DEFAULT_LIBREGISTRY_GLOBAL];
-        if (!(exists reg[CORE_FILENAME]))
-            reg[CORE_FILENAME] = core_pf;
-
-        for (string lib in libs)
-            load_bytecode_file("rosella/" + lib + ".pbc");
     }
 
-    // Load a single Rosella component library, by name
-    function load_rosella_library(string lib)
-    {
-        say("loading " + lib);
-        load_bytecode_file("rosella/" + lib + ".pbc", "load");
-    }
-
-    // Load a raw packfile object. Do not initialize it
-    function load_bytecode_raw(string file)
+    function load_bytecode_raw(string name)
     {
         var packfileview;
-        ${ load_bytecode packfileview, file };
+        ${ load_bytecode packfileview, name };
         return packfileview;
     }
 
-    // Load a bytecode file. Register it to prevent re-loading. Initialize
-    // with the given trigger, if given.
+    // Load in the bytecode library to the registry, for storage
     function load_bytecode_file(string file,
             string trigger [optional], int has_trigger [opt_flag])
     {
-        var reg = __get_globals()[DEFAULT_LIBREGISTRY_GLOBAL];
-        if (exists reg[file])
-            return reg[file];
+        var pf = load_bytecode_raw(file);
+        if (has_trigger && trigger != "" && trigger != null)
+            init_bytecode(pf, trigger);
+        return pf;
+    }
 
-        var packfileview = load_bytecode_raw(file);
-        reg[file] = packfileview;
-        if (has_trigger && trigger != null && trigger != "") {
-            var subs = packfileview.subs_by_flag(trigger);
+    // Initialize the bytecode, executing subs with the given trigger
+    function init_bytecode(var pf, string trigger)
+    {
+        if (!pf.is_initialized(trigger)) {
+            var subs = pf.subs_by_flag(trigger);
             for (var sub in subs)
                 sub();
+            pf.mark_initialized(trigger);
         }
-        return packfileview;
     }
 }

@@ -1,21 +1,29 @@
 namespace Rosella { namespace Template { namespace Node
 {
+    /* Master node class.
+        This node type is the top-level node. It represents the entire
+        template. This type loops over all nodes, renders them, and outputs
+        the results directly.
+    */
     class Master : Rosella.Template.Node
     {
         var children;
 
+        // Constructor
         function Master()
         {
             self.Node(null);
             self.children = [];
         }
 
-        function render(var context, var builder)
+        // Render all children, in order
+        function render(var engine, var context, var builder)
         {
             for (var child in self.children)
-                child.render(context, builder);
+                child.render(engine, context, builder);
         }
 
+        // Add a new child to the list of nodes
         function add_child(var node)
         {
             push(self.children, node);

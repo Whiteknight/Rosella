@@ -1,9 +1,14 @@
 namespace Rosella { namespace FileSystem
 {
+    /* File system Path object
+        This object represents a Path on a filesystem. It can be used to
+        extract information about a path.
+    */
     class FilePath
     {
         var details;
 
+        // Constructor. Parse the path string out into named parts
         function FilePath(string path)
         {
             self.details = {};
@@ -25,11 +30,14 @@ namespace Rosella { namespace FileSystem
             self.details["basepath"] = join(pathsep, pathparts);
         }
 
+        // The file extension, without "."
         function extension()
         {
             return self.details["extension"];
         }
 
+        // The full base path. This is the folder path that contains the file
+        // starting at the file system root.
         function full_base_path()
         {
             using Rosella.FileSystem.Directory.current_directory;
@@ -37,16 +45,20 @@ namespace Rosella { namespace FileSystem
             return string(cwd) + string(self.details["basepath"]);
         }
 
+        // The base path of the file starting from the current working
+        // directory
         function relative_base_path()
         {
             return self.details["basepath"];
         }
 
+        // The short name of the file, without folder path information
         function short_name()
         {
             return self.details["shortname"];
         }
 
+        // The short name of the file without the extension
         function short_name_no_ext()
         {
             return self.details["shortname_noext"];

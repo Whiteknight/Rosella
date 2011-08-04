@@ -1,2 +1,4 @@
 $include_const "src/filesystem/Constants.pasm";
 $include_const "iglobals.pasm";
+
+class OS;

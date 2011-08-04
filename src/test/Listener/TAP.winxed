@@ -38,9 +38,8 @@ namespace Rosella { namespace Test { namespace Listener
         // Pass information about a failure to the builder
         function display_failure(var ex)
         {
-            using Rosella.Test.Failure.get_exception_failure;
             while (ex != null) {
-                var failure = get_exception_failure(ex);
+                var failure = Rosella.Test.Failure.get_exception_failure(ex);
                 if (failure == null) {
                     self.test_builder.diag(ex);
                     break;

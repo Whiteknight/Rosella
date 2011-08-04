@@ -6,8 +6,7 @@ namespace Rosella { namespace MockObject { namespace Expectation
     {
         function match(var pos, var named)
         {
-            using Rosella.Error.must_subclass;
-            must_subclass("Rosella.MockObject.Expectation.With");
+            Rosella.Error.must_subclass("Rosella.MockObject.Expectation.With");
         }
     }
 
@@ -34,13 +33,26 @@ namespace Rosella { namespace MockObject { namespace Expectation
 
                 // Check that we have the correct values
                 for (int i = 0; i < int(pos); i++) {
-                    if (pos[i] != self.pos_args[i])
+                    if (!self.check_equality(pos[i], self.pos_args[i]))
                         return 0;
                 }
                 for (string name in named) {
                     if (!(exists self.named_args[name]))
                         return 0;
-                    if (named[name] != self.named_args[name])
+                    if (!self.check_equality(named[name], self.named_args[name]))
+                        return 0;
+                }
+                return 1;
+            }
+
+            function check_equality(var a, var b)
+            {
+                try {
+                    if (a != b)
+                        return 0;
+                } catch(e) {
+                    // there's a problem with is_equal. Try is_same
+                    if (a !== b)
                         return 0;
                 }
                 return 1;

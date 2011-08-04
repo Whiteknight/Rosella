@@ -42,10 +42,7 @@ namespace Rosella { namespace Test
         // Lock attribute access to be read-only
         function set_attr_str[vtable](string attr, var value)
         {
-            using Rosella.Error.invalid;
-            invalid("Rosella.Test.TestCase",
-                "Cannot modify the details of the TestCase. Use TestContext instead."
-            );
+            Rosella.Error.invalid(__FUNCTION__, "Cannot modify the details of the TestCase. Use TestContext instead.");
         }
 
         // Translate attribute names, so we can use TestCase in a language
@@ -61,9 +58,7 @@ namespace Rosella { namespace Test
             try {
                 ${ getattribute value, self, myclass, attr };
             } catch(e) {
-                using Rosella.Error.invalid;
-                invalid("Rosella.Test.TestCase",
-                    "TestCase does not have an attribute '" + attr_raw + "'");
+                Rosella.Error.invalid(__FUNCTION__, "TestCase does not have an attribute '" + attr_raw + "'");
             }
             return value;
         }

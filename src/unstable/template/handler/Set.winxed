@@ -1,35 +1,35 @@
 namespace Rosella { namespace Template { namespace Handler
 {
-    class Set : Rosella.Template.Handler
+    /* Temporary Variable Set
+        Set a value into a temporary variable
+    */
+    class Set : Rosella.Template.Handler.Children
     {
         var varname;
         var sourcename;
         var children;
 
+        // Constructor. Check syntax.
         function Set(var tokens)
         {
             int numtks = elements(tokens);
             string varname = tokens[0];
             self.varname = varname;
-            if (substr(varname, 0, 2) == "__" && substr(varname, length(varname) - 2, 2) == "__") {
-                using Rosella.Error.invalid;
-                invalid(__FUNCTION__, "Variable names starting and ending with double underscores are reserved");
-            }
+            if (substr(varname, 0, 2) == "__" && substr(varname, length(varname) - 2, 2) == "__")
+                Rosella.Error.invalid(__FUNCTION__, "Variable names starting and ending with double underscores are reserved");
 
             if (numtks == 1) {
                 self.sourcename = null;
-                self.children = [];
+                self.Children();
             }
-            else if (numtks == 3 && tokens[1] == "as") {
+            else if (numtks == 3 && tokens[1] == "as")
                 self.sourcename = tokens[2];
-                self.children = null;
-            }
-            else {
-                using Rosella.Error.invalid;
-                invalid(__FUNCTION__, "Syntax of set is 'set <var>' or 'set <var> as <value>'");
-            }
+            else
+                Rosella.Error.invalid(__FUNCTION__, "Syntax of set is 'set <var>' or 'set <var> as <value>'");
         }
 
+        // There are two forms of set. 1-argument set can have children,
+        // 3-argument set cannot
         function can_have_children()
         {
             if (self.children == null)
@@ -37,18 +37,13 @@ namespace Rosella { namespace Template { namespace Handler
             return 1;
         }
 
-        function add_child(var node)
-        {
-            if (self.children != null)
-                push(self.children, node);
-        }
-
-        function render(var ctx, var sb)
+        // Render. This node type doesn't have any output. Rendering it
+        // performs the assignment
+        function render(var engine, var ctx, var sb)
         {
             if (self.sourcename == null && self.children != null) {
                 var inner_sb = new "StringBuilder";
-                for (var child in self.children)
-                    child.render(ctx, inner_sb);
+                self.__render_children(engine, ctx, inner_sb);
                 string text = string(inner_sb);
                 ctx.set_temporary(self.varname, text);
             }

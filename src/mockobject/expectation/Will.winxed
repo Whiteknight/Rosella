@@ -14,8 +14,7 @@ namespace Rosella { namespace MockObject { namespace Expectation
 
         function execute()
         {
-            using Rosella.Error.must_subclass;
-            must_subclass("Rosella.MockObject.Expectation.Will");
+            Rosella.Error.must_subclass("Rosella.MockObject.Expectation.Will");
         }
     }
 

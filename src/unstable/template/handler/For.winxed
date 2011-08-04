@@ -1,63 +1,58 @@
 namespace Rosella { namespace Template { namespace Handler
 {
-    class For : Rosella.Template.Handler
+    /* For loop Handler
+        Logic of the For loop construct. Can be used to loop over arrays or
+        hash objects from the context
+    */
+    class For : Rosella.Template.Handler.Children
     {
         const string HASH_KEY_VARNAME = "__KEY__";
         const string FIRST_VARNAME = "__FIRST__";
         const string LAST_VARNAME = "__LAST__";
-        var children;
         var varname;
         var srcname;
 
+        // Constructor. Quick syntax sanity checks.
         function For(var tokens)
         {
-            if (elements(tokens) != 3 || string(tokens[1]) != "in") {
-                using Rosella.Error.invalid;
-                invalid(__FUNCTION__, "Syntax of for loop is 'for <var> in <src>'");
-            }
+            self.Children();
+            if (elements(tokens) != 3 || string(tokens[1]) != "in")
+                Rosella.Error.invalid(__FUNCTION__, "Syntax of for loop is 'for <var> in <src>'");
             string varname = tokens[0];
             self.varname = varname;
-            if (substr(varname, 0, 2) == "__" && substr(varname, length(varname) - 2, 2) == "__") {
-                using Rosella.Error.invalid;
-                invalid(__FUNCTION__, "Variable names starting and ending with double underscores are reserved");
-            }
+            if (substr(varname, 0, 2) == "__" && substr(varname, length(varname) - 2, 2) == "__")
+                Rosella.Error.invalid(__FUNCTION__, "Variable names starting and ending with double underscores are reserved");
             self.srcname = tokens[2];
-            self.children = [];
         }
 
-        function add_child(var node)
-        {
-            push(self.children, node);
-        }
-
-        function render(var ctx, var sb)
+        // Render. Loop over data and render children for each
+        function render(var engine, var ctx, var sb)
         {
             var values = ctx.get_value(self.srcname);
-            if (values == null) {
-                using Rosella.Error.invalid;
-                invalid(__FUNCTION__, "no value at '" + string(self.srcname) + "'");
-            }
+            if (values == null)
+                Rosella.Error.invalid(__FUNCTION__, "no value at '%s'", self.srcname);
 
-            int does_it;
-            ${ does does_it, values, "hash" };
-            var old_key = ctx.get_value(HASH_KEY_VARNAME);
-            var old_first = ctx.get_value(FIRST_VARNAME);
-            var old_last = ctx.get_value(LAST_VARNAME);
-            if (does_it)
-                self.__render_hash(ctx, sb, values);
-            else {
-                ${ does does_it, values, "array" };
+            self.__save_ctx_values(function() {
+                int does_it;
+                ${ does does_it, values, "hash" };
                 if (does_it)
-                    self.__render_array(ctx, sb, values);
-                else
-                    self.__render_scalar(ctx, sb, values);
-            }
-            ctx.set_temporary(HASH_KEY_VARNAME, old_key);
-            ctx.set_temporary(FIRST_VARNAME, old_first);
-            ctx.set_temporary(LAST_VARNAME, old_last);
+                    self.__render_hash(engine, ctx, sb, values);
+                else {
+                    ${ does does_it, values, "array" };
+                    if (does_it)
+                        self.__render_array(engine, ctx, sb, values);
+                    else
+                        self.__render_scalar(engine, ctx, sb, values);
+                }
+            }, ctx, HASH_KEY_VARNAME, FIRST_VARNAME, LAST_VARNAME);
         }
 
-        function __render_hash(var ctx, var sb, var values)
+        /* Internal Helper Routines
+            These methods are used to render for particular input types
+        */
+
+        // Render when the input data is a hash.
+        function __render_hash(var engine, var ctx, var sb, var values)
         {
             int is_first = 1;
             int num_items = elements(values);
@@ -68,15 +63,15 @@ namespace Rosella { namespace Template { namespace Handler
                 ctx.set_temporary(HASH_KEY_VARNAME, key);
                 ctx.set_temporary(FIRST_VARNAME, is_first);
                 ctx.set_temporary(LAST_VARNAME, is_last);
-                for (var child in self.children)
-                    child.render(ctx, sb);
+                self.__render_children(engine, ctx, sb);
                 is_first = 0;
                 num_items--;
                 is_last = num_items == 1;
             }
         }
 
-        function __render_array(var ctx, var sb, var values)
+        // Render when the input data is an array
+        function __render_array(var engine, var ctx, var sb, var values)
         {
             int is_first = 1;
             int num_items = elements(values);
@@ -86,21 +81,20 @@ namespace Rosella { namespace Template { namespace Handler
                 ctx.set_temporary(self.varname, value);
                 ctx.set_temporary(FIRST_VARNAME, is_first);
                 ctx.set_temporary(LAST_VARNAME, is_last);
-                for (var child in self.children)
-                    child.render(ctx, sb);
+                self.__render_children(engine, ctx, sb);
                 num_items--;
                 is_last = num_items == 1;
                 is_first = 0;
             }
         }
 
-        function __render_scalar(var ctx, var sb, var value)
+        // Render when the input data is a scalar
+        function __render_scalar(var engine, var ctx, var sb, var value)
         {
             ctx.set_temporary(FIRST_VARNAME, 1);
             ctx.set_temporary(LAST_VARNAME, 1);
             ctx.set_temporary(self.varname, value);
-            for (var child in self.children)
-                child.render(ctx, sb);
+            self.__render_children(engine, ctx, sb);
         }
     }
 }}}

@@ -1,39 +1,55 @@
 namespace Rosella { namespace Template { namespace Node
 {
+    /* Logic Node
+        Logic nodes provide logical constructs such as loops and conditionals.
+        Logic nodes keep track of certain information, and pass logical
+        rendering to Handler objects.
+    */
     class Logic : Rosella.Template.Node
     {
         var handler;
         var logic_name;
 
-        function Logic(var token)
+        // Constructor
+        function Logic(var token, var handler_factory)
         {
-            using Rosella.String.get_character_class;
-
             self.Node(token);
-            var cclasses = [get_character_class("graphical"), get_character_class("whitespace")];
+            var tokens = self.parse(token.data());
+            self.logic_name = tokens.shift();
+            self.handler = handler_factory.create(self.logic_name, tokens);
+        }
+
+        // Parse the tag contents. Return an array of string arguments
+        function parse(string text)
+        {
+            var cclasses = [
+                Rosella.String.get_character_class("graphical"),
+                Rosella.String.get_character_class("whitespace")
+            ];
             var tokenizer = new Rosella.String.Tokenizer.CClass(cclasses);
-            tokenizer.add_data(token.data());
+            tokenizer.add_data(text);
             var tokens_raw = tokenizer.all_tokens();
             var tokens = [];
             for (var token in tokens_raw) {
                 if (int(token.metadata()) != CCLASS_WHITESPACE)
                     push(tokens, token.data());
             }
-            self.logic_name = tokens.shift();
-            var factory = new Rosella.Template.Handler.Factory();
-            self.handler = factory.create(self.logic_name, tokens);
+            return tokens;
         }
 
+        // The logic name of this tag
         function logic_name()
         {
             return self.logic_name;
         }
 
+        // The name of the coresponding end tag
         function logic_end_name()
         {
             return Winxed_Builtins.sprintf("end%s", [self.logic_name]);
         }
 
+        // Assemble the node by pushing child nodes into it.
         function assemble(var parent_nodes, var current_node)
         {
             if (self.handler != null && !self.handler.can_have_children())
@@ -49,6 +65,8 @@ namespace Rosella { namespace Template { namespace Node
             return current_node;
         }
 
+        // True if this node is an end node for a child-bearing node. False
+        // otherwise.
         function is_logic_end()
         {
             string name = self.logic_name;
@@ -57,26 +75,22 @@ namespace Rosella { namespace Template { namespace Node
             return 0;
         }
 
+        // Add a child node to this one, if the handler takes children.
         function add_child(var node)
         {
-            if (self.handler == null) {
-                using Rosella.Error.invalid;
-                invalid(__FUNCTION__, "Cannot add child, no handler (" + string(self.logic_name) + ")");
-            }
-            if (!self.handler.can_have_children()) {
-                using Rosella.Error.invalid;
-                invalid(__FUNCTION__, "Cannot add child");
-            }
+            if (self.handler == null)
+                Rosella.Error.invalid(__FUNCTION__, "Cannot add child, no handler (%s)", self.logic_name);
+            if (!self.handler.can_have_children())
+                Rosella.Error.invalid(__FUNCTION__, "Cannot add child");
             self.handler.add_child(node);
         }
 
-        function render(var context, var builder)
+        // Render this node. Rendering requires a Handler
+        function render(var engine, var context, var builder)
         {
-            if (self.handler == null) {
-                using Rosella.Error.invalid;
-                invalid(__FUNCTION__, "Cannot render, no handler");
-            }
-            self.handler.render(context, builder);
+            if (self.handler == null)
+                Rosella.Error.invalid(__FUNCTION__, "Cannot render '%s', no handler", self.logic_name);
+            self.handler.render(engine, context, builder);
         }
     }
 }}}

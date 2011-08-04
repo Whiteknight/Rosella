@@ -1,0 +1,81 @@
+class ClassEntry {
+}
+
+class NamespaceEntry {
+    var classes;
+    var subs;
+
+    function NamespaceEntry()
+    {
+        self.classes = {};
+        self.subs = [];
+    }
+
+    function add_class(string c)
+    {
+        self.classes[c] = 1;
+    }
+
+    function add_sub(var sub)
+    {
+        push(self.subs, sub);
+    }
+}
+
+const int SUB_FLAG_METHOD = 0x04;
+const int SUB_FLAG_INIT = 0x400;
+const int PF_FLAG_ANON = 0x08;
+const int PF_FLAG_LOAD = 0x20;
+
+function main[main](var args)
+{
+    load_bytecode("rosella/core.pbc");
+    string program_name = args.shift();
+    string libpath = args.shift();
+    using Rosella.Parrot.try_report;
+    try_report(function() {
+        mk_header_main(libpath);
+    });
+}
+
+function mk_header_main(string libpath)
+{
+    using Rosella.IO.sayf;
+    var lib;
+    ${ load_bytecode lib, libpath };
+    var all_subs = lib.all_subs();
+    var all_namespaces = {};
+    for (var sub in all_subs) {
+        int sub_flags = sub.comp_flags();
+        int pf_flags = sub.pf_flags();
+
+        // Don't list subs marked :anon
+        if ((pf_flags & PF_FLAG_ANON) != 0)
+            continue;
+
+        var nsname = sub.get_namespace().get_name();
+        nsname.shift(); // drop HLL namespace
+        string ns = join(".", nsname);
+
+        if ((sub_flags & SUB_FLAG_METHOD) != 0) {
+            string classname = nsname.pop();
+            string basename = join(".", nsname);
+            if (!(exists all_namespaces[basename]))
+                all_namespaces[basename] = new NamespaceEntry();
+            all_namespaces[basename].add_class(classname);
+        }
+        else {
+            if (!(exists all_namespaces[ns]))
+                all_namespaces[ns] = new NamespaceEntry();
+            all_namespaces[ns].add_sub(sub);
+        }
+    }
+    for (var ns in all_namespaces) {
+        sayf("namespace %s {", ns);
+        for (var c in all_namespaces[ns].classes)
+            sayf("\tclass %s;", c);
+        for (var sub in all_namespaces[ns].subs)
+            sayf("\textern function %s;", sub);
+        say("}\n");
+    }
+}

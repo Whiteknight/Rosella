@@ -1,0 +1,178 @@
+namespace Rosella
+{
+    namespace Error
+    {
+        extern function invalid;
+    }
+    namespace IO
+    {
+        extern function sayf;
+        extern function printf;
+    }
+    namespace Template
+    {
+        extern function get_standard_template_file;
+    }
+}
+
+const int SUB_FLAG_METHOD = 0x04;
+const int SUB_FLAG_INIT = 0x400;
+const int PF_FLAG_ANON = 0x08;
+const int PF_FLAG_LOAD = 0x20;
+
+class NamespaceEntry
+{
+    var classes;
+    var subs;
+
+    function NamespaceEntry()
+    {
+        self.classes = {};
+        self.subs = [];
+    }
+
+    function add_class(string c)
+    {
+        if (!(exists self.classes[c]))
+            self.classes[c] = new 'Class';
+    }
+    function add_class_method(string c, var m)
+    {
+        self.add_class(c);
+        self.classes[c].add_method(string(m), m);
+    }
+    function add_sub(var sub) { push(self.subs, sub); }
+}
+
+function main[main](var args)
+{
+    load_bytecode("rosella/core.pbc");
+    load_bytecode("rosella/filesystem.pbc");
+    load_bytecode("rosella/template.pbc");
+
+    string program_name = args.shift();
+    string libpath = args.shift();
+    string folder = args.shift();
+    using Rosella.Parrot.try_report;
+    try_report(function() {
+        var lib = try_load_lib(libpath);
+        var entries = get_lib_entries(lib);
+        output_test_files(libpath, entries, folder);
+    });
+}
+
+function output_test_files(string libname, var entries, string folderpath)
+{
+    var dir = new Rosella.FileSystem.Directory(folderpath);
+    if (!dir.exists())
+        dir.create();
+    var engine = new Rosella.Template.Engine();
+    string class_tmpl = Rosella.Template.get_standard_template_file("test_class.winxed.template");
+    string ns_tmpl = Rosella.Template.get_standard_template_file("test_ns.winxed.template");
+    for (string nsname in entries) {
+        Rosella.IO.sayf("START NameSpace '%s'", nsname);
+        var classes = entries[nsname].classes;
+        var subs = entries[nsname].subs;
+        if (elements(subs) > 0) {
+            var context = get_subs_list_context(libname, nsname, subs);
+            string output = engine.generate_from_file(ns_tmpl, context);
+            var file = new Rosella.FileSystem.File(nsname + ".t", dir);
+            file.write_all_text(output);
+            Rosella.IO.sayf("\tBuilt Subs test file %s", string(file));
+        }
+        if (elements(classes) > 0) {
+            for (string classname in classes) {
+                var classobj = classes[classname];
+                var context = get_class_context(libname, nsname, nsname + "." + classname, classobj);
+                string output = engine.generate_from_file(class_tmpl, context);
+                var nsdir = new Rosella.FileSystem.Directory(nsname, dir);
+                if (!nsdir.exists())
+                    nsdir.create();
+                var classfile = new Rosella.FileSystem.File(classname + ".t", nsdir);
+                classfile.write_all_text(output);
+                Rosella.IO.sayf("\tBuilt Class test file %s", string(classfile));
+            }
+        }
+        Rosella.IO.sayf("END NameSpace '%s'", nsname);
+    }
+}
+
+function get_subs_list_context(string libname, string nsname, var subslist)
+{
+    using Rosella.String.replace_all;
+
+    var context = {
+        "ns" : {
+            "name" : nsname,
+            "cleanname" : replace_all(nsname, ".", "_"),
+            "winxedname" : nsname,
+            "perlname" : replace_all(nsname, ".", "::"),
+            "subs" : subslist,
+            "ownerlib" : libname
+        }
+    };
+    return context;
+}
+
+function get_class_context(string libname, string nsname, string classname, var classobj)
+{
+    using Rosella.String.replace_all;
+
+    var methods = classobj.methods();
+    var context = {
+        "class" : {
+            "name" : classname,
+            "cleanname" : replace_all(classname, ".", "_"),
+            "winxedname" : classname,
+            "perlname" : replace_all(classname, ".", "::"),
+            "methods" : methods,
+            "ownerlib" : libname
+        }
+    };
+    return context;
+}
+
+function try_load_lib(string libpath)
+{
+    var pf = new 'PackfileView';
+    pf.read_from_file(libpath);
+    for (var sub in pf.subs_by_flag("load"))
+        sub();
+    if (pf == null) {
+        Rosella.IO.sayf("FAIL.");
+        Rosella.Error.invalid(__FUNCTION__, "Cannot load '%s'", libpath);
+    }
+    return pf;
+}
+
+function get_lib_entries(var lib)
+{
+    var all_subs = lib.all_subs();
+    var all_namespaces = {};
+    for (var sub in all_subs) {
+        int sub_flags = sub.comp_flags();
+        int pf_flags = sub.pf_flags();
+
+        // Don't list subs marked :anon
+        if ((pf_flags & PF_FLAG_ANON) != 0)
+            continue;
+
+        var nsname = sub.get_namespace().get_name();
+        nsname.shift(); // drop HLL namespace
+        string ns = join(".", nsname);
+
+        if ((sub_flags & SUB_FLAG_METHOD) != 0) {
+            string classname = nsname.pop();
+            string basename = join(".", nsname);
+            if (!(exists all_namespaces[basename]))
+                all_namespaces[basename] = new NamespaceEntry();
+            all_namespaces[basename].add_class_method(classname, sub);
+        }
+        else {
+            if (!(exists all_namespaces[ns]))
+                all_namespaces[ns] = new NamespaceEntry();
+            all_namespaces[ns].add_sub(sub);
+        }
+    }
+    return all_namespaces;
+}

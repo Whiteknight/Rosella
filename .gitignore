@@ -7,4 +7,6 @@ src/_build/*
 _site
 /test.*
 src/unstable/utilities/installable_winxed_repl
-rosella/
+rosella/*.winxed
+rosella/*.pir
+rosella/*.pbc
