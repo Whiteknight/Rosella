@@ -74,20 +74,20 @@ namespace Rosella { namespace Query
         // Map the data
         function map(var data, var func)
         {
-            Rosella.Error.must_subclass("Rosella::Query::Provider");
+            Rosella.Error.must_subclass(__CLASS__);
         }
 
         // Filter the data
         function filter(var data, var func,
                 int limit [optional], int has_limit [opt_flag])
         {
-            Rosella.Error.must_subclass("Rosella::Query::Provider");
+            Rosella.Error.must_subclass(__CLASS__);
         }
 
         // Fold the data
         function fold(var seed, var data, var func)
         {
-            Rosella.Error.must_subclass("Rosella::Query::Provider");
+            Rosella.Error.must_subclass(__CLASS__);
         }
 
         // Return a count of elements. If a predicate is provided, return a
@@ -161,13 +161,13 @@ namespace Rosella { namespace Query
         // Take from the data
         function take(var data, int count, var func [optional], int has_func [opt_flag])
         {
-            Rosella.Error.must_subclass("Rosella::Query::Provider");
+            Rosella.Error.must_subclass(__CLASS__);
         }
 
         // Skip some of the data
         function skip(var data, int count, var func [optional], int has_func [opt_flag])
         {
-            Rosella.Error.must_subclass("Rosella::Query::Provider");
+            Rosella.Error.must_subclass(__CLASS__);
         }
 
         // Combine two aggregates
@@ -176,24 +176,24 @@ namespace Rosella { namespace Query
                 var key_func [optional], int has_key_func [opt_flag],
                 var dispute [optional], int has_dispute [opt_flag])
         {
-            Rosella.Error.must_subclass("Rosella::Query::Provider");
+            Rosella.Error.must_subclass(__CLASS__);
         }
 
         function unwrap_first(var data)
         {
-            Rosella.Error.must_subclass("Rosella::Query::Provider");
+            Rosella.Error.must_subclass(__CLASS__);
         }
 
         // Convert to an array
         function to_array(var data)
         {
-            Rosella.Error.must_subclass("Rosella::Query::Provider");
+            Rosella.Error.must_subclass(__CLASS__);
         }
 
         // Convert to a hash
         function to_hash(var data, var func)
         {
-            Rosella.Error.must_subclass("Rosella::Query::Provider");
+            Rosella.Error.must_subclass(__CLASS__);
         }
 
         // Convert the aggregate to an array and sort it, according to the

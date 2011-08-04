@@ -18,7 +18,7 @@ namespace Rosella { namespace Template
         // Render contents
         function render(var engine, var ctx, var sb)
         {
-            Rosella.Error.must_subclass(__FUNCTION__);
+            Rosella.Error.must_subclass(__CLASS__);
         }
 
         // This node can have children (Default)

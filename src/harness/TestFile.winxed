@@ -90,7 +90,7 @@ namespace Rosella { namespace Harness
 
         function compile_test()
         {
-            Rosella.Error.must_subclass("Rosella::Harness::TestFile");
+            Rosella.Error.must_subclass(__CLASS__);
         }
 
         function error_details()
@@ -127,7 +127,7 @@ namespace Rosella { namespace Harness
 
         function get_spawn_command()
         {
-            Rosella.Error.must_subclass("Rosella::Harness::TestFile");
+            Rosella.Error.must_subclass(__CLASS__);
         }
 
         function run(var view, int debug, int run_inline)

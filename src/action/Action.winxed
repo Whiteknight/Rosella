@@ -67,7 +67,7 @@ namespace Rosella
         // Perform the actual action. This must be done in a subclass.
         function execute_initializer(var obj, var pos, var named)
         {
-            Rosella.Error.must_subclass("Rosella.Action");
+            Rosella.Error.must_subclass(__CLASS__);
         }
     }
 }

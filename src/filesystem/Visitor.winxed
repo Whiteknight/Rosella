@@ -50,8 +50,7 @@ namespace Rosella { namespace FileSystem
         // overrides .visit(), this method might be unnecessary
         function process(var file)
         {
-            using Rosella.Error.must_subclass;
-            must_subclass("Rosella.File.Visitor");
+            Rosella.Error.must_subclass(__CLASS__);
         }
     }
 }}

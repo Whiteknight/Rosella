@@ -99,8 +99,7 @@ namespace Rosella { namespace String
         // input data. Must be subclassed
         function lex_next_token()
         {
-            using Rosella.Error.must_subclass;
-            must_subclass("Rosella.String.Tokenizer");
+            Rosella.Error.must_subclass(__CLASS__);
         }
 
         // Unget a token, pushing it onto a queue for later retrieval

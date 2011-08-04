@@ -22,7 +22,7 @@ namespace Rosella { namespace Template
         // Render contents. Must be subclassed
         function render(var engine, var context, var builder)
         {
-            Rosella.Error.must_subclass("Template.Node");
+            Rosella.Error.must_subclass(__CLASS__);
         }
 
         // assemble this node. Must be subclassed

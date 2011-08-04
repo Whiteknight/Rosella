@@ -95,7 +95,7 @@ namespace Rosella { namespace MockObject
         function __can_set_will()
         {
             if (self.will != null)
-                Rosella.Error.invalid("Cannot set Will behavior twice");
+                Rosella.Error.invalid(__FUNCTION__, "Cannot set Will behavior twice");
         }
 
         /* Arguments
@@ -140,7 +140,7 @@ namespace Rosella { namespace MockObject
         function __verify_can_set_args()
         {
             if (self.with != null)
-                Rosella.Error.invalid("You cannot specify arguments twice");
+                Rosella.Error.invalid(__FUNCTION__, "You cannot specify arguments twice");
         }
 
         /* Internal Methods
@@ -170,7 +170,7 @@ namespace Rosella { namespace MockObject
         // a match
         function __can_match_internal(string type, string name, var pos, var named)
         {
-            Rosella.Error.must_subclass("Rosella.MockObject.Expectation");
+            Rosella.Error.must_subclass(__CLASS__);
         }
 
         // mark this expectation matched, and reduce the quantity available.

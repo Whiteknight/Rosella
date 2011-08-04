@@ -13,7 +13,7 @@ namespace Rosella { namespace MockObject { namespace Expectation
         {
             self.__verify_can_set_args();
             if (int(pos) != 1 || int(named) != 0)
-                Rosella.Error.invalid("set_attribute takes exactly 1 positional and 0 named args");
+                Rosella.Error.invalid(__FUNCTION__, "set_attribute takes exactly 1 positional and 0 named args");
             self.with = new Rosella.MockObject.Expectation.With.Args(pos, named);
             return self;
         }
