@@ -33,8 +33,8 @@ class Test_<# class.cleanname #>
 
 function main[main]()
 {
-    load_bytecode("rosella/test.pbc");
-    load_bytecode("<# class.ownerlib #>");
-    using Rosella.Test.test;
-    test(class Test_<# class.cleanname #>);
+    var core = load_packfile("rosella/core.pbc");
+    using Rosella.initialize_rosella; initialize_rosella("test");
+    using Rosella.load_bytecode_file; load_bytecode_file("<# class.ownerlib #>", "load");
+    using Rosella.Test.test;          test(class Test_<# class.cleanname #>);
 }

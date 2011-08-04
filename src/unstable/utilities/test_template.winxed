@@ -2,8 +2,8 @@ const string TEMPLATE_FILE_FMT = "%s.%s.template";
 
 function main[main](var args)
 {
-    load_bytecode("rosella/template.pbc");
-    load_bytecode("rosella/filesystem.pbc");
+    var rosella = load_packfile("rosella/core.pbc");
+    using Rosella.initialize_rosella; initialize_rosella("filesystem", "template");
 
     if (elements(args) < 3) {
         show_help();
@@ -29,7 +29,7 @@ function template_main(string mode, string language, var args)
             context = harness_template_context(template, args);
             break;
         case "test":
-            template = get_template_text("test", language);
+            template = get_template_text("test_class", language);
             context = test_template_context(language, args[0], args[1]);
             break;
         default:
@@ -54,7 +54,6 @@ function get_template_text(string type, string lang)
     return file.read_all_text();
 }
 
-
 function harness_template_context(string template, var dirs)
 {
     var context = {
@@ -67,7 +66,7 @@ function harness_template_context(string template, var dirs)
 
 function test_template_context(string template, string libname, string classname)
 {
-    load_bytecode(libname);
+    var lib = load_packfile(libname);
     using Rosella.get_type_class;
     using Rosella.String.replace_all;
 
@@ -80,7 +79,8 @@ function test_template_context(string template, string libname, string classname
             "cleanname" : replace_all(classname, ".", "_"),
             "winxedname" : classname,
             "perlname" : replace_all(classname, ".", "::"),
-            "methods" : methods
+            "methods" : methods,
+            "ownerlib" : libname
         }
     };
     return context;

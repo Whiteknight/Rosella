@@ -25,8 +25,8 @@ class Test_<# ns.cleanname #>
 
 function main[main]()
 {
-    load_bytecode("rosella/test.pbc");
-    load_bytecode("<# ns.ownerlib #>");
-    using Rosella.Test.test;
-    test(class Test_<# ns.cleanname #>);
+    var core = load_packfile("rosella/core.pbc");
+    using Rosella.initialize_rosella; initialize_rosella("test");
+    using Rosella.load_bytecode_file; load_bytecode_file("<# ns.ownerlib #>");
+    using Rosella.Test.test;          test(class Test_<# ns.cleanname #>);
 }

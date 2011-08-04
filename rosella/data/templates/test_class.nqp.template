@@ -1,22 +1,30 @@
 class Test::<# class.perlname #> {
+    sub get_<# class.cleanname #>() {
+        return Rosella::construct(<# class.perlname #>);
+    }
+
     method test_sanity() {
         $!assert.is_true(1);
     }
 
     method test_new() {
-        my $obj := <# class.perlname #>.new();
+        my $obj := get_<# class.cleanname #>();
         $!assert.not_null($obj);
         $!assert.instance_of($obj, <# class.perlname #>);
     }
-
     <$ for method in class.methods $>
+
     method method_<# method #>() {
         $!status.verify("default test for <# method #>");
-        my $obj := <# class.name #>.new();
+        my $obj := get_<# class.cleanname #>();
         my $result := $obj.<# method #>();
-    }
-    <$ endfor $>
+    }<$ endfor $>
 }
 
-Rosella::Test::test(<# class.perlname #>);
-INIT { pir::load_bytecode("rosella/test.pbc"); }
+Rosella::Test::test(Test::<# class.perlname #>);
+
+INIT {
+    my $rosella := pir::load_bytecode__PS("rosella/core.pbc");
+    Rosella::initialize_rosella("test");
+    Rosella::load_bytecode_file("<# class.ownerlib #>", "load");
+}
