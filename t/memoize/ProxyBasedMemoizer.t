@@ -1,6 +1,6 @@
 INIT {
-    pir::load_bytecode("rosella/test.pbc");
-    pir::load_bytecode("rosella/memoize.pbc");
+    my $rosella := pir::load_bytecode__PS("rosella/core.pbc");
+    Rosella::initialize_rosella("test", "memoize");
 }
 
 Rosella::Test::test(Test::Memoize::ProxyBased);

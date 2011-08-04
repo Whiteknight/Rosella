@@ -1,5 +1,3 @@
-$load "rosella/path.pbc";
-
 namespace Rosella
 {
     // src/path/Path.winxed;
@@ -15,4 +13,9 @@ namespace Rosella
         // src/path/searcher/Hash.winxed
         class Hash;
     }
+}
+
+function __load_path[anon, load, init]()
+{
+    Rosella.load_bytecode_file("rosella/path.pbc", "load");
 }

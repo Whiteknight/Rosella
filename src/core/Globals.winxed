@@ -1,17 +1,17 @@
 namespace Rosella
 {
-    /* Global Instance Registry
+    /* Global Instance and Bytecode Registry
         The routines in this file are used to establish a registry for global
         instances. This is useful for situations where we would like to keep
         a single instance of a type around globally, or be able to inject
-        global behavior at runtime
+        global behavior at runtime.
     */
 
     const string DEFAULT_FACTORY_GLOBAL = "Rosella.default_factory";
 
     // Get the hash of globals. Private routine. Should not be called
     // externally
-    function __get_globals()
+    function __get_globals[anon]()
     {
         var globals = {
             DEFAULT_FACTORY_GLOBAL : new Rosella.ObjectFactory()
@@ -40,5 +40,49 @@ namespace Rosella
     function get_default_factory()
     {
         return __get_globals()[DEFAULT_FACTORY_GLOBAL];
+    }
+
+    /* Bytecode Management Functions
+    */
+
+    // Initialize the Rosella library, loading in any necessary files.
+    function initialize_rosella(var libs [slurpy])
+    {
+        var core = load_bytecode_raw("rosella/core.pbc");
+        init_bytecode(core, "load");
+
+        for (string shortlib in libs) {
+            string lib = "rosella/" + shortlib + ".pbc";
+            var pf = load_bytecode_raw(lib);
+            init_bytecode(pf, "load");
+        }
+    }
+
+    function load_bytecode_raw(string name)
+    {
+        var packfileview;
+        ${ load_bytecode packfileview, name };
+        return packfileview;
+    }
+
+    // Load in the bytecode library to the registry, for storage
+    function load_bytecode_file(string file,
+            string trigger [optional], int has_trigger [opt_flag])
+    {
+        var pf = load_bytecode_raw(file);
+        if (has_trigger && trigger != "" && trigger != null)
+            init_bytecode(pf, trigger);
+        return pf;
+    }
+
+    // Initialize the bytecode, executing subs with the given trigger
+    function init_bytecode(var pf, string trigger)
+    {
+        if (!pf.is_initialized(trigger)) {
+            var subs = pf.subs_by_flag(trigger);
+            for (var sub in subs)
+                sub();
+            pf.mark_initialized(trigger);
+        }
     }
 }

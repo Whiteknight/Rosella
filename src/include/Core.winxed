@@ -1,5 +1,3 @@
-$load "rosella/core.pbc";
-
 namespace Rosella {
     // src/core/Rosella.winxed
     extern function alloc;
@@ -25,6 +23,9 @@ namespace Rosella {
     extern function get_global;
     extern function register_global;
     extern function get_default_factory;
+    extern function load_bytecode_file;
+    extern function unload_bytecode;
+    extern function register_bytecode;
 
     // src/core/IO.winxed
     namespace IO
@@ -49,4 +50,16 @@ namespace Rosella {
     extern function get_version_hash;
     extern function get_version;
     class Version;
+}
+
+function __load_core[anon, load, init]()
+{
+    var core;
+    ${ load_bytecode core, "rosella/core.pbc" };
+    if (!core.is_initialized("load")) {
+        core.mark_initialized("load");
+        var subs = core.subs_by_flag("load");
+        for (var sub in subs)
+            sub();
+    }
 }

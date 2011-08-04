@@ -1,5 +1,3 @@
-$load "rosella/test.pbc";
-
 namespace Rosella {
     namespace Test {
         // src/test/Test.winxed
@@ -52,8 +50,11 @@ namespace Rosella {
 
         // src/test/TestStatus.winxed
         class TestStatus;
-
-
-
     }
 }
+
+function __load_test[anon, load, init]()
+{
+    Rosella.load_bytecode_file("rosella/test.pbc", "load");
+}
+

@@ -1,5 +1,3 @@
-$load "rosella/string.pbc";
-
 namespace Rosella {
     namespace String {
         // src/string/String.winxed
@@ -39,3 +37,9 @@ namespace Rosella {
         }
     }
 }
+
+function __load_string[anon, load, init]()
+{
+    Rosella.load_bytecode_file("rosella/string.pbc", "load");
+}
+
