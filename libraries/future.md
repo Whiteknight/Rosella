@@ -49,12 +49,6 @@ creating cheap Decorators. A Decorator is an object which adds new
 attributes and methods to an object of an existing class, without violating
 encapsulation.
 
-### Path
-
-The Path library allows searching of nested aggregates by using path strings.
-The user of an arbitrary attribute can pick values out of it using search
-string.
-
 ### Prototype
 
 The Prototype library implements the Prototype pattern. A Prototype is an
@@ -63,12 +57,6 @@ object creation where objects are allocated fresh and separate initialized.
 The Prototype library allows you to register both a prototype object and an
 initializer method for each type, then ask for objects of that type by name.
 
-### Query
-
-The Query library implements several higher-order functions for operating on
-aggregates. This library implements routines such as map, fold, reduce, count,
-and other utility routines for working with aggregates.
-
 ### Lazy
 
 The Lazy library implements lazy objects. Lazy objects are proxies which take
@@ -76,11 +64,24 @@ a target type but which only instantiate the targe object on demand. This is
 useful for when you need to have and pass an object "instance", but creating
 the object is too expensive to do eagerly.
 
-### String
+### Template
 
-The string library provides abstractions for performing common string
-operations in a simplified and future-proof way. It also provides tokenization
-and other utilities for working with strings.
+The Template library performs text-formatting and text-templating. It will
+have a default syntax familiar, but not identical, to other well-known text
+templating packages. In addition, it will provide a powerful customization
+interace to change both syntax and semanics of text templating for particular
+purposes.
+
+### Benchmark
+
+The Benchmark library will contain tools and utilities for benchmarking and
+measuring the performance of code.
+
+### Utilities
+
+Not a library, several standalone utility programs are being developed as
+part of the Rosella package. These utility programs will use Rosella libraries
+to perform several important and time-saving tasks.
 
 ## Planned Libraries
 

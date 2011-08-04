@@ -472,7 +472,6 @@ the Result object. Every TestCase has a TestStatus available. This class
 cannot be modified, subclassed, or replaced. TestStatus provides a number of
 methods which may be useful to people writing tests:
 
-
     # Mark the test TODO with the given explanation
     $!status.todo("message");
 
@@ -510,9 +509,9 @@ a Result is created with a single TAP-producing listener.
 Here is a complete example of class-based testing in Winxed:
 
     function main[main]() {
-        load_bytecode("rosella/test.pbc");
-        using Rosella.Test.test;
-        test(class MyTestClass);
+        var rosella = load_packfile("rosella/core.pbc");
+        using Rosella.initialize_rosella; initialize_rosella("test");
+        using Rosella.Test.test; test(class MyTestClass);
     }
 
     class MyTestClass {
@@ -574,6 +573,20 @@ give each item in the test a name:
     });
 
 ### NQP-rx
+
+    INIT {
+        my $rosella := pir::load_bytecode__PS("rosella/core.pbc");
+        Rosella::initialize_rosella("test");
+    }
+
+    Rosella::Test::test(My::Test);
+
+    class My::Test {
+        method test_a() {
+            ...
+        }
+        ...
+    }
 
 ## Users
 

@@ -130,6 +130,34 @@ Register a global instance:
     using Rosella.get_global;
     var foo = get_global("name");
 
+### Bytecode Loading
+
+Rosella provides several utilities for working with bytecode files in Parrot.
+
+    var rosella = load_packfile("rosella/core.pbc");
+    using Rosella.initialize_rosella;
+    initialize_rosella("action", "container", "test");
+
+Before using Rosella or any of its component libraries, you need to initialize
+it. The snippet above loads the Rosella bytecode file, initializes, and
+loads the component libraries "action", "container", and "test".
+
+To load a rosella library at runtime, use:
+
+    using Rosella.load_rosella_library;
+    load_rosella_library("proxy");
+
+To load any arbitrary bytecode library, use:
+
+    using Rosella.load_bytecode_file;
+    var pf = load_bytecode_file("foo/bar.pbc");
+
+If you want to execute all `:load` functions when you load the library, you
+must specify it:
+
+    using Rosella.load_bytecode_file;
+    var pf = load_bytecode_file("foo/bar.pbc", "load");
+
 ## Namespaces
 
 ### Rosella
@@ -164,6 +192,26 @@ input, output and error handles with custom handles. This is used in several
 places in the test and harness libraries, and may have more general usefulness
 elsewhere.
 
+### Rosella.Parrot
+
+The `Rosella.Parrot` namespace provides a number of utility functions for
+interacting with Parrot in standard ways.
+
+    // Get the Parrot config hash
+    var h = get_config_hash();
+
+    // Get a backtrace from current location
+    var bt = get_backtrace_strings();
+
+    // Get a backtrace from the exception object
+    var bt = get_backtrace_ex_strings(exception);
+
+    // Execute code. If there is an exception, print the exception details
+    // and complete backtrace to the console.
+    try_report(function() {
+        ...
+    });
+
 ## Classes
 
 ### Rosella.ObjectFactory
@@ -188,9 +236,19 @@ interface for other, more advanced, factory types.
 
 ### Winxed
 
+First, you need to load and initialize Rosella:
+
+    var rosella = load_packfile("rosella/core.pbc");
+    using Rosella.initialize_rosella;
+    initialize_rosella();
+
+Create an object with BUILD:
+
     using Rosella.build;
     // Calls obj.BUILD(arg)
     var obj = build(class My.P6ish.Type, arg);
+
+Create an object with a constructor:
 
     using Rosella.construct;
     // Calls obj.Type(arg)
@@ -198,8 +256,17 @@ interface for other, more advanced, factory types.
 
 ### NQP-rx
 
+First, load and initialize Rosella:
+
+    my $rosella := pir::load_bytecode__PS("rosella/core.pbc");
+    Rosella::initialize_rosella();
+
+Create an object with BUILD:
+
     # Calls $obj.BUILD($arg)
     my $obj := Rosella::build(My::P6ish::Type, $arg);
+
+Create an object with a constructor:
 
     # Calls $obj.Type($arg)
     my $obj := Rosella::construct(My::Normal::Type, $arg);

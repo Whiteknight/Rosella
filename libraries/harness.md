@@ -143,7 +143,9 @@ This is an internal class to help organize tests and test files by result.
 Here is a minimal harness written in Winxed:
 
     function main[main]() {
-        load_bytecode("rosella/harness.pbc");
+        var rosella = load_packfile("rosella/core.pbc");
+        using Rosella.initialize_rosella;
+        initialize_rosella("harness");
         var factory = new Rosella.Harness.TestRun.Factory();
         var harness = new Rosella.Harness();
         var view = harness.default_view();
@@ -158,7 +160,9 @@ Here is a version of the harness which takes a list of test directories from
 the command line:
 
     function main[main](var args) {
-        load_bytecode("rosella/harness.pbc");
+        var rosella = load_packfile("rosella/core.pbc");
+        using Rosella.initialize_rosella;
+        initialize_rosella("harness");
         var factory = new Rosella.Harness.TestRun.Factory();
         var harness = new Rosella.Harness();
         var view = harness.default_view();
@@ -181,7 +185,10 @@ the command line:
 
 Here is a minimal harness written in NQP:
 
-    INIT { pir::load_bytecode("rosella/harness.pbc"); }
+    INIT {
+        my $rosella := pir::load_bytecode__PS("rosella/core.pbc");
+        Rosella::initialize_rosella("harness");
+    }
     my $factory := Rosella::construct(Rosella::Harness::TestRunFactory);
     $factory.add_test_dirs("NQP", "t", :recurse(1));
     my $testrun := $factory.create();

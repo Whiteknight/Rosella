@@ -139,7 +139,14 @@ is a storage slot for arbitrary metadata to be attached.
 
 ### Winxed
 
+    function main[main](var args) {
+        var rosella = load_packfile("rosella/core.pbc");
+        using Rosella.initialize_rosella;
+        initialize_rosella("string");
+    }
+
 ### NQP
 
 ## Users
 
+* The Rosella Template library uses String
