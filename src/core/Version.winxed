@@ -8,7 +8,8 @@ namespace Rosella
         // version numbers in
         function get_version_hash()
         {
-            Rosella.Globals.register_global(VERSION_HASH_NAME, {});
+            var version_hash = Rosella.__PRIVATE_Version.__GET_VERSION_HASH();
+            Rosella.Globals.register_global(VERSION_HASH_NAME, version_hash);
             while (1)
                 yield Rosella.Globals.get_global(VERSION_HASH_NAME);
         }
@@ -20,16 +21,7 @@ namespace Rosella
             var version_hash = get_version_hash();
             if (exists version_hash[lib])
                 return version_hash[lib];
-            return new Rosella.Version(lib, -1, "UNKNOWN");
-        }
-
-        // internal routine for setting a library version. Don't call this one
-        // yourself. For internal use only.
-        function internal_set_version(string lib, var vernum, var verstate)
-        {
-            var version_hash = get_version_hash();
-            var ver = new Rosella.Version(lib, vernum, verstate);
-            version_hash[lib] = ver;
+            return version_hash["UNKNOWN"];
         }
     }
 

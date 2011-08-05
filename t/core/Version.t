@@ -11,4 +11,11 @@ class Test::Rosella::Version {
         $!assert.equal(+$ver.library_version(), -1);
         $!assert.equal($ver.library_state(), "UNKNOWN");
     }
+
+    method get_core_version() {
+        my $ver := Rosella::Version::get_version("core");
+        $!assert.not_null($ver);
+        $!assert.equal($ver.library_state, "Stable");
+        $!assert.equal($ver.library_version, "2");
+    }
 }

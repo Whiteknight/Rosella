@@ -15,6 +15,6 @@ prototype: 0 Alpha
 proxy: 2 Stable
 query: 1 Stable
 string: 1 Stable
-template: 0 Alpha
+template: 0 Beta
 test: 3 Stable
 winxed: 2 Stable
