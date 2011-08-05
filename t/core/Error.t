@@ -6,7 +6,12 @@ INIT {
 Rosella::Test::test(ErrorTest);
 
 class ErrorTest {
-    method test_fail() {
-        $!status.unimplemented("Test this");
+    method throw_error() {
+        $!assert.throws({
+            Rosella::Error::throw_error("test");
+        });
     }
+
+    # TODO: We need an Asserter method for matching error messages to test
+    #       other stuff.
 }

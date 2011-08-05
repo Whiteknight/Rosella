@@ -18,4 +18,10 @@ class Test::Rosella::Version {
         $!assert.equal($ver.library_state, "Stable");
         $!assert.equal($ver.library_version, "2");
     }
+
+    method get_version_hash() {
+        my %h := Rosella::Version::get_version_hash();
+        $!assert.not_null(%h);
+        $!assert.instance_of(%h, "Hash");
+    }
 }
