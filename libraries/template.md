@@ -233,7 +233,7 @@ snippet of code for an array literal:
 
     <$ for x in y $>
         <$ if __FIRST__ $>[<$ endif $>
-            <# x #> <$ unless __LAST__ $>,
+            <# x #> <$ unless __LAST__ $>,<$ endunless $>
         <$ else $>];<$ endif $>
     <$ endfor $>
 
