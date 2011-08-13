@@ -50,10 +50,16 @@ namespace Rosella { namespace FileSystem
 
         // Open the file for reading, returning the open FileHandle. The user
         // must close the filehandle themselves.
-        function open_read()
+        function open_read(string encoding [optional], int has_e [opt_flag])
         {
+            int is_binary = 0;
             var filehandle = get_filehandle();
-            filehandle.open(self.path, "r");
+            if (has_e) {
+                string mode = (encoding == "binary") ? "rb" : "r";
+                filehandle.open(self.path, mode);
+                filehandle.encoding(encoding);
+            } else
+                filehandle.open(self.path, "r");
             return filehandle;
         }
 
@@ -66,6 +72,7 @@ namespace Rosella { namespace FileSystem
             return filehandle;
         }
 
+        // Open the file for appending.
         function open_append()
         {
             var filehandle = get_filehandle();
@@ -74,20 +81,29 @@ namespace Rosella { namespace FileSystem
         }
 
         // Return all text from the file in a single string.
-        function read_all_text()
+        function read_all_text(string encoding [optional], int has_e [opt_flag])
         {
-            var filehandle = self.open_read();
+            var filehandle;
+            if (has_e && encoding != null)
+                filehandle = self.open_read(encoding);
+            else
+                filehandle = self.open_read();
             string text = filehandle.readall();
             filehandle.close();
             return text;
         }
 
         // Return all text from the file, as an array of lines.
-        function read_all_lines(string delim [optional], int has_d [opt_flag])
+        function read_all_lines(string delim [optional], int has_d [opt_flag],
+            string encoding [optional], int has_encoding [opt_flag])
         {
             if (!has_d)
                 delim = "\n";
-            string text = self.read_all_text();
+            string text;
+            if (has_encoding && encoding != null)
+                text = self.read_all_text(encoding);
+            else
+                text = self.read_all_text();
             return split(delim, text);
         }
 
@@ -122,7 +138,7 @@ namespace Rosella { namespace FileSystem
         function copy(string dest)
         {
             var file = new Rosella.FileSystem.File(dest);
-            string txt = self.read_all_text();
+            string txt = self.read_all_text("binary");
             file.write_all_text(txt);
             return file;
         }
