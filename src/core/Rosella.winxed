@@ -162,7 +162,7 @@ namespace Rosella
     {
         if (!pf.is_initialized(trigger)) {
             pf.mark_initialized(trigger);
-            var subs = pf.subs_by_flag(trigger);
+            var subs = pf.subs_by_tag(trigger);
             for (var sub in subs)
                 sub();
         }
