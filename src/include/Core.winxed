@@ -9,6 +9,9 @@ namespace Rosella {
     extern function find_named_method;
     extern function invoke_method;
     extern function get_unique_count;
+    extern function load_bytecode_file;
+    extern function unload_bytecode;
+    extern function register_bytecode;
 
     // src/core/Error.winxed
     namespace Error
@@ -20,12 +23,12 @@ namespace Rosella {
     }
 
     // src/core/Globals.winxed
-    extern function get_global;
-    extern function register_global;
-    extern function get_default_factory;
-    extern function load_bytecode_file;
-    extern function unload_bytecode;
-    extern function register_bytecode;
+    namespace Globals
+    {
+        extern function get_global;
+        extern function register_global;
+        extern function get_default_factory;
+    }
 
     // src/core/IO.winxed
     namespace IO
@@ -44,21 +47,24 @@ namespace Rosella {
         extern function get_config_hash;
         extern function get_backtrace_strings;
         extern function get_backtrace_ex_strings;
+        extern function try_report;
     }
 
     // src/core/Version.winxed
-    extern function get_version_hash;
-    extern function get_version;
+    namespace Version
+    {
+        extern function get_version_hash;
+        extern function get_version;
+    }
     class Version;
 }
 
 function __load_core[anon, load, init]()
 {
-    var core;
-    ${ load_bytecode core, "rosella/core.pbc" };
+    var core = load_packfile("rosella/core.pbc");
     if (!core.is_initialized("load")) {
         core.mark_initialized("load");
-        var subs = core.subs_by_flag("load");
+        var subs = core.subs_by_tag("load");
         for (var sub in subs)
             sub();
     }

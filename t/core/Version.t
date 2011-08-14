@@ -7,8 +7,21 @@ Rosella::Test::test(Test::Rosella::Version);
 
 class Test::Rosella::Version {
     method nonexistant_version() {
-        my $ver := Rosella::get_version("BlahBlahBlah - does not exist");
+        my $ver := Rosella::Version::get_version("BlahBlahBlah - does not exist");
         $!assert.equal(+$ver.library_version(), -1);
         $!assert.equal($ver.library_state(), "UNKNOWN");
+    }
+
+    method get_core_version() {
+        my $ver := Rosella::Version::get_version("core");
+        $!assert.not_null($ver);
+        $!assert.equal($ver.library_state, "Stable");
+        $!assert.equal($ver.library_version, "2");
+    }
+
+    method get_version_hash() {
+        my %h := Rosella::Version::get_version_hash();
+        $!assert.not_null(%h);
+        $!assert.instance_of(%h, "Hash");
     }
 }

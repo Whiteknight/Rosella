@@ -6,87 +6,41 @@ namespace Rosella
         a single instance of a type around globally, or be able to inject
         global behavior at runtime.
     */
-
-    const string DEFAULT_FACTORY_GLOBAL = "Rosella.default_factory";
-
-    // Get the hash of globals. Private routine. Should not be called
-    // externally
-    function __get_globals[anon]()
+    namespace Globals
     {
-        var globals = {
-            DEFAULT_FACTORY_GLOBAL : new Rosella.ObjectFactory()
-        };
-        while (1)
-            yield globals;
-    }
+        const string DEFAULT_FACTORY_GLOBAL = "Rosella.default_factory";
 
-    // Get a global by name
-    function get_global(string name)
-    {
-        var globals = __get_globals();
-        if (exists globals[name])
-            return globals[name];
-        return null;
-    }
-
-    // Register a new global by name
-    function register_global(string name, var value)
-    {
-        var globals = __get_globals();
-        globals[name] = value;
-    }
-
-    // Helper method to retrieve a global ObjectFactory instance
-    function get_default_factory()
-    {
-        return __get_globals()[DEFAULT_FACTORY_GLOBAL];
-    }
-
-    /* Bytecode Management Functions
-    */
-
-    // Initialize the Rosella library, loading in any necessary files.
-    function initialize_rosella(var libs [slurpy])
-    {
-        var core = load_packfile("rosella/core.pbc");
-        init_bytecode(core, "load");
-        load_rosella_libraries(libs);
-    }
-
-    // Load a Rosella library, by name
-    function load_rosella_library(var libs [slurpy])
-    {
-        load_rosella_libraries(libs);
-    }
-
-    // Load an array of rosella libraries
-    function load_rosella_libraries(var libs)
-    {
-        for (string lib in libs) {
-            string lib_name = sprintf("rosella/%s.pbc", [lib]);
-            var pf = load_packfile(lib_name);
-            init_bytecode(pf, "load");
+        // Get the hash of globals. Private routine. Should not be called
+        // externally
+        function __get_globals[anon]()
+        {
+            var globals = {
+                DEFAULT_FACTORY_GLOBAL : new Rosella.ObjectFactory()
+            };
+            while (1)
+                yield globals;
         }
-    }
 
-    // Load in the bytecode library, executing the given trigger, if any.
-    function load_bytecode_file(string file,
-            string trigger [optional], int has_trigger [opt_flag])
-    {
-        var pf = load_packfile(file);
-        if (has_trigger && trigger != "" && trigger != null)
-            init_bytecode(pf, trigger);
-        return pf;
-    }
+        // Get a global by name
+        function get_global(string name)
+        {
+            var globals = __get_globals();
+            if (exists globals[name])
+                return globals[name];
+            return null;
+        }
 
-    // Initialize the bytecode, executing subs with the given trigger
-    function init_bytecode(var pf, string trigger)
-    {
-        if (!pf.is_initialized(trigger)) {
-            pf.mark_initialized(trigger);
-            var subs = pf.subs_by_flag(trigger);
-            for (var sub in subs)
-                sub();
+        // Register a new global by name
+        function register_global(string name, var value)
+        {
+            var globals = __get_globals();
+            globals[name] = value;
+        }
+
+        // Helper method to retrieve a global ObjectFactory instance
+        function get_default_factory()
+        {
+            return __get_globals()[DEFAULT_FACTORY_GLOBAL];
         }
     }
 }
