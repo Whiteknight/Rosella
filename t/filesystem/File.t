@@ -168,11 +168,13 @@ class Test::FileSystem::File {
     method copy() {
         my $file := Rosella::construct(Rosella::FileSystem::File, "foo.txt");
         test_with_filehandle_mock($!status, -> $c {
-            $c.expect_method("open").with_args("foo.txt", "r");
+            $c.expect_method("open").with_args("foo.txt", "rb");
+            $c.expect_method("encoding").with_args("binary");
             $c.expect_method("readall").with_no_args.will_return("foo\nbar\nbaz");
             $c.expect_method("close").with_no_args;
 
-            $c.expect_method("open").with_args("bar.txt", "w");
+            $c.expect_method("open").with_args("bar.txt", "wb");
+            $c.expect_method("encoding").with_args("binary");
             $c.expect_method("print").with_args("foo\nbar\nbaz");
             $c.expect_method("close").with_no_args;
         }, {

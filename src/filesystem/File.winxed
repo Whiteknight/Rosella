@@ -63,10 +63,15 @@ namespace Rosella { namespace FileSystem
 
         // Open the file for writing, returning the open FileHandle. The user
         // must close the FileHandle themselves.
-        function open_write()
+        function open_write(string encoding [optional], int has_e [opt_flag])
         {
             var filehandle = get_filehandle();
-            filehandle.open(self.path, "w");
+            if (has_e) {
+                string mode = (encoding == "binary") ? "wb" : "w";
+                filehandle.open(self.path, mode);
+                filehandle.encoding(encoding);
+            } else
+                filehandle.open(self.path, "w");
             return filehandle;
         }
 
@@ -107,9 +112,14 @@ namespace Rosella { namespace FileSystem
 
         // Write the text to the file. Create the file if it does not exist,
         // overwrite it if it does.
-        function write_all_text(string text)
+        function write_all_text(string text,
+                string encoding [optional], int has_e [opt_flag])
         {
-            var filehandle = self.open_write();
+            var filehandle;
+            if (has_e && encoding != null)
+                filehandle = self.open_write(encoding);
+            else
+                filehandle = self.open_write();
             filehandle.print(text);
             filehandle.close();
         }
@@ -137,7 +147,7 @@ namespace Rosella { namespace FileSystem
         {
             var file = new Rosella.FileSystem.File(dest);
             string txt = self.read_all_text("binary");
-            file.write_all_text(txt);
+            file.write_all_text(txt, "binary");
             return file;
         }
 
