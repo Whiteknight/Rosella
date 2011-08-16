@@ -23,6 +23,17 @@ namespace Rosella {
         extern function throw_error;
     }
 
+    // src/core/Function.winxed
+    namespace Function
+    {
+        extern function bind;
+        extern function bind_method;
+        extern function once;
+        extern function after;
+        extern function wrap;
+        extern function compose;
+    }
+
     // src/core/Globals.winxed
     namespace Globals
     {
