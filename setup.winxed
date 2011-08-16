@@ -65,6 +65,7 @@ function setup_stable_libraries(var rosella)
     setup_winxed_lib(rosella, "core", [],
         "core/Rosella",
         "core/Error",
+        "core/Function",
         "core/IO",
         "core/Globals",
         "core/ObjectFactory",
