@@ -243,10 +243,11 @@ function setup_experimental_libraries(var rosella)
         "decorate/Factory"
     );
 
-    setup_unstable_lib(rosella, "contract", ["Core"],
-        "contract/Contract",
-        "contract/Method",
-        "contract/Interface"
+    setup_unstable_lib(rosella, "assert", ["Core"],
+        "assert/Assert",
+        "assert/Debug",
+        "assert/Method",
+        "assert/Interface"
     );
 
     setup_unstable_lib(rosella, "lazy", ["Core", "Proxy"],
