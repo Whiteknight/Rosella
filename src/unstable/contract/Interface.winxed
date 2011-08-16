@@ -1,16 +1,16 @@
-namespace Rosella { namespace Contract
+namespace Rosella { namespace Assert
 {
     /* Contract class to verify that the given type satisfies the public
        interface of a base class.
     */
-    class Interface
+    class InterfaceContract
     {
         var base_type_class;
         var base_type_methods;
         var base_type_name;
 
         // TODO: Allow to specify optional inclusion/exclusion criteria
-        function BUILD(var base_type)
+        function InterfaceContract(var base_type)
         {
             using Rosella.get_type_class;
             using Rosella.get_type_name;

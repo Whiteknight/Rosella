@@ -20,6 +20,7 @@ namespace Rosella {
         extern function not_implemented;
         extern function invalid;
         extern function invalid_type;
+        extern function throw_error;
     }
 
     // src/core/Globals.winxed
@@ -48,6 +49,8 @@ namespace Rosella {
         extern function get_backtrace_strings;
         extern function get_backtrace_ex_strings;
         extern function try_report;
+        extern function format_frame;
+        extern function format_backtrace;
     }
 
     // src/core/Version.winxed

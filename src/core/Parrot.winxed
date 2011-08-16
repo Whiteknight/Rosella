@@ -19,14 +19,14 @@ namespace Rosella
         {
             var cur_ctx = getinterp()["context"];
             var last_ctx = cur_ctx.caller_ctx;
-            return __format_backtrace(last_ctx.backtrace());
+            return format_backtrace(last_ctx.backtrace());
         }
 
         // Get an array of strings representing a backtrace from the exception
         function get_backtrace_ex_strings(var ex)
         {
             var bt = ex.backtrace();
-            return __format_backtrace(bt);
+            return format_backtrace(bt);
         }
 
         // Execute a function. Catch any exceptions and print the message and
@@ -40,7 +40,6 @@ namespace Rosella
             try {
                 sub();
             } catch (e) {
-
                 handle.print(e["message"]);
                 handle.print("\n");
                 for (string bt in get_backtrace_ex_strings(e))
@@ -48,20 +47,28 @@ namespace Rosella
             }
         }
 
+        function format_frame(var frame)
+        {
+            var sub = frame["sub"];
+            string subname = "(entry)";
+            if (sub != null)
+                subname = string(sub);
+            var annotations = frame["annotations"];
+            string filename = annotations["file"];
+            int lineno = annotations["line"];
+            string text = Winxed_Builtins.sprintf("'%s' (%s : %d)", [subname, filename, lineno]);
+            return sub, text;
+        }
+
         // private routine. Format backtrace information into an array of
         // human-readable strings
-        function __format_backtrace(var bt)
+        function format_backtrace(var bt)
         {
             var bts = [];
             for (int i = 0; i < elements(bt); i++) {
-                var sub = bt[i]["sub"];
-                string subname = "(entry)";
-                if (sub != null)
-                    subname = string(sub);
-                var annotations = bt[i]["annotations"];
-                string filename = annotations["file"];
-                int lineno = annotations["line"];
-                bts[i] = Winxed_Builtins.sprintf("Called from '%s' (%s : %d)", [subname, filename, lineno]);
+                var sub; string text;
+                :(sub, text) = format_frame(bt[i]);
+                bts[i] = "Called from " + text;
                 if (sub == null)
                     break;
             }

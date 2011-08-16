@@ -1,22 +1,44 @@
 namespace Rosella
 {
-    namespace Contract
+    namespace Assert
     {
-        function active(int is_active [optional], int has_is_active [opt_flag])
+        const string ASSERT_IS_ACTIVE_KEY = "Rosella.Assert.IsActive";
+
+        function is_active()
         {
-            if (!has_is_active)
-                is_active = 0;
-          next:
-            yield is_active;
-            goto next;
+            var temp = Rosella.Globals.get_global(ASSERT_IS_ACTIVE_KEY);
+            if (temp == null) {
+                temp = var(false);
+                Rosella.Globals.register_global(ASSERT_IS_ACTIVE_KEY, temp);
+            }
+            while(1) {
+                yield temp;
+                temp = Rosella.Globals.get_global(ASSERT_IS_ACTIVE_KEY);
+            }
+        }
+
+        function set_active(int active)
+        {
+            Rosella.Globals.register_global(ASSERT_IS_ACTIVE_KEY, var(active));
         }
 
         function assert(int cond, string text)
         {
-            if (!active())
+            if (cond || !is_active())
                 return;
-            if (!cond)
-                die("Assertion '" + text + "' failed");
+            var cur_ctx = getinterp()["context"];
+            var bt = cur_ctx.backtrace();
+            if (elements(bt) > 1) {
+                string frame = Rosella.Parrot.format_frame(bt[1]);
+                text = Winxed_Builtins.sprintf("%s at %s", [text, frame]);
+            }
+            assert_fail(text);
+        }
+
+        function assert_fail(string text, var args [slurpy])
+        {
+            text = sprintf(text, args);
+            Rosella.Error.throw_error("Assertion failure: " + text);
         }
     }
 }
