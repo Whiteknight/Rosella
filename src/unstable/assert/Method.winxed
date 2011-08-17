@@ -3,33 +3,83 @@ namespace Rosella { namespace Assert
     /* Contract class to inject pre- and post-conditions into individual
        method calls.
     */
-    class MethodConstract
+    class MethodContract
     {
         var type;
         var type_class;
         var type_methods;
+        var assertions;
 
         function MethodContract(var type)
         {
             self.type = type;
             var type_class = Rosella.get_type_class(type);
-            var methods = type_class.methods();
             self.type_class = type_class;
-            self.type_methods = methods;
+            self.type_methods = type_class.methods();
+            self.assertions = {};
         }
 
-        function inject(string meth_name, var precond_list, var postcond_list)
+        const int PRECOND_IDX = 0;
+        const int POSTCOND_IDX = 1;
+
+        function arg_not_null(string meth_name, int idx)
+        {
+            self.add_pre_assertion(meth_name, sprintf("Arg %d not null", idx),
+                function(var p [slurpy], var n [slurpy,named]) {
+                    if (p[idx] == null)
+                        return false;
+                    return true;
+                }
+            );
+        }
+
+        function arg_not_null(string meth_name, string idx)
+        {
+            self.add_pre_assertion(meth_name, sprintf("Arg '%s' not null", idx),
+                function(var p [slurpy], var n [slurpy,named]) {
+                    if (n[idx] == null)
+                        return false;
+                    return true;
+                }
+            );
+        }
+
+        function add_pre_assertion(string meth_name, string cond_name, var cond)
+        {
+            if (!(exists self.assertions[meth_name]))
+                self.assertions[meth_name] = [{}, {}];
+            self.assertions[meth_name][PRECOND_IDX][cond_name] = cond;
+        }
+
+        function add_post_assertion(string meth_name, string cond_name, var cond)
+        {
+            if (!(exists self.assertions[meth_name]))
+                self.assertions[meth_name] = [{}, {}];
+            self.assertions[meth_name][POSTCOND_IDX][cond_name] = cond;
+        }
+
+        function apply()
         {
             if (!Rosella.Assert.is_active())
                 return;
+            for (string meth_name in self.assertions) {
+                var pre = self.assertions[meth_name][PRECOND_IDX];
+                var post = self.assertions[meth_name][POSTCOND_IDX];
+                self.__inject(meth_name, pre, post);
+            }
+        }
+
+        function __inject(string meth_name, var precond_list, var postcond_list)
+        {
+
             var old_method = self.type_methods[meth_name];
-            var new_method = self.get_method_wrapper(meth_name, old_method, precond_list, postcond_list);
+            var new_method = self.__get_method_wrapper(meth_name, old_method, precond_list, postcond_list);
             //self.type_methods[meth_name] = new_method;
             self.type_class.remove_method(meth_name);
             self.type_class.add_method(meth_name, new_method);
         }
 
-        function get_method_wrapper(string meth_name_str, var method, var pre, var post)
+        function __get_method_wrapper(string meth_name_str, var method, var pre, var post)
         {
             var preconditions = pre;
             var postconditions = post;
@@ -38,16 +88,21 @@ namespace Rosella { namespace Assert
 
             return function(var p [slurpy], var n [slurpy,named]) {
                 var invocant = p.shift();
+                var __cond_ok;
                 for (string pre_name in preconditions) {
-                    if (!preconditions[pre_name](p:[flat], n:[flat,named]))
+                    :(__cond_ok [slurpy]) = preconditions[pre_name](p:[flat], n:[flat,named]);
+                    if (elements(__cond_ok) > 0 && !__cond_ok[0])
                         Rosella.Assert.assert_fail("Failed precondition '%s' for method %s'", pre_name, meth_name);
                 }
-                var result = invocant.*meth(p:[flat], n:[flat,named]);
+                var result_p;
+                var result_n;
+                :(result_p [slurpy], result_n [slurpy,named]) = invocant.*meth(p:[flat], n:[flat,named]);
                 for (string post_name in postconditions) {
-                    if (!postconditions[post_name](result))
+                    :(__cond_ok [slurpy]) = postconditions[post_name](result_p:[flat], result_n:[flat,named]);
+                    if (elements(__cond_ok) > 0 && !__cond_ok[0])
                         Rosella.Assert.assert_fail("Failed postcondition '%s' for method '%s'", post_name, meth_name);
                 }
-                return result;
+                return result_p:[flat], result_n:[flat,named];
             };
         }
     }

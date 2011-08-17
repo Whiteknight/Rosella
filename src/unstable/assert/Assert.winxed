@@ -8,7 +8,7 @@ namespace Rosella
         {
             var temp = Rosella.Globals.get_global(ASSERT_IS_ACTIVE_KEY);
             if (temp == null) {
-                temp = var(false);
+                temp = false;
                 Rosella.Globals.register_global(ASSERT_IS_ACTIVE_KEY, temp);
             }
             while(1) {
@@ -19,7 +19,7 @@ namespace Rosella
 
         function set_active(int active)
         {
-            Rosella.Globals.register_global(ASSERT_IS_ACTIVE_KEY, var(active));
+            Rosella.Globals.register_global(ASSERT_IS_ACTIVE_KEY, active);
         }
 
         function assert(int cond, string text)
@@ -37,8 +37,13 @@ namespace Rosella
 
         function assert_fail(string text, var args [slurpy])
         {
-            text = sprintf(text, args);
-            Rosella.Error.throw_error("Assertion failure: " + text);
+            text = "Assertion failure: " + sprintf(text, args);
+
+            using Rosella.Test.internal_fail;
+            if (internal_fail == null)
+                Rosella.Error.throw_error(text);
+            else
+                internal_fail(text, 1, null);
         }
     }
 }

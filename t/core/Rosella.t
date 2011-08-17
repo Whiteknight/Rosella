@@ -1,6 +1,6 @@
 INIT {
     my $rosella := pir::load_bytecode__PS("rosella/core.pbc");
-    Rosella::initialize_rosella("test");
+    Rosella::initialize_rosella("test", "assert");
 }
 
 Rosella::Test::test(RosellaTest);
@@ -112,5 +112,9 @@ class RosellaTest {
         my $a := Rosella::get_unique_count();
         my $b := Rosella::get_unique_count();
         $!assert.not_equal($a, $b);
+    }
+
+    method assert_fail() {
+        Rosella::Assert::assert_fail("test");
     }
 }

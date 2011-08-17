@@ -27,7 +27,12 @@ namespace Rosella { namespace Assert
             if (!Rosella.Assert.is_active())
                 return;
             var handle = dbg_handle();
-            handle.pring(msg);
+            handle.print(msg);
+        }
+
+        function dsay(string msg)
+        {
+            debug(msg + "\n");
         }
 
         function dprintf(string fmt, var args [slurpy])
@@ -36,7 +41,7 @@ namespace Rosella { namespace Assert
                 return;
             string text = Winxed_Builtins.sprintf(fmt, args);
             var handle = dbg_handle();
-            handle.pring(text);
+            handle.print(text);
         }
     }
 }}
