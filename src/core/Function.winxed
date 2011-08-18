@@ -1,81 +1,86 @@
 namespace Rosella
 {
-    function bind(var func, var p [slurpy], var n [slurpy,named])
+    namespace Function
     {
-        return function(var _p [slurpy], var _n [slurpy,named]) {
-            var hash = {};
-            for (string key in n)
-                hash[key] = n[key];
-            for (string key in _n)
-                hash[key] = _n[key];
-            return func(p:[flat], _p:[flat], hash:[flat,named]);
-        };
-    }
+        function bind(var func, var p [slurpy], var n [slurpy,named])
+        {
+            return function(var _p [slurpy], var _n [slurpy,named]) {
+                var hash = {};
+                for (string key in n)
+                    hash[key] = n[key];
+                for (string key in _n)
+                    hash[key] = _n[key];
+                return func(p:[flat], _p:[flat], hash:[flat,named]);
+            };
+        }
 
-    function bind_method(var func, var obj, var p [slurpy], var n [slurpy,named])
-    {
-        return function(var _p [slurpy], var _n [slurpy,named]) {
-            var hash = {};
-            for (string key in n)
-                hash[key] = n[key];
-            for (string key in _n)
-                hash[key] = _n[key];
-            return obj.*func(p:[flat], _p:[flat], hash:[flat,named]);
-        };
-    }
+        function bind_method(var func, var obj, var p [slurpy], var n [slurpy,named])
+        {
+            return function(var _p [slurpy], var _n [slurpy,named]) {
+                var hash = {};
+                for (string key in n)
+                    hash[key] = n[key];
+                for (string key in _n)
+                    hash[key] = _n[key];
+                return obj.*func(p:[flat], _p:[flat], hash:[flat,named]);
+            };
+        }
 
-    function once(var func)
-    {
-        int count = 0;
-        var ret_p;
-        var ret_n;
-        return function(var p [slurpy], var n [slurpy,named]) {
-            if (count++ == 0) {
-                :(ret_p [slurpy], ret_n [slurpy,named]) = func(p:[flat], n:[flat,named]);
+        function wrap(var func, var wrapper)
+        {
+            return function(var p [slurpy], var n [slurpy,named]) {
+                return wrapper(func, p:[flat], n:[flat,named]);
+            };
+        }
+
+        function compose(var funcs [slurpy])
+        {
+            return function(var p [slurpy], var n [slurpy,named]) {
+                var _p = p;
+                var _n = n;
+                for (var func in funcs)
+                    :(_p [slurpy], _n[slurpy,named]) = func(_p:[flat], _n:[flat]);
+                return _p:[flat], _n:[flat,named];
+            };
+        }
+
+        /*
+        function once(var func)
+        {
+            int count = 0;
+            var ret_p;
+            var ret_n;
+            return function(var p [slurpy], var n [slurpy,named]) {
+                if (count++ == 0) {
+                    :(ret_p [slurpy], ret_n [slurpy,named]) = func(p:[flat], n:[flat,named]);
+                    return ret_p:[flat], ret_n:[flat,named];
+                }
                 return ret_p:[flat], ret_n:[flat,named];
-            }
-            return ret_p:[flat], ret_n:[flat,named];
-        };
-    }
+            };
+        }
 
-    function after(int wait_count, var func)
-    {
-        int count = 0;
-        return function(var p [slurpy], var n [slurpy,named]) {
-            if (count++ >= wait_count)
-                return func(p:[flat], n:[flat,named]);
-            return;
-        };
-    }
+        function after(int wait_count, var func)
+        {
+            int count = 0;
+            return function(var p [slurpy], var n [slurpy,named]) {
+                if (count++ >= wait_count)
+                    return func(p:[flat], n:[flat,named]);
+                return;
+            };
+        }
+        */
 
-    function wrap(var func, var wrapper)
-    {
-        return function(var p [slurpy], var n [slurpy,named]) {
-            return wrapper(func, p:[flat], n:[flat,named]);
-        };
-    }
-
-    /*
-    function throttle(var func, num wait)
-    {
-        num last_time = 0.0;
-        return function(var p:[slurpy], var n:[slurpy,named]) {
-            var t = floattime();
-            if (t > last_time + wait)
-                return func(p:[flat], n:[flat,named]);
-            return;
-        };
-    }
-    */
-
-    function compose(var funcs [slurpy])
-    {
-        return function(var p [slurpy], var n [slurpy,named]) {
-            var _p = p;
-            var _n = n;
-            for (var func in funcs)
-                :(_p [slurpy], _n[slurpy,named]) = func(_p:[flat], _n:[flat]);
-            return _p:[flat], _n:[flat,named];
-        };
+        /*
+        function throttle(var func, num wait)
+        {
+            num last_time = 0.0;
+            return function(var p:[slurpy], var n:[slurpy,named]) {
+                var t = floattime();
+                if (t > last_time + wait)
+                    return func(p:[flat], n:[flat,named]);
+                return;
+            };
+        }
+        */
     }
 }
