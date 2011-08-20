@@ -8,8 +8,10 @@ namespace Rosella { namespace Query { namespace Provider
         // Constructor
         function Hash() { }
 
+        // Return the name of this type
         function name() { return string(__CLASS__); }
 
+        // Execute a callback for each item in the hash
         function foreach(var data, var func)
         {
             for (string key in data)
@@ -48,6 +50,8 @@ namespace Rosella { namespace Query { namespace Provider
             return new_data;
         }
 
+        // Return the first element in the hash. Since hashes aren't ordered,
+        // this might return inconsistent results.
         function unwrap_first(var data)
         {
             // Let the iterator decide which entry is "first"
@@ -154,6 +158,7 @@ namespace Rosella { namespace Query { namespace Provider
             return new_hash;
         }
 
+        // Return an array of the keys of the hash
         function keys(var data)
         {
             var keys = [];
@@ -162,6 +167,8 @@ namespace Rosella { namespace Query { namespace Provider
             return keys;
         }
 
+        // Return true of any item in the hash matches the predicate. False
+        // otherwise. Short-circuit
         function any(var data, var func)
         {
             if (func == null)

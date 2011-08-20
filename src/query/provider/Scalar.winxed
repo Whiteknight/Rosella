@@ -9,8 +9,10 @@ namespace Rosella { namespace Query { namespace Provider
         // Constructor
         function Scalar() {}
 
+        // Return the name of the type
         function name() { return string(__CLASS__); }
 
+        // Execute the callback on the item
         function foreach(var data, var func)
         {
             func(data);
@@ -43,9 +45,7 @@ namespace Rosella { namespace Query { namespace Provider
         // Get a count. 1 or 0, depending on the predicate
         function count(var data, var func)
         {
-            if (func == null)
-                return 1;
-            if (func(data))
+            if (func == null || func(data))
                 return 1;
             return 0;
         }
@@ -73,9 +73,10 @@ namespace Rosella { namespace Query { namespace Provider
                 var key_func [optional], int has_key_func [opt_flag],
                 var dispute [optional], int has_dispute [opt_flag])
         {
-            // TODO
+            Rosella.Error.invalid(__FUNCTION__, "Cannot combine scalars");
         }
 
+        // Return the item
         function unwrap_first(var data)
         {
             return data;
@@ -90,10 +91,7 @@ namespace Rosella { namespace Query { namespace Provider
         // Return a hash with the scalar at a key determined by the function
         function to_hash(var data, var func)
         {
-            string key = func(data);
-            var new_hash = {};
-            new_hash[key] = data;
-            return new_hash;
+            return { func(data) : data };
         }
     }
 }}}

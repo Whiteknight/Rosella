@@ -8,8 +8,10 @@ namespace Rosella { namespace Query { namespace Provider
         // Constructor
         function Array() {}
 
+        // Return the name of this type
         function name() { return string(__CLASS__); }
 
+        // Execute a callback for each item in the array
         function foreach(var data, var func)
         {
             for (int i = elements(data) - 1; i >= 0; i--)
@@ -71,6 +73,8 @@ namespace Rosella { namespace Query { namespace Provider
             return new_data;
         }
 
+        // Skip the first N items which match the predicate, return all
+        // remaining items which match
         function skip(var data, int count, var func)
         {
             if (func != null)
@@ -104,6 +108,7 @@ namespace Rosella { namespace Query { namespace Provider
             return new_data;
         }
 
+        // Return the first item in the array
         function unwrap_first(var data)
         {
             return data[0];
@@ -129,6 +134,8 @@ namespace Rosella { namespace Query { namespace Provider
             return new_hash;
         }
 
+        // Return true if any element in the sequence satisfies the predicate.
+        // false otherwise. Short-circuit.
         function any(var data, var func)
         {
             if (func == null)

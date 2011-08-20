@@ -37,5 +37,19 @@ namespace Rosella
             ${ does flag, data, "hash" };
             return flag;
         }
+
+        // Helper function. Excute one callback depending on whether the given
+        // data is an array, a hash, or anything else.
+        function array_or_hash(var data, var array_func, var hash_func, var scalar_func)
+        {
+            int flag;
+            ${ does flag, data, "array" };
+            if (flag)
+                return array_func(data);
+            ${ does flag, data, "hash" };
+            if (flag)
+                return hash_func(data);
+            return scalar_func(data);
+        }
     }
 }
