@@ -115,18 +115,21 @@ namespace Rosella { namespace Query
 
         function single(var func [optional], int has_func [opt_flag])
         {
-            return self.provider.single(self.data, has_func ? func : null);
+            var data = self.provider.single(self.data, has_func ? func : null);
+            return self.as_queryable(data);
         }
 
         function first(var func [optional], int has_func [opt_flag])
         {
-            return self.provider.first(self.data, has_func ? func : null);
+            var data = self.provider.first(self.data, has_func ? func : null);
+            return self.as_queryable(data);
         }
 
         function first_or_default(var func [optional], int has_func [opt_flag],
                 var def [optional], int has_def [opt_flag])
         {
-            return self.provider.first_or_default(self.data, has_func ? func : null, has_def ? def : null);
+            var data = self.provider.first_or_default(self.data, has_func ? func : null, has_def ? def : null);
+            return self.as_queryable(data);
         }
 
         // Return an aggregate of the first N elements in the data. If a

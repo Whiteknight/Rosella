@@ -219,11 +219,17 @@ class Test::Query::Queryable {
     # any
 
     method test_any_hash() {
-        $!status.unimplemented("tests for .any()");
+        my $any := Rosella::Query::as_queryable(test_hash()).any(-> $x { $x == 4 });
+        $!assert.is_true($any);
+        $any := Rosella::Query::as_queryable(test_hash()).any(-> $x { $x == 5 });
+        $!assert.is_false($any);
     }
 
     method test_any_array() {
-        $!status.unimplemented("tests for .any()");
+        my $any := Rosella::Query::as_queryable([1, 2, 3, 4]).any(-> $x { $x == 4 });
+        $!assert.is_true($any);
+        $any := Rosella::Query::as_queryable([1, 2, 3, 4]).any(-> $x { $x == 5 });
+        $!assert.is_false($any);
     }
 
     method test_any_scalar() {
@@ -233,11 +239,14 @@ class Test::Query::Queryable {
     # take
 
     method test_take_hash() {
-        $!status.unimplemented("tests for .take()");
+        my %r := Rosella::Query::as_queryable(test_hash()).take(3).data;
+        $!assert.equal(+%r, 3);
     }
 
     method test_take_array() {
-        $!status.unimplemented("tests for .take()");
+        my @r := Rosella::Query::as_queryable([1, 2, 3, 4]).take(3).data;
+        $!assert.equal(+@r, 3);
+        arrays_equal($!assert, @r, [1, 2, 3]);
     }
 
     method test_take_scalar() {
@@ -247,11 +256,14 @@ class Test::Query::Queryable {
     # skip
 
     method test_skip_hash() {
-        $!status.unimplemented("tests for .skip()");
+        my %r := Rosella::Query::as_queryable(test_hash()).skip(3).data;
+        $!assert.equal(+%r, 1);
     }
 
     method test_skip_array() {
-        $!status.unimplemented("tests for .skip()");
+        my @r := Rosella::Query::as_queryable([1, 2, 3, 4]).skip(3).data;
+        $!assert.equal(+@r, 1);
+        arrays_equal($!assert, @r, [4]);
     }
 
     method test_skip_scalar() {
@@ -305,11 +317,19 @@ class Test::Query::Queryable {
     # single
 
     method test_single_hash() {
-        $!status.unimplemented("tests for .single()");
+        #my $r := Rosella::Query::as_queryable([1]).single.data;
+        #$!assert.equal($r, 1);
+        $!assert.throws({
+            my $s := Rosella::Query::as_queryable(test_hash()).single;
+        })
     }
 
     method test_single_array() {
-        $!status.unimplemented("tests for .single()");
+        my $r := Rosella::Query::as_queryable([1]).single.data;
+        $!assert.equal($r, 1);
+        $!assert.throws({
+            my $s := Rosella::Query::as_queryable([1, 2, 3, 4]).single;
+        })
     }
 
     method test_single_scalar() {
@@ -319,25 +339,44 @@ class Test::Query::Queryable {
     # First
 
     method test_first_hash() {
-        $!status.unimplemented("tests for .first()");
+        $!assert.throws_nothing({
+            my $r := Rosella::Query::as_queryable(test_hash()).first.data;
+        });
+        $!assert.throws({
+            my %h := {};
+            my $s := Rosella::Query::as_queryable(%h).first.data;
+        });
     }
 
     method test_first_array() {
-        $!status.unimplemented("tests for .first()");
+        my $r := Rosella::Query::as_queryable([1, 2, 3, 4]).first.data;
+        $!assert.equal($r, 1);
+        $!assert.throws({
+            my $s := Rosella::Query::as_queryable([]).first.data;
+        });
     }
 
     method test_first_scalar() {
-        $!status.unimplemented("tests for .first()");
+        my $r := Rosella::Query::as_queryable("test").first.data;
+        $!assert.equal($r, "test");
     }
 
     # first_or_default
 
     method test_first_or_default_hash() {
-        $!status.unimplemented("tests for .first_or_default()");
+        $!assert.throws_nothing({
+            my $r := Rosella::Query::as_queryable(test_hash()).first_or_default.data;
+        });
+        my %h := {};
+        my $s := Rosella::Query::as_queryable(%h).first_or_default.data;
+        $!assert.is_null($s);
     }
 
     method test_first_or_default_array() {
-        $!status.unimplemented("tests for .first_or_default()");
+        my $r := Rosella::Query::as_queryable([1, 2, 3, 4]).first_or_default.data;
+        $!assert.equal($r, 1);
+        my $s := Rosella::Query::as_queryable([]).first_or_default.data;
+        $!assert.is_null($s);
     }
 
     method test_first_or_default_scalar() {
@@ -347,11 +386,14 @@ class Test::Query::Queryable {
     # keys
 
     method test_keys_hash() {
-        $!status.unimplemented("tests for .keys()");
+        my @r := Rosella::Query::as_queryable(test_hash()).keys.data;
+        $!assert.equal(+@r, 4);
     }
 
     method test_keys_array() {
-        $!status.unimplemented("tests for .keys()");
+        $!assert.throws({
+            my $r := Rosella::Query::as_queryable([1, 2, 3, 4]).keys.data;
+        });
     }
 
     method test_keys_scalar() {
