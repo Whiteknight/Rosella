@@ -58,12 +58,14 @@ namespace Rosella { namespace Query
         /* Query Routines
         */
 
+        // Perform some action for every element in the aggregate
         function foreach(var func)
         {
             self.provider.foreach(self.data, func);
             return self;
         }
 
+        // Perform a callback on the current value of the data
         function tap(var func)
         {
             func(self.data);
@@ -77,6 +79,22 @@ namespace Rosella { namespace Query
             var data = self.provider.map(self.data, mapper);
             return self.as_queryable(data);
         }
+
+        // A special case of map. Replace every item in the aggregate by the
+        // value of a particular named attribute
+        function pick(string attr)
+        {
+            return self.map(function(var d) { return d.*attr; });
+        }
+
+        // A special case of map. Replace each element in the aggregate by
+        // the result of a specific method call
+        //function map_method(string meth_name, var p [slurpy], var n [slurpy,named])
+        //{
+        //    return self.map(function(var d) {
+        //        return Rosella.invoke_method(d, meth_name, p, n);
+        //    });
+        //}
 
         // Return a new aggregate where only the elements from the original
         // data which satisfy a test are included
@@ -96,6 +114,7 @@ namespace Rosella { namespace Query
             return self.as_queryable(value);
         }
 
+        // Sort the data using a given comparison routine
         function sort(var func)
         {
             var result = self.provider.sort(self.data, func);
@@ -108,23 +127,31 @@ namespace Rosella { namespace Query
             return self.provider.count(self.data, has_func ? func : null);
         }
 
+        // Return true if any element in the aggregate satisfies the predicate
+        // false otherwise. Short-circuits
         function any(var func [optional], int has_func [opt_flag])
         {
             return self.provider.any(self.data, has_func ? func : null);
         }
 
+        // Return the first item in the aggregate if the aggregate contains
+        // only one item. If it contains more items, throw an exception
         function single(var func [optional], int has_func [opt_flag])
         {
             var data = self.provider.single(self.data, has_func ? func : null);
             return self.as_queryable(data);
         }
 
+        // Return the first item in the aggregate, throwing an exception if
+        // it is empty.
         function first(var func [optional], int has_func [opt_flag])
         {
             var data = self.provider.first(self.data, has_func ? func : null);
             return self.as_queryable(data);
         }
 
+        // Return the first item in the aggregate, returning a default value
+        // if empty
         function first_or_default(var func [optional], int has_func [opt_flag],
                 var def [optional], int has_def [opt_flag])
         {
@@ -165,6 +192,17 @@ namespace Rosella { namespace Query
             return self.as_queryable(data);
         }
 
+        // For hashes, return an array of keys. For everything else, throw an
+        // exception
+        function keys()
+        {
+            var keys = self.provider.keys(self.data);
+            return self.as_queryable(keys);
+        }
+
+        /* Vtables and Low-level access
+        */
+
         // Get an iterator over the data
         function get_iter[vtable]()
         {
@@ -174,10 +212,29 @@ namespace Rosella { namespace Query
             return data;
         }
 
-        function keys()
+        /*
+        function get_pmc_keyed_int[vtable](int key)
         {
-            var keys = self.provider.keys(self.data);
-            return self.as_queryable(keys);
+            return self.data[key];
         }
+
+        function get_integer_keyed_int[vtable](int key)
+        {
+            int i = self.data[key];
+            return i;
+        }
+
+        function get_string_keyed_int[vtable](int key)
+        {
+            string s = self.data[key];
+            return s;
+        }
+
+        function get_number_keyed_int[vtable](int key)
+        {
+            float n = self.data[key];
+            return n;
+        }
+        */
     }
 }}
