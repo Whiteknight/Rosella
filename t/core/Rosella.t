@@ -113,8 +113,4 @@ class RosellaTest {
         my $b := Rosella::get_unique_count();
         $!assert.not_equal($a, $b);
     }
-
-    method assert_fail() {
-        Rosella::Assert::assert_fail("test");
-    }
 }

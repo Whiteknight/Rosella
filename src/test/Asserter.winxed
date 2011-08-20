@@ -225,17 +225,21 @@ namespace Rosella { namespace Test
             }
         }
 
-        function is_true(int bool, string message [optional], int has_msg [opt_flag])
+        function is_true(var bool, string message [optional], int has_msg [opt_flag])
         {
             message = self.default_message(message, has_msg, "is not true");
-            if (!bool)
+            int false_flag;
+            ${ isfalse false_flag, bool };
+            if (false_flag)
                 self.fail(message);
         }
 
-        function is_false(int bool, string message [optional], int has_msg [opt_flag])
+        function is_false(var bool, string message [optional], int has_msg [opt_flag])
         {
             message = self.default_message(message, has_msg, "is not false");
-            if (bool)
+            int true_flag;
+            ${ istrue true_flag, bool };
+            if (true_flag)
                 self.fail(message);
         }
 
