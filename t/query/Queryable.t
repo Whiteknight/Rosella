@@ -216,6 +216,20 @@ class Test::Query::Queryable {
         $!assert.equal($count, 1);
     }
 
+    # any
+
+    method test_any_hash() {
+        $!status.unimplemented("tests for .any()");
+    }
+
+    method test_any_array() {
+        $!status.unimplemented("tests for .any()");
+    }
+
+    method test_any_scalar() {
+        $!status.unimplemented("tests for .any()");
+    }
+
     # take
 
     method test_take_hash() {
@@ -286,5 +300,61 @@ class Test::Query::Queryable {
             -> $item { "test_$item"; }
         ).data;
         hashes_equal($!assert, %hash, hash(:test_A("A")));
+    }
+
+    # single
+
+    method test_single_hash() {
+        $!status.unimplemented("tests for .single()");
+    }
+
+    method test_single_array() {
+        $!status.unimplemented("tests for .single()");
+    }
+
+    method test_single_scalar() {
+        $!status.unimplemented("tests for .single()");
+    }
+
+    # First
+
+    method test_first_hash() {
+        $!status.unimplemented("tests for .first()");
+    }
+
+    method test_first_array() {
+        $!status.unimplemented("tests for .first()");
+    }
+
+    method test_first_scalar() {
+        $!status.unimplemented("tests for .first()");
+    }
+
+    # first_or_default
+
+    method test_first_or_default_hash() {
+        $!status.unimplemented("tests for .first_or_default()");
+    }
+
+    method test_first_or_default_array() {
+        $!status.unimplemented("tests for .first_or_default()");
+    }
+
+    method test_first_or_default_scalar() {
+        $!status.unimplemented("tests for .first_or_default()");
+    }
+
+    # keys
+
+    method test_keys_hash() {
+        $!status.unimplemented("tests for .keys()");
+    }
+
+    method test_keys_array() {
+        $!status.unimplemented("tests for .keys()");
+    }
+
+    method test_keys_scalar() {
+        $!status.unimplemented("tests for .keys()");
     }
 }
