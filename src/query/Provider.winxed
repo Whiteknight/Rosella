@@ -61,7 +61,6 @@ namespace Rosella { namespace Query
                 s = pivot + 1;
             }
         }
-
     }
 
     /* Provider Class
@@ -71,6 +70,16 @@ namespace Rosella { namespace Query
     */
     class Provider
     {
+        function name()
+        {
+            Rosella.Error.must_subclass(__CLASS__);
+        }
+
+        function foreach(var data, var func)
+        {
+            Rosella.Error.must_subclass(__CLASS__);
+        }
+
         // Map the data
         function map(var data, var func)
         {
@@ -92,49 +101,38 @@ namespace Rosella { namespace Query
 
         // Return a count of elements. If a predicate is provided, return a
         // count of elements which satisfy that predicate
-        function count(var data, var func [optional], int has_func [opt_flag])
+        function count(var data, var func)
         {
-            if (has_func && func != null)
+            if (func != null)
                 data = self.filter(data, func);
-            int elems = 0;
-            ${ elements elems, data };
-            return elems;
+            return elements(data);
         }
 
         // Return true if the aggregate contains any elements, or any elements
         // which match the predicate.
-        function any(var data, var func [optional], int has_func [opt_flag])
+        function any(var func)
         {
-            int num;
-            if (has_func) {
-                data = self.take(data, 1, func);
-                num = self.count(data);
-            } else
-                num = count(data);
-            return (num > 0);
+            Rosella.Error.must_subclass(__CLASS__);
         }
 
         // Return the single element in the aggregate, or the single element
         // which matches the predicate. If there are more than or less than
         // exactly 1 elements, throw an exception.
-        function single(var data, var func [optional], int has_func [opt_flag])
+        function single(var data, var func)
         {
-            if (has_func)
+            if (func != null)
                 data = self.filter(data, func);
-            if (self.count(data) != 1)
+            if (self.count(data, null) != 1)
                 Rosella.Error.invalid(__FUNCTION__, "Aggregate has more than one entry");
             return self.unwrap_first(data);
         }
 
         // Return the first element in the aggregate, or the first element
         // which matches the predicate. If there are none, throw an exception.
-        function first(var data, var func [optional], int has_func [opt_flag])
+        function first(var data, var func)
         {
-            if (has_func)
-                data = self.take(data, 1, func);
-            else
-                data = self.take(data, 1);
-            if (self.count(data) < 1)
+            data = self.take(data, 1, func);
+            if (self.count(data, null) < 1)
                 Rosella.Error.invalid(__FUNCTION__, "Aggregate does not have at least one entry");
             return self.unwrap_first(data);
         }
@@ -142,30 +140,22 @@ namespace Rosella { namespace Query
         // Return the first element in the aggregate, or the first element
         // which matches the predicate. If there are none, return a default
         // value
-        function first_or_default(var data,
-                var func [optional], int has_func [opt_flag],
-                var def [optional], int has_def [opt_flag])
+        function first_or_default(var data, var func, var def)
         {
-            if (has_func)
-                data = self.take(data, 1, func);
-            else
-                data = self.take(data, 1);
-            if (self.count(data) == 0) {
-                if (has_def)
-                    return def;
-                return null;
-            }
+            data = self.take(data, 1, func);
+            if (self.count(data, null) == 0)
+                return def;
             return self.unwrap_first(data);
         }
 
         // Take from the data
-        function take(var data, int count, var func [optional], int has_func [opt_flag])
+        function take(var data, int count, var func)
         {
             Rosella.Error.must_subclass(__CLASS__);
         }
 
         // Skip some of the data
-        function skip(var data, int count, var func [optional], int has_func [opt_flag])
+        function skip(var data, int count, var func)
         {
             Rosella.Error.must_subclass(__CLASS__);
         }
@@ -203,6 +193,11 @@ namespace Rosella { namespace Query
             var new_data = self.to_array(data);
             qsort(new_data, 0, elements(new_data), func);
             return new_data;
+        }
+
+        function keys(var data)
+        {
+            Rosella.Error.invalid(__FUNCTION__, "Provider %s does not support .keys()", self.name());
         }
     }
 }}

@@ -22,6 +22,10 @@ namespace Rosella { namespace Query
                 self.provider = self.get_provider(data);
         }
 
+        /* Queryable API
+            These routines are used to create and manipulate Queryables
+        */
+
         // Get suitable provider for the given data
         function get_provider(var data)
         {
@@ -49,6 +53,21 @@ namespace Rosella { namespace Query
         function as_queryable(var data)
         {
             return new Rosella.Query.Queryable(data);
+        }
+
+        /* Query Routines
+        */
+
+        function foreach(var func)
+        {
+            self.provider.foreach(self.data, func);
+            return self;
+        }
+
+        function tap(var func)
+        {
+            func(self.data);
+            return self;
         }
 
         // Return a new aggregate where each element is a function of the
@@ -86,10 +105,28 @@ namespace Rosella { namespace Query
         // Return a count of elements
         function count(var func [optional], int has_func [opt_flag])
         {
-            if (has_func)
-                return self.provider.count(self.data, func);
-            else
-                return self.provider.count(self.data);
+            return self.provider.count(self.data, has_func ? func : null);
+        }
+
+        function any(var func [optional], int has_func [opt_flag])
+        {
+            return self.provider.any(self.data, has_func ? func : null);
+        }
+
+        function single(var func [optional], int has_func [opt_flag])
+        {
+            return self.provider.single(self.data, has_func ? func : null);
+        }
+
+        function first(var func [optional], int has_func [opt_flag])
+        {
+            return self.provider.first(self.data, has_func ? func : null);
+        }
+
+        function first_or_default(var func [optional], int has_func [opt_flag],
+                var def [optional], int has_def [opt_flag])
+        {
+            return self.provider.first_or_default(self.data, has_func ? func : null, has_def ? def : null);
         }
 
         // Return an aggregate of the first N elements in the data. If a
@@ -97,11 +134,7 @@ namespace Rosella { namespace Query
         // prediate
         function take(int count, var func [optional], int has_func [opt_flag])
         {
-            var data;
-            if (has_func)
-                data = self.provider.take(self.data, count, func);
-            else
-                data = self.provider.take(self.data, count);
+            var data = self.provider.take(self.data, count, has_func ? func : null);
             return self.as_queryable(data);
         }
 
@@ -109,11 +142,7 @@ namespace Rosella { namespace Query
         // return all by the first N elements which satisfy the predicate.
         function skip(int count, var func [optional], int has_func [opt_flag])
         {
-            var data;
-            if (has_func)
-                data = self.provider.skip(self.data, count, func);
-            else
-                data = self.provider.skip(self.data, count);
+            var data = self.provider.skip(self.data, count, has_func ? func : null);
             return self.as_queryable(data);
         }
 
@@ -140,6 +169,12 @@ namespace Rosella { namespace Query
             var data = self.data;
             ${ iter iter, data };
             return data;
+        }
+
+        function keys()
+        {
+            var keys = self.provider.keys(self.data);
+            return self.as_queryable(keys);
         }
     }
 }}

@@ -8,6 +8,14 @@ namespace Rosella { namespace Query { namespace Provider
         // Constructor
         function Hash() { }
 
+        function name() { return string(__CLASS__); }
+
+        function foreach(var data, var func)
+        {
+            for (string key in data)
+                func(data[key]);
+        }
+
         // Map all values to a new hash with the same keys
         function map(var data, var mapper)
         {
@@ -59,10 +67,9 @@ namespace Rosella { namespace Query { namespace Provider
         }
 
         // Take the first N key/value pairs which satisfy the predicate
-        function take(var data, var limit,
-                var func [optional], int has_func [opt_flag])
+        function take(var data, var limit, var func)
         {
-            if (has_func)
+            if (func != null)
                 return self.filter(data, func, limit:[named]);
             int num = 0;
             var new_data = {};
@@ -80,10 +87,9 @@ namespace Rosella { namespace Query { namespace Provider
 
         // Take all but the first N key/value pairs which satisfy the
         // predicate
-        function skip(var data, int count,
-                var func [optional], int has_func [opt_flag])
+        function skip(var data, int count, var func)
         {
-            if (has_func)
+            if (func != null)
                 data = self.filter(data, func);
             int num = 0;
             var new_data = {};
@@ -146,6 +152,26 @@ namespace Rosella { namespace Query { namespace Provider
                 new_hash[new_key] = item;
             }
             return new_hash;
+        }
+
+        function keys(var data)
+        {
+            var keys = [];
+            for (string key in data)
+                push(keys, key);
+            return keys;
+        }
+
+        function any(var data, var func)
+        {
+            if (func == null)
+                return elements(data) > 0 ? true : false;
+
+            for (string key in data) {
+                if (func(data[key]))
+                    return true;
+            }
+            return false;
         }
     }
 }}}

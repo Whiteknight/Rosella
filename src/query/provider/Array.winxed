@@ -8,6 +8,14 @@ namespace Rosella { namespace Query { namespace Provider
         // Constructor
         function Array() {}
 
+        function name() { return string(__CLASS__); }
+
+        function foreach(var data, var func)
+        {
+            for (int i = elements(data) - 1; i >= 0; i--)
+                func(data[i]);
+        }
+
         // Return a new array where the elements are all functions of the
         // elements in the current array
         function map(var data, var mapper)
@@ -53,10 +61,9 @@ namespace Rosella { namespace Query { namespace Provider
 
         // Return a new array, the first N items which match the optional
         // predicate
-        function take(var data, var limit,
-                var func [optional], int has_func [opt_flag])
+        function take(var data, var limit, var func)
         {
-            if (has_func)
+            if (func != null)
                 return self.filter(data, func, limit);
             var new_data = [];
             for (int i = 0; i < limit && i < elements(data); i++)
@@ -64,10 +71,9 @@ namespace Rosella { namespace Query { namespace Provider
             return new_data;
         }
 
-        function skip(var data, int count,
-                var func [optional], int has_func [opt_flag])
+        function skip(var data, int count, var func)
         {
-            if (has_func)
+            if (func != null)
                 data = self.filter(data, func);
             var new_data = [];
             for (int i = count; i < elements(data); i++)
@@ -98,29 +104,6 @@ namespace Rosella { namespace Query { namespace Provider
             return new_data;
         }
 
-        function combine_key(var a, var b, var key_func, var dispute)
-        {
-            var keys = {};
-            for (var item_a in a) {
-                var key = key_func(item_a);
-                if (exists keys[key])
-                    keys[key] = dispute(key, keys[key], item_a);
-                else
-                    keys[key] = item_a;
-            }
-            for (var item_b in b) {
-                var key = key_func(item_b);
-                if (exists keys[key])
-                    keys[key] = dispute(key, keys[key], item_b);
-                else
-                    keys[key] = item_b;
-            }
-            var new_data = [];
-            for (string key in keys)
-                push(new_data, keys[key]);
-            return new_data;
-        }
-
         function unwrap_first(var data)
         {
             return data[0];
@@ -144,6 +127,18 @@ namespace Rosella { namespace Query { namespace Provider
                 new_hash[new_key] = item;
             }
             return new_hash;
+        }
+
+        function any(var data, var func)
+        {
+            if (func == null)
+                return elements(data) > 0 ? true : false;
+
+            for (int i = 0; i < elements(data); i++) {
+                if (func(data[i]))
+                    return true;
+            }
+            return false;
         }
     }
 }}}
