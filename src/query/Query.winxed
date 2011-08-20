@@ -51,5 +51,29 @@ namespace Rosella
                 return hash_func(data);
             return scalar_func(data);
         }
+
+        const string DEFAULT_PROVIDER_FACTORY = "Rosella.Query.default_provider_factory";
+
+        function default_provider_factory()
+        {
+            var temp = Rosella.Globals.get_global(DEFAULT_PROVIDER_FACTORY);
+            if (temp == null) {
+                temp = new Rosella.Query.Provider.Factory(
+                    new Rosella.Query.Provider.Scalar(), {
+                        "array" : new Rosella.Query.Provider.Array(),
+                        "hash"  : new Rosella.Query.Provider.Hash()
+                    }, null);
+                Rosella.Globals.register_global(DEFAULT_PROVIDER_FACTORY, temp);
+            }
+            while(1) {
+                yield temp;
+                temp = Rosella.Globals.get_global(DEFAULT_PROVIDER_FACTORY);
+            }
+        }
+
+        function set_provider_factory(var factory)
+        {
+            Rosella.Globals.register_global(DEFAULT_PROVIDER_FACTORY, factory);
+        }
     }
 }

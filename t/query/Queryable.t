@@ -49,21 +49,6 @@ class Test::Query::Queryable {
         $!status.unimplemented("Need test to build a Queryable with custom Provider");
     }
 
-    method get_provider() {
-        my %hash := {};
-        my @array := [];
-        my $q := Rosella::construct(Rosella::Query::Queryable, @array);
-
-        my $p := $q.get_provider(%hash);
-        $!assert.instance_of($p, Rosella::Query::Provider::Hash);
-
-        $p := $q.get_provider(@array);
-        $!assert.instance_of($p, Rosella::Query::Provider::Array);
-
-        $p := $q.get_provider(1);
-        $!assert.instance_of($p, Rosella::Query::Provider::Scalar);
-    }
-
     method data() {
         my @data := <foo bar baz fie>;
         my @new_data := Rosella::Query::as_queryable(@data).data();

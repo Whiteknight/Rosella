@@ -1,0 +1,28 @@
+namespace Rosella { namespace Query { namespace Provider
+{
+    class Factory : Rosella.ObjectFactory
+    {
+        var role_map;
+        var type_map;
+        var default_provider;
+
+        function Factory(var default_provider, var role_map, var type_map)
+        {
+            self.default_provider = default_provider;
+            self.role_map = role_map;
+            self.type_map = type_map;
+        }
+
+        function create(var data, var p [slurpy], var n [slurpy,named])
+        {
+            for (string role in self.role_map) {
+                int flag;
+                ${ does flag, data, role };
+                if (flag)
+                    return self.role_map[role];
+            }
+            // TODO: Type-map
+            return self.default_provider;
+        }
+    }
+}}}

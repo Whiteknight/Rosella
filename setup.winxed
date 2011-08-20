@@ -187,6 +187,7 @@ function setup_stable_libraries(var rosella)
         "query/provider/Array",
         "query/provider/Hash",
         "query/provider/Scalar",
+        "query/provider/Factory",
         "query/Query",
         "query/Queryable",
         "query/queryable/InPlace"

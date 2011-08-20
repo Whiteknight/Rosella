@@ -1,7 +1,7 @@
 namespace Rosella { namespace Query
 {
     /* Queryable Class
-        This class is a wrapper type which provides higher-order behaviors
+        This class is a wrapper type which provides higher-order behaviorsor
         for existing aggregate types. To provide this behavior, we pair each
         aggregate with a Provider. The Provider implements all the behaviors.
     */
@@ -9,38 +9,23 @@ namespace Rosella { namespace Query
     {
         var data;
         var provider;
+        var factory;
 
         // Constructor. Store the data and get a suitable provider. It is
         // probably better to use Rosella.Query.as_queryable instead of
         // creating this directly.
-        function Queryable(var data, var provider [optional], int has_p [opt_flag])
+        function Queryable(var data, var factory [optional], int has_f [opt_flag])
         {
             self.data = data;
-            if (has_p)
-                self.provider = provider;
-            else
-                self.provider = self.get_provider(data);
+            if (!has_f)
+                factory = Rosella.Query.default_provider_factory();
+            self.factory = factory;
+            self.provider = factory.create(data);
         }
 
         /* Queryable API
             These routines are used to create and manipulate Queryables
         */
-
-        // Get suitable provider for the given data
-        function get_provider(var data)
-        {
-            var provider = null;
-            using Rosella.Query.is_array;
-            if (is_array(data))
-                provider = Rosella.Query.Provider.get_array_provider();
-            else {
-                if (Rosella.Query.is_hash(data))
-                    provider = Rosella.Query.Provider.get_hash_provider();
-            }
-            if (provider == null)
-                provider = Rosella.Query.Provider.get_scalar_provider(data);
-            return provider;
-        }
 
         // Get the raw data back
         function data()
@@ -52,7 +37,7 @@ namespace Rosella { namespace Query
         // new Queryable
         function as_queryable(var data)
         {
-            return new Rosella.Query.Queryable(data);
+            return new Rosella.Query.Queryable(data, self.factory);
         }
 
         /* Query Routines
