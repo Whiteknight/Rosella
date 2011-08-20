@@ -24,5 +24,10 @@ namespace Rosella { namespace Query { namespace Provider
             // TODO: Type-map
             return self.default_provider;
         }
+
+        function set_role_mapping(string role, var provider)
+        {
+            self.role_map[role] = provider;
+        }
     }
 }}}
