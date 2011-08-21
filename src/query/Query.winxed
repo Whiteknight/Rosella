@@ -52,8 +52,12 @@ namespace Rosella
             return scalar_func(data);
         }
 
+        /* Default Provider Factory
+        */
+
         const string DEFAULT_PROVIDER_FACTORY = "Rosella.Query.default_provider_factory";
 
+        // Get the global default provider factory
         function default_provider_factory()
         {
             var temp = Rosella.Globals.get_global(DEFAULT_PROVIDER_FACTORY);
@@ -71,6 +75,7 @@ namespace Rosella
             }
         }
 
+        // Set a customer global provider factory
         function set_provider_factory(var factory)
         {
             Rosella.Globals.register_global(DEFAULT_PROVIDER_FACTORY, factory);

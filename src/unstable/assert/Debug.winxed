@@ -2,7 +2,7 @@ namespace Rosella { namespace Assert
 {
     namespace Debug
     {
-        const string DEBUG_HANDLE_KEY = "Rosella.Assert.DebugHandle";
+        const string DEBUG_HANDLE_KEY = "Rosella.Assert.debug_handle";
 
         function dbg_handle()
         {
