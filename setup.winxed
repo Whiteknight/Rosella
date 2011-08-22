@@ -291,6 +291,13 @@ function setup_experimental_libraries(var rosella)
         "reflect/class/Attribute",
         "reflect/class/Method"
     );
+
+    setup_unstable_lib(rosella, "dumper", ["Core"],
+        "dumper/Dumper",
+        "dumper/DumpHandler",
+        "dumper/dumphandler/Array",
+        "dumper/dumphandler/Hash"
+    );
 }
 
 function setup_utilities(var rosella)

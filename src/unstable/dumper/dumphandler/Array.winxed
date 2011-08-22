@@ -2,6 +2,8 @@ namespace Rosella { namespace Dumper { namespace DumpHandler
 {
     class Array : Rosella.Dumper.DumpHandler
     {
+        function Array() { }
+
         function can_handle(var obj)
         {
             int can_do = 0;
@@ -11,14 +13,14 @@ namespace Rosella { namespace Dumper { namespace DumpHandler
 
         function dump(var dump, var obj, string pprefix, string prefix, var sb)
         {
-            push(sb, "[");
+            push(sb, "[\n");
             for (int i = 0; i < elements(obj); i++) {
                 push(sb, Winxed_Builtins.sprintf("%s%d => ", [prefix, i]));
-                dump.__dump_recursive(obj[i], sb);
+                dump.__dump_recurse(obj[i], sb, prefix);
             }
 
             push(sb, pprefix);
-            push(sb, "]");
+            push(sb, "]\n");
         }
     }
 }}}

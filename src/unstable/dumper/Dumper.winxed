@@ -5,6 +5,7 @@ namespace Rosella
         var role_dumpers;
         var type_dumpers;
         var fallback_dumper;
+        var indent;
 
         function Dumper()
         {
@@ -14,12 +15,13 @@ namespace Rosella
             };
             self.type_dumpers = {};
             self.fallback_dumper = new Rosella.Dumper.DumpHandler();
+            self.indent = "\t";
         }
 
         function dump(var obj)
         {
             var sb = new "StringBuilder";
-            self.__dump_recursive(obj, sb, "");
+            self.__dump_recurse(obj, sb, "");
             return string(sb);
         }
 
@@ -29,7 +31,7 @@ namespace Rosella
             for (string key in self.type_dumpers)
             {
                 if (type == key) {
-                    self.type_dumpers[key].dump(self, obj, prefix, prefix + "\t", sb);
+                    self.type_dumpers[key].dump(self, obj, prefix, prefix + string(self.indent), sb);
                     return;
                 }
             }
@@ -37,12 +39,12 @@ namespace Rosella
             {
                 int does_it = 0;
                 ${ does does_it, obj, role };
-                if (does_it) {
-                    self.role_dumpers[role].dump(self, obj, prefix, prefix + "\t", sb);
+                if (does_it && self.role_dumpers[role].can_dump(obj)) {
+                    self.role_dumpers[role].dump(self, obj, prefix, prefix + string(self.indent), sb);
                     return;
                 }
             }
-            self.fallback_dumper.dump(self, obj, prefix, prefix + "\t", sb);
+            self.fallback_dumper.dump(self, obj, prefix, prefix + string(self.indent), sb);
         }
     }
 }
