@@ -49,7 +49,7 @@ namespace Rosella { namespace Reflect
             return attr.get_value(obj);
         }
 
-        function set_attr(string attr_name, var obj, var value)
+        function set_attr_value(string attr_name, var obj, var value)
         {
             var attr = self.get_attr(attr_name);
             attr.set_value(obj, value);
