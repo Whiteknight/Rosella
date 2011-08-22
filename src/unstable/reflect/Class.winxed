@@ -1,0 +1,104 @@
+namespace Rosella { namespace Reflect
+{
+    class Class
+    {
+        var class_obj;
+        var attr_cache;
+        var attrs_raw;
+        var method_cache;
+
+        function Class(var type)
+        {
+            var class_obj = Rosella.get_type_class(type);
+            self.class_obj = class_obj;
+            self.attrs_raw = class_obj.attributes();
+            self.attr_cache = {};
+            self.method_cache = {};
+        }
+
+        function name()
+        {
+            return string(self.class_obj.name());
+        }
+
+        function purge()
+        {
+            self.attr_cache = {};
+            self.method_cache = {};
+        }
+
+        function new(var p [slurpy], var n [slurpy,named])
+        {
+            return Rosella.construct(self.class_obj, p:[flat], n:[flat,named]);
+        }
+
+        function get_attr(string attr_name)
+        {
+            if (exists self.attr_cache[attr_name])
+                return self.attr_cache[attr_name];
+            if (!(exists self.attrs_raw[attr_name]))
+                Rosella.Error.Invalid(__FUNCTION__, "Attr %s does not exist in class %s", attr_name, string(self.class_obj));
+            var attr = new Rosella.Reflect.Class.Attribute(self, attr_name);
+            self.attr_cache[attr_name] = attr;
+            return attr;
+        }
+
+        function get_attr_value(string attr_name, var obj)
+        {
+            var attr = self.get_attr(attr_name);
+            return attr.get_value(obj);
+        }
+
+        function set_attr(string attr_name, var obj, var value)
+        {
+            var attr = self.get_attr(attr_name);
+            attr.set_value(obj, value);
+        }
+
+        function invoke_method(string meth_name, var obj, var p [slurpy], var n [slurpy,named])
+        {
+            var method = self.get_method(meth_name);
+            return method.invoke(obj, p, n);
+        }
+
+        function isa(var obj)
+        {
+            var class_obj = self.class_obj;
+            int isa_this;
+            ${ isa isa_this, obj, class_obj };
+            return isa_this == 0 ? false : true;
+        }
+
+        function can(string meth_name)
+        {
+            var method = self.class_obj.find_method(meth_name);
+            return method == null ? false : true;
+        }
+
+        function get_method(string meth_name)
+        {
+            if (exists self.method_cache[meth_name])
+                return self.method_cache[meth_name];
+            var raw_method = self.class_obj.find_method(meth_name);
+            if (raw_method == null)
+                Rosella.Error.invalid(__FUNCTION__, "Cannot find method %s in class %s", meth_name, string(self.class_obj));
+            var method = new Rosella.Reflect.Class.Method(self, meth_name, raw_method);
+            self.method_cache[meth_name] = method;
+            return method;
+        }
+
+        /*
+        function set_method(string meth_name, var method)
+        {
+        }
+
+        function set_vtable_override(string vtable_name, var vtable)
+        {
+        }
+
+        function get_mro()
+        {
+        }
+        */
+    }
+}}

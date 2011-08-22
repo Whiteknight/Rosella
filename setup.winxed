@@ -284,6 +284,13 @@ function setup_experimental_libraries(var rosella)
         "template/node/Eval",
         "template/node/Literal"
     );
+
+    setup_unstable_lib(rosella, "reflect", ["Core"],
+        "reflect/Class",
+        "reflect/class/Member",
+        "reflect/class/Attribute",
+        "reflect/class/Method"
+    );
 }
 
 function setup_utilities(var rosella)

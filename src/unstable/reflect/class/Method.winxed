@@ -1,0 +1,21 @@
+namespace Rosella { namespace Reflect { namespace Class
+{
+    class Method : Rosella.Reflect.Class.Member
+    {
+        var method_obj;
+
+        function Method(var class_obj, string name, var method)
+        {
+            self.method_obj = method;
+            self.Member(class_obj, name);
+        }
+
+        function invoke(var obj, var p, var n)
+        {
+            if (!self.class_obj.isa(obj))
+                Rosella.Error.invalid(__FUNCTION__, "Object is not instance of class %s", self.class_obj.name());
+            var method_obj = self.method_obj;
+            return obj.*method_obj(p:[flat], n:[flat,named]);
+        }
+    }
+}}}
