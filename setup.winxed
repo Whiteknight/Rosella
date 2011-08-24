@@ -226,6 +226,27 @@ function setup_stable_libraries(var rosella)
         "string/tokenizer/DelimiterRegion",
         "string/tokenizer/Token"
     );
+
+    setup_winxed_lib(rosella, "template", ["Core", "Path", "String", "FileSystem"],
+        "template/Includes",
+        "template/Template",
+        "template/Engine",
+        "template/Context",
+        "template/Handler",
+        "template/handler/Factory",
+        "template/handler/For",
+        "template/handler/Repeat",
+        "template/handler/If",
+        "template/handler/Include",
+        "template/handler/Set",
+        "template/Node",
+        "template/node/Factory",
+        "template/node/Master",
+        "template/node/Logic",
+        "template/node/Data",
+        "template/node/Eval",
+        "template/node/Literal"
+    );
 }
 
 function setup_experimental_libraries(var rosella)
@@ -262,27 +283,6 @@ function setup_experimental_libraries(var rosella)
     setup_unstable_lib(rosella, "benchmark", [],
         "benchmark/Benchmark",
         "benchmark/Result"
-    );
-
-    setup_unstable_lib(rosella, "template", ["Core", "Path", "String", "FileSystem"],
-        "template/Includes",
-        "template/Template",
-        "template/Engine",
-        "template/Context",
-        "template/Handler",
-        "template/handler/Factory",
-        "template/handler/For",
-        "template/handler/Repeat",
-        "template/handler/If",
-        "template/handler/Include",
-        "template/handler/Set",
-        "template/Node",
-        "template/node/Factory",
-        "template/node/Master",
-        "template/node/Logic",
-        "template/node/Data",
-        "template/node/Eval",
-        "template/node/Literal"
     );
 
     setup_unstable_lib(rosella, "reflect", ["Core"],

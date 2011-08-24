@@ -6,13 +6,6 @@ class Test_Rosella_Template_Engine
         self.assert.instance_of(obj, class Rosella.Template.Engine);
     }
 
-    function Engine() {
-        self.status.verify("Test Rosella.Template.Engine.Engine()");
-        var obj = new Rosella.Template.Engine();
-
-        var result = obj.Engine();
-    }
-
     function setup_default_regions() {
         self.status.verify("Test Rosella.Template.Engine.setup_default_regions()");
         var obj = new Rosella.Template.Engine();

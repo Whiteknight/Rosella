@@ -9,12 +9,13 @@ class Test_Rosella_Template_Node_Literal
     function render() {
         self.status.verify("Test Rosella.Template.Node.Literal.render()");
         self.status.unimplemented("Test this");
-        var obj = new Rosella.Template.Node.Literal();
+        var obj = new Rosella.Template.Node.Literal("contents", "");
 
         var arg_0 = null;
         var arg_1 = null;
-        var arg_2 = null;
-        var result = obj.render(arg_0, arg_1, arg_2);
+        var arg_2 = new 'StringBuilder';
+        obj.render(arg_0, arg_1, arg_2);
+        self.assert.equal(string(arg_2), "contents");
     }
 }
 

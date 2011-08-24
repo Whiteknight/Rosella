@@ -46,9 +46,7 @@ class Test_Rosella_Template_Node
 
 function main[main]()
 {
-    load_bytecode("rosella/test.pbc");
-    load_bytecode("rosella/mockobject.pbc");
-    load_bytecode("rosella/template.pbc");
-    using Rosella.Test.test;
-    test(class Test_Rosella_Template_Node);
+    var rosella = load_packfile("rosella/core.pbc");
+    var(Rosella.initialize_rosella)("test", "mockobject", "template");
+    var(Rosella.Test.test)(class Test_Rosella_Template_Node);
 }

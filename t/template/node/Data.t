@@ -8,15 +8,13 @@ class Test_Rosella_Template_Node_Data
 
     function render() {
         self.status.verify("Test Rosella.Template.Node.Data.render()");
-        self.status.unimplemented("Find a way to test this");
-
-        var token = new Rosella.String.Tokenizer.Token("Foo", "Bar", "Baz");
-        var obj = new Rosella.Template.Node.Data();
+        var obj = new Rosella.Template.Node.Data("foo", "");
 
         var arg_0 = null;
-        var arg_1 = null;
-        var arg_2 = null;
+        var arg_1 = new Rosella.Template.Context({ "foo" : "FOO" });
+        var arg_2 = new 'StringBuilder';
         var result = obj.render(arg_0, arg_1, arg_2);
+        self.assert.equal(string(arg_2), "FOO");
     }
 }
 

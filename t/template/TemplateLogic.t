@@ -120,5 +120,17 @@ function __test_data() { return {
         "<$ repeat 4 to 6 $><# __INDEX__ #><# __FIRST__ #><# __LAST__ #><$ endrepeat $>",
         {},
         "410500601"
+    ],
+
+    // Set
+    "1-arg set" : [
+        "<$ set foo $>This is <# bar #><$ endset $><# foo #>",
+        { "bar" : "BARBAR" },
+        "This is BARBAR"
+    ],
+    "3-arg set" : [
+        "<$ set foo as bar $><# foo #>",
+        { "bar" : "BARBAR" },
+        "BARBAR"
     ]
 };}
