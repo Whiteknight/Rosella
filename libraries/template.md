@@ -168,10 +168,15 @@ this type directly, use a subclass instead.
 which have children. `for` and `repeat` loops, for instance, are subclasses
 of the Children handler. Some types, such as `if/else` blocks need more
 complicated management logic and do not descent from Children.
-
+ for the Eval node uses `<% %>` markers. Here's an example
+of an Eval region in a template, using this
 This is also an abstract parent type and should not be used directly.
 
 ### Template.Handler.Factory
+
+`Rosella.Template.Handler.Factory` is a factory type for creating Handlers.
+It is used internally by the Engine, and can be configured through method
+calls on the Engine.
 
 ### Template.Handler.For
 
@@ -183,11 +188,93 @@ special variable `__KEY__` will contain the string key.
 
 ### Template.Handler.If
 
+`Rosella.Template.Handler.If` implements if/else conditionals. The if block
+takes a basic conditional that can be in one of two forms:
+
+    <$ if foo.bar $>
+        ...
+    <$ endif $>
+
+And
+
+    <$ if foo.bar > foo.baz $>
+        ...
+    <$ endif $>
+
+In the first form with one argument, it looks up the argument in the context
+and uses normal truth tests to determine if the value evaluates to true or
+false. In the second case with three arguments, it takes two values and
+performs a basic relational comparison on them. The two values can be either
+paths in the context, or they can be string or number literals:
+
+    <$ if foo.bar <= foo.baz $>
+    <$ if foo.bar < 1 $>
+    <$ if foo.bar == "string" $>
+    <$ if "string" == foo.bar $>
+
+An if block can optionally contain an `else` block. If provided, the else
+block is rendered whenever the if condition fails.
+
+    <$ if foo.bar == foo.baz $>
+        This literal text is output if ctx["foo.bar"] equals ctx["foo.baz"]
+    <$ else $>
+        This literal text is output otherwise
+    <$ endif $>
+
 ### Template.Handler.Include
+
+`Rosella.Template.Handler.Include` performs literal file inclusion. The
+contents of a separate file are included inline and parsed as part of the
+template. There is a recursion limit which can be configured in the Engine.
+By default the recursion limit is something restrictive, like `10`.
+
+    <$ include 'myfile.template' $>
 
 ### Template.Handler.Repeat
 
+The `Rosella.Template.Handler.Repeat` handler is a loop that executes a fixed
+number of times with integer indices.
+
+    <$ repeat 1 to 5 $> <# __INDEX__#> <$ endrepeat $>
+
+That example will print out:
+
+    1  2  3  4  5
+
+Likewise, we can go in reverse:
+
+    <$ repeat 10 to 5 $> <# __INDEX__ #> <$ endrepeat $>
+
+...Which prints:
+
+    10  9  8  7  6  5
+
+Like the for loop, the repeat loop has `__FIRST__` and `__LAST__` values which
+are true during the first and last iteration of the loop, respectively.
+
 ### Template.Handler.Set
+
+The `Rosella.Template.Handler.Set` node is used to set a value to a named
+context key. It takes two forms:
+
+    <$ set foo.bar as foo.baz $>
+
+This first form sets the key `foo.bar` to the same value as is in `foo.baz`.
+Programmatically, it's the same as writing
+
+    ctx["foo.bar"] = ctx["foo.baz"];
+
+The second form of `set` is:
+
+    <$ set foo.bar $>
+    This literal string and other contents like <# foo.baz #>
+    are stored in foo.bar
+    <$ endset $>
+
+In this second form, the contents of the set block are stored in the key
+`foo.bar`. The rendering of the contents happens when the `set` block is
+rendered, so the variable and other logic in the middle don't get re-rendered
+dynamically when values change.
 
 ### Template.Handler.Unless
 
