@@ -1,9 +1,10 @@
 action: 2 Stable
+assert: 0 Alpha
 benchmark: 0 Alpha
 container: 2 Stable
-contract: 0 Alpha
 core: 2 Stable
 decorate: 0 Beta
+dumper: 0 Beta
 event: 3 Stable
 filesystem: 1 Stable
 harness: 2 Stable
@@ -14,6 +15,7 @@ path: 1 Stable
 prototype: 0 Alpha
 proxy: 2 Stable
 query: 1 Stable
+reflect: 0 Alpha
 string: 1 Stable
 template: 0 Beta
 test: 3 Stable
