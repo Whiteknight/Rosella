@@ -1,9 +1,12 @@
 namespace Rosella
 {
+    /* Helper routines for working with Templates
+    */
     namespace Template
     {
         const string TEMPLATE_PATH = "rosella/data/templates";
 
+        // Get a standard template file, by looking in certain standard locations.
         function get_standard_template_file(string shortname)
         {
             string filepath = Rosella.FileSystem.join_path_parts(TEMPLATE_PATH, shortname);
@@ -16,6 +19,7 @@ namespace Rosella
             Rosella.Error.invalid(__FUNCTION__, "Cannot find standard template '%s'", shortname);
         }
 
+        // Get the text of a standard template
         function get_standard_template_text(string shortname)
         {
             string filename = get_standard_template_file(shortname);

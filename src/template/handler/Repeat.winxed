@@ -1,5 +1,9 @@
 namespace Rosella { namespace Template { namespace Handler
 {
+    /* Fixed Integer Repeating
+        Repeat the contents of the node a certain number of times defined by
+        an integer range
+    */
     class Repeat : Rosella.Template.Handler.Children
     {
         var start;
@@ -8,6 +12,7 @@ namespace Rosella { namespace Template { namespace Handler
         const string FIRST_VARNAME = "__FIRST__";
         const string LAST_VARNAME = "__LAST__";
 
+        // Constructor
         function Repeat(var tokens)
         {
             if (elements(tokens) != 3 || tokens[1] != "to")
