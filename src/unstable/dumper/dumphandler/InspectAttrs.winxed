@@ -13,10 +13,10 @@ namespace Rosella { namespace Dumper { namespace DumpHandler
         {
             var attrs;
             ${ inspect attrs, obj };
-            emit.wrap("(", ")", function() {
+            emit.object(function() {
                 for (string key in attrs) {
                     var attr = attrs[key];
-                    emit.line("'%s' => ", key);
+                    emit.text("'%s' => ", key);
                     dump.__dump_recurse(emit, attr);
                 }
             });

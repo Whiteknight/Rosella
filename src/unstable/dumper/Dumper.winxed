@@ -39,7 +39,7 @@ namespace Rosella
             self.registry = new 'Hash';
             self.registry.set_key_type(3);
             self.__dump_recurse(emit, obj);
-            return emit.output();
+            return emit.get_output();
         }
 
         function __dump_recurse(var emit, var obj)

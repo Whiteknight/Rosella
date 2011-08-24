@@ -15,10 +15,10 @@ namespace Rosella { namespace Dumper { namespace DumpHandler
         function dump(var dump, var emit, var obj)
         {
             var class_obj = typeof(obj);
-            emit.data("'%s' ", class_obj);
-            emit.wrap("(", ")", function() {
+            emit.text("'%s' ", class_obj);
+            emit.object(function() {
                 for (string key in class_obj.attributes()) {
-                    emit.line("%s => ", key);
+                    emit.text_line("%s => ", key);
                     dump.__dump_recurse(emit, obj.*key);
                 }
             });

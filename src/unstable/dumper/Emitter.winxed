@@ -15,26 +15,32 @@ namespace Rosella { namespace Dumper
 
         function wrap(string start, string stop, var func)
         {
-            self.data("%s\n", start);
+            self.text("%s\n", start);
             string old_prefix = self.current_prefix;
             self.current_prefix = string(self.current_prefix) + string(self.prefix);
             func();
             self.current_prefix = old_prefix;
-            self.line("%s\n", stop);
+            self.text_line("%s\n", stop);
         }
 
-        function line(string text, var args [slurpy])
+        function hash(var func) { self.wrap("{", "}", func); }
+
+        function array(var func) { self.wrap("[", "]", func); }
+
+        function object(var func) { self.wrap("(", ")", func); }
+
+        function text_line(string text, var args [slurpy])
         {
             string l = sprintf("%s%s", [self.current_prefix, text]);
             push(self.string_builder, sprintf(l, args));
         }
 
-        function data(string text, var args [slurpy])
+        function text(string text, var args [slurpy])
         {
             push(self.string_builder, sprintf(text, args));
         }
 
-        function output()
+        function get_output()
         {
             return string(self.string_builder);
         }

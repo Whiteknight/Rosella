@@ -13,9 +13,9 @@ namespace Rosella { namespace Dumper { namespace DumpHandler
 
         function dump(var dump, var emit, var obj)
         {
-            emit.wrap("[", "]", function() {
+            emit.array(function() {
                 for (int i = 0; i < elements(obj); i++) {
-                    emit.line("%d => ", i);
+                    emit.text_line("%d => ", i);
                     dump.__dump_recurse(emit, obj[i]);
                 }
             });

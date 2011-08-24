@@ -13,9 +13,9 @@ namespace Rosella { namespace Dumper
         {
             try {
                 string text = string(obj);
-                emit.data("(%s): '%s'\n", typeof(obj), text);
+                emit.text("(%s): '%s'\n", typeof(obj), text);
             } catch() {
-                emit.data("PMC (%s)\n", typeof(obj));
+                emit.text("(%s)\n", typeof(obj));
             }
         }
     }

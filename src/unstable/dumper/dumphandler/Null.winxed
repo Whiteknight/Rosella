@@ -11,7 +11,7 @@ namespace Rosella { namespace Dumper { namespace DumpHandler
 
         function dump(var dump, var emit, var obj)
         {
-            emit.data("<NULL>\n");
+            emit.text("<NULL>\n");
         }
     }
 }}}
