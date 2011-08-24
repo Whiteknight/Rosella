@@ -45,7 +45,7 @@ context object for rendering templates.
 
 ## Namespaces
 
-## Rosella.Template
+### Rosella.Template
 
 The Rosella.Template namespace contains a small number of support routines
 to help with using templates. Rosella ships with a number of "standard"
