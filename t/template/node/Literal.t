@@ -1,8 +1,7 @@
 class Test_Rosella_Template_Node_Literal
 {
     function test_new() {
-        var token = new Rosella.String.Tokenizer.Token("Foo", "Bar", "Baz");
-        var obj = new Rosella.Template.Node.Literal(token);
+        var obj = new Rosella.Template.Node.Literal("Foo", "Bar");
         self.assert.not_null(obj);
         self.assert.instance_of(obj, class Rosella.Template.Node.Literal);
     }

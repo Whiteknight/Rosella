@@ -13,6 +13,7 @@ class Test_Rosella_Template_Context
         var arg_0 = "foo";
         var arg_1 = "bar";
         obj.set_temporary(arg_0, arg_1);
+        self.assert.equal(obj["foo"], "bar");
     }
 
     function get_value_user_data() {

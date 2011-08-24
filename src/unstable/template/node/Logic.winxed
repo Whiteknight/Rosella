@@ -11,10 +11,10 @@ namespace Rosella { namespace Template { namespace Node
         var logic_name;
 
         // Constructor
-        function Logic(var token, var handler_factory)
+        function Logic(string contents, string type, var handler_factory)
         {
-            self.Node(token);
-            var tokens = self.parse(token.data());
+            self.Node(contents, type);
+            var tokens = self.parse(contents);
             self.logic_name = tokens.shift();
             self.handler = handler_factory.create(self.logic_name, tokens);
         }

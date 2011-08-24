@@ -45,9 +45,9 @@ namespace Rosella { namespace Template { namespace Node
         {
             var node;
             if (has_factory)
-                node = Rosella.construct(type_class, token, handler_factory);
+                node = Rosella.construct(type_class, token.data(), token.metadata(), handler_factory);
             else
-                node = Rosella.construct(type_class, token);
+                node = Rosella.construct(type_class, token.data(), token.metadata());
             return node;
         }
     }

@@ -1,8 +1,7 @@
 class Test_Rosella_Template_Node_Eval
 {
     function test_new() {
-        var token = new Rosella.String.Tokenizer.Token("foo", "bar", "baz");
-        var obj = new Rosella.Template.Node.Eval(token);
+        var obj = new Rosella.Template.Node.Eval("foo", "bar");
         self.assert.not_null(obj);
         self.assert.instance_of(obj, class Rosella.Template.Node.Eval);
     }

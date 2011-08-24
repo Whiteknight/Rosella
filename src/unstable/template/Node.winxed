@@ -5,18 +5,20 @@ namespace Rosella { namespace Template
     */
     class Node
     {
-        var token; // The String.Tokenizer.Token object
+        var contents;
+        var type;
 
         // Constructor
-        function Node(var token)
+        function Node(string contents, string type)
         {
-            self.token = token;
+            self.contents = contents;
+            self.type = type;
         }
 
         // Get the token type
         function type()
         {
-            return self.token.metadata();
+            return self.type;
         }
 
         // Render contents. Must be subclassed
@@ -25,7 +27,7 @@ namespace Rosella { namespace Template
             Rosella.Error.must_subclass(__CLASS__);
         }
 
-        // assemble this node. Must be subclassed
+        // assemble this node.
         function assemble(var parent_nodes, var current_node)
         {
             current_node.add_child(self);

@@ -2,7 +2,7 @@ class Test_Rosella_Template_Node
 {
     function test_new()
     {
-        var obj = new Rosella.Template.Node(null);
+        var obj = new Rosella.Template.Node("", "");
         self.assert.not_null(obj);
         self.assert.instance_of(obj, class Rosella.Template.Node);
     }
@@ -10,18 +10,16 @@ class Test_Rosella_Template_Node
     function type()
     {
         self.status.verify("Test Rosella.Template.Node.type()");
-        var token = new Rosella.String.Tokenizer.Token("foo", "bar", "baz");
-        var obj = new Rosella.Template.Node(token);
+        var obj = new Rosella.Template.Node("foo", "bar");
 
         var result = obj.type();
-        self.assert.equal(result, "baz");
+        self.assert.equal(result, "bar");
     }
 
     function render()
     {
         self.status.verify("Test Rosella.Template.Node.render()");
-        var token = new Rosella.String.Tokenizer.Token("foo", "bar", "baz");
-        var obj = new Rosella.Template.Node(token);
+        var obj = new Rosella.Template.Node("foo", "bar");
 
         self.assert.throws(function() {
             var arg_0 = null;
@@ -34,8 +32,7 @@ class Test_Rosella_Template_Node
     function assemble()
     {
         self.status.verify("Test Rosella.Template.Node.assemble()");
-        var token = new Rosella.String.Tokenizer.Token("foo", "bar", "baz");
-        var obj = new Rosella.Template.Node(token);
+        var obj = new Rosella.Template.Node("foo", "bar");
 
         var nodec = (new Rosella.MockObject.Factory()).create_typed(class Rosella.Template.Node);
         nodec.expect_method("add_child").once().with_args(obj);

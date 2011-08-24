@@ -12,7 +12,7 @@ namespace Rosella { namespace Template { namespace Node
         // Constructor
         function Master()
         {
-            self.Node(null);
+            self.Node("", "");
             self.children = [];
         }
 

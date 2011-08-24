@@ -2,9 +2,8 @@ class Test_Rosella_Template_Node_Logic
 {
     function test_new() {
         self.status.todo("Figure out how to test this correctly");
-        var token = new Rosella.String.Tokenizer.Token("Foo", "bar", "baz");
         var factory = new Rosella.Template.Handler.Factory({"bar" : new Rosella.Template.Handler});
-        var obj = new Rosella.Template.Node.Logic(token, factory);
+        var obj = new Rosella.Template.Node.Logic("Foo", "bar", factory);
         self.assert.not_null(obj);
         self.assert.instance_of(obj, class Rosella.Template.Node.Logic);
     }

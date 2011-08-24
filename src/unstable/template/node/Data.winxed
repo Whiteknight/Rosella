@@ -7,12 +7,12 @@ namespace Rosella { namespace Template { namespace Node
     class Data : Rosella.Template.Node
     {
         // Constructor.
-        function Data(var token) { self.Node(token); }
+        function Data(string contents, string type) { self.Node(contents, type); }
 
         // Get the value from the context and push it onto the output stream
         function render(var engine, var context, var builder)
         {
-            string key = Rosella.String.trim(self.token.data());
+            string key = Rosella.String.trim(self.contents);
             string value = context.get_value(key);
             push(builder, value);
         }

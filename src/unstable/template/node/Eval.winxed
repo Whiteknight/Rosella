@@ -10,9 +10,9 @@ namespace Rosella { namespace Template { namespace Node
         const string EVAL_BASE_NAME = "Template_Node_Eval";
 
         // Constructor
-        function Eval(var token)
+        function Eval(string contents, string type)
         {
-            self.Node(token);
+            self.Node(contents, type);
             self.func = null;
         }
 
@@ -21,7 +21,7 @@ namespace Rosella { namespace Template { namespace Node
         function render(var engine, var context, var builder)
         {
             if (self.func == null) {
-                string code = self.token.data();
+                string code = self.contents;
                 self.func = self.compile_func(code);
             }
             var func = self.func;
