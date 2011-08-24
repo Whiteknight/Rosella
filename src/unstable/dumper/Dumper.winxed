@@ -1,5 +1,28 @@
 namespace Rosella
 {
+    namespace Dumper
+    {
+        const string DEFAULT_DUMPER_GLOBAL = "Rosella.Dumper.default_dumper";
+
+        function default_dumper()
+        {
+            var temp = Rosella.Globals.get_global(DEFAULT_DUMPER_GLOBAL);
+            if (temp == null) {
+                temp = new Rosella.Dumper();
+                Rosella.Globals.register_global(DEFAULT_DUMPER_GLOBAL, temp);
+            }
+            while(1) {
+                yield temp;
+                temp = Rosella.Globals.get_global(DEFAULT_DUMPER_GLOBAL)
+            }
+        }
+
+        function set_default_dumper(var dumper)
+        {
+            Rosella.Globals.register_global(DEFAULT_DUMPER_GLOBAL, dumper);
+        }
+    }
+
     class Dumper
     {
         var role_dumpers;
@@ -16,18 +39,39 @@ namespace Rosella
         function Dumper()
         {
             self.null_dumper = new Rosella.Dumper.DumpHandler.Null();
-            self.role_dumpers = {
+            self.role_dumpers = self.default_role_dumpers();
+            self.type_dumpers = self.default_type_dumpers();
+            self.misc_dumpers = self.default_misc_dumpers();
+            self.fallback_dumper = self.default_fallback_dumper();
+            self.indent = "\t";
+        }
+
+        function default_role_dumpers()
+        {
+            return {
                 "array" : new Rosella.Dumper.DumpHandler.Array(),
                 "hash"  : new Rosella.Dumper.DumpHandler.Hash()
             };
-            self.type_dumpers = {};
-            self.type_dumpers.set_key_type(3);
-            self.misc_dumpers = [
-                new Rosella.Dumper.DumpHandler.Object(),
-                new Rosella.Dumper.DumpHandler.InspectAttrs()
-            ];
-            self.fallback_dumper = new Rosella.Dumper.DumpHandler();
-            self.indent = "\t";
+        }
+
+        function default_type_dumpers()
+        {
+            var type_dumpers = {};
+            type_dumpers.set_key_type(3);
+            return type_dumpers;
+        }
+
+        function default_misc_dumpers()
+        {
+            return {
+                "object" : new Rosella.Dumper.DumpHandler.Object(),
+                "attrs" : new Rosella.Dumper.DumpHandler.InspectAttrs()
+            };
+        }
+
+        function default_fallback_dumper()
+        {
+            return new Rosella.Dumper.DumpHandler();
         }
 
         function add_type_dumper(var type, var dumper [optional], int has_dumper [opt_flag])
@@ -37,12 +81,12 @@ namespace Rosella
             self.type_dumpers[type] = dumper;
         }
 
-        function add_misc_dumper(var dumper)
+        function set_misc_dumper(string name, var dumper)
         {
-            push(self.misc_dumpers, dumper);
+            self.misc_dumpers[name] = dumper;
         }
 
-        function add_role_dumper(string role, var dumper)
+        function set_role_dumper(string role, var dumper)
         {
             self.role_dumpers[role] = dumper;
         }
@@ -94,9 +138,10 @@ namespace Rosella
                     return;
                 }
             }
-            for (var dumper in self.misc_dumpers) {
-                if (dumper.can_dump(obj)) {
-                    dumper.dump(self, emit, obj);
+            for (string misc in self.misc_dumpers) {
+                var misc_dumper = self.misc_dumpers[misc];
+                if (misc_dumper.can_dump(obj)) {
+                    misc_dumper.dump(self, emit, obj);
                     self.recurse_level--;
                     return;
                 }
