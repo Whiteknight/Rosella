@@ -1,0 +1,28 @@
+namespace Rosella { namespace Dumper { namespace DumpHandler
+{
+    class InspectAttrs : Rosella.Dumper.DumpHandler
+    {
+        function InspectAttrs() { }
+
+        function can_dump(var obj)
+        {
+            return true;
+        }
+
+        function dump(var dump, var emit, var obj)
+        {
+            var attrs;
+            ${ inspect attrs, obj };
+            emit.wrap("(", ")", function() {
+                for (string key in attrs) {
+                    var attr = attrs[key];
+                    emit.line("'%s' => ", key);
+                    dump.__dump_recurse(emit, attr);
+                }
+            });
+        }
+    }
+}}}
+
+
+

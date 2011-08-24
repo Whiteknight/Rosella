@@ -1,0 +1,17 @@
+namespace Rosella { namespace Dumper { namespace DumpHandler
+{
+    class Null : Rosella.Dumper.DumpHandler
+    {
+        function Null() { }
+
+        function can_dump(var obj)
+        {
+            return obj == null ? true : false;
+        }
+
+        function dump(var dump, var emit, var obj)
+        {
+            emit.data("<NULL>\n");
+        }
+    }
+}}}

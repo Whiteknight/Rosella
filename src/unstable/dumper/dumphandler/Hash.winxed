@@ -4,23 +4,21 @@ namespace Rosella { namespace Dumper { namespace DumpHandler
     {
         function Hash() { }
 
-        function can_handle(var obj)
+        function can_dump(var obj)
         {
-            int can_do = 0;
-            ${ can can_do, obj, "hash" };
-            return can_do;
+            int does_hash = 0;
+            ${ does does_hash, obj, "hash" };
+            return does_hash == 0 ? false : true;
         }
 
-        function dump(var dump, var obj, string pprefix, string prefix, var sb)
+        function dump(var dump, var emit, var obj)
         {
-            push(sb, "{\n");
-            for (string key in obj) {
-                push(sb, Winxed_Builtins.sprintf("%s%s => ", [prefix, key]));
-                dump.__dump_recurse(obj[key], sb, prefix);
-            }
-
-            push(sb, pprefix);
-            push(sb, "}\n");
+            emit.wrap("{", "}", function() {
+                for (string key in obj) {
+                    emit.line("'%s' => ", key);
+                    dump.__dump_recurse(emit, obj[key]);
+                }
+            });
         }
     }
 }}}

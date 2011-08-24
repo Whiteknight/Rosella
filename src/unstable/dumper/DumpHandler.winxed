@@ -9,14 +9,13 @@ namespace Rosella { namespace Dumper
             return 1;
         }
 
-        function dump(var dump, var obj, string pprefix, string prefix, var sb)
+        function dump(var dump, var emit, var obj)
         {
             try {
-                string txt = string(obj);
-                push(sb, Winxed_Builtins.sprintf("'%s'\n", [txt]));
+                string text = string(obj);
+                emit.data("(%s): '%s'\n", typeof(obj), text);
             } catch() {
-                int addr;
-                push(sb, Winxed_Builtins.sprintf("PMC (%s)\n", [typeof(obj)]));
+                emit.data("PMC (%s)\n", typeof(obj));
             }
         }
     }

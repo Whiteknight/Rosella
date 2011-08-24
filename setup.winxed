@@ -295,8 +295,12 @@ function setup_experimental_libraries(var rosella)
     setup_unstable_lib(rosella, "dumper", ["Core"],
         "dumper/Dumper",
         "dumper/DumpHandler",
+        "dumper/Emitter",
         "dumper/dumphandler/Array",
-        "dumper/dumphandler/Hash"
+        "dumper/dumphandler/Hash",
+        "dumper/dumphandler/InspectAttr",
+        "dumper/dumphandler/Object",
+        "dumper/dumphandler/Null"
     );
 }
 

@@ -4,47 +4,75 @@ namespace Rosella
     {
         var role_dumpers;
         var type_dumpers;
+        var misc_dumpers;
+        var null_dumper;
         var fallback_dumper;
         var indent;
+        var registry;
 
         function Dumper()
         {
+            self.null_dumper = new Rosella.Dumper.DumpHandler.Null();
             self.role_dumpers = {
                 "array" : new Rosella.Dumper.DumpHandler.Array(),
                 "hash"  : new Rosella.Dumper.DumpHandler.Hash()
             };
             self.type_dumpers = {};
+            self.type_dumpers.set_key_type(3);
+            self.misc_dumpers = [
+                new Rosella.Dumper.DumpHandler.Object
+            ];
             self.fallback_dumper = new Rosella.Dumper.DumpHandler();
             self.indent = "\t";
         }
 
-        function dump(var obj)
+        function add_type_dumper(var type, var dumper [optional], int has_dumper [opt_flag])
         {
-            var sb = new "StringBuilder";
-            self.__dump_recurse(obj, sb, "");
-            return string(sb);
+            if (!has_dumper)
+                dumper = new Rosella.Dumper.DumpHandler.InspectAttr();
+            self.type_dumpers[type] = dumper;
         }
 
-        function __dump_recurse(var obj, var sb, string prefix)
+        function dump(var obj)
         {
-            string type = typeof(obj);
-            for (string key in self.type_dumpers)
-            {
-                if (type == key) {
-                    self.type_dumpers[key].dump(self, obj, prefix, prefix + string(self.indent), sb);
+            var emit = new Rosella.Dumper.Emitter(self.indent);
+            self.registry = new 'Hash';
+            self.registry.set_key_type(3);
+            self.__dump_recurse(emit, obj);
+            return emit.output();
+        }
+
+        function __dump_recurse(var emit, var obj)
+        {
+            if (obj == null) {
+                self.null_dumper.dump(self, emit, obj);
+                return;
+            }
+            string type_name = Rosella.get_type_name(typeof(obj));
+            if (exists self.type_dumpers[type_name]) {
+                var type_dumper = self.type_dumpers[type_name];
+                if (type_dumper.can_dump(obj)) {
+                    type_dumper.dump(self, emit, obj);
                     return;
                 }
             }
             for (string role in self.role_dumpers)
             {
+                var role_dumper = self.role_dumpers[role];
                 int does_it = 0;
                 ${ does does_it, obj, role };
-                if (does_it && self.role_dumpers[role].can_dump(obj)) {
-                    self.role_dumpers[role].dump(self, obj, prefix, prefix + string(self.indent), sb);
+                if (does_it && role_dumper.can_dump(obj)) {
+                    role_dumper.dump(self, emit, obj);
                     return;
                 }
             }
-            self.fallback_dumper.dump(self, obj, prefix, prefix + string(self.indent), sb);
+            for (var dumper in self.misc_dumpers) {
+                if (dumper.can_dump(obj)) {
+                    dumper.dump(self, emit, obj);
+                    return;
+                }
+            }
+            self.fallback_dumper.dump(self, emit, obj);
         }
     }
 }

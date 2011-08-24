@@ -1,0 +1,27 @@
+namespace Rosella { namespace Dumper { namespace DumpHandler
+{
+    class Object : Rosella.Dumper.DumpHandler
+    {
+        function Object() { }
+
+        function can_dump(var obj)
+        {
+            var class_obj = typeof(obj);
+            int isa_class;
+            ${ isa isa_class, class_obj, "PMCProxy" };
+            return isa_class == 0 ? true : false;
+        }
+
+        function dump(var dump, var emit, var obj)
+        {
+            var class_obj = typeof(obj);
+            emit.data("'%s' ", class_obj);
+            emit.wrap("(", ")", function() {
+                for (string key in class_obj.attributes()) {
+                    emit.line("%s => ", key);
+                    dump.__dump_recurse(emit, obj.*key);
+                }
+            });
+        }
+    }
+}}}
