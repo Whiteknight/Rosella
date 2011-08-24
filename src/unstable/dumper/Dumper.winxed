@@ -13,7 +13,7 @@ namespace Rosella
             }
             while(1) {
                 yield temp;
-                temp = Rosella.Globals.get_global(DEFAULT_DUMPER_GLOBAL)
+                temp = Rosella.Globals.get_global(DEFAULT_DUMPER_GLOBAL);
             }
         }
 
