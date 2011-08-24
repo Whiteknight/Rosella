@@ -11,7 +11,7 @@ namespace Rosella
         var registry;
         var recurse_level;
 
-        const int RECURSE_LIMIT = 8;
+        const int RECURSE_LIMIT = 6;
 
         function Dumper()
         {
@@ -37,6 +37,21 @@ namespace Rosella
             self.type_dumpers[type] = dumper;
         }
 
+        function add_misc_dumper(var dumper)
+        {
+            push(self.misc_dumpers, dumper);
+        }
+
+        function add_role_dumper(string role, var dumper)
+        {
+            self.role_dumpers[role] = dumper;
+        }
+
+        function set_indent(string indent)
+        {
+            self.indent = indent;
+        }
+
         function dump(var obj)
         {
             self.recurse_level = 0;
@@ -50,7 +65,7 @@ namespace Rosella
         function __dump_recurse(var emit, var obj)
         {
             if (int(self.recurse_level) > RECURSE_LIMIT) {
-                emit.text("\n(Recursion halted. Too many levels)\n");
+                self.fallback_dumper(self, emit, obj);
                 return;
             }
             self.recurse_level++;
