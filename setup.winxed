@@ -298,7 +298,7 @@ function setup_experimental_libraries(var rosella)
         "dumper/Emitter",
         "dumper/dumphandler/Array",
         "dumper/dumphandler/Hash",
-        "dumper/dumphandler/InspectAttr",
+        "dumper/dumphandler/InspectAttrs",
         "dumper/dumphandler/Object",
         "dumper/dumphandler/Null"
     );
