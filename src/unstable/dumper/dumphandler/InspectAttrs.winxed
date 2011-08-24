@@ -6,18 +6,26 @@ namespace Rosella { namespace Dumper { namespace DumpHandler
 
         function can_dump(var obj)
         {
-            return true;
+            var class_obj = typeof(obj);
+            int isa_class;
+            ${ isa isa_class, class_obj, "PMCProxy" };
+            return isa_class == 0 ? false : true;
         }
 
         function dump(var dump, var emit, var obj)
         {
             var attrs;
             ${ inspect attrs, obj };
+            emit.text("(%s): ", typeof(obj));
             emit.object(function() {
                 for (string key in attrs) {
                     var attr = attrs[key];
-                    emit.text("'%s' => ", key);
-                    dump.__dump_recurse(emit, attr);
+                    string text = "";
+                    try {
+                        text = string(attr);
+                    } catch () {}
+                    emit.text_line("'%s' => (%s): '%s'\n", key, typeof(attr), text);
+                    //dump.__dump_recurse(emit, attr);
                 }
             });
         }

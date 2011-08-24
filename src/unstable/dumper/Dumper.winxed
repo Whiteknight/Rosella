@@ -9,6 +9,9 @@ namespace Rosella
         var fallback_dumper;
         var indent;
         var registry;
+        var recurse_level;
+
+        const int RECURSE_LIMIT = 8;
 
         function Dumper()
         {
@@ -20,7 +23,8 @@ namespace Rosella
             self.type_dumpers = {};
             self.type_dumpers.set_key_type(3);
             self.misc_dumpers = [
-                new Rosella.Dumper.DumpHandler.Object
+                new Rosella.Dumper.DumpHandler.Object(),
+                new Rosella.Dumper.DumpHandler.InspectAttrs()
             ];
             self.fallback_dumper = new Rosella.Dumper.DumpHandler();
             self.indent = "\t";
@@ -35,6 +39,7 @@ namespace Rosella
 
         function dump(var obj)
         {
+            self.recurse_level = 0;
             var emit = new Rosella.Dumper.Emitter(self.indent);
             self.registry = new 'Hash';
             self.registry.set_key_type(3);
@@ -44,8 +49,14 @@ namespace Rosella
 
         function __dump_recurse(var emit, var obj)
         {
+            if (int(self.recurse_level) > RECURSE_LIMIT) {
+                emit.text("\n(Recursion halted. Too many levels)\n");
+                return;
+            }
+            self.recurse_level++;
             if (obj == null) {
                 self.null_dumper.dump(self, emit, obj);
+                self.recurse_level--;
                 return;
             }
             string type_name = Rosella.get_type_name(typeof(obj));
@@ -53,6 +64,7 @@ namespace Rosella
                 var type_dumper = self.type_dumpers[type_name];
                 if (type_dumper.can_dump(obj)) {
                     type_dumper.dump(self, emit, obj);
+                    self.recurse_level--;
                     return;
                 }
             }
@@ -63,16 +75,19 @@ namespace Rosella
                 ${ does does_it, obj, role };
                 if (does_it && role_dumper.can_dump(obj)) {
                     role_dumper.dump(self, emit, obj);
+                    self.recurse_level--;
                     return;
                 }
             }
             for (var dumper in self.misc_dumpers) {
                 if (dumper.can_dump(obj)) {
                     dumper.dump(self, emit, obj);
+                    self.recurse_level--;
                     return;
                 }
             }
             self.fallback_dumper.dump(self, emit, obj);
+            self.recurse_level--;
         }
     }
 }
