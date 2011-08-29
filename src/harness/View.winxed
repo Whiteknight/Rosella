@@ -63,8 +63,11 @@ namespace Rosella { namespace Harness
             else
                 say("ok");
             string error_details = test.error_details();
-            if (error_details != null)
-                Rosella.IO.sayf("# %s", error_details);
+            if (error_details != null) {
+                var lines = split("\n", error_details);
+                for (string line in lines)
+                    Rosella.IO.sayf("# %s", line);
+            }
         }
 
         // Mark the TestRun as being complete

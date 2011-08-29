@@ -46,6 +46,15 @@ namespace Rosella
             return result.was_successful();
         }
 
+        function test_list(var list, var options [slurpy,named])
+        {
+            __default_options(options);
+            var suitefactory = new Rosella.Test.SuiteFactory.List(list, options);
+            var suite = suitefactory.create();
+            var result = suite.run();
+            return result.was_successful();
+        }
+
         function make_suite(var test_type, var options [slurpy,named])
         {
             __default_options(options);
