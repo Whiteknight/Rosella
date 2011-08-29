@@ -15,10 +15,10 @@ namespace Rosella { namespace Harness { namespace TestFile
             return result[0];
         }
 
-        function get_spawn_command()
+        function get_spawn_command(string filename)
         {
             // TODO: be more generic
-            return "parrot " + string(self.filename);
+            return "parrot " + filename;
         }
     }
 }}}

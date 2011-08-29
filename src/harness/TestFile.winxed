@@ -111,14 +111,23 @@ namespace Rosella { namespace Harness
             self.status = "EMPTY";
         }
 
+        function setup_spawn(string filename) { return filename; }
+        function cleanup_spawn(string filename) { }
+
         function spawn_and_execute(var view, int debug)
         {
+            string filename = self.setup_spawn(self.filename);
+            if (filename == null) {
+                self.lines = [];
+                return;
+            }
             var pipe = new "FileHandle";
             pipe.encoding('utf8');
-            string cmd = self.get_spawn_command();
+            string cmd = self.get_spawn_command(filename);
             pipe.open(cmd, "rp");
             string output = pipe.readall();
             pipe.close();
+            self.cleanup_spawn(filename);
             int exit_status = pipe.exit_status();
             if (exit_status != 0)
                 self.mark_test_abort("Test aborted with exit code " + exit_status);

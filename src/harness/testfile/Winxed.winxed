@@ -15,9 +15,9 @@ namespace Rosella { namespace Harness { namespace TestFile
             return winxed.compile_file(self.filename);
         }
 
-        function get_spawn_command()
+        function get_spawn_command(string filename)
         {
-            return "winxed --nowarn " + string(self.filename);
+            return "winxed --nowarn " + filename;
         }
     }
 }}}
