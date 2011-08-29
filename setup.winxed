@@ -306,7 +306,12 @@ function setup_experimental_libraries(var rosella)
 
 function setup_utilities(var rosella)
 {
-    var utilities = {"winxed_repl" : "winxed_repl"};
+    var utilities = {
+        "winxed_repl" : "winxed_repl",
+        "test_all_lib" : "rosella_test_all_lib",
+        "test_template" : "rosella_test_template",
+        "mk_winxed_header" : "winxed_mk_header"
+    };
     string prefix = "src/unstable/utilities/";
     for (string util_source in utilities) {
         string winxed_file = prefix + util_source + ".winxed";
