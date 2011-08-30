@@ -59,7 +59,7 @@ namespace Rosella { namespace Test
         // Boolean whether the whole run was successful
         function was_successful()
         {
-            return (self.num_failures == 0);
+            return int(self.num_failures) == 0;
         }
 
         // Tell the listeners that all tests have executed

@@ -167,7 +167,7 @@ namespace Rosella { namespace Template
         // Performs automatic recursion depth checking.
         function __generate_internal(string tmpl, var context)
         {
-            if (self.recurse_level == 0)
+            if (int(self.recurse_level) == 0)
                 return;
             self.recurse_level--;
 

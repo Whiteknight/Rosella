@@ -197,11 +197,11 @@ namespace Rosella { namespace MockObject
         // satisfied
         function __satisfied()
         {
-            if (string(self.quantity_modifier) == "=" && self.quantity == 0)
+            if (string(self.quantity_modifier) == "=" && int(self.quantity) == 0)
                 return 1;
-            if (string(self.quantity_modifier) == "<=" && self.quantity >= 0)
+            if (string(self.quantity_modifier) == "<=" && int(self.quantity) >= 0)
                 return 1;
-            if (string(self.quantity_modifier) == ">=" && self.quantity <= 0)
+            if (string(self.quantity_modifier) == ">=" && int(self.quantity) <= 0)
                 return 1;
             return 0;
         }

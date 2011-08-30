@@ -38,11 +38,11 @@ namespace Rosella { namespace Template { namespace Handler
             int is_logic = 0;
             ${ can is_logic, node, "logic_name" };
             if (is_logic && node.logic_name() == "else") {
-                if (self.mode == ELSE_MODE)
+                if (int(self.mode) == ELSE_MODE)
                     Rosella.Error.invalid(__FUNCTION__, "Can only have one ELSE node in an IF block");
                 self.mode = ELSE_MODE;
             } else {
-                if (self.mode == THEN_MODE)
+                if (int(self.mode) == THEN_MODE)
                     push(self.then_children, node);
                 else
                     push(self.else_children, node);

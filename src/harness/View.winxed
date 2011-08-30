@@ -111,7 +111,7 @@ namespace Rosella { namespace Harness
 
         function show_error_detail()
         {
-            if (self.num_failed_tests == 0)
+            if (int(self.num_failed_tests) == 0)
                 return;
 
             var failed_files = self.get_all_files_by_status("FAILED");
