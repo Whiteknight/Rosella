@@ -9,19 +9,65 @@ namespace Rosella
     */
     class Harness
     {
-        function Harness() { }
+        var testrun_factory;
+        var default_view;
+        var saved_runs;
+
+        function Harness()
+        {
+            self.testrun_factory = new Rosella.Harness.TestRun.Factory();
+            self.saved_runs = [];
+        }
+
+        /* Routines for adding tests to the harness
+        */
+
+        function add_testfile_type(string name, var type)
+        {
+            self.testrun_factory.add_testfile_type(name, type);
+            return self;
+        }
+
+        function add_test_dirs(string testfile_type_s, var dirs [slurpy],
+            var options [slurpy,named])
+        {
+            self.testrun_factory.add_test_dirs(testfile_type_s, dirs:[flat],
+                options:[flat,named]);
+            return self;
+        }
+
+        function add_test_files(string testfile_type_s, var files [slurpy],
+            var options [slurpy,named])
+        {
+            self.testrun_factory.add_test_files(testfile_type_s, files:[flat],
+                options:[flat,named]);
+            return self;
+        }
+
+        function setup_test_run(var view [optional], int has_view [opt_flag])
+        {
+            if (!has_view || view == null)
+                view = self.default_view();
+            var run = self.testrun_factory.create();
+            view.add_run(run, 0);
+            push(self.saved_runs, run);
+            return run;
+        }
 
         /* Routines for Running the Harness
         */
 
         function default_view()
         {
-            return new Rosella.Harness.View();
+            if (self.default_view == null)
+                self.default_view = new Rosella.Harness.View();
+            return self.default_view;
         }
 
         // Run the harness. Optionally take a custom view, and a handful of
         // other named options.
-        function run(var test_run, var view,
+        function run(var test_runs [optional], int has_runs [opt_flag],
+                var view [optional], int has_view [opt_flag],
                 int run_inline [named,optional],  int has_ri [opt_flag],
                 int line_length [named,optional], int has_ll [opt_flag],
                 int debug [named,optional], int has_dbg [opt_flag])
@@ -32,21 +78,29 @@ namespace Rosella
                 line_length = 0;
             if (!has_dbg)
                 debug = 0;
-            return self.run_internal(test_run, view, run_inline, debug);
+            if (has_view == 0 || view == null)
+                view = self.default_view();
+            if (has_runs == 0 || test_runs == null)
+                test_runs = self.saved_runs;
+            return self.run_internal(test_runs, view, run_inline, debug);
         }
 
         // Interal routine to run the harness
-        function run_internal(var test_run, var view, int run_inline, int debug)
+        function run_internal(var test_runs, var view, int run_inline, int debug)
         {
-            for (var test in test_run.tests()) {
-                view.start_test(test);
-                test.run(view, debug, run_inline);
-                test_run.update_test_stats(test);
-                view.end_test(test);
+            for (var test_run in test_runs) {
+                for (var test in test_run.tests()) {
+                    view.start_test(test);
+                    test.run(view, debug, run_inline);
+                    test_run.update_test_stats(test);
+                    view.end_test(test);
+                }
+                test_run.mark_completed();
+                view.test_run_complete(test_run);
+                if (!test_run.run_was_success())
+                    return 0;
             }
-            test_run.mark_completed();
-            view.test_run_complete(test_run);
-            return test_run.run_was_success();
+            return 1;
         }
     }
 }

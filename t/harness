@@ -5,12 +5,7 @@ INIT {
 
 my @argv := pir::getinterp__P()[2];
 my $dummy := pir::shift__PP(@argv);
-
-my $factory := Rosella::construct(Rosella::Harness::TestRun::Factory);
 my $harness := Rosella::construct(Rosella::Harness);
-my $testview := $harness.default_view();
-
-my @test_runs := [];
 
 if (pir::elements(@argv)) {
     for @argv -> $dir {
@@ -18,32 +13,23 @@ if (pir::elements(@argv)) {
         if ($dir eq "template") {
             $type := "Winxed";
         }
-        $factory.add_test_dirs($type, "t/$dir", :recurse(1));
-        my $run := $factory.create();
-        pir::push(@test_runs, $run);
-        $testview.add_run($run, 0);
+        $harness.add_test_dirs($type, "t/$dir", :recurse(1)).setup_test_run();
     }
 } else {
     # Core tests (If these fail, we don't attempt anything else)
-    $factory.add_test_dirs("NQP",
+    $harness.add_test_dirs("NQP",
         "t/core"
-    );
-    my $run := $factory.create();
-    pir::push(@test_runs, $run);
-    $testview.add_run($run, 0);
+    ).setup_test_run();
 
     # Winxed tests
     # These are some basic sanity tests to prove we can also write tests in
     # winxed.
-    $factory.add_test_dirs("Winxed",
+    $harness.add_test_dirs("Winxed",
         "t/winxed_test"
-    );
-    $run := $factory.create();
-    pir::push(@test_runs, $run);
-    $testview.add_run($run, 0);
+    ).setup_test_run();
 
     # Stable library tests
-    $factory.add_test_dirs("NQP",
+    $harness.add_test_dirs("NQP",
         "t/tap_harness",    # "harness", can't shadow t/harness program
         "t/test",
         "t/action",
@@ -57,31 +43,21 @@ if (pir::elements(@argv)) {
         "t/path",
         "t/string",
         :recurse(1)
-    );
-    $run := $factory.create();
-    pir::push(@test_runs, $run);
-    $testview.add_run($run, 0);
+    ).setup_test_run();
 
     # Unstable library tests
-    $factory.add_test_dirs("NQP",
+    $harness.add_test_dirs("NQP",
         "t/prototype",
         :recurse(1)
-    );
-    $factory.add_test_dirs("Winxed",
+    ).add_test_dirs("Winxed",
         "t/template",
         :recurse(1)
-    );
-    $run := $factory.create();
-    pir::push(@test_runs, $run);
-    $testview.add_run($run, 0);
+    ).setup_test_run();
 }
 
-for @test_runs -> $run {
-    my $result := $harness.run($run, $testview);
-    if (!$result) {
-        $testview.show_results();
-        pir::exit(1);
-    }
+my $result := $harness.run();
+$harness.default_view.show_results();
+if (!$result) {
+    pir::exit(1);
 }
-$testview.show_results();
-#pir::exit(0);
+
