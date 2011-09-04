@@ -19,7 +19,7 @@ namespace Rosella { namespace Harness { namespace TestRun
             self.ObjectFactory(class Rosella.Harness.TestRun);
             // We need a default type for the testfile factory. NQP is as good a default as any, for now
             self.testfile_factory         = new Rosella.Harness.TestFile.Factory(class Rosella.Harness.TestFile.NQP);
-            self.testfile_types = {};
+            self.testfile_types           = {};
             self.testfile_types["NQP"]    = class Rosella.Harness.TestFile.NQP;
             self.testfile_types["PIR"]    = class Rosella.Harness.TestFile.PIR;
             self.testfile_types["Winxed"] = class Rosella.Harness.TestFile.Winxed;

@@ -28,34 +28,19 @@ namespace Rosella { namespace Harness { namespace TestFile
         // of files which appear to be tests.
         function create_tests_from_dirs(var test_type, var dirs, int recurse)
         {
-            var tests = [];
-            for (string dirpath in dirs) {
-                var dir = new Rosella.FileSystem.Directory(dirpath);
-                var rawfiles;
-                if (recurse) {
-                    rawfiles = dir.walk_func(function (var file) {
-                        var path = file.path_obj();
-                        if (path.extension() != "t")
-                            return;
-                        return file;
-                    });
-                } else {
-                    var allfiles = dir.get_files();
-                    rawfiles = [];
-                    for (var file in allfiles) {
-                        var path = file.path_obj();
-                        if (path.extension() == "t")
-                            push(rawfiles, file);
-                    }
-                }
-                for (var file in rawfiles) {
-                    var testobj = self.create_typed(test_type, string(file));
-                    push(tests, testobj);
-                }
-            }
-            return tests;
+            return Rosella.Query.as_queryable(dirs)
+                .map(function(d) { return new Rosella.FileSystem.Directory(d); })
+                .map(function(dir) {
+                    if (recurse)
+                        return dir.walk_func(function(file) { return file; });
+                    else
+                        return dir.get_files();
+                })
+                .flatten()
+                .filter(function(f) { return f.path_obj().extension() == "t"; })
+                .map(function(f) { return self.create_typed(test_type, string(f)); })
+                .data();
         }
-
 
         // Return a list of TestFile objects from a list of files. Do not do
         // any detection or sanity checking, all files in the list are

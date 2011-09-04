@@ -54,13 +54,10 @@ namespace Rosella { namespace Harness
         // Determine the maximum file length of tests in the run.
         function max_file_length(int start_length)
         {
-            int max = start_length;
-            for (var test in self.tests) {
-                int len = length(test.filename());
-                if (len > max)
-                    max = len;
-            }
-            return max;
+            return Rosella.Query.as_queryable(self.tests)
+                .map(function(t) { return length(t.filename()); })
+                .fold(function(int max, int l) { return max > l ? max : l; }, start_length)
+                .data();
         }
 
         // Returns 1 if the run was a success, 0 otherwise

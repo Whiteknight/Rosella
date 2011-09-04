@@ -160,15 +160,11 @@ namespace Rosella { namespace Harness
         // status
         function get_all_files_by_status(string status)
         {
-            var files_with_status = [];
-            for (var testrun in self.test_runs) {
-                if (testrun.is_complete() == 0)
-                    continue;
-                var failed_tests = testrun.files_by_status(status);
-                for (var failed_test in failed_tests)
-                    push(files_with_status, failed_test);
-            }
-            return files_with_status;
+            return Rosella.Query.as_queryable(self.test_runs)
+                .filter(function(tr) { return tr.is_complete() != 0; })
+                .map(function(tr) { return tr.files_by_status(status); })
+                .flatten()
+                .data();
         }
     }
 }}
