@@ -14,7 +14,7 @@ namespace Rosella { namespace Harness { namespace TestFile
         function compile_test()
         {
             if (self.compiler == null)
-                Rosella.Error.invalid("Harness.TestFile.Custom", "No compiler provided");
+                Rosella.Error.invalid(__FUNCTION__, "No compiler provided");
 
             var handle = new "FileHandle";
             handle.open(self.filename, 'r');
@@ -29,7 +29,7 @@ namespace Rosella { namespace Harness { namespace TestFile
         function get_spawn_command()
         {
             if (self.cmd_fmt == null)
-                Rosella.Error.invalid("Harness.TestFile.Custom", "No command provided");
+                Rosella.Error.invalid(__FUNCTION__, "No command provided");
 
             return sprintf(self.cmd_fmt, [self.filename]);
         }
