@@ -77,12 +77,9 @@ namespace Rosella { namespace Harness
         // one of "ABORTED", "PASSED", or "FAILED"
         function files_by_status(string status)
         {
-            var files = [];
-            for (var test in self.tests) {
-                if (test.status() == status)
-                    push(files, test);
-            }
-            return files;
+            return Rosella.Query.as_queryable(self.tests).filter(function(test) {
+                return test.status() == status;
+            }).data();
         }
 
         // Get the number of tests by status. Status is a string, one of

@@ -62,15 +62,12 @@ namespace Rosella { namespace Harness { namespace TestFile
         // assumed to be valid test files for this loader.
         function create_tests_from_files(var test_type, var filenames)
         {
-            var tests = [];
-            for (string filename in filenames) {
+            return Rosella.Query.as_queryable(filenames).map(function(filename) {
                 var file = new Rosella.FileSystem.File(filename);
                 if (!file.exists())
                     Rosella.Error.invalid(__FUNCTION__, "file '%s' does not exist", filename);
-                var testobj = self.create_typed(test_type, filename);
-                push(tests, testobj);
-            }
-            return tests;
+                return self.create_typed(test_type, filename);
+            }).data();
         }
 
         // Determine if the file is a valid test. Probably best to override this in
