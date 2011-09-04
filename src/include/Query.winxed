@@ -1,0 +1,10 @@
+namespace Rosella {
+    namespace Query {
+        extern function as_queryable;
+    }
+}
+
+function __load_query[anon, load, init]()
+{
+    Rosella.load_bytecode_file("rosella/query.pbc", "load");
+}

@@ -18,14 +18,16 @@ if (pir::elements(@argv)) {
 } else {
     # Core tests (If these fail, we don't attempt anything else)
     $harness.add_test_dirs("NQP",
-        "t/core"
+        "t/core",
+        :sort(1)
     ).setup_test_run();
 
     # Winxed tests
     # These are some basic sanity tests to prove we can also write tests in
     # winxed.
     $harness.add_test_dirs("Winxed",
-        "t/winxed_test"
+        "t/winxed_test",
+        "t/template"
     ).setup_test_run();
 
     # Stable library tests
@@ -42,15 +44,13 @@ if (pir::elements(@argv)) {
         "t/filesystem",
         "t/path",
         "t/string",
-        :recurse(1)
+        :recurse(1),
+        :sort(1)
     ).setup_test_run();
 
     # Unstable library tests
     $harness.add_test_dirs("NQP",
         "t/prototype",
-        :recurse(1)
-    ).add_test_dirs("Winxed",
-        "t/template",
         :recurse(1)
     ).setup_test_run();
 }

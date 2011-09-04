@@ -6,6 +6,9 @@ namespace Rosella { namespace Harness { namespace TestRun
     */
     class Factory : Rosella.ObjectFactory
     {
+        const int SORT_ORDER = 1;
+        const int SORT_DEFAULT = 0;
+        const int SORT_DISORDER = 2;
         var testfile_factory;
         var testfile_types;
         var tests;
@@ -35,13 +38,31 @@ namespace Rosella { namespace Harness { namespace TestRun
         // Add a list of directories. Directories are searched, possibly
         // recursively, for a list of test files to run.
         function add_test_dirs(string testfile_type_s, var dirs [slurpy],
-                int recurse [named,optional], int has_recurse [opt_flag])
+                int recurse [named,optional], int has_recurse [opt_flag],
+                int sort [named,optional], int has_sort [opt_flag])
         {
             if (!has_recurse)
                 recurse = 0;
+            if (!has_sort)
+                sort = SORT_DEFAULT;
             var testfile_type = self.testfile_types[testfile_type_s];
             var tests = self.testfile_factory.create_tests_from_dirs(testfile_type, dirs, recurse);
+            if (sort == SORT_ORDER)
+                tests = self.sort_tests(tests);
             self.add_tests(tests);
+        }
+
+        function sort_tests(var tests)
+        {
+            return Rosella.Query.as_queryable(tests).sort(function(_a, _b) {
+                string a = _a.filename();
+                string b = _b.filename();
+                if (a == b)
+                    return 0;
+                if (a < b)
+                    return -1;
+                return 1;
+            }).data();
         }
 
         // Add an individual test file
