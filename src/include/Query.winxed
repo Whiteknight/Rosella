@@ -1,6 +1,28 @@
 namespace Rosella {
     namespace Query {
+        class Provider;
+        class Queryable;
         extern function as_queryable;
+        extern function is_array;
+        extern function is_hash;
+        extern function array_or_hash;
+        extern function default_provider_factory;
+        extern function set_provider_factory;
+
+        namespace Provider {
+            class Array;
+            class Hash;
+            class Scalar;
+            class Factory;
+            extern function get_array_provider;
+            extern function get_hash_provider;
+            extern function get_scalar_provider;
+            extern function qsort;
+        }
+
+        namespace Queryable {
+            class InPlace;
+        }
     }
 }
 
