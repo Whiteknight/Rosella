@@ -161,6 +161,12 @@ namespace Rosella { namespace Query
             return self.as_queryable(data);
         }
 
+        function flatten()
+        {
+            var data = self.provider.flatten(self.data);
+            return self.as_queryable(data);
+        }
+
         //function combine() { }
 
         // Return the data as an array

@@ -199,5 +199,28 @@ namespace Rosella { namespace Query
         {
             Rosella.Error.invalid(__FUNCTION__, "Provider %s does not support .keys()", self.name());
         }
+
+        function flatten(var data)
+        {
+            var results = [];
+            self.__flatten_internal(results, data);
+            return results;
+        }
+
+        function __flatten_internal(var results, var data)
+        {
+            Rosella.Query.array_or_hash(data,
+                function(a) {
+                    for (var item in a)
+                        self.__flatten_internal(results, item);
+                },
+                function(h) {
+                    var a = Rosella.Query.as_queryable(h).to_array().data();
+                    for (var item in a)
+                        self.__flatten_internal(results, item);
+                },
+                function(s) { push(results, s); }
+            );
+        }
     }
 }}
