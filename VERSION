@@ -7,7 +7,7 @@ decorate: 0 Beta
 dumper: 0 Beta
 event: 3 Stable
 filesystem: 1 Stable
-harness: 2 Stable
+harness: 3 Stable
 lazy: 0 Alpha
 memoize: 1 Stable
 mockobject: 2 Stable
