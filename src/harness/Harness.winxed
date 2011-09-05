@@ -44,11 +44,12 @@ namespace Rosella
             return self;
         }
 
-        function setup_test_run(var view [optional], int has_view [opt_flag])
+        function setup_test_run(var view [optional], int has_view [opt_flag],
+                var options [named,slurpy])
         {
             if (!has_view || view == null)
                 view = self.default_view();
-            var run = self.testrun_factory.create();
+            var run = self.testrun_factory.create(options:[flat,named]);
             view.add_run(run, 0);
             push(self.saved_runs, run);
             return run;

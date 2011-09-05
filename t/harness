@@ -19,8 +19,7 @@ if (pir::elements(@argv)) {
     # Core tests (If these fail, we don't attempt anything else)
     $harness.add_test_dirs("NQP",
         "t/core",
-        :sort(1)
-    ).setup_test_run();
+    ).setup_test_run(:sort(1));
 
     # Winxed tests
     # These are some basic sanity tests to prove we can also write tests in
@@ -45,8 +44,7 @@ if (pir::elements(@argv)) {
         "t/path",
         "t/string",
         :recurse(1),
-        :sort(1)
-    ).setup_test_run();
+    ).setup_test_run(:sort(1));
 
     # Unstable library tests
     $harness.add_test_dirs("NQP",

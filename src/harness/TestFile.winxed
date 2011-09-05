@@ -147,7 +147,19 @@ namespace Rosella { namespace Harness
         {
             Rosella.Query.as_queryable(lines)
                 .filter(function(l) { return (l != null && length(l) != 0); })
-                .foreach(function(l) { self.parse_line(l); });
+                .map(function(l) { return new Rosella.Harness.TestFile.Line(l); })
+                .filter(function(lineobj) { return lineobj.ignore() ? false : true; })
+                .foreach(function(lineobj) {
+                    string msg = Rosella.String.sprintf("test %d - %s", lineobj.number(), lineobj.name());
+                    int todo = lineobj.todo();
+                    int success = lineobj.success();
+                    if (success || todo)
+                        self.passed_tests = self.passed_tests + 1;
+                    if (!success && todo)
+                        self.todo_passed.push(msg);
+                    if (!success && !todo)
+                        self.failures.push(msg);
+                });
 
             int num_failures = elements(self.failures);
             if (num_failures == 0)
@@ -155,25 +167,6 @@ namespace Rosella { namespace Harness
             else {
                 self.result = Rosella.String.sprintf("Failed %d / %d", num_failures, self.num_tests);
                 self.status = "FAILED";
-            }
-        }
-
-        function parse_line(string line)
-        {
-            var lineobj = new Rosella.Harness.TestFile.Line(line);
-            if (lineobj.ignore())
-                return;
-            string msg = Rosella.String.sprintf("test %d - %s", lineobj.number(), lineobj.name());
-
-            if (lineobj.success()) {
-                self.passed_tests = self.passed_tests + 1;
-                if (lineobj.todo())
-                    self.todo_passed.push(msg);
-            } else {
-                if (lineobj.todo())
-                    self.passed_tests = self.passed_tests + 1;
-                else
-                    self.failures.push(msg);
             }
         }
     }

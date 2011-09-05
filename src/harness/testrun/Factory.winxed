@@ -18,20 +18,25 @@ namespace Rosella { namespace Harness { namespace TestRun
         function Factory()
         {
             self.ObjectFactory(class Rosella.Harness.TestRun);
-            self.tests = [];
+            self.tests = Rosella.Query.as_queryable([]);
             self.testfile_factory = new Rosella.Harness.TestFile.Factory(class Rosella.Harness.TestFile.Automatic);
-            self.testfile_types   = {};
-            self.testfile_types["Automatic"] = class Rosella.Harness.TestFile.Automatic;
-            self.testfile_types["NQP"]       = class Rosella.Harness.TestFile.NQP;
-            self.testfile_types["PIR"]       = class Rosella.Harness.TestFile.PIR;
-            self.testfile_types["Winxed"]    = class Rosella.Harness.TestFile.Winxed;
+            self.testfile_types = {
+                "Automatic" : class Rosella.Harness.TestFile.Automatic,
+                "NQP"       : class Rosella.Harness.TestFile.NQP,
+                "PIR"       : class Rosella.Harness.TestFile.PIR,
+                "Winxed"    : class Rosella.Harness.TestFile.Winxed
+            };
         }
 
         // Create the TestRun object
-        function create_typed(var testrun_type, var p [slurpy], var n [slurpy,named])
+        function create_typed(var testrun_type, var p [slurpy],
+                int sort [named,optional], int has_sort [opt_flag],
+                var n [slurpy,named])
         {
-            var testrun = Rosella.construct(testrun_type, self.tests);
-            self.tests = [];
+            var sort_routine = self.get_sort_routine(has_sort ? sort : SORT_DEFAULT);
+            var tests = self.tests.sort(sort_routine).to_array().data();
+            var testrun = Rosella.construct(testrun_type, tests);
+            self.tests = Rosella.Query.as_queryable([]);
             return testrun;
         }
 
@@ -41,23 +46,13 @@ namespace Rosella { namespace Harness { namespace TestRun
         // Add a list of directories. Directories are searched, possibly
         // recursively, for a list of test files to run.
         function add_test_dirs(string testfile_type_s, var dirs [slurpy],
-                int recurse [named,optional], int has_recurse [opt_flag],
-                int sort [named,optional], int has_sort [opt_flag])
+                int recurse [named,optional], int has_recurse [opt_flag])
         {
             if (!has_recurse)
                 recurse = 0;
-            if (!has_sort)
-                sort = SORT_DEFAULT;
-            var testfile_type = null;
-            if (testfile_type_s != null && testfile_type_s != "") {
-                if (!(exists self.testfile_types[testfile_type_s]))
-                    Rosella.Error.invalid(__FUNCTION__, "Cannot find test file type %s", testfile_type_s);
-                testfile_type = self.testfile_types[testfile_type_s];
-            }
-            var tests = self.testfile_factory.create_tests_from_dirs(testfile_type, dirs, recurse);
-            if (sort == SORT_ORDER)
-                tests = self.sort_tests(tests);
-            self.add_tests(tests);
+            var testfile_type = self.get_testfile_type(testfile_type_s);
+            var t = self.testfile_factory.create_tests_from_dirs(testfile_type, dirs, recurse);
+            self.tests = self.tests.append(t);
         }
 
         // Add an individual test file
@@ -65,13 +60,7 @@ namespace Rosella { namespace Harness { namespace TestRun
         {
             var testfile_type = self.testfile_types[testfile_type_s];
             var tests = self.testfile_factory.create_tests_from_files(testfile_type, files);
-            self.add_tests(tests);
-        }
-
-        function add_tests(var tests)
-        {
-            for (var test in tests)
-                push(self.tests, test);
+            self.tests = self.tests.append(tests);
         }
 
         // Add a new loader. If a loader exists with the same name, it is
@@ -81,20 +70,40 @@ namespace Rosella { namespace Harness { namespace TestRun
             self.testfile_types[name] = testfile_type;
         }
 
-        /* Internal Helper Routines
+        /* Private helper routines
         */
 
-        function sort_tests(var tests)
+        function get_testfile_type(string name)
         {
-            return Rosella.Query.as_queryable(tests).sort(function(_a, _b) {
-                string a = _a.filename();
-                string b = _b.filename();
-                if (a == b)
-                    return 0;
-                if (a < b)
-                    return -1;
-                return 1;
-            }).data();
+            if (name == null && name == "")
+                return null;
+            if (!(exists self.testfile_types[name]))
+                Rosella.Error.invalid(__FUNCTION__, "Cannot find test file type %s", name);
+            return self.testfile_types[name];
+        }
+
+        function get_sort_routine(int sort)
+        {
+            switch (sort) {
+                case SORT_ORDER:
+                    return function(_a, _b) {
+                        string a = string(_a);
+                        string b = string(_b);
+                        if (a == b)
+                            return 0;
+                        if (a < b)
+                            return -1;
+                        return 1;
+                    };
+                case SORT_DEFAULT:
+                    return function(_a, _b) { return 0; };
+                case SORT_DISORDER:
+                    int i = 0;
+                    return function(_a, _b) {
+                        i = (i + 1) % 3;
+                        return i - 1;
+                    };
+            }
         }
     }
 }}}
