@@ -9,13 +9,9 @@ namespace Rosella { namespace Harness { namespace TestFile
 
         function compile_test(string filename)
         {
+            var file = new Rosella.FileSystem.File(filename);
+            string code = file.read_all_text();
             var compiler = compreg('NQP-rx');
-            var handle = new "FileHandle";
-            handle.open(filename, 'r');
-
-            string code = handle.readall();
-            handle.close();
-
             var result = compiler.compile(code);
             return result[0];
         }
