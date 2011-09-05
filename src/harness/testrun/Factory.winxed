@@ -13,6 +13,7 @@ namespace Rosella { namespace Harness { namespace TestRun
         var testfile_types;
         var tests;
 
+        // Constructor
         function Factory()
         {
             self.tests = [];
@@ -25,6 +26,7 @@ namespace Rosella { namespace Harness { namespace TestRun
             self.testfile_types["Winxed"]    = class Rosella.Harness.TestFile.Winxed;
         }
 
+        // Create the TestRun object
         function create_typed(var testrun_type, var p [slurpy], var n [slurpy,named])
         {
             var testrun = Rosella.construct(testrun_type, self.tests);
@@ -57,19 +59,6 @@ namespace Rosella { namespace Harness { namespace TestRun
             self.add_tests(tests);
         }
 
-        function sort_tests(var tests)
-        {
-            return Rosella.Query.as_queryable(tests).sort(function(_a, _b) {
-                string a = _a.filename();
-                string b = _b.filename();
-                if (a == b)
-                    return 0;
-                if (a < b)
-                    return -1;
-                return 1;
-            }).data();
-        }
-
         // Add an individual test file
         function add_test_files(string testfile_type_s, var files [slurpy])
         {
@@ -89,6 +78,22 @@ namespace Rosella { namespace Harness { namespace TestRun
         function add_testfile_type(string name, var testfile_type)
         {
             self.testfile_types[name] = testfile_type;
+        }
+
+        /* Internal Helper Routines
+        */
+
+        function sort_tests(var tests)
+        {
+            return Rosella.Query.as_queryable(tests).sort(function(_a, _b) {
+                string a = _a.filename();
+                string b = _b.filename();
+                if (a == b)
+                    return 0;
+                if (a < b)
+                    return -1;
+                return 1;
+            }).data();
         }
     }
 }}}

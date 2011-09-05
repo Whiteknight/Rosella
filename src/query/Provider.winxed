@@ -195,11 +195,13 @@ namespace Rosella { namespace Query
             return new_data;
         }
 
+        // Return the list of keys of the aggregate
         function keys(var data)
         {
             Rosella.Error.invalid(__FUNCTION__, "Provider %s does not support .keys()", self.name());
         }
 
+        // Flatten a nested structure into a single flat array.
         function flatten(var data)
         {
             var results = [];
@@ -221,6 +223,14 @@ namespace Rosella { namespace Query
                 },
                 function(s) { push(results, s); }
             );
+        }
+
+        // Append the contents of the second array into the first
+        function append(var target, var source)
+        {
+            for (var i in source)
+                push(target, i);
+            return target;
         }
     }
 }}

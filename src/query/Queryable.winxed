@@ -191,6 +191,14 @@ namespace Rosella { namespace Query
             return self.as_queryable(keys);
         }
 
+        function append(var s)
+        {
+            var target = self.provider.to_array(self.data);
+            var source = Rosella.Query.as_queryable(s).to_array().data();
+            var result = self.provider.append(target, source);
+            return self.as_queryable(result);
+        }
+
         /* Vtables and Low-level access
         */
 
