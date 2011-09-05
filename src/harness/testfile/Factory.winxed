@@ -20,8 +20,8 @@ namespace Rosella { namespace Harness { namespace TestFile
         // Make a suitable TestFile object for the given file.
         function create_typed(var type, string filename)
         {
-            if (type == null || type == "")
-                return new Rosella.Harness.TestFile.Automatic(filename);
+            if (type == null)
+                type = self.target_type;
             return Rosella.construct(type, filename);
         }
 

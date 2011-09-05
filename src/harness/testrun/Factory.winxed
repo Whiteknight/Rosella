@@ -17,12 +17,12 @@ namespace Rosella { namespace Harness { namespace TestRun
         {
             self.tests = [];
             self.ObjectFactory(class Rosella.Harness.TestRun);
-            // We need a default type for the testfile factory. NQP is as good a default as any, for now
-            self.testfile_factory         = new Rosella.Harness.TestFile.Factory(class Rosella.Harness.TestFile.NQP);
-            self.testfile_types           = {};
-            self.testfile_types["NQP"]    = class Rosella.Harness.TestFile.NQP;
-            self.testfile_types["PIR"]    = class Rosella.Harness.TestFile.PIR;
-            self.testfile_types["Winxed"] = class Rosella.Harness.TestFile.Winxed;
+            self.testfile_factory = new Rosella.Harness.TestFile.Factory(class Rosella.Harness.TestFile.Automatic);
+            self.testfile_types   = {};
+            self.testfile_types["Automatic"] = class Rosella.Harness.TestFile.Automatic;
+            self.testfile_types["NQP"]       = class Rosella.Harness.TestFile.NQP;
+            self.testfile_types["PIR"]       = class Rosella.Harness.TestFile.PIR;
+            self.testfile_types["Winxed"]    = class Rosella.Harness.TestFile.Winxed;
         }
 
         function create_typed(var testrun_type, var p [slurpy], var n [slurpy,named])
@@ -45,7 +45,12 @@ namespace Rosella { namespace Harness { namespace TestRun
                 recurse = 0;
             if (!has_sort)
                 sort = SORT_DEFAULT;
-            var testfile_type = self.testfile_types[testfile_type_s];
+            var testfile_type = null;
+            if (testfile_type_s != null && testfile_type_s != "") {
+                if (!(exists self.testfile_types[testfile_type_s]))
+                    Rosella.Error.invalid(__FUNCTION__, "Cannot find test file type %s", testfile_type_s);
+                testfile_type = self.testfile_types[testfile_type_s];
+            }
             var tests = self.testfile_factory.create_tests_from_dirs(testfile_type, dirs, recurse);
             if (sort == SORT_ORDER)
                 tests = self.sort_tests(tests);

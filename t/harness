@@ -12,8 +12,6 @@ if (pir::elements(@argv)) {
         my $type := "NQP";
         if ($dir eq "template") {
             $type := "Winxed";
-        } elsif ($dir eq "core") {
-            $type := "";
         }
         $harness.add_test_dirs($type, "t/$dir", :recurse(1)).setup_test_run();
     }
