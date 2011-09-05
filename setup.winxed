@@ -149,9 +149,10 @@ function setup_stable_libraries(var rosella)
     );
 
     // A tap harness library for building easy, extensible test harnesses
-    setup_winxed_lib(rosella, "harness", ["Core", "FileSystem", "Query"],
+    setup_winxed_lib(rosella, "harness", ["Core", "FileSystem", "Query", "String"],
         "harness/Harness",
         "harness/TestFile",
+        "harness/testfile/Automatic",
         "harness/testfile/Factory",
         "harness/testfile/Line",
         "harness/testfile/Custom",
