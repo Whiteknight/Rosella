@@ -86,7 +86,7 @@ namespace Rosella
             return self.run_internal(test_runs, view, run_inline, debug);
         }
 
-        // Interal routine to run the harness
+        // Internal routine to run the harness
         function run_internal(var test_runs, var view, int run_inline, int debug)
         {
             for (var test_run in test_runs) {

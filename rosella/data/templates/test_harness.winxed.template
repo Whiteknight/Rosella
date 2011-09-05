@@ -10,9 +10,7 @@ namespace Rosella {
 // Harness Main. Execute tests in directories and display results.
 function harness_main(var args)
 {
-    var factory = new Rosella.Harness.TestRun.Factory();
     var harness = new Rosella.Harness();
-    var view = harness.default_view();
 
     // Default directories. These are executed if none are specified in args
     if (elements(args) == 0) {
@@ -21,11 +19,9 @@ function harness_main(var args)
         ];
     }
 
-    factory.add_test_dirs("Winxed", args:[flat], 1:[named("recurse")]);
-    var run = factory.create();
-    view.add_run(run, 0);
-    harness.run(run, view);
-    view.show_results();
+    harness.add_test_dirs("Automatic", args:[flat], 1:[named("recurse")]).setup_test_run(1:[named("sort")]);
+    harness.run();
+    harness.default_run().show_results();
 }
 
 // Show help message
