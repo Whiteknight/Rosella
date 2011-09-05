@@ -393,4 +393,14 @@ class Test::Query::Queryable {
         $!assert.equal(+@r, 9);
         arrays_equal($!assert, @r, [1, 2, 3, 4, 5, 6, 7, 8, 9]);
     }
+
+    # append
+
+    method test_append_array() {
+        my @a := [1, 2, 3];
+        my @b := [4, 5, 6];
+        my @r := Rosella::Query::as_queryable(@a).append(@b).data;
+        $!assert.equal(+@r, 6);
+        arrays_equal($!assert, @r, [1, 2, 3, 4, 5, 6]);
+    }
 }
