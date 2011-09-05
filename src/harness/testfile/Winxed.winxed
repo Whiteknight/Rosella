@@ -1,16 +1,14 @@
 namespace Rosella { namespace Harness { namespace TestFile
 {
+    /* Winxed test compiler
+        This class handles compiling and executing tests written in Winxed
+    */
     class Winxed : Rosella.Harness.TestFile
     {
         function Winxed(var p [slurpy]) { self.TestFile(p:[flat]); }
 
-        //our $have_winxed;
         function compile_test()
         {
-            //if !pir::defined($have_winxed) {
-            //    pir::load_language("winxed");
-            //    $have_winxed = 1;
-            //}
             var winxed = compreg("winxed");
             return winxed.compile_file(self.filename);
         }

@@ -110,6 +110,20 @@ namespace Rosella { namespace FileSystem
             return split(delim, text);
         }
 
+        function read_top_lines(int count, string encoding [optional], int has_e [opt_flag])
+        {
+            var fh;
+            if (has_e && encoding != null)
+                fh = self.open_read(encoding);
+            else
+                fh = self.open_read();
+            var lines = [];
+            for (int i = 0; i < count && !fh.eof(); i++)
+                push(lines, fh.readline_interactive());
+            fh.close();
+            return lines;
+        }
+
         // Write the text to the file. Create the file if it does not exist,
         // overwrite it if it does.
         function write_all_text(string text,

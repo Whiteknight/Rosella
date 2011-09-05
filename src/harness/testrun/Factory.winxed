@@ -1,8 +1,9 @@
 namespace Rosella { namespace Harness { namespace TestRun
 {
-    /* TestRun factory type. Builds TestRun objects, pre-populating them with
-       a list of TestFile objects. The TestRun.Factory contains a
-       TestFile.Factory, which is used to build the actual TestFile objects.
+    /* TestRun factory type.
+        Builds TestRun objects, pre-populating them with a list of TestFile
+        objects. The TestRun.Factory contains a TestFile.Factory, which is
+        used to build the actual TestFile objects.
     */
     class Factory : Rosella.ObjectFactory
     {
@@ -16,8 +17,8 @@ namespace Rosella { namespace Harness { namespace TestRun
         // Constructor
         function Factory()
         {
-            self.tests = [];
             self.ObjectFactory(class Rosella.Harness.TestRun);
+            self.tests = [];
             self.testfile_factory = new Rosella.Harness.TestFile.Factory(class Rosella.Harness.TestFile.Automatic);
             self.testfile_types   = {};
             self.testfile_types["Automatic"] = class Rosella.Harness.TestFile.Automatic;

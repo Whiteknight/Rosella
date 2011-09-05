@@ -43,9 +43,9 @@ namespace Rosella { namespace Harness
         {
             string status = test.status();
             self.results[status].add_file();
-            self.results["FAILED"].add_tests(test.failed_tests());
+            self.results["FAILED"].add_tests(elements(test.list_of_failures()));
             self.results["PASSED"].add_tests(test.passed_tests());
-            int todo_passed = test.todo_passed_tests();
+            int todo_passed = elements(test.list_of_todo_passed());
             self.results["TODOPASSED"].add_tests(todo_passed);
             if (todo_passed > 0)
                 self.results["TODOPASSED"].add_file();
@@ -55,7 +55,7 @@ namespace Rosella { namespace Harness
         function max_file_length(int start_length)
         {
             return Rosella.Query.as_queryable(self.tests)
-                .map(function(t) { return length(t.filename()); })
+                .map(function(t) { return length(string(t)); })
                 .fold(function(int max, int l) { return max > l ? max : l; }, start_length)
                 .data();
         }

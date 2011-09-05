@@ -1,14 +1,17 @@
 namespace Rosella { namespace Harness { namespace TestFile
 {
+    /* NQP Compiler class
+        This class compiles and executes test files written in NQP
+    */
     class NQP : Rosella.Harness.TestFile
     {
         function NQP(var p [slurpy]) { self.TestFile(p:[flat]); }
 
-        function compile_test()
+        function compile_test(string filename)
         {
             var compiler = compreg('NQP-rx');
             var handle = new "FileHandle";
-            handle.open(self.filename, 'r');
+            handle.open(filename, 'r');
 
             string code = handle.readall();
             handle.close();

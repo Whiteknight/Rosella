@@ -12,7 +12,6 @@ namespace Rosella { namespace Harness
         var status;
         var failures;
         var todo_passed;
-        var lines;
         var num_tests;
         var failed_tests;
         var passed_tests;
@@ -29,74 +28,25 @@ namespace Rosella { namespace Harness
             self.status = null;
         }
 
-        function total_tests()
-        {
-            return self.num_tests;
-        }
+        /* Public Accessors
+        */
 
-        function failed_tests()
-        {
-            return int(self.failures);
-        }
+        function total_tests() { return self.num_tests; }
 
-        function passed_tests()
-        {
-            return self.passed_tests;
-        }
+        function passed_tests() { return self.passed_tests; }
 
-        function list_of_failures()
-        {
-            return self.failures;
-        }
+        function list_of_failures() { return self.failures; }
 
-        function list_of_todo_passed()
-        {
-            return self.todo_passed;
-        }
+        function list_of_todo_passed() { return self.todo_passed; }
 
-        function todo_passed_tests()
-        {
-            return int(self.todo_passed);
-        }
+        function status() { return self.status; }
 
-        function filename()
-        {
-            return string(self.filename);
-        }
+        function error_details() { return self.errdetails; }
 
-        function status()
-        {
-            return string(self.status);
-        }
+        function get_string[vtable]() { return string(self.filename); }
 
-        function compile_and_execute(var view, int debug)
-        {
-            var sub = self.compile_test();
-            var stdout = new "StringHandle";
-            stdout.open("blah", "rw");
-            var save_handles = Rosella.IO.swap_handles(
-                {"stdout" : stdout, "stderr" : stdout}
-            );
-            try {
-                sub();
-            } catch(e) {
-                self.mark_test_abort(e);
-                view.debug(debug, e["message"]);
-            }
-            string output = stdout.readall();
-            Rosella.IO.swap_handles(save_handles);
-            self.lines = split("\n", output);
-        }
-
-        function compile_test()
-        {
-            Rosella.Error.must_subclass(__CLASS__);
-        }
-
-        function error_details()
-        {
-            return self.errdetails;
-        }
+        /* Helper and Status routines
+        */
 
         function mark_test_abort(var err)
         {
@@ -111,84 +61,101 @@ namespace Rosella { namespace Harness
             self.status = "EMPTY";
         }
 
+        /* Compile and execute routines
+        */
+
+        function compile_and_execute(string filename, var view, int debug)
+        {
+            var sub = self.compile_test(filename);
+            string output = Rosella.IO.capture_output(1, sub,
+                function(e) {
+                    self.mark_test_abort(e);
+                    view.debug(debug, e["message"]);
+                }
+            );
+            return split("\n", output);
+        }
+
+        function compile_test(string filename)
+        {
+            Rosella.Error.must_subclass(__CLASS__);
+        }
+
         function setup_spawn(string filename) { return filename; }
         function cleanup_spawn(string filename) { }
-
-        function spawn_and_execute(var view, int debug)
-        {
-            string filename = self.setup_spawn(self.filename);
-            if (filename == null) {
-                self.lines = [];
-                return;
-            }
-            var pipe = new "FileHandle";
-            pipe.encoding('utf8');
-            string cmd = self.get_spawn_command(filename);
-            pipe.open(cmd, "rp");
-            string output = pipe.readall();
-            pipe.close();
-            self.cleanup_spawn(filename);
-            int exit_status = pipe.exit_status();
-            if (exit_status != 0)
-                self.mark_test_abort("Test aborted with exit code " + exit_status);
-            self.lines = split("\n", output);
-        }
 
         function get_spawn_command()
         {
             Rosella.Error.must_subclass(__CLASS__);
         }
 
+        function spawn_and_execute(var view, int debug)
+        {
+            string filename = self.setup_spawn(self.filename);
+            if (filename == null)
+                return [];
+            string cmd = self.get_spawn_command(filename);
+            string output = Rosella.IO.execute_pipe(cmd, function(ec) {
+                self.mark_test_abort("Test aborted with exit code " + string(ec));
+            });
+            self.cleanup_spawn(filename);
+            return split("\n", output);
+        }
+
         function run(var view, int debug, int run_inline)
         {
+            var lines;
             if (run_inline)
-                self.compile_and_execute(view, debug);
+                lines = self.compile_and_execute(view, debug);
             else
-                self.spawn_and_execute(view, debug);
+                lines = self.spawn_and_execute(view, debug);
 
             if (self.status == null || self.status != "ABORTED") {
-                if (self.has_tap_output()) {
-                    self.get_plan();
-                    self.parse();
+                if (self.has_tap_output(lines)) {
+                    self.num_tests = self.get_plan(lines);
+                    self.parse(lines);
                 }
                 else
                     self.mark_test_empty();
             }
         }
 
-        // TODO: A more robust check
-        function has_tap_output()
+        /* TAP Parsing routines
+        */
+
+        // TODO: Refactor most of this out into a separate TAP parser class
+
+        function has_tap_output(var lines)
         {
-            if (int(self.lines) < 2)
-                return 0;
-            return 1;
+            return (elements(lines) >= 2) ? true : false;
         }
 
-        function get_plan()
+        function get_plan(var lines)
         {
-            // TODO: Detect bad plan
-            string plan    = self.lines[0];
+            int num_cclass = Rosella.String.get_character_class("numeric");
+            string plan    = Rosella.String.trim(lines.shift());
             var plan_parts = split("..", plan);
-            self.num_tests  = plan_parts[1];
-            var lines = self.lines;
-            var dummy = null;
-            ${ shift dummy, lines };
-            self.lines = lines;
+            if (elements(plan_parts) != 2 || string(plan_parts[0]) != "1")
+                Rosella.Error.invalid(__FUNCTION__, "Test plan '%s' is not valid", plan);
+            string lim = string(plan_parts[1]);
+            if (Rosella.String.first_not_cclass(lim, num_cclass) != -1)
+                Rosella.Error.invalid(__FUNCTION__, "Number of tests '%s' is not valid", lim);
+            return int(lim);
         }
 
-        // TODO: refactor this out into a TAP parser class
-        function parse()
+        function parse(var lines)
         {
-            for (string line in self.lines) {
-                if (line != null && length(line) != 0)
-                    self.parse_line(line);
-            }
-            if (int(self.failures)) {
-                int num_failures = int(self.failures);
-                self.result = "Failed " + num_failures + " / " + string(self.num_tests);
-                self.status = "FAILED";
-            } else
+            Rosella.Query.as_queryable(lines)
+                .filter(function(l) { return (l != null && length(l) != 0); })
+                .foreach(function(l) { self.parse_line(l); });
+
+            int num_failures = elements(self.failures);
+            if (num_failures == 0)
                 self.status = "PASSED";
+            else {
+                self.result = Rosella.String.sprintf("Failed %d / %d", num_failures, self.num_tests);
+                self.status = "FAILED";
+            }
         }
 
         function parse_line(string line)
@@ -196,7 +163,7 @@ namespace Rosella { namespace Harness
             var lineobj = new Rosella.Harness.TestFile.Line(line);
             if (lineobj.ignore())
                 return;
-            string msg = sprintf("test %d - %s", [lineobj.number(), lineobj.name()]);
+            string msg = Rosella.String.sprintf("test %d - %s", lineobj.number(), lineobj.name());
 
             if (lineobj.success()) {
                 self.passed_tests = self.passed_tests + 1;

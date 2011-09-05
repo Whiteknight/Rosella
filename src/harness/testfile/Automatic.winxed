@@ -6,11 +6,9 @@ namespace Rosella { namespace Harness { namespace TestFile
 
         function get_spawn_command(string filename)
         {
-            string line = (new Rosella.FileSystem.File(filename)).read_all_lines()[0];
-            if (substr(line, 0, 2) == "#!") {
-                string cmd = sprintf("%s %s", [Rosella.String.trim(substr(line, 2)), filename]);
-                return cmd;
-            }
+            string line = (new Rosella.FileSystem.File(filename)).read_top_lines(1)[0];
+            if (substr(line, 0, 2) == "#!")
+                return Rosella.String.sprintf("%s %s", Rosella.String.trim(substr(line, 2)), filename);
             else
                 Rosella.Error.invalid(__FUNCTION__, "Cannot determine how to run test file %s", filename);
         }

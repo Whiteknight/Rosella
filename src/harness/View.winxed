@@ -46,7 +46,7 @@ namespace Rosella { namespace Harness
         // Start an individual test
         function start_test(var test)
         {
-            string filename = test.filename();
+            string filename = string(test);
             int len = length(filename);
             int line_length = self.line_length;
             int diff = line_length - len + 3;

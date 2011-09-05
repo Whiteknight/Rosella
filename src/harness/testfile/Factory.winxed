@@ -49,19 +49,14 @@ namespace Rosella { namespace Harness { namespace TestFile
         // assumed to be valid test files for this loader.
         function create_tests_from_files(var test_type, var filenames)
         {
-            return Rosella.Query.as_queryable(filenames).map(function(filename) {
-                var file = new Rosella.FileSystem.File(filename);
-                if (!file.exists())
-                    Rosella.Error.invalid(__FUNCTION__, "file '%s' does not exist", filename);
-                return self.create_typed(test_type, filename);
-            }).data();
+            return Rosella.Query.as_queryable(filenames)
+                .foreach(function(filename) {
+                    if (!Rosella.FileSystem.is_file(filename))
+                        Rosella.Error.invalid(__FUNCTION__, "file '%s' does not exist or is not a file", filename);
+                })
+                .map(function(filename) { return self.create_typed(test_type, filename); })
+                .data();
         }
-
-        // Determine if the file is a valid test. Probably best to override this in
-        // a subclass if you need different behaviors.
-        // TODO: Maybe read the shebang preamble to make sure we have the
-        //       correct type of file.
-
     }
 }}}
 

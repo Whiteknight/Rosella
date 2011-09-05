@@ -1,24 +1,25 @@
+$include_const "iglobals.pasm";
+
 namespace Rosella { namespace Harness { namespace TestFile
 {
+    /* PIR Test file
+        This class compiles and executes test files written in PIR
+    */
     class PIR : Rosella.Harness.TestFile
     {
         function PIR(var p [slurpy]) { self.TestFile(p:[flat]); }
 
-        function compile_test()
+        function compile_test(string filename)
         {
             var compiler = compreg("PIR");
-            var handle = new "FileHandle";
-            handle.open(self.filename, 'r');
-            string code = handle.readall();
-            handle.close();
-            var result = compiler(code);
-            return result[0];
+            var packfile = compiler.compile_file(filename);
+            return packfile.main_sub();
         }
 
         function get_spawn_command(string filename)
         {
-            // TODO: be more generic
-            return "parrot " + filename;
+            string exe_name = getinterp()[IGLOBALS_EXECUTABLE];
+            return Rosella.String.sprintf("%s %s", exe_name, filename);
         }
     }
 }}}
