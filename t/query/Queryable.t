@@ -384,4 +384,13 @@ class Test::Query::Queryable {
     method test_keys_scalar() {
         $!status.unimplemented("tests for .keys()");
     }
+
+    # flatten
+
+    method test_flatten_array() {
+        my @d := [[1,2,3],[[4],[5],[6,7,8]], 9];
+        my @r := Rosella::Query::as_queryable(@d).flatten.data;
+        $!assert.equal(+@r, 9);
+        arrays_equal($!assert, @r, [1, 2, 3, 4, 5, 6, 7, 8, 9]);
+    }
 }
