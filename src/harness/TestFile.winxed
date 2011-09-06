@@ -1,80 +1,16 @@
 namespace Rosella { namespace Harness
 {
-    // TODO: Can we break the post-run status information out into a separate
-    //       data type?
-    // TODO: This needs a major refactor. Break out unrelated bits of logic
-    //       into subclasses or delegate classes
     class TestFile
     {
         var filename;
-        var result;
-        var errdetails;
-        var status;
-        var failures;
-        var todo_passed;
-        var num_tests;
-        var failed_tests;
-        var passed_tests;
 
         function TestFile(string filename)
         {
             self.filename = filename;
-            self.failed_tests = 0;
-            self.passed_tests = 0;
-            self.failures = [];
-            self.todo_passed = [];
-            self.result = null;
-            self.errdetails = null;
-            self.status = null;
-        }
-
-        /* Public Accessors
-        */
-
-        function total_tests() { return self.num_tests; }
-
-        function passed_tests() { return self.passed_tests; }
-
-        function list_of_failures() { return self.failures; }
-
-        function list_of_todo_passed() { return self.todo_passed; }
-
-        function status() { return self.status; }
-
-        function error_details() { return self.errdetails; }
-
-        function get_string[vtable]() { return string(self.filename); }
-
-        /* Helper and Status routines
-        */
-
-        function mark_test_abort(var err)
-        {
-            self.result = "aborted prematurely";
-            self.errdetails = err;
-            self.status = "ABORTED";
-        }
-
-        function mark_test_empty()
-        {
-            self.result = "no TAP output";
-            self.status = "EMPTY";
         }
 
         /* Compile and execute routines
         */
-
-        function compile_and_execute(string filename, var view, int debug)
-        {
-            var sub = self.compile_test(filename);
-            string output = Rosella.IO.capture_output(1, sub,
-                function(e) {
-                    self.mark_test_abort(e);
-                    view.debug(debug, e["message"]);
-                }
-            );
-            return split("\n", output);
-        }
 
         function compile_test(string filename)
         {
@@ -82,92 +18,12 @@ namespace Rosella { namespace Harness
         }
 
         function setup_spawn(string filename) { return filename; }
-        function cleanup_spawn(string filename) { }
 
         function get_spawn_command()
         {
             Rosella.Error.must_subclass(__CLASS__);
         }
 
-        function spawn_and_execute(var view, int debug)
-        {
-            string filename = self.setup_spawn(self.filename);
-            if (filename == null)
-                return [];
-            string cmd = self.get_spawn_command(filename);
-            string output = Rosella.IO.execute_pipe(cmd, function(ec) {
-                self.mark_test_abort("Test aborted with exit code " + string(ec));
-            });
-            self.cleanup_spawn(filename);
-            return split("\n", output);
-        }
-
-        function run(var view, int debug, int run_inline)
-        {
-            var lines;
-            if (run_inline)
-                lines = self.compile_and_execute(view, debug);
-            else
-                lines = self.spawn_and_execute(view, debug);
-
-            if (self.status == null || self.status != "ABORTED") {
-                if (self.has_tap_output(lines)) {
-                    self.num_tests = self.get_plan(lines);
-                    self.parse(lines);
-                }
-                else
-                    self.mark_test_empty();
-            }
-        }
-
-        /* TAP Parsing routines
-        */
-
-        // TODO: Refactor most of this out into a separate TAP parser class
-
-        function has_tap_output(var lines)
-        {
-            return (elements(lines) >= 2) ? true : false;
-        }
-
-        function get_plan(var lines)
-        {
-            int num_cclass = Rosella.String.get_character_class("numeric");
-            string plan    = Rosella.String.trim(lines.shift());
-            var plan_parts = split("..", plan);
-            if (elements(plan_parts) != 2 || string(plan_parts[0]) != "1")
-                Rosella.Error.invalid(__FUNCTION__, "Test plan '%s' is not valid", plan);
-            string lim = string(plan_parts[1]);
-            if (Rosella.String.first_not_cclass(lim, num_cclass) != -1)
-                Rosella.Error.invalid(__FUNCTION__, "Number of tests '%s' is not valid", lim);
-            return int(lim);
-        }
-
-        function parse(var lines)
-        {
-            Rosella.Query.as_queryable(lines)
-                .filter(function(l) { return (l != null && length(l) != 0); })
-                .map(function(l) { return new Rosella.Harness.TestFile.Line(l); })
-                .filter(function(lineobj) { return lineobj.ignore() ? false : true; })
-                .foreach(function(lineobj) {
-                    string msg = Rosella.String.sprintf("test %d - %s", lineobj.number(), lineobj.name());
-                    int todo = lineobj.todo();
-                    int success = lineobj.success();
-                    if (success || todo)
-                        self.passed_tests = self.passed_tests + 1;
-                    if (!success && todo)
-                        self.todo_passed.push(msg);
-                    if (!success && !todo)
-                        self.failures.push(msg);
-                });
-
-            int num_failures = elements(self.failures);
-            if (num_failures == 0)
-                self.status = "PASSED";
-            else {
-                self.result = Rosella.String.sprintf("Failed %d / %d", num_failures, self.num_tests);
-                self.status = "FAILED";
-            }
-        }
+        function cleanup_spawn(string filename) { }
     }
 }}

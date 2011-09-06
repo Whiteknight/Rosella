@@ -1,0 +1,69 @@
+namespace Rosella { namespace Harness
+{
+    class FileResult
+    {
+        var file;
+        var result;
+        var errdetails;
+        var status;
+        var failures;
+        var todo_passed;
+        var num_tests;
+
+        function FileResult(var file)
+        {
+            self.file = file;
+            self.failures = [];
+            self.todo_passed = [];
+            self.result = "PASSED";
+            self.errdetails = null;
+            self.status = null;
+        }
+
+        /* Public Accessors
+        */
+
+        function total_tests() { return self.num_tests; }
+
+        function passed_tests() { return self.passed_tests; }
+
+        function list_of_failures() { return self.failures; }
+
+        function list_of_todo_passed() { return self.todo_passed; }
+
+        function status() { return self.status; }
+
+        function error_details() { return self.errdetails; }
+
+        function get_string[vtable]() { return string(self.filename); }
+
+        /* Helper and Status routines
+        */
+
+        function mark_test_abort(var err)
+        {
+            self.result = "aborted prematurely";
+            self.errdetails = err;
+            self.status = "ABORTED";
+        }
+
+        function mark_test_empty()
+        {
+            self.result = "no TAP output";
+            self.status = "EMPTY";
+        }
+
+        function add_pass(int num, int todo)
+        {
+        }
+
+        function add_fail(int num, int todo)
+        {
+            self.result = "FAILED";
+        }
+
+        function set_plan(int num)
+        {
+        }
+    }
+}}

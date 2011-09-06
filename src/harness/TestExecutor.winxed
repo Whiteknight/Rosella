@@ -1,0 +1,54 @@
+namespace Rosella { namespace Harness
+{
+    class TestExecutor
+    {
+        const int MODE_SPAWN_EXECUTE = 0;
+        const int MODE_COMPILE_INLINE = 1;
+
+        var mode;
+
+        function TestExecutor(int mode)
+        {
+            self.mode = mode;
+        }
+
+        function compile_and_execute(var view, var file, var result, int debug)
+        {
+            var sub = file.compile_test();
+            string output = Rosella.IO.capture_output(1, sub,
+                function(e) {
+                    result.mark_test_abort(e);
+                    view.debug(debug, e["message"]);
+                }
+            );
+            return output;
+        }
+
+        function spawn_and_execute(var view, var file, var result, int debug)
+        {
+            string filename = file.setup_spawn();
+            if (filename == null)
+                return "";
+            string cmd = self.get_spawn_command(filename);
+            string output = Rosella.IO.execute_pipe(cmd, function(ec) {
+                result.mark_test_abort("Test aborted with exit code " + string(ec));
+            });
+            self.cleanup_spawn(filename);
+            return output;
+        }
+
+        function run(var view, var file, var parser, int debug)
+        {
+            var result = new Rosella.Harness.FileResult(file);
+            var text;
+            if (int(mode) == MODE_COMPILE_INLINE)
+                text = self.compile_and_execute(view, file, result, debug);
+            else
+                text = self.spawn_and_execute(view, file, result, debug);
+
+            if (result.status == null || result.status != "ABORTED")
+                parser.parse(text, result);
+            return result;
+        }
+    }
+}}
