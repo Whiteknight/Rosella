@@ -62,15 +62,28 @@ namespace Rosella
         function execute_pipe(string cmd,
                 var on_err [optional], int has_err [opt_flag])
         {
-            var pipe = new "FileHandle";
-            pipe.encoding('utf8');
-            pipe.open(cmd, "rp");
+            var pipe = open_pipe(cmd);
             string output = pipe.readall();
-            pipe.close();
-            int exit_status = pipe.exit_status();
+            int exit_status = close_pipe(pipe);
             if (exit_status != 0 && has_err && on_err != null)
                 on_err(exit_status);
             return output;
+        }
+
+        function open_pipe(string cmd)
+        {
+            var pipe = new "FileHandle";
+            pipe.encoding('utf8');
+            pipe.open(cmd, "rp");
+            return pipe;
+        }
+
+        function close_pipe(var pipe)
+        {
+            // TODO: See if we have any more data and empty the buffer
+            pipe.close();
+            int exit_status = pipe.exit_status();
+            return exit_status;
         }
 
         // Convenience routines for performing formatted output
