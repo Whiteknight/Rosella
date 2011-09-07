@@ -75,7 +75,7 @@ namespace Rosella { namespace Harness
         function files_by_status(string status)
         {
             return Rosella.Query.as_queryable(self.tests).filter(function(test) {
-                return test.status() == status;
+                return test.result.status() == status;
             }).data();
         }
 

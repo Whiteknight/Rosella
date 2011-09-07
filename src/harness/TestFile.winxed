@@ -3,6 +3,7 @@ namespace Rosella { namespace Harness
     class TestFile
     {
         var filename;
+        var result;
 
         function TestFile(string filename)
         {
@@ -16,6 +17,11 @@ namespace Rosella { namespace Harness
 
         /* Compile and execute routines
         */
+
+        function set_result(var result)
+        {
+            self.result = result;
+        }
 
         function compile_test(string filename)
         {

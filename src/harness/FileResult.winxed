@@ -4,20 +4,21 @@ namespace Rosella { namespace Harness
     {
         var file;
         var errdetails;
-        var status;
         var failures;
         var todo_passed;
         var num_tests;
         var passed_tests;
+        var status;
 
         function FileResult(var file)
         {
             self.file = file;
-            self.failures = [];
-            self.todo_passed = [];
-            self.errdetails = null;
-            self.status = "PASSED";
+            file.set_result(self);
+            self.failures     = [];
+            self.todo_passed  = [];
             self.passed_tests = [];
+            self.errdetails = null;
+            self.status = null;
         }
 
         /* Public Accessors
@@ -31,7 +32,14 @@ namespace Rosella { namespace Harness
 
         function list_of_todo_passed() { return self.todo_passed; }
 
-        function status() { return self.status; }
+        function status()
+        {
+            if (self.status != null)
+                return self.status;
+            if (elements(self.failures) > 0)
+                return "FAILED";
+            return "PASSED";
+        }
 
         function error_details() { return self.errdetails; }
 
@@ -53,15 +61,26 @@ namespace Rosella { namespace Harness
 
         function add_pass(int num, int todo)
         {
+            string msg = Rosella.String.sprintf("%s test %d", string(self.file), num);
+            if (todo == 1)
+                push(self.todo_passed, msg);
+            else
+                push(self.passed_tests, msg);
         }
 
         function add_fail(int num, int todo)
         {
-            self.status = "FAILED";
+            string msg = Rosella.String.sprintf("%s test %d", string(self.file), num);
+            if (todo == 1)
+                push(self.passed_tests, msg);
+            else
+                push(self.failures, msg);
         }
 
         function set_plan(int num)
         {
+            // TODO: Check bounds. Make sure we run this many tests
+            self.num_tests = num;
         }
     }
 }}
