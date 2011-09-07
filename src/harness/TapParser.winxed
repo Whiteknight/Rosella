@@ -8,9 +8,9 @@ namespace Rosella { namespace Harness
         {
             using Rosella.String.get_character_class;
             self.tokenizer = new Rosella.String.Tokenizer.CClass([
-                get_character_class("alphabetic"),
+                get_character_class("punctuation"),
                 get_character_class("numeric"),
-                get_character_class("punctuation")
+                get_character_class("word")
             ]);
         }
 
@@ -55,13 +55,18 @@ namespace Rosella { namespace Harness
                     else
                         Rosella.Error.invalid(__FUNCTION__, "Unknown TAP sequence: '%s' ('%s', '%s')", join(" ", l), r, l[1]);
                     int num = int(l[i++]);
-                    while(i < elements(l) && l[i] != "#")
+                    if (l[i] == "-")
                         i++;
+                    string name = "";
+                    while(i < elements(l) && l[i] != "#") {
+                        name = name + string(l[i]) + " ";
+                        i++;
+                    }
                     if (i < elements(l) && l[i] == "#" && i + 1 < elements(l) && l[i + 1] == "TODO")
-                        return [num, result, 1];
-                    return [num, result, 0];
+                        return [name, num, result, 1];
+                    return [name, num, result, 0];
                 })
-                .foreach(function(r) { result.*(r[1] == 1 ? "add_pass" : "add_fail")(r[0], r[2]); });
+                .foreach(function(r) { result.*(r[2] == 1 ? "add_pass" : "add_fail")(r[0], r[1], r[3]); });
         }
 
         function get_lines()

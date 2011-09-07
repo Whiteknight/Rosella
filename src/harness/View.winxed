@@ -136,8 +136,9 @@ namespace Rosella { namespace Harness
 
             say("\tList of failed tests by file:");
             for (var test in failed_files) {
-                Rosella.IO.sayf("\t\t%s", test.filename());
-                for (var failure in test.list_of_failures())
+                Rosella.IO.sayf("\t\t%s", string(test));
+                var result = test.result;
+                for (var failure in result.list_of_failures())
                     Rosella.IO.sayf("\t\t\t%s", failure);
             }
         }
@@ -169,8 +170,9 @@ namespace Rosella { namespace Harness
         function show_result_headline(string result)
         {
             Rosella.IO.sayf("Result: %s", result);
-            Rosella.IO.sayf("\tPassed %d tests in %d files (%d test runs)",
-                self.num_passed_tests, self.total_files, int(self.test_runs)
+            int num_runs = int(self.test_runs);
+            Rosella.IO.sayf("\tPassed %d tests in %d files (%d test run%s)",
+                self.num_passed_tests, self.total_files, num_runs, num_runs == 1 ? "" : "s"
             );
         }
 

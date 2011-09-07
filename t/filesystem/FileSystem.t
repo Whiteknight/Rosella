@@ -23,7 +23,6 @@ class Test::FileSystem {
     }
 
     method is_file() {
-        pir::say(Rosella::FileSystem::Directory::current_directory());
         $!assert.is_true(Rosella::FileSystem::is_file("t/harness"));
         $!assert.is_false(Rosella::FileSystem::is_file("t/WHARBLEGARBLE"));
     }

@@ -59,18 +59,18 @@ namespace Rosella { namespace Harness
             self.status = "EMPTY";
         }
 
-        function add_pass(int num, int todo)
+        function add_pass(string name, int num, int todo)
         {
-            string msg = Rosella.String.sprintf("%s test %d", string(self.file), num);
+            string msg = Rosella.String.sprintf("test %d: %s", num, name);
             if (todo == 1)
                 push(self.todo_passed, msg);
             else
                 push(self.passed_tests, msg);
         }
 
-        function add_fail(int num, int todo)
+        function add_fail(string name, int num, int todo)
         {
-            string msg = Rosella.String.sprintf("%s test %d", string(self.file), num);
+            string msg = Rosella.String.sprintf("test %d: %s", num, name);
             if (todo == 1)
                 push(self.passed_tests, msg);
             else
