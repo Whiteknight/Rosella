@@ -8,7 +8,7 @@ namespace Rosella { namespace Harness
         {
             using Rosella.String.get_character_class;
             self.tokenizer = new Rosella.String.Tokenizer.CClass([
-                get_character_class("word"),
+                get_character_class("alphabetic"),
                 get_character_class("numeric"),
                 get_character_class("punctuation")
             ]);
@@ -53,7 +53,7 @@ namespace Rosella { namespace Harness
                     else if (r == "not" && l[i++] == "ok")
                         result = 0;
                     else
-                        return; // ignore it or throw an error?
+                        Rosella.IO.sayf("Unknown TAP sequence: '%s'", join(" ", r));
                     int num = int(l[i++]);
                     while(i < elements(l) && l[i] != "#")
                         i++;
@@ -69,9 +69,10 @@ namespace Rosella { namespace Harness
             int cclass_whitespace = Rosella.String.get_character_class("whitespace");
             var lines = [[]];
             int i = 0;
-            while(self.tokenizer.has_token()) {
+            while(self.tokenizer.has_tokens()) {
                 var t = self.tokenizer.get_token();
                 string d = t.data();
+                Rosella.IO.sayf("'%s' : %d", d, int(t.metadata()));
                 if (indexof("\n", d) != -1) {
                     i++;
                     lines[i] = [];

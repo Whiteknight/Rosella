@@ -58,7 +58,7 @@ namespace Rosella { namespace Harness
         function end_test(var result)
         {
             if (result.status() != "PASSED")
-                Rosella.IO.sayf("not ok (%s)", result);
+                Rosella.IO.sayf("not ok (%s)", self.get_result_status(result));
             else
                 say("ok");
             string error_details = result.error_details();
@@ -66,6 +66,25 @@ namespace Rosella { namespace Harness
                 var lines = split("\n", error_details);
                 for (string line in lines)
                     Rosella.IO.sayf("# %s", line);
+            }
+        }
+
+        function get_result_status(var result)
+        {
+            string status = result.status();
+            switch(status) {
+                case "EMPTY":
+                    return "No tests run or no TAP output";
+                case "ABORTED":
+                    return "Test exited prematurely";
+                case "PASSED":
+                    return "All subtests pass";
+                case "FAILED":
+                    int total_tests = result.total_tests();
+                    int failed_tests = elements(result.list_of_failures());
+                    return Rosella.String.sprintf("Failed %d / %d", failed_tests, total_tests);
+                default:
+                    return "Unknown status '" + status + "'";
             }
         }
 

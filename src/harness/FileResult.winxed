@@ -3,7 +3,6 @@ namespace Rosella { namespace Harness
     class FileResult
     {
         var file;
-        var result;
         var errdetails;
         var status;
         var failures;
@@ -16,9 +15,8 @@ namespace Rosella { namespace Harness
             self.file = file;
             self.failures = [];
             self.todo_passed = [];
-            self.result = "PASSED";
             self.errdetails = null;
-            self.status = null;
+            self.status = "PASSED";
             self.passed_tests = [];
         }
 
@@ -44,14 +42,12 @@ namespace Rosella { namespace Harness
 
         function mark_test_abort(var err)
         {
-            self.result = "aborted prematurely";
             self.errdetails = err;
             self.status = "ABORTED";
         }
 
         function mark_test_empty()
         {
-            self.result = "no TAP output";
             self.status = "EMPTY";
         }
 
@@ -61,7 +57,7 @@ namespace Rosella { namespace Harness
 
         function add_fail(int num, int todo)
         {
-            self.result = "FAILED";
+            self.status = "FAILED";
         }
 
         function set_plan(int num)
