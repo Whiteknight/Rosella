@@ -89,12 +89,15 @@ namespace Rosella
         // Internal routine to run the harness
         function run_internal(var test_runs, var view, int run_inline, int debug)
         {
+            var executor = new Rosella.Harness.TestExecutor(run_inline);
+            var parser = new Rosella.Harness.TapParser();
+
             for (var test_run in test_runs) {
                 for (var test in test_run.tests()) {
-                    view.start_test(test);
-                    test.run(view, debug, run_inline);
-                    test_run.update_test_stats(test);
-                    view.end_test(test);
+                    view.start_test(string(test));
+                    var result = executor.run(view, test, parser, debug);
+                    test_run.update_test_stats(result);
+                    view.end_test(result);
                 }
                 test_run.mark_completed();
                 view.test_run_complete(test_run);

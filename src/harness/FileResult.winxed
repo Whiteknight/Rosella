@@ -9,6 +9,7 @@ namespace Rosella { namespace Harness
         var failures;
         var todo_passed;
         var num_tests;
+        var passed_tests;
 
         function FileResult(var file)
         {
@@ -18,6 +19,7 @@ namespace Rosella { namespace Harness
             self.result = "PASSED";
             self.errdetails = null;
             self.status = null;
+            self.passed_tests = [];
         }
 
         /* Public Accessors
@@ -35,7 +37,7 @@ namespace Rosella { namespace Harness
 
         function error_details() { return self.errdetails; }
 
-        function get_string[vtable]() { return string(self.filename); }
+        function get_string[vtable]() { return string(self.file); }
 
         /* Helper and Status routines
         */

@@ -6,7 +6,7 @@ namespace Rosella { namespace Harness
 
         function TapParser()
         {
-            using Rosella.String.get_cclass;
+            using Rosella.String.get_character_class;
             self.tokenizer = new Rosella.String.Tokenizer.CClass([
                 get_character_class("word"),
                 get_character_class("numeric"),
@@ -24,7 +24,7 @@ namespace Rosella { namespace Harness
             self.parse_internal(result);
         }
 
-        function get_plan(var lines, var result)
+        function get_plan(var result)
         {
             if (self.tokenizer.get_token().data() != "1" ||
                 self.tokenizer.get_token().data() != "..")
@@ -32,7 +32,7 @@ namespace Rosella { namespace Harness
 
             int num_cclass = Rosella.String.get_character_class("numeric");
             var plan_t = self.tokenizer.get_token();
-            if (plan_t.type() != num_cclass || indexof("\n", self.tokenizer.get_token().data()) == -1)
+            if (plan_t.metadata() != num_cclass || indexof("\n", self.tokenizer.get_token().data()) == -1)
                 return false;
 
             string lim = plan_t.data();

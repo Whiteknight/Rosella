@@ -39,13 +39,13 @@ namespace Rosella { namespace Harness
         }
 
         // Update statistics about the test, after the test has been run.
-        function update_test_stats(var test)
+        function update_test_stats(var result)
         {
-            string status = test.status();
+            string status = result.status();
             self.results[status].add_file();
-            self.results["FAILED"].add_tests(elements(test.list_of_failures()));
-            self.results["PASSED"].add_tests(test.passed_tests());
-            int todo_passed = elements(test.list_of_todo_passed());
+            self.results["FAILED"].add_tests(elements(result.list_of_failures()));
+            self.results["PASSED"].add_tests(result.passed_tests());
+            int todo_passed = elements(result.list_of_todo_passed());
             self.results["TODOPASSED"].add_tests(todo_passed);
             if (todo_passed > 0)
                 self.results["TODOPASSED"].add_file();

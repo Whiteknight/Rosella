@@ -9,6 +9,11 @@ namespace Rosella { namespace Harness
             self.filename = filename;
         }
 
+        function get_string[vtable]()
+        {
+            return string(self.filename);
+        }
+
         /* Compile and execute routines
         */
 
@@ -17,7 +22,7 @@ namespace Rosella { namespace Harness
             Rosella.Error.must_subclass(__CLASS__);
         }
 
-        function setup_spawn(string filename) { return filename; }
+        function setup_spawn() { return string(self.filename); }
 
         function get_spawn_command()
         {
