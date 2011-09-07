@@ -37,7 +37,7 @@ namespace Rosella { namespace Harness
             return output;
         }
 
-        function run(var view, var file, var parser, int debug)
+        function run(var view, var file, var parser, int mode, int debug)
         {
             var result = new Rosella.Harness.FileResult(file);
             var text;
