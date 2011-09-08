@@ -28,9 +28,8 @@ namespace Rosella { namespace Template { namespace Node
             ];
             var tokenizer = new Rosella.String.Tokenizer.CClass(cclasses);
             tokenizer.add_data(text);
-            var tokens_raw = tokenizer.all_tokens();
             var tokens = [];
-            for (var token in tokens_raw) {
+            for (var token in tokenizer) {
                 if (int(token.metadata()) != CCLASS_WHITESPACE)
                     push(tokens, token.data());
             }

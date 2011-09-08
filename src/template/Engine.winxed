@@ -135,8 +135,7 @@ namespace Rosella { namespace Template
         {
             var nodes_array = [];
             tokenizer.add_data(tmpl);
-            while (tokenizer.has_tokens()) {
-                var t = tokenizer.get_token();
+            for (var t in tokenizer) {
                 var node = node_factory.create(t);
                 push(nodes_array, node);
             }
