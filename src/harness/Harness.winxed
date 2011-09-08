@@ -96,7 +96,6 @@ namespace Rosella
                 for (var test in test_run.tests()) {
                     view.start_test(string(test));
                     var result = executor.run(view, test, parser, debug);
-                    test_run.update_test_stats(result);
                     view.end_test(result);
                 }
                 test_run.mark_completed();

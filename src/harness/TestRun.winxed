@@ -9,21 +9,12 @@ namespace Rosella { namespace Harness
     class TestRun
     {
         var tests;
-        var results;
         var executed;
 
         // Constructor. Setup the test run with all the necessary bookkeeping.
         function TestRun(var tests)
         {
             self.tests = tests;
-            self.results = {
-                "ABORTED"    : new Rosella.Harness.TestRun.ResultSet(),
-                "PASSED"     : new Rosella.Harness.TestRun.ResultSet(),
-                "FAILED"     : new Rosella.Harness.TestRun.ResultSet(),
-                "EMPTY"      : new Rosella.Harness.TestRun.ResultSet(),
-                "TODOPASSED" : new Rosella.Harness.TestRun.ResultSet(),
-                "TODOFAILED" : new Rosella.Harness.TestRun.ResultSet()
-            };
             self.executed = 0;
         }
 
@@ -38,19 +29,6 @@ namespace Rosella { namespace Harness
             return self.tests;
         }
 
-        // Update statistics about the test, after the test has been run.
-        function update_test_stats(var result)
-        {
-            string status = result.status();
-            self.results[status].add_file();
-            self.results["FAILED"].add_tests(elements(result.list_of_failures()));
-            self.results["PASSED"].add_tests(result.passed_tests());
-            int todo_passed = elements(result.list_of_todo_passed());
-            self.results["TODOPASSED"].add_tests(todo_passed);
-            if (todo_passed > 0)
-                self.results["TODOPASSED"].add_file();
-        }
-
         // Determine the maximum file length of tests in the run.
         function max_file_length(int start_length)
         {
@@ -63,34 +41,48 @@ namespace Rosella { namespace Harness
         // Returns 1 if the run was a success, 0 otherwise
         function run_was_success()
         {
-            int num_aborted_files = self.num_files_by_status("ABORTED");
-            int num_failed_files = self.num_files_by_status("FAILED");
-            if (num_aborted_files == 0 && num_failed_files == 0)
-                return 1;
-            return 0;
+            return Rosella.Query.as_queryable(self.tests)
+                .map(function(t) { return t.result.status(); })
+                .any(function(s) { return s == "ABORTED" || s == "FAILED"; })
+                ? false : true;
         }
 
         // Get a list of all files with the given status. Status is a string,
         // one of "ABORTED", "PASSED", or "FAILED"
         function files_by_status(string status)
         {
-            return Rosella.Query.as_queryable(self.tests).filter(function(test) {
-                return test.result.status() == status;
-            }).data();
+            return Rosella.Query.as_queryable(self.tests)
+                .filter(function(test) { return test.result.status() == status; })
+                .data();
         }
 
         // Get the number of tests by status. Status is a string, one of
         // "ABORTED", "PASSED", "FAILED", or "TODOPASSED"
         function num_files_by_status(string status)
         {
-            return self.results[status].num_files;
+            return Rosella.Query.as_queryable(self.tests)
+                .map(function(t) { return t.result.status(); })
+                .count(function(s) { return s == status; });
         }
 
         // Get the number of tests by status. Status is a string, one of
         // "PASSED", "FAILED", or "TODOPASSED"
         function num_tests_by_status(string status)
         {
-            return self.results[status].num_tests;
+            return Rosella.Query.as_queryable(self.tests)
+                .map(function(t) { return t.result; })
+                .map(function(r) {
+                    switch (status) {
+                        case "PASSED":
+                            return r.passed_tests();
+                        case "FAILED":
+                            return r.list_of_failures();
+                        case "TODOPASSED":
+                            return r.list_of_todo_passed();
+                    }
+                })
+                .flatten()
+                .count();
         }
 
         // Get the total number of test files in the collection
@@ -102,7 +94,7 @@ namespace Rosella { namespace Harness
         // Mark the run as being complete
         function mark_completed()
         {
-            self.executed = 1;
+            self.executed = true;
         }
 
         // Determine if the run is complete

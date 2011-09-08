@@ -161,7 +161,6 @@ function setup_stable_libraries(var rosella)
         "harness/testfile/PIR",
         "harness/testfile/Winxed",
         "harness/TestRun",
-        "harness/testrun/ResultSet",
         "harness/testrun/Factory",
         "harness/View"
     );
