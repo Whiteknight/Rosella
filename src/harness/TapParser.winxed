@@ -55,6 +55,8 @@ namespace Rosella { namespace Harness
                     else
                         Rosella.Error.invalid(__FUNCTION__, "Unknown TAP sequence: '%s' ('%s', '%s')", join(" ", l), r, l[1]);
                     int num = int(l[i++]);
+                    if (i >= elements(l))
+                        return ["", num, result, 0];
                     if (l[i] == "-")
                         i++;
                     string name = "";
