@@ -1,0 +1,64 @@
+namespace Rosella.FileSystem
+{
+    class FileIterator
+    {
+        var file;
+        var handle;
+
+        function FileIterator(var file)
+        {
+            if (file instanceof Rosella.FileSystem.File)
+                self.file = file;
+            else if (file instanceof "Handle") {
+                if (file.is_closed())
+                    Rosella.Error.invalid(__FUNCTION__, "Handle object must be open in FileIterator");
+                self.handle = file;
+            } else
+                Rosella.Error.invalid(__FUNCTION__, "Unknown object '%s'. Expected Rosella.FileSystem.File or parrot.Handle");
+        }
+
+        function close()
+        {
+            if (self.handle != null && !self.handle.is_closed())
+                self.handle.close();
+            say("Closed");
+        }
+
+        function FileIterator(string filename)
+        {
+            var f = new Rosella.FileSystem.File(filename);
+            self.FileIterator(f);
+        }
+
+        function get_bool[vtable]()
+        {
+            if (self.handle == null)
+                self.handle = self.file.open_read();
+            if (self.handle.eof()) {
+                self.close();
+                return false;
+            }
+            return true;
+        }
+
+        function shift_string[vtable]()
+        {
+            if (self.handle == null)
+                self.handle = self.file.open_read();
+            string line = self.handle.readline_interactive();
+            if (line == null)
+                return "";
+            return line;
+        }
+
+        function shift_pmc[vtable]()
+        {
+            if (self.handle == null)
+                self.handle = self.file.open_read();
+            string line = self.handle.readline_interactive();
+            if (line == null)
+                return "";
+            return line;
+        }
+    }
+}

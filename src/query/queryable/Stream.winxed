@@ -2,7 +2,6 @@ namespace Rosella.Query.Queryable
 {
     class Stream : Rosella.Query.Queryable
     {
-        var iterator;
         var last_stage;
         var source_stage;
         var output_cache;
@@ -20,6 +19,16 @@ namespace Rosella.Query.Queryable
             var value;
             :(is_valid, value) = self.last_stage.next();
             return is_valid, value;
+        }
+
+        function on_iterator(var f)
+        {
+            f(self.source_stage.iterator);
+        }
+
+        function on_data(var f)
+        {
+            f(self.data);
         }
 
         /* Queryable API
@@ -154,14 +163,20 @@ namespace Rosella.Query.Queryable
         // prediate
         function take(int count, var func [optional], int has_func [opt_flag])
         {
-            // TODO
+            if (!has_func)
+                func = null;
+            self.last_stage = new Rosella.Query.Stage.Take(self.last_stage, func, count);
+            return self;
         }
 
         // Return all but the first N elements. If a predicate is provided,
         // return all by the first N elements which satisfy the predicate.
         function skip(int count, var func [optional], int has_func [opt_flag])
         {
-            // TODO
+            if (!has_func)
+                func = null;
+            self.last_stage = new Rosella.Query.Stage.Skip(self.last_stage, func, count);
+            return self;
         }
 
         function flatten()
