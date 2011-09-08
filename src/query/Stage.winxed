@@ -1,0 +1,154 @@
+namespace Rosella.Query
+{
+    class Stage
+    {
+        var previous;
+        var func;
+
+        function Stage(var prev, var func)
+        {
+            self.previous = prev;
+            self.func = func;
+        }
+
+        function next()
+        {
+            Rosella.Error.must_subclass(__CLASS__);
+        }
+
+        function gobble_all()
+        {
+            var d = [];
+            :(int is_valid, var value) = self.previous.next();
+            if (!is_valid)
+                return null;
+            while (is_valid) {
+                push(d, value);
+                :(is_valid, value) = self.previous.next();
+            }
+            return d;
+        }
+    }
+
+    namespace Stage
+    {
+        class Source : Rosella.Query.Stage
+        {
+            var iterator;
+            function Source(var data)
+            {
+                var i;
+                ${ iter i, data };
+                self.iterator = i;
+            }
+
+            function next()
+            {
+                if (self.iterator) {
+                    var d;
+                    var i = self.iterator;
+                    ${ shift d, i };
+                    return true, d;
+                }
+                return false, null;
+            }
+        }
+
+        class ForEach : Rosella.Query.Stage
+        {
+            function ForEach(var p, var f) { self.Stage(p, f); }
+
+            function next()
+            {
+                :(var is_valid, var value) = self.previous.next();
+                if (!is_valid)
+                    return false, null;
+                var(self.func)(value);
+                return true, value;
+            }
+        }
+
+        class Tap : Rosella.Query.Stage
+        {
+            var cache;
+            function Tap(var p, var f) { self.Stage(p, f); }
+
+            function next()
+            {
+                if (self.cache == null)
+                    self.cache = self.gobble_all();
+                if (elements(self.cache) == 0)
+                    return false, null;
+                return true, self.cache.shift();
+            }
+        }
+
+        class Map : Rosella.Query.Stage
+        {
+            function Map(var p, var f) { self.Stage(p, f); }
+
+            function next()
+            {
+                :(int is_valid, var value) = self.previous.next();
+                if (!is_valid)
+                    return false, null;
+                var f = self.func;
+                return true, f(value);
+            }
+        }
+
+        class Filter : Rosella.Query.Stage
+        {
+            function Filter(var p, var f) { self.Stage(p, f); }
+
+            function next()
+            {
+                :(int is_valid, var value) = self.previous.next();
+                if (!is_valid)
+                    return false, null;
+                return var(self.func)(value), value;
+            }
+        }
+
+        class Fold : Rosella.Query.Stage
+        {
+            var seed;
+            function Fold(var p, var f, var seed)
+            {
+                self.Stage(p, f);
+                self.seed = seed;
+            }
+
+            function next()
+            {
+                var d = self.gobble_all();
+                if (d == null || elements(d) == 0)
+                    return false, null;
+                var value = self.seed;
+                var f = self.func;
+                for (int i = 0; i < elements(d); i++)
+                    value = f(value, d[i]);
+                return true, value;
+            }
+        }
+
+        class Sort : Rosella.Query.Stage
+        {
+            var cache;
+            function Sort(var p, var f) { self.Stage(p, f); }
+
+            function next()
+            {
+                if (self.cache == null) {
+                    var d = self.gobble_all();
+                    Rosella.Query.Provider.qsort(d, 0, elements(d), self.func);
+                    self.cache = d;
+                }
+
+                if (elements(self.cache) == 0)
+                    return false, null;
+                return true, self.cache.shift();
+            }
+        }
+    }
+}

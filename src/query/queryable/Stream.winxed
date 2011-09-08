@@ -1,0 +1,186 @@
+namespace Rosella.Query.Queryable
+{
+    class Stream : Rosella.Query.Queryable
+    {
+        var iterator;
+        var last_stage;
+        var source_stage;
+        var output_cache;
+
+        function Stream(var data)
+        {
+            self.data = data;
+            self.source_stage = self.last_stage = new Rosella.Query.Stage.Source(data);
+            self.output_cache = [];
+        }
+
+        function get_next()
+        {
+            int is_valid;
+            var value;
+            :(is_valid, value) = self.last_stage.next();
+            return is_valid, value;
+        }
+
+        /* Queryable API
+            These routines are used to create and manipulate Queryables
+        */
+
+        // Get the raw data back
+        function data()
+        {
+            var d = [];
+            int is_valid;
+            var item;
+            :(is_valid, item) = self.get_next();
+            while (is_valid) {
+                push(d, item);
+                :(is_valid, item) = self.get_next();
+            }
+            return d;
+        }
+
+        function has_more()
+        {
+            if (elements(self.cache) > 0)
+                return true;
+            int is_valid;
+            var item;
+            :(is_valid, item) = self.get_next();
+            if (is_valid)
+                push(self.cache, item);
+            return is_valid;
+        }
+
+        function next()
+        {
+            if (elements(self.cache) > 0)
+                return self.cache.shift();
+            int is_valid;
+            var item;
+            :(is_valid, item) = self.get_next();
+            if (!is_valid)
+                Rosella.Error.invalid(__FUNCTION__, "Cannot get next from empty iterable");
+            return item;
+        }
+
+        /* Query Routines
+        */
+
+        // Perform some action for every element in the aggregate
+        function foreach(var func)
+        {
+            self.last_stage = new Rosella.Query.Stage.ForEach(self.last_stage, func);
+            return self;
+        }
+
+        // Perform a callback on the current value of the data
+        function tap(var func)
+        {
+            self.last_stage = new Rosella.Query.Stage.Tap(self.last_stage, func);
+            return self;
+        }
+
+        // Return a new aggregate where each element is a function of the
+        // elements in the data
+        function map(var func)
+        {
+            self.last_stage = new Rosella.Query.Stage.Map(self.last_stage, func);
+            return self;
+        }
+
+        // Return a new aggregate where only the elements from the original
+        // data which satisfy a test are included
+        function filter(var func)
+        {
+            self.last_stage = new Rosella.Query.Stage.Filter(self.last_stage, func);
+            return self;
+        }
+
+        // Combine elements from the aggregate into a single value and
+        // return that.
+        function fold(var func, var seed [optional], int has_seed [opt_flag])
+        {
+            if (!has_seed)
+                seed = null;
+            self.last_stage = new Rosella.Query.Stage.Fold(self.last_stage, func, seed);
+            return self;
+        }
+
+        // Sort the data using a given comparison routine
+        function sort(var func)
+        {
+            self.last_stage = new Rosella.Query.Stage.Sort(self.last_stage, func);
+            return self;
+        }
+
+        // Return a count of elements
+        function count(var func [optional], int has_func [opt_flag])
+        {
+            // TODO
+        }
+
+        // Return true if any element in the aggregate satisfies the predicate
+        // false otherwise. Short-circuits
+        function any(var func [optional], int has_func [opt_flag])
+        {
+            // TODO
+        }
+
+        // Return the first item in the aggregate if the aggregate contains
+        // only one item. If it contains more items, throw an exception
+        function single(var func [optional], int has_func [opt_flag])
+        {
+            // TODO
+        }
+
+        // Return the first item in the aggregate, throwing an exception if
+        // it is empty.
+        function first(var func [optional], int has_func [opt_flag])
+        {
+            // TODO
+        }
+
+        // Return the first item in the aggregate, returning a default value
+        // if empty
+        function first_or_default(var func [optional], int has_func [opt_flag],
+                var def [optional], int has_def [opt_flag])
+        {
+            // TODO
+        }
+
+        // Return an aggregate of the first N elements in the data. If a
+        // predicate is provided, return the first N which satisfy the
+        // prediate
+        function take(int count, var func [optional], int has_func [opt_flag])
+        {
+            // TODO
+        }
+
+        // Return all but the first N elements. If a predicate is provided,
+        // return all by the first N elements which satisfy the predicate.
+        function skip(int count, var func [optional], int has_func [opt_flag])
+        {
+            // TODO
+        }
+
+        function flatten()
+        {
+            // TODO
+        }
+
+        function append(var s)
+        {
+            // TODO
+        }
+
+        /* Vtables and Low-level access
+        */
+
+        // Get an iterator over the data
+        function get_iter[vtable]()
+        {
+            // TODO
+        }
+    }
+}

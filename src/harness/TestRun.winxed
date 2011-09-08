@@ -11,7 +11,7 @@ namespace Rosella { namespace Harness
         var tests;
         var executed;
 
-        // Constructor. Setup the test run with all the necessary bookkeeping.
+        // Constructor.
         function TestRun(var tests)
         {
             self.tests = tests;
