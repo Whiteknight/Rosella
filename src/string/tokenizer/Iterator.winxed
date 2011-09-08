@@ -1,0 +1,34 @@
+namespace Rosella.String.Tokenizer
+{
+    class Iterator
+    {
+        var tokenizer;
+
+        function Iterator(var tokenizer)
+        {
+            self.tokenizer = tokenizer;
+        }
+
+        function set_integer_native[vtable](int direction)
+        {
+            // ignored
+        }
+
+        function get_bool[vtable]()
+        {
+            return self.tokenizer != null && self.tokenizer.has_tokens();
+        }
+
+        function shift_pmc[vtable]()
+        {
+            say("shift_pmc");
+            return self.tokenizer.get_token();
+        }
+
+        function shift_string[vtable]()
+        {
+            say("shift_string");
+            return self.tokenizer.get_token().data();
+        }
+    }
+}

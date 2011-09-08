@@ -31,6 +31,11 @@ namespace Rosella { namespace String { namespace Tokenizer
             return self.data;
         }
 
+        function get_string[vtable]()
+        {
+            return string(self.data);
+        }
+
         // Get the metadata object;
         function metadata()
         {

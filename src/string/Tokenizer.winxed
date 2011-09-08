@@ -146,5 +146,10 @@ namespace Rosella { namespace String
             self.data = substr(str, count + skip);
             return substr(str, 0, count);
         }
+
+        function get_iter[vtable]()
+        {
+            return new Rosella.String.Tokenizer.Iterator(self);
+        }
     }
 }}

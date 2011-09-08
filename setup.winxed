@@ -228,6 +228,7 @@ function setup_stable_libraries(var rosella)
         "string/tokenizer/CClass",
         "string/tokenizer/Delimiter",
         "string/tokenizer/DelimiterRegion",
+        "string/tokenizer/Iterator",
         "string/tokenizer/Token"
     );
 
