@@ -152,7 +152,7 @@ namespace Rosella { namespace Harness
                 for (var file in aborted_files) {
                     // TODO: Should record and output error codes or other
                     //       error info. Display some diagnostics here
-                    Rosella.IO.sayf("\t\t%s", file.filename());
+                    Rosella.IO.sayf("\t\t%s", file);
                 }
             }
         }
