@@ -189,6 +189,12 @@ namespace Rosella.Query.Queryable
             // TODO
         }
 
+        function project(var func)
+        {
+            self.last_stage = new Rosella.Query.Stage.Project(self.last_stage, func);
+            return self;
+        }
+
         /* Vtables and Low-level access
         */
 
