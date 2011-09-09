@@ -76,5 +76,12 @@ namespace Rosella
             string path_sep = path_separator();
             return join(path_sep, parts);
         }
+
+        function iterable_handle(var handle)
+        {
+            if (handle instanceof "Handle")
+                return new Rosella.FileSystem.IterableHandle(handle);
+            Rosella.Error.invalid(__FUNCTION__, "handle_iterator expects a Handle object");
+        }
     }
 }

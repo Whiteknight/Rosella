@@ -7,6 +7,7 @@ namespace Rosella {
         extern function is_directory;
         extern function path_separator;
         extern function join_path_parts;
+        extern function iterable_handle;
 
         // src/filesystem/Directory.winxed
         class Directory;

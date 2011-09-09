@@ -14,7 +14,7 @@ namespace Rosella { namespace Harness
             ]);
         }
 
-        function parse(string text, var result)
+        function parse(var stream, var result)
         {
             self.tokenizer.add_data(text);
             if (!self.tokenizer.has_tokens() || !self.get_plan(result)) {

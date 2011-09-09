@@ -23,12 +23,12 @@ namespace Rosella.Query.Queryable
 
         function on_iterator(var f)
         {
-            f(self.source_stage.iterator);
+            return f(self.source_stage.iterator);
         }
 
         function on_data(var f)
         {
-            f(self.data);
+            return f(self.data);
         }
 
         /* Queryable API

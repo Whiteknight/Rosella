@@ -206,6 +206,7 @@ function setup_stable_libraries(var rosella)
         "filesystem/FileIterator",
         "filesystem/FilePath",
         "filesystem/FileSystem",
+        "filesystem/IterableHandle",
         "filesystem/Visitor",
         "filesystem/visitor/Delete",
         "filesystem/visitor/Function",
