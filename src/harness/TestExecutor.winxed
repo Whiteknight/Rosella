@@ -17,7 +17,7 @@ namespace Rosella { namespace Harness
             var result = new Rosella.Harness.FileResult(file);
             var stream;
             if (int(self.mode) == MODE_COMPILE_INLINE)
-                stream = self.compile_and_execute(file);
+                stream = self.compile_and_execute(file, debug);
             else
                 stream = self.open_pipe_stream(file);
             if (result.status == null || result.status != "ABORTED")
@@ -28,7 +28,7 @@ namespace Rosella { namespace Harness
             return result;
         }
 
-        function compile_and_execute(var file)
+        function compile_and_execute(var file, int debug)
         {
             var sub = file.compile_test();
             var handle = Rosella.IO.capture_output(1, sub,
