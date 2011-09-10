@@ -21,7 +21,6 @@ namespace Rosella.FileSystem
         {
             if (self.handle != null && !self.handle.is_closed())
                 self.handle.close();
-            say("Closed");
         }
 
         function FileIterator(string filename)

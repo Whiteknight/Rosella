@@ -46,7 +46,7 @@ namespace Rosella { namespace Harness
         function close_stream(var file, var stream)
         {
             int exit_code = stream.on_data(function(ih) {
-                var pipe = ih.handle():
+                var pipe = ih.handle();
                 pipe.close();
                 return pipe.exit_status();
             });

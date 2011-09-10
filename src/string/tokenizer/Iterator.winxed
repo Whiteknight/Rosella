@@ -21,13 +21,11 @@ namespace Rosella.String.Tokenizer
 
         function shift_pmc[vtable]()
         {
-            say("shift_pmc");
             return self.tokenizer.get_token();
         }
 
         function shift_string[vtable]()
         {
-            say("shift_string");
             return self.tokenizer.get_token().data();
         }
     }

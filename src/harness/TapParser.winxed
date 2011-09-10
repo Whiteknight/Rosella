@@ -16,33 +16,25 @@ namespace Rosella { namespace Harness
 
         function parse(var stream, var result)
         {
-            self.tokenizer.add_data(text);
-            if (!self.tokenizer.has_tokens() || !self.get_plan(result)) {
+            var plan_stream = stream
+                .take(1)
+                .map(function(l) {
+                    self.tokenizer.add_data(l);
+                    return self.get_plan(self.tokenizer.all_tokens(), result);
+                });
+            if (plan_stream.has_more() == false || plan_stream.next() == false) {
                 result.mark_test_empty();
                 return;
             }
-            self.parse_internal(result);
-        }
-
-        function get_plan(var result)
-        {
-            if (self.tokenizer.get_token().data() != "1" ||
-                self.tokenizer.get_token().data() != "..")
-                return false;
-
-            int num_cclass = Rosella.String.get_character_class("numeric");
-            var plan_t = self.tokenizer.get_token();
-            if (plan_t.metadata() != num_cclass || indexof("\n", self.tokenizer.get_token().data()) == -1)
-                return false;
-
-            string lim = plan_t.data();
-            result.set_plan(int(lim));
-            return true;
-        }
-
-        function parse_internal(var result)
-        {
-            Rosella.Query.as_queryable(self.get_lines())
+            stream
+                .clear_stages()
+                .map(function(l) {
+                    self.tokenizer.add_data(l);
+                    return Rosella.Query.as_stream(self.tokenizer)
+                        .filter(function(t) { return int(t.metadata()) != 0; })
+                        .map(function(t) { return t.data(); })
+                        .data();
+                })
                 .filter(function(l) { return elements(l) >= 2 && substr(l[0], 0, 1) != "#"; })
                 .map(function(l) {
                     int i = 0;
@@ -68,25 +60,23 @@ namespace Rosella { namespace Harness
                         return [name, num, result, 1];
                     return [name, num, result, 0];
                 })
-                .foreach(function(r) { result.*(r[2] == 1 ? "add_pass" : "add_fail")(r[0], r[1], r[3]); });
+                .foreach(function(r) { result.*(r[2] == 1 ? "add_pass" : "add_fail")(r[0], r[1], r[3]); })
+                .execute();
         }
 
-        function get_lines()
+        function get_plan(var tokens, var result)
         {
-            var lines = [[]];
-            int i = 0;
-            while(self.tokenizer.has_tokens()) {
-                var t = self.tokenizer.get_token();
-                string d = t.data();
-                if (indexof("\n", d) != -1) {
-                    i++;
-                    lines[i] = [];
-                    continue;
-                }
-                if (int(t.metadata()) != 0)
-                    push(lines[i], d);
-            }
-            return lines;
+            if (tokens[0].data() != "1" || tokens[1].data() != "..")
+                return false;
+
+            var plan_t = tokens[2];
+            int num_cclass = Rosella.String.get_character_class("numeric");
+            if (plan_t.metadata() != num_cclass)
+                return false;
+
+            string lim = plan_t.data();
+            result.set_plan(int(lim));
+            return true;
         }
     }
 }}

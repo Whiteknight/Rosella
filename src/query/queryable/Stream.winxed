@@ -15,9 +15,7 @@ namespace Rosella.Query.Queryable
 
         function get_next()
         {
-            int is_valid;
-            var value;
-            :(is_valid, value) = self.last_stage.next();
+            :(int is_valid, var value) = self.last_stage.next();
             return is_valid, value;
         }
 
@@ -39,9 +37,7 @@ namespace Rosella.Query.Queryable
         function data()
         {
             var d = [];
-            int is_valid;
-            var item;
-            :(is_valid, item) = self.get_next();
+            :(int is_valid, var item) = self.get_next();
             while (is_valid) {
                 push(d, item);
                 :(is_valid, item) = self.get_next();
@@ -49,22 +45,34 @@ namespace Rosella.Query.Queryable
             return d;
         }
 
+        // Run the stream to the end, ignores return values;
+        function execute()
+        {
+            :(int is_valid, var item) = self.get_next();
+            while (is_valid)
+                :(is_valid, item) = self.get_next();
+        }
+
+        function clear_stages()
+        {
+            self.last_stage = self.source_stage;
+            return self;
+        }
+
         function has_more()
         {
-            if (elements(self.cache) > 0)
+            if (elements(self.output_cache) > 0)
                 return true;
-            int is_valid;
-            var item;
-            :(is_valid, item) = self.get_next();
+            :(int is_valid, var item) = self.get_next();
             if (is_valid)
-                push(self.cache, item);
+                push(self.output_cache, item);
             return is_valid;
         }
 
         function next()
         {
-            if (elements(self.cache) > 0)
-                return self.cache.shift();
+            if (elements(self.output_cache) > 0)
+                return self.output_cache.shift();
             int is_valid;
             var item;
             :(is_valid, item) = self.get_next();

@@ -63,7 +63,8 @@ namespace Rosella.Query
                 :(var is_valid, var value) = self.previous.next();
                 if (!is_valid)
                     return false, null;
-                var(self.func)(value);
+                var f = self.func;
+                f(value);
                 return true, value;
             }
         }
