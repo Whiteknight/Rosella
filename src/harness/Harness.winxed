@@ -70,13 +70,10 @@ namespace Rosella
         function run(var test_runs [optional], int has_runs [opt_flag],
                 var view [optional], int has_view [opt_flag],
                 int run_inline [named,optional],  int has_ri [opt_flag],
-                int line_length [named,optional], int has_ll [opt_flag],
                 int debug [named,optional], int has_dbg [opt_flag])
         {
             if (!has_ri)
                 run_inline = 0;
-            if (!has_ll)
-                line_length = 0;
             if (!has_dbg)
                 debug = 0;
             if (has_view == 0 || view == null)

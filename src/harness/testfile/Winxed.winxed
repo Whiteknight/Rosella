@@ -7,10 +7,10 @@ namespace Rosella { namespace Harness { namespace TestFile
     {
         function Winxed(var p [slurpy]) { self.TestFile(p:[flat]); }
 
-        function compile_test(string filename)
+        function compile_test()
         {
             var winxed = compreg("winxed");
-            return winxed.compile_file(filename);
+            return winxed.compile_file(string(self));
         }
 
         function get_spawn_command(string filename)

@@ -15,42 +15,54 @@ namespace Rosella { namespace Harness
         function run(var view, var file, var parser, int debug)
         {
             var result = new Rosella.Harness.FileResult(file);
-            // TODO: Instead of a complete blob of text, return a queryable
-            // stream of input so we can get real-time test counts
-            var text;
+            var stream;
             if (int(self.mode) == MODE_COMPILE_INLINE)
-                text = self.compile_and_execute(view, file, result, debug);
+                stream = self.compile_and_execute(file, debug);
             else
-                text = self.spawn_and_execute(view, file, result, debug);
-
+                stream = self.open_pipe_stream(file);
             if (result.status == null || result.status != "ABORTED")
-                parser.parse(text, result);
+                parser.parse(stream, result);
+            int exit_status = self.close_stream(file, stream);
+            if (exit_status != 0 || (result.status != null && result.status == "ABORTED"))
+                result.mark_test_abort("Test aborted with exit code " + string(exit_status));
             return result;
         }
 
-        function compile_and_execute(var view, var file, var result, int debug)
+        function compile_and_execute(var file, int debug)
         {
             var sub = file.compile_test();
-            string output = Rosella.IO.capture_output(1, sub,
+            var handle = Rosella.IO.capture_output(1, sub,
                 function(e) {
                     result.mark_test_abort(e);
                     view.debug(debug, e["message"]);
                 }
             );
-            return output;
+            var ihandle = Rosella.FileSystem.iterable_handle(handle);
+            return Rosella.Query.as_stream(ihandle);
         }
 
-        function spawn_and_execute(var view, var file, var result, int debug)
+        function close_stream(var file, var stream)
+        {
+            int exit_code = stream.on_data(function(ih) {
+                var handle = ih.handle();
+                handle.close();
+                int can_exit_status;
+                ${ can can_exit_status, handle, "exit_status" };
+                return can_exit_status == 1 ? handle.exit_status() : 0;
+            });
+            file.cleanup_spawn();
+            return exit_code;
+        }
+
+        function open_pipe_stream(var file)
         {
             string filename = file.setup_spawn();
             if (filename == null)
-                return "";
+                return null;
             string cmd = file.get_spawn_command(filename);
-            string output = Rosella.IO.execute_pipe(cmd, function(ec) {
-                result.mark_test_abort("Test aborted with exit code " + string(ec));
-            });
-            file.cleanup_spawn(filename);
-            return output;
+            var pipe = Rosella.IO.open_pipe(cmd);
+            var ihandle = Rosella.FileSystem.iterable_handle(pipe);
+            return Rosella.Query.as_stream(ihandle);
         }
     }
 }}

@@ -3,6 +3,7 @@ namespace Rosella {
         class Provider;
         class Queryable;
         extern function as_queryable;
+        extern function as_stream;
         extern function is_array;
         extern function is_hash;
         extern function array_or_hash;

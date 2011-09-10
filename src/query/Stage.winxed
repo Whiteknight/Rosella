@@ -63,7 +63,8 @@ namespace Rosella.Query
                 :(var is_valid, var value) = self.previous.next();
                 if (!is_valid)
                     return false, null;
-                var(self.func)(value);
+                var f = self.func;
+                f(value);
                 return true, value;
             }
         }
@@ -228,6 +229,32 @@ namespace Rosella.Query
                     return false, null;
                 if (f == null || f(value))
                     return true, value;
+                return false, null;
+            }
+        }
+
+        class Project : Rosella.Query.Stage
+        {
+            var cache;
+            function Project(var p, var f)
+            {
+                self.Stage(p, f);
+                self.cache = [];
+            }
+
+            function next()
+            {
+                if (elements(self.cache) > 0)
+                    return true, self.cache.shift();
+                :(int is_valid, var value) = self.previous.next();
+                if (!is_valid)
+                    return false, null;
+                var f = self.func;
+                var results = f(value);
+                for (var r in results)
+                    push(self.cache, r);
+                if (elements(self.cache) > 0)
+                    return true, self.cache.shift();
                 return false, null;
             }
         }

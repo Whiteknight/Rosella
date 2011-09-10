@@ -22,6 +22,11 @@ namespace Rosella
                 return new Rosella.Query.Queryable(data);
         }
 
+        function as_stream(var data)
+        {
+            return new Rosella.Query.Queryable.Stream(data);
+        }
+
         // Helper function. Determine if the aggregate is an array
         function is_array(var data)
         {

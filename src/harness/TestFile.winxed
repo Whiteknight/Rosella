@@ -35,6 +35,6 @@ namespace Rosella { namespace Harness
             Rosella.Error.must_subclass(__CLASS__);
         }
 
-        function cleanup_spawn(string filename) { }
+        function cleanup_spawn() { }
     }
 }}

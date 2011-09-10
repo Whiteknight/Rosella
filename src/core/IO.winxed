@@ -52,11 +52,10 @@ namespace Rosella
                     err_func(e);
             }
             swap_handles(save_handles);
-            string stdout_text = stdout.readall();
             if (together)
-                return stdout_text;
+                return stdout;
             else
-                return stdout_text, stderr.readall();
+                return stdout, stderr;
         }
 
         function execute_pipe(string cmd,
