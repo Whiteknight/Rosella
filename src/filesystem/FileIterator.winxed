@@ -44,7 +44,7 @@ namespace Rosella.FileSystem
         {
             if (self.handle == null)
                 self.handle = self.file.open_read();
-            string line = self.handle.readline_interactive();
+            string line = self.handle.readline();
             if (line == null)
                 return "";
             return line;
@@ -54,7 +54,7 @@ namespace Rosella.FileSystem
         {
             if (self.handle == null)
                 self.handle = self.file.open_read();
-            string line = self.handle.readline_interactive();
+            string line = self.handle.readline();
             if (line == null)
                 return "";
             return line;

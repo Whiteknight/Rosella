@@ -9,10 +9,10 @@ namespace Rosella { namespace Harness { namespace TestFile
     {
         function PIR(var p [slurpy]) { self.TestFile(p:[flat]); }
 
-        function compile_test(string filename)
+        function compile_test()
         {
             var compiler = compreg("PIR");
-            var packfile = compiler.compile_file(filename);
+            var packfile = compiler.compile_file(string(self));
             return packfile.main_sub();
         }
 
