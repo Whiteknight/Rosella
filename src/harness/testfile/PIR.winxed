@@ -12,7 +12,7 @@ namespace Rosella { namespace Harness { namespace TestFile
         function compile_test()
         {
             var compiler = compreg("PIR");
-            var packfile = compiler.compile_file(string(self));
+            var packfile = compiler.compile_file(string(self);
             return packfile.main_sub();
         }
 

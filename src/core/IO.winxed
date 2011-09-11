@@ -44,14 +44,17 @@ namespace Rosella
                 stderr = new "StringHandle";
                 stderr.open("blah", "rw");
             }
+            var exception = null;
             var save_handles = swap_handles({"stdout" : stdout, "stderr" : stderr});
+            string msg;
             try {
                 func();
             } catch(e) {
-                if (has_err)
-                    err_func(e);
+                exception = e;
             }
             swap_handles(save_handles);
+            if (exception != null && has_err && err_func != null)
+                err_func(exception);
             if (together)
                 return stdout;
             else
