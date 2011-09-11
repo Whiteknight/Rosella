@@ -51,32 +51,50 @@ function main[main](var args)
     load_bytecode("rosella/template.pbc");
 
     string program_name = args.shift();
+    if (elements(args) != 3)
+        usage_and_exit(program_name);
+    string lang = args.shift();
     string libpath = args.shift();
     string folder = args.shift();
     using Rosella.Parrot.try_report;
     try_report(function() {
         var lib = try_load_lib(libpath);
         var entries = get_lib_entries(lib);
-        output_test_files(libpath, entries, folder);
+        output_test_files(lang, libpath, entries, folder);
     });
 }
 
-function output_test_files(string libname, var entries, string folderpath)
+function usage_and_exit(string prog_name)
+{
+    prog_name = (new Rosella.FileSystem.FilePath(prog_name)).short_name();
+    string fmt = <<:
+Usage: %s <lang> <library> <folder>
+
+Create tests for all classes and namespaces in <library>. Output all tests
+to <folder>. Tests will be in language <lang>. <lang> is probably one of
+'winxed' or 'nqp' or others if you have suitable templates installed.
+:>>
+;
+    Rosella.IO.sayf(fmt, prog_name);
+}
+
+function output_test_files(string lang, string libname, var entries, string folderpath)
 {
     var dir = new Rosella.FileSystem.Directory(folderpath);
     if (!dir.exists())
         dir.create();
     var engine = new Rosella.Template.Engine();
-    string class_tmpl = Rosella.Template.get_standard_template_file("test_class.winxed.template");
-    string ns_tmpl = Rosella.Template.get_standard_template_file("test_ns.winxed.template");
+    :(string class_tmpl, string ns_tmpl) = get_templates(lang);
     for (string nsname in entries) {
         Rosella.IO.sayf("START NameSpace '%s'", nsname);
+        var ns_dir = get_namespace_directory(dir, nsname);
+
         var classes = entries[nsname].classes;
         var subs = entries[nsname].subs;
         if (elements(subs) > 0) {
             var context = get_subs_list_context(libname, nsname, subs);
             string output = engine.generate_from_file(ns_tmpl, context);
-            var file = new Rosella.FileSystem.File(nsname + ".t", dir);
+            var file = new Rosella.FileSystem.File(nsname + ".t", ns_dir);
             file.write_all_text(output);
             Rosella.IO.sayf("\tBuilt Subs test file %s", string(file));
         }
@@ -85,16 +103,32 @@ function output_test_files(string libname, var entries, string folderpath)
                 var classobj = classes[classname];
                 var context = get_class_context(libname, nsname, nsname + "." + classname, classobj);
                 string output = engine.generate_from_file(class_tmpl, context);
-                var nsdir = new Rosella.FileSystem.Directory(nsname, dir);
-                if (!nsdir.exists())
-                    nsdir.create();
-                var classfile = new Rosella.FileSystem.File(classname + ".t", nsdir);
+                var classfile = new Rosella.FileSystem.File(classname + ".t", ns_dir);
                 classfile.write_all_text(output);
                 Rosella.IO.sayf("\tBuilt Class test file %s", string(classfile));
             }
         }
         Rosella.IO.sayf("END NameSpace '%s'", nsname);
     }
+}
+
+function get_namespace_directory(var dir, string ns)
+{
+    var cur_dir = dir;
+    var parts = split('.', ns);
+    for (string part in parts) {
+        cur_dir = new Rosella.FileSystem.Directory(part, cur_dir);
+        if (!cur_dir.exists())
+            cur_dir.create();
+    }
+    return cur_dir;
+}
+
+function get_templates(string lang)
+{
+    string class_tmpl = Rosella.Template.get_standard_template_file("test_class." + lang + ".template");
+    string ns_tmpl = Rosella.Template.get_standard_template_file("test_ns." + lang + ".template");
+    return class_tmpl, ns_tmpl;
 }
 
 function get_subs_list_context(string libname, string nsname, var subslist)
@@ -136,7 +170,7 @@ function try_load_lib(string libpath)
 {
     var pf = new 'PackfileView';
     pf.read_from_file(libpath);
-    for (var sub in pf.subs_by_flag("load"))
+    for (var sub in pf.subs_by_tag("load"))
         sub();
     if (pf == null) {
         Rosella.IO.sayf("FAIL.");
