@@ -31,7 +31,7 @@ if (pir::elements(@argv)) {
 
     # Stable library tests
     $harness.add_test_dirs("NQP",
-        "t/tap_harness",    # "harness", can't shadow t/harness program
+        #"t/tap_harness",    # "harness", can't shadow t/harness program
         "t/test",
         "t/action",
         "t/container",
