@@ -4,8 +4,9 @@ namespace Rosella
        each in a loop. The Harness keeps statistics about the test run, and
        passes them off to other routines for display and analysis.
 
-       Harness is the Controller object in the MVC system. Harness::View is
-       the view which displays to the user, and Harness::Results is the model.
+       Harness is the Controller object in the MVC system. Harness.View is
+       the view which displays to the user, and the model is made of
+       Harness.TestRun and Harness.FileResult objects.
     */
     class Harness
     {
@@ -13,26 +14,44 @@ namespace Rosella
         var view;
         var saved_runs;
 
+        // Constructor
         function Harness()
         {
             self.testrun_factory = new Rosella.Harness.TestRun.Factory();
             self.saved_runs = [];
         }
 
+        /* Setup Routines
+        */
+
+        // Set a customer TestRun.Factory object
         function set_testfile_factory(var factory)
         {
             self.testrun_factory = factory;
+            return self;
         }
 
-        /* Routines for adding tests to the harness
-        */
-
+        // Add a custom testfile type
         function add_testfile_type(string name, var type)
         {
             self.testrun_factory.add_testfile_type(name, type);
             return self;
         }
 
+        // Set a view to use
+        function view(var view [optional], int has_view [opt_flag])
+        {
+            if (has_view)
+                self.view = view;
+            if (self.view == null)
+                self.view = new Rosella.Harness.View();
+            return self.view;
+        }
+
+        /* Routines for adding tests to the harness
+        */
+
+        // Add test directories to the current TestRun being constructed
         function add_test_dirs(string testfile_type_s, var dirs [slurpy],
             var options [slurpy,named])
         {
@@ -41,6 +60,7 @@ namespace Rosella
             return self;
         }
 
+        // Add specific test files to the current TestRun
         function add_test_files(string testfile_type_s, var files [slurpy],
             var options [slurpy,named])
         {
@@ -49,6 +69,7 @@ namespace Rosella
             return self;
         }
 
+        // Return the current test run
         function setup_test_run(var view [optional], int has_view [opt_flag],
                 var options [named,slurpy])
         {
@@ -62,21 +83,6 @@ namespace Rosella
 
         /* Routines for Running the Harness
         */
-
-        function view(var view [optional], int has_view [opt_flag])
-        {
-            if (has_view)
-                self.view = view;
-            if (self.view == null)
-                self.view = new Rosella.Harness.View();
-            return self.view;
-        }
-
-        function show_results()
-        {
-            var view = self.view();
-            view.show_results();
-        }
 
         // Run the harness. Optionally take a custom view, and a handful of
         // other named options.
@@ -92,6 +98,16 @@ namespace Rosella
                 test_runs = self.saved_runs;
             return self.run_internal(test_runs, view, run_inline, debug);
         }
+
+        // Show the results with the View
+        function show_results()
+        {
+            var view = self.view();
+            view.show_results();
+        }
+
+        /* Private Internal Routines
+        */
 
         // Internal routine to run the harness
         function run_internal(var test_runs, int run_inline, int debug)
@@ -109,9 +125,9 @@ namespace Rosella
                 test_run.mark_completed();
                 view.test_run_complete(test_run);
                 if (!test_run.run_was_success())
-                    return 0;
+                    return false;
             }
-            return 1;
+            return true;
         }
     }
 }

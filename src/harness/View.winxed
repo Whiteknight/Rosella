@@ -1,26 +1,26 @@
 namespace Rosella { namespace Harness
 {
-    /* View class for the Harness. Displays running status and result
-       information to the user on the commandline.
+    /* Default Harness View
+        View class for the Harness. Displays running status and result
+        information to the user on the commandline.
     */
     class View
     {
         var test_runs;
         var line_length;
         var total_files;
-        var num_passed_files;
         var num_failed_files;
         var num_passed_tests;
         var num_failed_tests;
         var num_aborted_files;
         var need_backspaces;
 
+        // Constructor
         function View()
         {
             self.test_runs = [];
             self.line_length = 0;
             self.total_files = 0;
-            self.num_passed_files = 0;
             self.num_passed_tests = 0;
             self.num_failed_files = 0;
             self.num_failed_tests = 0;
@@ -105,7 +105,6 @@ namespace Rosella { namespace Harness
         function test_run_complete(var test_run)
         {
             self.total_files       += test_run.num_files();
-            self.num_passed_files  += test_run.num_files_by_status("PASSED");
             self.num_passed_tests  += test_run.num_tests_by_status("PASSED");
             self.num_failed_files  += test_run.num_files_by_status("FAILED");
             self.num_failed_tests  += test_run.num_tests_by_status("FAILED");
