@@ -1,11 +1,6 @@
 // Automatically generated test for Class Rosella.Harness
 class Test_Rosella_Harness
 {
-    function test_sanity()
-    {
-        self.assert.is_true(1);
-    }
-
     function test_new()
     {
         var obj = new Rosella.Harness();

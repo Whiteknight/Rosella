@@ -10,13 +10,18 @@ namespace Rosella
     class Harness
     {
         var testrun_factory;
-        var default_view;
+        var view;
         var saved_runs;
 
         function Harness()
         {
             self.testrun_factory = new Rosella.Harness.TestRun.Factory();
             self.saved_runs = [];
+        }
+
+        function set_testfile_factory(var factory)
+        {
+            self.testrun_factory = factory;
         }
 
         /* Routines for adding tests to the harness
@@ -58,17 +63,24 @@ namespace Rosella
         /* Routines for Running the Harness
         */
 
-        function default_view()
+        function view(var view [optional], int has_view [opt_flag])
         {
-            if (self.default_view == null)
-                self.default_view = new Rosella.Harness.View();
-            return self.default_view;
+            if (has_view)
+                self.view = view;
+            if (self.view == null)
+                self.view = new Rosella.Harness.View();
+            return self.view;
+        }
+
+        function show_results()
+        {
+            var view = self.view();
+            view.show_results();
         }
 
         // Run the harness. Optionally take a custom view, and a handful of
         // other named options.
         function run(var test_runs [optional], int has_runs [opt_flag],
-                var view [optional], int has_view [opt_flag],
                 int run_inline [named,optional],  int has_ri [opt_flag],
                 int debug [named,optional], int has_dbg [opt_flag])
         {
@@ -76,18 +88,17 @@ namespace Rosella
                 run_inline = 0;
             if (!has_dbg)
                 debug = 0;
-            if (has_view == 0 || view == null)
-                view = self.default_view();
-            if (has_runs == 0 || test_runs == null)
+            if (has_runs == false || test_runs == null || elements(test_runs) == 0)
                 test_runs = self.saved_runs;
             return self.run_internal(test_runs, view, run_inline, debug);
         }
 
         // Internal routine to run the harness
-        function run_internal(var test_runs, var view, int run_inline, int debug)
+        function run_internal(var test_runs, int run_inline, int debug)
         {
             var executor = new Rosella.Harness.TestExecutor(run_inline);
             var parser = new Rosella.Harness.TapParser();
+            var view = self.view();
 
             for (var test_run in test_runs) {
                 for (var test in test_run.tests()) {
