@@ -13,6 +13,7 @@ namespace Rosella { namespace Harness
         var num_passed_tests;
         var num_failed_tests;
         var num_aborted_files;
+        var need_backspaces;
 
         function View()
         {
@@ -24,6 +25,7 @@ namespace Rosella { namespace Harness
             self.num_failed_files = 0;
             self.num_failed_tests = 0;
             self.num_aborted_files = 0;
+            self.need_backspaces = 0;
         }
 
         /* View API.
@@ -57,10 +59,21 @@ namespace Rosella { namespace Harness
         // End a test
         function end_test(var result)
         {
+            if (self.need_backspaces > 0) {
+                int num_b = int(self.need_backspaces);
+                string b;
+                ${ repeat b, "\b", num_b };
+                print(b + " ");
+                //print("\b\b\b\b\b\b\b\b\b\b");
+                self.need_backspaces = 0;
+            }
+            string msg;
             if (result.status() != "PASSED")
-                Rosella.IO.sayf("not ok (%s)", self.get_result_status(result));
+                msg = Rosella.String.sprintf("not ok (%s)", self.get_result_status(result));
             else
-                say("ok");
+                msg = "ok";
+            msg = Rosella.String.pad_end(msg, 10);
+            say(msg);
             string error_details = result.error_details();
             if (error_details != null) {
                 var lines = split("\n", error_details);
@@ -141,6 +154,22 @@ namespace Rosella { namespace Harness
                 for (var failure in result.list_of_failures())
                     Rosella.IO.sayf("\t\t\t%s", failure);
             }
+        }
+
+        function show_current_test_progress(int done, int total)
+        {
+            if (self.need_backspaces > 0) {
+                int num_b = int(self.need_backspaces);
+                string b;
+                ${ repeat b, "\b", num_b };
+                print(b + " ");
+                //print("\b\b\b\b\b\b\b\b\b\b");
+                self.need_backspaces = 0;
+            }
+            string p = Rosella.String.sprintf("%d/%d", done, total);
+            //p = Rosella.String.pad_end(p, 10);
+            self.need_backspaces = length(p) + 1;
+            print(p);
         }
 
         function show_failure_detail()
