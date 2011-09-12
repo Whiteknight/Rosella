@@ -1,5 +1,8 @@
-namespace Rosella { namespace Harness
+namespace Rosella.Harness
 {
+    /* Test File Execution Result
+        The FileResult object contains information from the test execution.
+    */
     class FileResult
     {
         var file;
@@ -10,6 +13,7 @@ namespace Rosella { namespace Harness
         var passed_tests;
         var status;
 
+        // Constructor. Take the TestFile object and initialize
         function FileResult(var file)
         {
             self.file = file;
@@ -24,14 +28,20 @@ namespace Rosella { namespace Harness
         /* Public Accessors
         */
 
+        // A total count of tests
         function total_tests() { return self.num_tests; }
 
+        // The list of result strings for passed tests
         function passed_tests() { return self.passed_tests; }
 
+        // The list of result strings for failed tests
         function list_of_failures() { return self.failures; }
 
+        // The list of to-do test result strings which passed unexpectedly
         function list_of_todo_passed() { return self.todo_passed; }
 
+        // A string representing status. Can be one of "PASSED", "FAILED",
+        // "ABORTED", or "EMPTY"
         function status()
         {
             if (self.status != null)
@@ -41,24 +51,30 @@ namespace Rosella { namespace Harness
             return "PASSED";
         }
 
+        // On abort, return an error object which contains error details.
         function error_details() { return self.errdetails; }
 
+        // Get the filename of the associated TestFile
         function get_string[vtable]() { return string(self.file); }
 
         /* Helper and Status routines
         */
 
+        // Mark the test as having been aborted, with error info
         function mark_test_abort(var err)
         {
             self.errdetails = err;
             self.status = "ABORTED";
         }
 
+        // Mark the test as having produced no usable TAP output
         function mark_test_empty()
         {
             self.status = "EMPTY";
         }
 
+        // Add a test pass. Include the name and number, and whether the test
+        // was marked to-do
         function add_pass(string name, int num, int todo)
         {
             string msg = Rosella.String.sprintf("test %d: %s", num, name);
@@ -68,6 +84,8 @@ namespace Rosella { namespace Harness
                 push(self.passed_tests, msg);
         }
 
+        // Add a test failure. Include the name and number, and whether the
+        // test was marked to-do
         function add_fail(string name, int num, int todo)
         {
             string msg = Rosella.String.sprintf("test %d: %s", num, name);
@@ -77,10 +95,11 @@ namespace Rosella { namespace Harness
                 push(self.failures, msg);
         }
 
+        // Set the expected number of tests
         function set_plan(int num)
         {
             // TODO: Check bounds. Make sure we run this many tests
             self.num_tests = num;
         }
     }
-}}
+}

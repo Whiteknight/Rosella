@@ -1,17 +1,27 @@
-namespace Rosella { namespace Harness
+namespace Rosella.Harness
 {
+    /* Test Executor Class
+        Central engine for executing tests. Executes one test at a time.
+    */
     class TestExecutor
     {
         const int MODE_SPAWN_EXECUTE = 0;
         const int MODE_COMPILE_INLINE = 1;
 
+        // Two modes: spawn/execute and compile inline. See the constants above
         var mode;
 
+        // Constructor
         function TestExecutor(int mode)
         {
             self.mode = mode;
         }
 
+        /* Public API
+        */
+
+        // Execute a single test, using the given parser, and sending update
+        // commands to the view.
         function run(var view, var file, var parser, int debug)
         {
             var result = new Rosella.Harness.FileResult(file);
@@ -28,6 +38,11 @@ namespace Rosella { namespace Harness
             return result;
         }
 
+        /* Internal Helper Methods
+        */
+
+        // Compile the TestFile inline and execute it. Return a Stream over
+        // a StringHandle used to capture output
         function compile_and_execute(var file, var result)
         {
             var sub = file.compile_test();
@@ -40,6 +55,21 @@ namespace Rosella { namespace Harness
             return Rosella.Query.as_stream(ihandle);
         }
 
+        // Open a stream for a pipe to a separate process where the test will
+        // be run.
+        function open_pipe_stream(var file)
+        {
+            string filename = file.setup_spawn();
+            if (filename == null)
+                return null;
+            string cmd = file.get_spawn_command(filename);
+            var pipe = Rosella.IO.open_pipe(cmd);
+            var ihandle = Rosella.FileSystem.iterable_handle(pipe);
+            return Rosella.Query.as_stream(ihandle);
+        }
+
+        // Close the stream. Check the exit status if the test was aborted
+        // prematurely
         function close_stream(var file, var stream)
         {
             int exit_code = stream.on_data(function(ih) {
@@ -52,16 +82,5 @@ namespace Rosella { namespace Harness
             file.cleanup_spawn();
             return exit_code;
         }
-
-        function open_pipe_stream(var file)
-        {
-            string filename = file.setup_spawn();
-            if (filename == null)
-                return null;
-            string cmd = file.get_spawn_command(filename);
-            var pipe = Rosella.IO.open_pipe(cmd);
-            var ihandle = Rosella.FileSystem.iterable_handle(pipe);
-            return Rosella.Query.as_stream(ihandle);
-        }
     }
-}}
+}

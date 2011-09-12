@@ -1,9 +1,15 @@
-namespace Rosella { namespace Harness
+namespace Rosella.Harness
 {
+    /* TAP Parser
+        The TAP Parser takes a string representing the TAP output of the test
+        file. The stream is parsed to get result information and that
+        information is communicated to the FileResult and the View
+    */
     class TapParser
     {
         var tokenizer;
 
+        // Constructor
         function TapParser()
         {
             using Rosella.String.get_character_class;
@@ -14,8 +20,11 @@ namespace Rosella { namespace Harness
             ]);
         }
 
+        // Parse the incoming TAP stream. Communicate status and result
+        // information to the view and the FileResult object
         function parse(var stream, var view, var result)
         {
+            // Get the plan. That should be the first line of the stream.
             var plan_stream = stream
                 .take(1)
                 .map(function(l) {
@@ -26,8 +35,12 @@ namespace Rosella { namespace Harness
                 result.mark_test_empty();
                 return;
             }
+
+            // Now, parse the remainder of the stream
             stream
                 .clear_stages()
+
+                // Turn each line into an array of tokens
                 .map(function(l) {
                     self.tokenizer.add_data(l);
                     return Rosella.Query.as_stream(self.tokenizer)
@@ -35,7 +48,13 @@ namespace Rosella { namespace Harness
                         .map(function(t) { return t.data(); })
                         .data();
                 })
+
+                // Remove lines which are empty or which start with a #
                 .filter(function(l) { return elements(l) >= 2 && substr(l[0], 0, 1) != "#"; })
+
+                // Parse the line. Look for "ok" or "not ok". Get the test number
+                // and the TODO directive, if any. Return a 4-element tuple
+                // with [test name, test number, true/false result, true/false todo]
                 .map(function(l) {
                     int i = 0;
                     string r = l[i++];
@@ -60,11 +79,18 @@ namespace Rosella { namespace Harness
                         return [name, num, result, 1];
                     return [name, num, result, 0];
                 })
+
+                // Update the view to show current file status
                 .foreach(function(r) { view.show_current_test_progress(r[1], result.num_tests); })
+
+                // Update the FileResult
                 .foreach(function(r) { result.*(r[2] == 1 ? "add_pass" : "add_fail")(r[0], r[1], r[3]); })
                 .execute();
         }
 
+        // Get the plan. Plan should be in the format "1..X", where X is a
+        // positive integer value. Return true if the plan is found and add it
+        // to the FileResult. Return false otherwise.
         function get_plan(var tokens, var result)
         {
             if (tokens[0].data() != "1" || tokens[1].data() != "..")
@@ -80,4 +106,4 @@ namespace Rosella { namespace Harness
             return true;
         }
     }
-}}
+}

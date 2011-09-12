@@ -1,4 +1,4 @@
-namespace Rosella { namespace Harness
+namespace Rosella.Harness
 {
     /* Default Harness View
         View class for the Harness. Displays running status and result
@@ -82,6 +82,7 @@ namespace Rosella { namespace Harness
             }
         }
 
+        // Get a status string describing the results of the test
         function get_result_status(var result)
         {
             string status = result.status();
@@ -139,6 +140,8 @@ namespace Rosella { namespace Harness
                 self.show_result_headline("PASSED");
         }
 
+        // Show a summary of all errors. Errors are files that have run, but
+        // with subtests which have failed
         function show_error_detail()
         {
             if (int(self.num_failed_tests) == 0)
@@ -155,6 +158,7 @@ namespace Rosella { namespace Harness
             }
         }
 
+        // Show the current progress of a test being executed
         function show_current_test_progress(int done, int total)
         {
             if (self.need_backspaces > 0) {
@@ -171,6 +175,8 @@ namespace Rosella { namespace Harness
             print(p);
         }
 
+        // Show a list of failures. Failures are files which have not executed
+        // or which terminated early with an unhandled error of some variety
         function show_failure_detail()
         {
             var aborted_files = self.get_all_files_by_status("ABORTED");
@@ -185,6 +191,7 @@ namespace Rosella { namespace Harness
             }
         }
 
+        // Print out a debug message
         function debug(int dbg, var msg)
         {
             Rosella.IO.sayf("DEBUG: %s\n", msg);
@@ -215,4 +222,4 @@ namespace Rosella { namespace Harness
                 .data();
         }
     }
-}}
+}
