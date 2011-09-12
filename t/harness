@@ -54,7 +54,7 @@ if (pir::elements(@argv)) {
 }
 
 my $result := $harness.run();
-$harness.default_view.show_results();
+$harness.show_results();
 if (!$result) {
     pir::exit(1);
 }
