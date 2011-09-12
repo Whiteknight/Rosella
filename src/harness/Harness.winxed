@@ -25,7 +25,7 @@ namespace Rosella
         */
 
         // Set a customer TestRun.Factory object
-        function set_testfile_factory(var factory)
+        function set_testrun_factory(var factory)
         {
             self.testrun_factory = factory;
             return self;
@@ -74,7 +74,7 @@ namespace Rosella
                 var options [named,slurpy])
         {
             if (!has_view || view == null)
-                view = self.default_view();
+                view = self.view();
             var run = self.testrun_factory.create(options:[flat,named]);
             view.add_run(run, 0);
             push(self.saved_runs, run);
@@ -96,7 +96,7 @@ namespace Rosella
                 debug = 0;
             if (has_runs == false || test_runs == null || elements(test_runs) == 0)
                 test_runs = self.saved_runs;
-            return self.run_internal(test_runs, view, run_inline, debug);
+            return self.run_internal(test_runs, run_inline, debug);
         }
 
         // Show the results with the View
