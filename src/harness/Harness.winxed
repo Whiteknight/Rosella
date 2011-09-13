@@ -55,6 +55,12 @@ namespace Rosella
             return run;
         }
 
+        function show_results()
+        {
+            var view = self.default_view();
+            view.show_results();
+        }
+
         /* Routines for Running the Harness
         */
 
