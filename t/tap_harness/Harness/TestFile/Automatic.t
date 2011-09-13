@@ -1,33 +1,20 @@
 // Automatically generated test for Class Rosella.Harness.TestFile.Automatic
 class Test_Rosella_Harness_TestFile_Automatic
 {
-    function test_sanity()
-    {
-        self.assert.is_true(1);
-    }
-
     function test_new()
     {
-        var obj = new Rosella.Harness.TestFile.Automatic();
+        var obj = new Rosella.Harness.TestFile.Automatic("foo.t");
         self.assert.not_null(obj);
         self.assert.instance_of(obj, class Rosella.Harness.TestFile.Automatic);
     }
 
-
-    function Automatic()
-    {
-        self.status.verify("Test Rosella.Harness.TestFile.Automatic.Automatic()");
-        var obj = new Rosella.Harness.TestFile.Automatic();
-
-        var result = obj.Automatic();
-    }
-
     function get_spawn_command()
     {
+        self.status.unimplemented("Find a way to test .get_spawn_command()");
         self.status.verify("Test Rosella.Harness.TestFile.Automatic.get_spawn_command()");
         var obj = new Rosella.Harness.TestFile.Automatic();
 
-        var arg_0 = null;
+        var arg_0 = "foo.t";
         var result = obj.get_spawn_command(arg_0);
     }
 }

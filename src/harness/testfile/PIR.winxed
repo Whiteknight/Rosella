@@ -18,8 +18,8 @@ namespace Rosella { namespace Harness { namespace TestFile
 
         function get_spawn_command(string filename)
         {
-            string exe_name = getinterp()[IGLOBALS_EXECUTABLE];
-            return Rosella.String.sprintf("%s %s", exe_name, filename);
+            //string exe_name = getinterp()[IGLOBALS_EXECUTABLE];
+            return Rosella.String.sprintf("parrot %s", filename);
         }
     }
 }}}

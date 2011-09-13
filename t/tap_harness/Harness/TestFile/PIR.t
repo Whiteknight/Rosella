@@ -1,29 +1,16 @@
 // Automatically generated test for Class Rosella.Harness.TestFile.PIR
 class Test_Rosella_Harness_TestFile_PIR
 {
-    function test_sanity()
-    {
-        self.assert.is_true(1);
-    }
-
     function test_new()
     {
-        var obj = new Rosella.Harness.TestFile.PIR();
+        var obj = new Rosella.Harness.TestFile.PIR("foo.pir");
         self.assert.not_null(obj);
         self.assert.instance_of(obj, class Rosella.Harness.TestFile.PIR);
     }
 
-
-    function PIR()
-    {
-        self.status.verify("Test Rosella.Harness.TestFile.PIR.PIR()");
-        var obj = new Rosella.Harness.TestFile.PIR();
-
-        var result = obj.PIR();
-    }
-
     function compile_test()
     {
+        self.status.unimplemented("Find a way to test .compile_test()");
         self.status.verify("Test Rosella.Harness.TestFile.PIR.compile_test()");
         var obj = new Rosella.Harness.TestFile.PIR();
 
@@ -33,10 +20,11 @@ class Test_Rosella_Harness_TestFile_PIR
     function get_spawn_command()
     {
         self.status.verify("Test Rosella.Harness.TestFile.PIR.get_spawn_command()");
-        var obj = new Rosella.Harness.TestFile.PIR();
+        var obj = new Rosella.Harness.TestFile.PIR("foo.pir");
 
-        var arg_0 = null;
-        var result = obj.get_spawn_command(arg_0);
+        var arg_0 = "foo.pir";
+        string result = obj.get_spawn_command(arg_0);
+        self.assert.equal(result, "parrot foo.pir");
     }
 }
 
