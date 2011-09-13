@@ -3,13 +3,14 @@ class Test_Rosella_Harness_TestExecutor
 {
     function test_new()
     {
-        var obj = new Rosella.Harness.TestExecutor();
+        var obj = new Rosella.Harness.TestExecutor(0);
         self.assert.not_null(obj);
         self.assert.instance_of(obj, class Rosella.Harness.TestExecutor);
     }
 
     function run()
     {
+        self.status.unimplemented("Find a way to test .run()");
         self.status.verify("Test Rosella.Harness.TestExecutor.run()");
         var obj = new Rosella.Harness.TestExecutor();
 
@@ -17,11 +18,12 @@ class Test_Rosella_Harness_TestExecutor
         var arg_1 = null;
         var arg_2 = null;
         var arg_3 = null;
-        var result = obj.run(arg_0, arg_1, arg_2, arg_3);
+        //var result = obj.run(arg_0, arg_1, arg_2, arg_3);
     }
 
     function compile_and_execute()
     {
+        self.status.unimplemented("Find a way to test .compile_and_execute()");
         self.status.verify("Test Rosella.Harness.TestExecutor.compile_and_execute()");
         var obj = new Rosella.Harness.TestExecutor();
 
@@ -32,6 +34,7 @@ class Test_Rosella_Harness_TestExecutor
 
     function close_stream()
     {
+        self.status.unimplemented("Find a way to test .close_stream()");
         self.status.verify("Test Rosella.Harness.TestExecutor.close_stream()");
         var obj = new Rosella.Harness.TestExecutor();
 
@@ -42,6 +45,7 @@ class Test_Rosella_Harness_TestExecutor
 
     function open_pipe_stream()
     {
+        self.status.unimplemented("Find a way to test .open_pipe_stream()");
         self.status.verify("Test Rosella.Harness.TestExecutor.open_pipe_stream()");
         var obj = new Rosella.Harness.TestExecutor();
 

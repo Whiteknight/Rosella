@@ -29,12 +29,13 @@ namespace Rosella.Harness
                 stream = self.compile_and_execute(file, result);
             else
                 stream = self.open_pipe_stream(file);
-            if (result.status == null || result.status != "ABORTED")
+            if (result.status == null || result.status != "ABORTED") {
                 try {
                     parser.parse(stream, view, result);
                 } catch (e) {
                     result.mark_test_abort(e.message);
                 }
+            }
             int exit_status = self.close_stream(file, stream);
             if (exit_status != 0 || (result.status != null && result.status == "ABORTED"))
                 result.mark_test_abort("Test aborted with exit code " + string(exit_status));
