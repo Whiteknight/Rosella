@@ -1,11 +1,14 @@
 namespace Rosella
 {
+    /* Harness Utility Routines
+    */
     namespace Harness
     {
         const string DEFAULT_TESTEXECUTOR_FACTORY = "Rosella.Harness.TestExecutor_factory";
         const string DEFAULT_TAPPARSER_FACTORY = "Rosella.Harness.TapParser_factory";
         const string DEFAULT_FILERESULT_FACTORY = "Rosella.Harness.FileResult_factory";
 
+        // Get a factory for creating TestExecutors
         function default_testexecutor_factory()
         {
             var temp = Rosella.Globals.get_global(DEFAULT_TESTEXECUTOR_FACTORY);
@@ -19,6 +22,7 @@ namespace Rosella
             }
         }
 
+        // Get a factory for creating TapParsers
         function default_tapparser_factory()
         {
             var temp = Rosella.Globals.get_global(DEFAULT_TAPPARSER_FACTORY);
@@ -32,6 +36,7 @@ namespace Rosella
             }
         }
 
+        // Get a factory for creating FileResults
         function default_fileresult_factory()
         {
             var temp = Rosella.Globals.get_global(DEFAULT_FILERESULT_FACTORY);
@@ -158,15 +163,14 @@ namespace Rosella
         // Internal routine to run the harness
         function run_internal(var test_runs, int run_inline, int debug)
         {
-            // TODO: Add a mechanism to override these defaults, allow the
-            // user to use subclasses
             var executor = default_testexecutor_factory().create(run_inline);
             var parser = default_tapparser_factory().create();
+            var fileresult_factory = default_fileresult_factory();
             var view = self.view();
 
             for (var test_run in test_runs) {
                 for (var test in test_run.tests()) {
-                    var result = default_fileresult_factory().create(test);
+                    var result = fileresult_factory.create(test);
                     view.start_test(string(test));
                     executor.run(view, test, result, parser, debug);
                     view.end_test(result);
