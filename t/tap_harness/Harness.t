@@ -8,6 +8,75 @@ function get_mock_testrun_factory(var harness)
 
 class Test_Rosella_Harness
 {
+    /* Tests for Harness namespace helper routines
+    */
+
+    function default_testexecutor_factory()
+    {
+        using Rosella.Harness.default_testexecutor_factory;
+        var f = default_testexecutor_factory();
+        self.assert.not_null(f);
+        self.assert.instance_of(f, class Rosella.ObjectFactory);
+        var e = f.create(0);
+        self.assert.not_null(e);
+        self.assert.instance_of(e, class Rosella.Harness.TestExecutor);
+    }
+
+    function set_testexecutor_factory()
+    {
+        using Rosella.Harness.default_testexecutor_factory;
+        using Rosella.Harness.set_testexecutor_factory;
+        var f = "Test";
+        set_testexecutor_factory(f);
+        var g = default_testexecutor_factory();
+        self.assert.same(f, g);
+    }
+
+    function default_tapparser_factory()
+    {
+        using Rosella.Harness.default_tapparser_factory;
+        var f = default_tapparser_factory();
+        self.assert.not_null(f);
+        self.assert.instance_of(f, class Rosella.ObjectFactory);
+        var e = f.create();
+        self.assert.not_null(e);
+        self.assert.instance_of(e, class Rosella.Harness.TapParser);
+    }
+
+    function set_tapparser_factory()
+    {
+        using Rosella.Harness.default_tapparser_factory;
+        using Rosella.Harness.set_tapparser_factory;
+        var f = "Test";
+        set_tapparser_factory(f);
+        var g = default_tapparser_factory();
+        self.assert.same(f, g);
+    }
+
+    function default_fileresult_factory()
+    {
+        using Rosella.Harness.default_fileresult_factory;
+        var f = default_fileresult_factory();
+        self.assert.not_null(f);
+        self.assert.instance_of(f, class Rosella.ObjectFactory);
+        //var e = f.create();
+        //self.assert.not_null(e);
+        //self.assert.instance_of(e, class Rosella.Harness.FileResult);
+    }
+
+    function set_fileresult_factory()
+    {
+        using Rosella.Harness.default_fileresult_factory;
+        using Rosella.Harness.set_fileresult_factory;
+        var f = "Test";
+        set_fileresult_factory(f);
+        var g = default_fileresult_factory();
+        self.assert.same(f, g);
+    }
+
+    /* Tests for Harness class
+    */
+
     function test_new()
     {
         var obj = new Rosella.Harness();

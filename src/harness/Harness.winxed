@@ -22,6 +22,12 @@ namespace Rosella
             }
         }
 
+        // Set the global default TestExecutor factory
+        function set_testexecutor_factory(var f)
+        {
+            Rosella.Globals.register_global(DEFAULT_TESTEXECUTOR_FACTORY, f);
+        }
+
         // Get a factory for creating TapParsers
         function default_tapparser_factory()
         {
@@ -36,6 +42,12 @@ namespace Rosella
             }
         }
 
+        // Set the global default TapParser factory
+        function set_tapparser_factory(var f)
+        {
+            Rosella.Globals.register_global(DEFAULT_TAPPARSER_FACTORY, f);
+        }
+
         // Get a factory for creating FileResults
         function default_fileresult_factory()
         {
@@ -48,6 +60,12 @@ namespace Rosella
                 yield temp;
                 temp = Rosella.Globals.get_global(DEFAULT_FILERESULT_FACTORY);
             }
+        }
+
+        // Set the global default FileResult factory
+        function set_fileresult_factory(var f)
+        {
+            Rosella.Globals.register_global(DEFAULT_FILERESULT_FACTORY, f);
         }
     }
     /* TAP Harness class. Contains a list of TestFile objects and executes
@@ -134,7 +152,7 @@ namespace Rosella
         /* Routines for Running the Harness
         */
 
-        // Run the harness.
+        // Run the harness. Get argument values and pass them to run_internal
         function run(var test_runs [optional], int has_runs [opt_flag],
                 int run_inline [named,optional],  int has_ri [opt_flag],
                 int debug [named,optional], int has_dbg [opt_flag])
