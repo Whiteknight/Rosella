@@ -1,11 +1,20 @@
 // Automatically generated test for Class Rosella.Harness.TapParser
+function test_parse(var data, var setup)
+{
+    var s = Rosella.Query.as_stream(data);
+    var factory = Rosella.MockObject.default_mock_factory();
+    var rcont = factory.create_typed(class Rosella.Harness.FileResult);
+    var vcont = factory.create_typed(class Rosella.Harness.View);
+    var obj = new Rosella.Harness.TapParser();
+
+    setup(rcont, vcont);
+    obj.parse(s, vcont.mock(), rcont.mock());
+    rcont.verify();
+    vcont.verify();
+}
+
 class Test_Rosella_Harness_TapParser
 {
-    function test_sanity()
-    {
-        self.assert.is_true(1);
-    }
-
     function test_new()
     {
         var obj = new Rosella.Harness.TapParser();
@@ -13,41 +22,43 @@ class Test_Rosella_Harness_TapParser
         self.assert.instance_of(obj, class Rosella.Harness.TapParser);
     }
 
-
-    function TapParser()
+    function parse_empty()
     {
-        self.status.verify("Test Rosella.Harness.TapParser.TapParser()");
-        var obj = new Rosella.Harness.TapParser();
-
-        var result = obj.TapParser();
+        test_parse([""], function(r, v) {
+            r.expect_method("mark_test_empty").once().with_no_args();
+        });
     }
 
-    function parse()
+    function parse_simple_success()
     {
-        self.status.verify("Test Rosella.Harness.TapParser.parse()");
-        var obj = new Rosella.Harness.TapParser();
-
-        var arg_0 = null;
-        var arg_1 = null;
-        var arg_2 = null;
-        var result = obj.parse(arg_0, arg_1, arg_2);
+        test_parse(["1..1", "ok 1"], function(r, v) {
+            r.expect_method("set_plan").once().with_args(1);
+            r.expect_get("num_tests").once().will_return(1);
+            v.expect_method("show_current_test_progress").once().with_args(1, 1);
+            r.expect_method("add_pass").once().with_args("", 1, 0);
+        });
     }
 
-    function get_plan()
+    function parse_several()
     {
-        self.status.verify("Test Rosella.Harness.TapParser.get_plan()");
-        var obj = new Rosella.Harness.TapParser();
-
-        var arg_0 = null;
-        var arg_1 = null;
-        var result = obj.get_plan(arg_0, arg_1);
+        test_parse(["1..3", "ok 1", "ok 2", "ok 3"], function(r, v) {
+            r.expect_method("set_plan").once().with_args("3");
+            r.expect_get("num_tests").exactly(3).will_return(3);
+            v.expect_method("show_current_test_progress").once().with_args(1, 3);
+            v.expect_method("show_current_test_progress").once().with_args(2, 3);
+            v.expect_method("show_current_test_progress").once().with_args(3, 3);
+            r.expect_method("add_pass").once().with_args("", 1, 0);
+            r.expect_method("add_pass").once().with_args("", 2, 0);
+            r.expect_method("add_pass").once().with_args("", 3, 0);
+        });
     }
 }
 
 function main[main]()
 {
     var core = load_packfile("rosella/core.pbc");
-    using Rosella.initialize_rosella; initialize_rosella("test");
+    using Rosella.initialize_rosella; initialize_rosella("test", "mockobject");
     using Rosella.load_bytecode_file; load_bytecode_file("rosella/harness.pbc", "load");
     using Rosella.Test.test;          test(class Test_Rosella_Harness_TapParser);
+    var t = new Test_Rosella_Harness_TapParser;
 }

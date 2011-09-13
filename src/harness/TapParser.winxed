@@ -25,13 +25,13 @@ namespace Rosella.Harness
         function parse(var stream, var view, var result)
         {
             // Get the plan. That should be the first line of the stream.
-            var plan_stream = stream
+            stream
                 .take(1)
                 .map(function(l) {
                     self.tokenizer.add_data(l);
                     return self.get_plan(self.tokenizer.all_tokens(), result);
                 });
-            if (plan_stream.has_more() == false || plan_stream.next() == false) {
+            if (stream.has_more() == false || stream.next() == false) {
                 result.mark_test_empty();
                 return;
             }
@@ -93,6 +93,8 @@ namespace Rosella.Harness
         // to the FileResult. Return false otherwise.
         function get_plan(var tokens, var result)
         {
+            if (elements(tokens) != 3)
+                return false;
             if (tokens[0].data() != "1" || tokens[1].data() != "..")
                 return false;
 
