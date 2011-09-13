@@ -84,8 +84,7 @@ namespace Rosella
         /* Routines for Running the Harness
         */
 
-        // Run the harness. Optionally take a custom view, and a handful of
-        // other named options.
+        // Run the harness.
         function run(var test_runs [optional], int has_runs [opt_flag],
                 int run_inline [named,optional],  int has_ri [opt_flag],
                 int debug [named,optional], int has_dbg [opt_flag])
@@ -96,6 +95,8 @@ namespace Rosella
                 debug = 0;
             if (has_runs == false || test_runs == null || elements(test_runs) == 0)
                 test_runs = self.saved_runs;
+            if (has_runs == true && test_runs instanceof Rosella.Harness.TestRun)
+                test_runs = [test_runs];
             return self.run_internal(test_runs, run_inline, debug);
         }
 
