@@ -19,6 +19,7 @@ namespace Rosella { namespace MockObject
     {
         var mock;
         var expectations;
+        var proxy_class;
 
         // Constructor
         function Controller()
@@ -106,6 +107,7 @@ namespace Rosella { namespace MockObject
             var controller = self;
             var name_pmc = name; // needs to be a PMC to be lexically scoped
             return function(var pos [slurpy], var named [slurpy,named]) {
+                controller.proxy_class.clear_method_cache();
                 pos.shift(); // remove the invocant. We know it's the mock
                 return controller.match_function(name_pmc, pos, named);
             };

@@ -30,7 +30,9 @@ namespace Rosella { namespace MockObject
             else
                 controller = self.controller_factory.create();
             var mock_factory = self.get_mock_factory_internal(type_to_mock, opts);
+            var mock_class = mock_factory.get_proxy_class_for();
             controller.mock = mock_factory.create(controller, null);
+            controller.proxy_class = mock_class;
             return controller;
         }
 
