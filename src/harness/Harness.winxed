@@ -1,5 +1,50 @@
 namespace Rosella
 {
+    namespace Harness
+    {
+        const string DEFAULT_TESTEXECUTOR_FACTORY = "Rosella.Harness.TestExecutor_factory";
+        const string DEFAULT_TAPPARSER_FACTORY = "Rosella.Harness.TapParser_factory";
+        const string DEFAULT_FILERESULT_FACTORY = "Rosella.Harness.FileResult_factory";
+
+        function default_testexecutor_factory()
+        {
+            var temp = Rosella.Globals.get_global(DEFAULT_TESTEXECUTOR_FACTORY);
+            if (temp == null) {
+                temp = new Rosella.ObjectFactory(class Rosella.Harness.TestExecutor);
+                Rosella.Globals.register_global(DEFAULT_TESTEXECUTOR_FACTORY, temp);
+            }
+            while(1) {
+                yield temp;
+                temp = Rosella.Globals.get_global(DEFAULT_TESTEXECUTOR_FACTORY);
+            }
+        }
+
+        function default_tapparser_factory()
+        {
+            var temp = Rosella.Globals.get_global(DEFAULT_TAPPARSER_FACTORY);
+            if (temp == null) {
+                temp = new Rosella.ObjectFactory(class Rosella.Harness.TapParser);
+                Rosella.Globals.register_global(DEFAULT_TAPPARSER_FACTORY, temp);
+            }
+            while(1) {
+                yield temp;
+                temp = Rosella.Globals.get_global(DEFAULT_TAPPARSER_FACTORY);
+            }
+        }
+
+        function default_fileresult_factory()
+        {
+            var temp = Rosella.Globals.get_global(DEFAULT_FILERESULT_FACTORY);
+            if (temp == null) {
+                temp = new Rosella.ObjectFactory(class Rosella.Harness.FileResult);
+                Rosella.Globals.register_global(DEFAULT_FILERESULT_FACTORY, temp);
+            }
+            while(1) {
+                yield temp;
+                temp = Rosella.Globals.get_global(DEFAULT_FILERESULT_FACTORY);
+            }
+        }
+    }
     /* TAP Harness class. Contains a list of TestFile objects and executes
        each in a loop. The Harness keeps statistics about the test run, and
        passes them off to other routines for display and analysis.
@@ -113,14 +158,17 @@ namespace Rosella
         // Internal routine to run the harness
         function run_internal(var test_runs, int run_inline, int debug)
         {
-            var executor = new Rosella.Harness.TestExecutor(run_inline);
-            var parser = new Rosella.Harness.TapParser();
+            // TODO: Add a mechanism to override these defaults, allow the
+            // user to use subclasses
+            var executor = default_testexecutor_factory().create(run_inline);
+            var parser = default_tapparser_factory().create();
             var view = self.view();
 
             for (var test_run in test_runs) {
                 for (var test in test_run.tests()) {
+                    var result = default_fileresult_factory().create(test);
                     view.start_test(string(test));
-                    var result = executor.run(view, test, parser, debug);
+                    executor.run(view, test, result, parser, debug);
                     view.end_test(result);
                 }
                 test_run.mark_completed();

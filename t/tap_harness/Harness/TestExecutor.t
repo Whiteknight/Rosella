@@ -1,26 +1,11 @@
 // Automatically generated test for Class Rosella.Harness.TestExecutor
 class Test_Rosella_Harness_TestExecutor
 {
-    function test_sanity()
-    {
-        self.assert.is_true(1);
-    }
-
     function test_new()
     {
         var obj = new Rosella.Harness.TestExecutor();
         self.assert.not_null(obj);
         self.assert.instance_of(obj, class Rosella.Harness.TestExecutor);
-    }
-
-
-    function TestExecutor()
-    {
-        self.status.verify("Test Rosella.Harness.TestExecutor.TestExecutor()");
-        var obj = new Rosella.Harness.TestExecutor();
-
-        var arg_0 = null;
-        var result = obj.TestExecutor(arg_0);
     }
 
     function run()

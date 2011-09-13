@@ -22,9 +22,8 @@ namespace Rosella.Harness
 
         // Execute a single test, using the given parser, and sending update
         // commands to the view.
-        function run(var view, var file, var parser, int debug)
+        function run(var view, var file, var result, var parser, int debug)
         {
-            var result = new Rosella.Harness.FileResult(file);
             var stream;
             if (int(self.mode) == MODE_COMPILE_INLINE)
                 stream = self.compile_and_execute(file, result);
@@ -39,7 +38,6 @@ namespace Rosella.Harness
             int exit_status = self.close_stream(file, stream);
             if (exit_status != 0 || (result.status != null && result.status == "ABORTED"))
                 result.mark_test_abort("Test aborted with exit code " + string(exit_status));
-            return result;
         }
 
         /* Internal Helper Methods

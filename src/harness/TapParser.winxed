@@ -93,7 +93,7 @@ namespace Rosella.Harness
         // to the FileResult. Return false otherwise.
         function get_plan(var tokens, var result)
         {
-            if (elements(tokens) != 3)
+            if (elements(tokens) < 3)
                 return false;
             if (tokens[0].data() != "1" || tokens[1].data() != "..")
                 return false;
