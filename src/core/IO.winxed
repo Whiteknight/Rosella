@@ -88,8 +88,27 @@ namespace Rosella
             return exit_status;
         }
 
-        // Convenience routines for performing formatted output
-        function sayf(string fmt, var args[slurpy]) { say(sprintf(fmt, args)); }
-        function printf(string fmt, var args[slurpy]) { print(sprintf(fmt, args)); }
+        /* Convenience routines for performing formatted output
+        */
+
+        // Say. Print with a trailing newline
+        function sayf(string fmt, var args[slurpy], var handle[named,optional], int has_h [opt_flag])
+        {
+            string msg = sprintf(fmt, args);
+            if (!has_h || handle == null)
+                say(msg);
+            else
+                handle.print(msg + "\n");
+        }
+
+        // Print with a trailing newline
+        function printf(string fmt, var args[slurpy], var handle[named,optional], int has_h [opt_flag])
+        {
+            string msg = sprintf(fmt, args);
+            if (!has_h || handle == null)
+                print(msg);
+            else
+                handle.print(msg);
+        }
     }
 }

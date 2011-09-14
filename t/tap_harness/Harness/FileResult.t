@@ -1,18 +1,21 @@
-// Automatically generated test for Class Rosella.Harness.FileResult
+function test_fileresult(var s, var f)
+{
+    var fr = Rosella.MockObject.default_mock_factory().create_typed(class Rosella.Harness.TestFile);
+    fr.expect_method("set_result").with_any_args();
+    if (s != null)
+        s(fr);
+    f(fr.mock());
+    fr.verify();
+}
+
 class Test_Rosella_Harness_FileResult
 {
-    function test_sanity()
-    {
-        self.assert.is_true(1);
-    }
-
     function test_new()
     {
         var obj = new Rosella.Harness.FileResult();
         self.assert.not_null(obj);
         self.assert.instance_of(obj, class Rosella.Harness.FileResult);
     }
-
 
     function FileResult()
     {
@@ -131,7 +134,7 @@ class Test_Rosella_Harness_FileResult
 function main[main]()
 {
     var core = load_packfile("rosella/core.pbc");
-    using Rosella.initialize_rosella; initialize_rosella("test");
+    using Rosella.initialize_rosella; initialize_rosella("test", "mockobject");
     using Rosella.load_bytecode_file; load_bytecode_file("rosella/harness.pbc", "load");
     using Rosella.Test.test;          test(class Test_Rosella_Harness_FileResult);
 }

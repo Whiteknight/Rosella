@@ -6,6 +6,7 @@ namespace Rosella.Harness
     */
     class View
     {
+        var handle;
         var test_runs;
         var line_length;
         var total_files;
@@ -16,8 +17,11 @@ namespace Rosella.Harness
         var need_backspaces;
 
         // Constructor
-        function View()
+        function View(var handle [optional], int has_h [opt_flag])
         {
+            if (!has_h)
+                handle = getstdout();
+            self.handle = handle;
             self.test_runs = [];
             self.line_length = 0;
             self.total_files = 0;
@@ -53,7 +57,7 @@ namespace Rosella.Harness
             int diff = line_length - len + 3;
             string elipses = "";
             ${ repeat elipses, '.', diff };
-            Rosella.IO.printf("%s %s ", name, elipses);
+            Rosella.IO.printf("%s %s ", name, elipses, self.handle:[named("handle")]);
         }
 
         // End a test
@@ -73,12 +77,12 @@ namespace Rosella.Harness
             else
                 msg = "ok";
             msg = Rosella.String.pad_end(msg, 10);
-            say(msg);
+            Rosella.IO.sayf(msg, self.handle:[named("handle")]);
             string error_details = result.error_details();
             if (error_details != null) {
                 var lines = split("\n", error_details);
                 for (string line in lines)
-                    Rosella.IO.sayf("# %s", line);
+                    Rosella.IO.sayf("# %s", line, self.handle:[named("handle")]);
             }
         }
 
@@ -132,10 +136,10 @@ namespace Rosella.Harness
 
                 var failed_files  = self.get_all_files_by_status("FAILED");
                 if (self.num_aborted_files)
-                    Rosella.IO.sayf("\tFailed %d files due to premature exit", self.num_aborted_files);
+                    Rosella.IO.sayf("\tFailed %d files due to premature exit", self.num_aborted_files, self.handle:[named("handle")]);
                 if (self.num_failed_tests)
-                    Rosella.IO.sayf("\tFailed %d tests in %d files", self.num_failed_tests, self.num_failed_files);
-                say("");
+                    Rosella.IO.sayf("\tFailed %d tests in %d files", self.num_failed_tests, self.num_failed_files, self.handle:[named("handle")]);
+                Rosella.IO.sayf("", self.handle:[named("handle")]);
             } else
                 self.show_result_headline("PASSED");
         }
@@ -151,10 +155,10 @@ namespace Rosella.Harness
 
             say("\tList of failed tests by file:");
             for (var test in failed_files) {
-                Rosella.IO.sayf("\t\t%s", string(test));
+                Rosella.IO.sayf("\t\t%s", string(test), self.handle:[named("handle")]);
                 var result = test.result;
                 for (var failure in result.list_of_failures())
-                    Rosella.IO.sayf("\t\t\t%s", failure);
+                    Rosella.IO.sayf("\t\t\t%s", failure, self.handle:[named("handle")]);
             }
         }
 
@@ -172,7 +176,7 @@ namespace Rosella.Harness
             string p = Rosella.String.sprintf("%d/%d", done, total);
             //p = Rosella.String.pad_end(p, 10);
             self.need_backspaces = length(p) + 1;
-            print(p);
+            Rosella.IO.printf(p, self.handle:[named("handle")]);
         }
 
         // Show a list of failures. Failures are files which have not executed
@@ -186,7 +190,7 @@ namespace Rosella.Harness
                 for (var file in aborted_files) {
                     // TODO: Should record and output error codes or other
                     //       error info. Display some diagnostics here
-                    Rosella.IO.sayf("\t\t%s", file);
+                    Rosella.IO.sayf("\t\t%s", file, self.handle:[named("handle")]);
                 }
             }
         }
@@ -194,7 +198,7 @@ namespace Rosella.Harness
         // Print out a debug message
         function debug(int dbg, var msg)
         {
-            Rosella.IO.sayf("DEBUG: %s\n", msg);
+            Rosella.IO.sayf("DEBUG: %s\n", msg, self.handle:[named("handle")]);
         }
 
         /* Internal Helper Routines
@@ -204,10 +208,11 @@ namespace Rosella.Harness
         // a count of how many tests passed.
         function show_result_headline(string result)
         {
-            Rosella.IO.sayf("Result: %s", result);
+            Rosella.IO.sayf("Result: %s", result, self.handle:[named("handle")]);
             int num_runs = int(self.test_runs);
             Rosella.IO.sayf("\tPassed %d tests in %d files (%d test run%s)",
-                self.num_passed_tests, self.total_files, num_runs, num_runs == 1 ? "" : "s"
+                self.num_passed_tests, self.total_files, num_runs, num_runs == 1 ? "" : "s",
+                self.handle:[named("handle")]
             );
         }
 
@@ -221,5 +226,6 @@ namespace Rosella.Harness
                 .flatten()
                 .data();
         }
+
     }
 }
