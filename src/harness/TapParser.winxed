@@ -16,7 +16,8 @@ namespace Rosella.Harness
             self.tokenizer = new Rosella.String.Tokenizer.CClass([
                 get_character_class("punctuation"),
                 get_character_class("numeric"),
-                get_character_class("word")
+                get_character_class("word"),
+                get_character_class("whitespace")
             ]);
         }
 
@@ -44,8 +45,8 @@ namespace Rosella.Harness
                 .map(function(l) {
                     self.tokenizer.add_data(l);
                     return Rosella.Query.as_stream(self.tokenizer)
-                        .filter(function(t) { return int(t.metadata()) != 0; })
                         .map(function(t) { return t.data(); })
+                        .filter(function(s) { return indexof(s, "\n") == -1; })
                         .data();
                 })
 
@@ -57,14 +58,16 @@ namespace Rosella.Harness
                 // with [test name, test number, true/false result, true/false todo]
                 .map(function(l) {
                     int i = 0;
-                    string r = l[i++];
+                    string r = l[0];
                     int result;
                     if (r == "ok")
                         result = 1;
-                    else if (r == "not" && l[i++] == "ok")
+                    else if (r == "not" && l[2] == "ok") {
+                        i += 2;
                         result = 0;
-                    else
+                    } else
                         Rosella.Error.invalid(__FUNCTION__, "Unknown TAP sequence: '%s' ('%s', '%s')", join(" ", l), r, l[1]);
+                    i += 2;
                     int num = int(l[i++]);
                     if (i >= elements(l))
                         return ["", num, result, 0];
@@ -72,10 +75,10 @@ namespace Rosella.Harness
                         i++;
                     string name = "";
                     while(i < elements(l) && l[i] != "#") {
-                        name = name + string(l[i]) + " ";
+                        name = name + string(l[i]);
                         i++;
                     }
-                    if (i < elements(l) && l[i] == "#" && i + 1 < elements(l) && l[i + 1] == "TODO")
+                    if (i < elements(l) && l[i] == "#" && i + 1 < elements(l) && (l[i + 1] == "TODO" || l[i + 2] == "TODO"))
                         return [name, num, result, 1];
                     return [name, num, result, 0];
                 })
