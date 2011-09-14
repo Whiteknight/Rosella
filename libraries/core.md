@@ -118,16 +118,16 @@ for components to use repeatedly. This is a mechanism which is typically only
 used by the various Rosella libraries themselves to store certain persistant
 data values.
 
-This mechanism is not necessarily designed for user code to use directly,
-although it does provide a mechanism for user code to override some defaults
-used internally by Rosella.
+This mechanism is not necessarily designed for user code to use directly.
+Where it is necessary to use this functionality to override default behavior
+in various libraries, specific interfaces for that will be provided.
 
 Register a global instance:
 
-    using Rosella.register_global;
+    using Rosella.Globals.register_global;
     register_global("name", value);
 
-    using Rosella.get_global;
+    using Rosella.Globals.get_global;
     var foo = get_global("name");
 
 ### Bytecode Loading
@@ -135,8 +135,7 @@ Register a global instance:
 Rosella provides several utilities for working with bytecode files in Parrot.
 
     var rosella = load_packfile("rosella/core.pbc");
-    using Rosella.initialize_rosella;
-    initialize_rosella("action", "container", "test");
+    var(Rosella.initialize_rosella)("action", "container", "test");
 
 Before using Rosella or any of its component libraries, you need to initialize
 it. The snippet above loads the Rosella bytecode file, initializes, and
@@ -181,8 +180,16 @@ keys.
 
 ### Rosella.Error
 
-The Rosella.Error namespace provides a number of error reporting mechanisms
-used internally by Rosella to communicate problems.
+The `Rosella.Error` namespace provides a number of error reporting mechanisms
+used internally by Rosella to communicate problems. The most common are:
+
+* `invalid`: Throw a general Rosella error. This is used to communicate most
+errors internally.
+* `must_subclass`: An error in a parent class where a subclass must be used.
+When subclassing an existing Rosella type, find uses of this error and make
+sure your subclass provides an implementation of that method.
+
+### Rosella.Globals
 
 ### Rosella.IO
 
@@ -212,6 +219,23 @@ interacting with Parrot in standard ways.
         ...
     });
 
+### Rosella.Version
+
+Rosella libraries are individually versioned. To get the version information
+for a Rosella library, you can use the `Rosella.Version.get_version` function.
+This function returns a simple version object which contains acessors to get
+detailed version information.
+
+    var v = Rosella.Version.get_version("core");
+    say(v.library_name());
+    say(v.library_version());
+    say(v.library_state());
+
+The `library_version` is a version number. Libraries with version number 0
+are considered "unstable" or are early prototypes. The `library_state` is an
+identifier like "alpha", "beta", or "stable" which tells the state of the
+library.
+
 ## Classes
 
 ### Rosella.ObjectFactory
@@ -232,6 +256,12 @@ ObjectFactory is the parent type of all other factory objects in Rosella.
 The basic ObjectFactory has limited utility, but it provides a common
 interface for other, more advanced, factory types.
 
+### Rosella.Version
+
+The `Rosella.Version` class is used as the return object from the
+`Rosella.Version.get_version` function. It encapsulates version information
+from individual Rosella libraries.
+
 ## Examples
 
 ### Winxed
@@ -239,8 +269,7 @@ interface for other, more advanced, factory types.
 First, you need to load and initialize Rosella:
 
     var rosella = load_packfile("rosella/core.pbc");
-    using Rosella.initialize_rosella;
-    initialize_rosella();
+    var(Rosella.initialize_rosella)();
 
 Create an object with BUILD:
 

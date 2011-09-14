@@ -119,6 +119,9 @@ recursively and returns that list to the caller.
 
 ### Winxed
 
+    var rosella = load_packfile("rosella/core.pbc");
+    var(Rosella.initialize_rosella)("filesystem");
+
 Create a new directory:
 
     var dir = construct(class Rosella.FileSystem.Directory, "foo");
@@ -138,6 +141,9 @@ Get a file from the current directory:
     string txt = file.read_all_text();
 
 ### NQP-rx
+
+    my $rosella := pir::load_bytecode__ps("rosella/core.pbc");
+    Rosella::initialize_rosella("filesystem");
 
 
 ## Users

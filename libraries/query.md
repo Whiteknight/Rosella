@@ -287,6 +287,9 @@ will have markedly different behaviors.
 
 ### Winxed
 
+    var rosella = load_packfile("rosella/core.pbc");
+    var(Rosella.initialize_rosella)("query");
+
 This example, from the test suite, uses `.map`, `.filter` and `.fold`. It uses
 map to square each entry. Then it uses filter to select only the odd squares.
 Finally, it uses fold to sum all the squares together. The sum of 1 + 9 + 25
@@ -301,6 +304,9 @@ Finally, it uses fold to sum all the squares together. The sum of 1 + 9 + 25
     say(sum); # 165
 
 ### NQP-rx
+
+    my $rosella := pir::load_bytecode__ps("rosella/core.pbc");
+    Rosella::initialize_rosella("filesystem");
 
 Same sum-of-odd-squares example from above, in NQP-rx:
 
