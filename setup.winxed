@@ -20,6 +20,7 @@ function setup_main(var argv)
         "pbc_pbc"           : {},
         "pbc_pir"           : {},
         "pir_pir"           : {},
+        "winxed_debug"      : false,
         "winxed_winxed"     : {},
         "inst_lib"          : [],
         "installable_pbc"   : {},
