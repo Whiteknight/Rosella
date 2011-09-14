@@ -18,6 +18,7 @@ namespace Rosella.Harness
         {
             self.file = file;
             file.set_result(self);
+            self.num_tests    = 0;
             self.failures     = [];
             self.todo_passed  = [];
             self.passed_tests = [];
