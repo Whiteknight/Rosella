@@ -1,7 +1,8 @@
-namespace Rosella.Query.Queryable
+namespace Rosella.Query
 {
-    class Stream : Rosella.Query.Queryable
+    class Stream : Rosella.Query
     {
+        var data;
         var last_stage;
         var source_stage;
         var output_cache;
@@ -11,22 +12,6 @@ namespace Rosella.Query.Queryable
             self.data = data;
             self.source_stage = self.last_stage = new Rosella.Query.Stage.Source(data);
             self.output_cache = [];
-        }
-
-        function get_next()
-        {
-            :(int is_valid, var value) = self.last_stage.next();
-            return is_valid, value;
-        }
-
-        function on_iterator(var f)
-        {
-            return f(self.source_stage.iterator);
-        }
-
-        function on_data(var f)
-        {
-            return f(self.data);
         }
 
         /* Queryable API
@@ -51,6 +36,16 @@ namespace Rosella.Query.Queryable
             :(int is_valid, var item) = self.get_next();
             while (is_valid)
                 :(is_valid, item) = self.get_next();
+        }
+
+        function on_iterator(var f)
+        {
+            return f(self.source_stage.iterator);
+        }
+
+        function on_data(var f)
+        {
+            return f(self.data);
         }
 
         function clear_stages()
@@ -210,6 +205,15 @@ namespace Rosella.Query.Queryable
         function get_iter[vtable]()
         {
             // TODO
+        }
+
+        /* Internal Helper Routines
+        */
+
+        function get_next()
+        {
+            :(int is_valid, var value) = self.last_stage.next();
+            return is_valid, value;
         }
     }
 }
