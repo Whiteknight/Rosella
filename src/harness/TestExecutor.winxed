@@ -33,6 +33,14 @@ namespace Rosella.Harness
                 try {
                     parser.parse(stream, view, result);
                 } catch (e) {
+                    /*
+                    if (__DEBUG__) {
+                        say("");
+                        say(e.message);
+                        for(string bt in e.backtrace_strings())
+                            say(bt);
+                    }
+                    */
                     result.mark_test_abort(e.message);
                 }
             }

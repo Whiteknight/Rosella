@@ -103,7 +103,7 @@ class Test_Rosella_Harness_TapParser
         });
     }
 
-    function parse_todo_failure()
+    function parse_todo_pass()
     {
         test_parse(["1..1", "ok 1 # TODO"], function(r, v) {
             r.expect_method("set_plan").once().with_args(1);

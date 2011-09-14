@@ -42,7 +42,8 @@ namespace Rosella.Harness
                 .clear_stages()
 
                 // Turn each line into an array of tokens
-                .map(function(l) {
+                .map(function(string l) {
+                    l = Rosella.String.trim(l);
                     self.tokenizer.add_data(l);
                     return Rosella.Query.as_stream(self.tokenizer)
                         .map(function(t) { return t.data(); })
@@ -66,7 +67,7 @@ namespace Rosella.Harness
                         i += 2;
                         result = 0;
                     } else
-                        Rosella.Error.invalid(__FUNCTION__, "Unknown TAP sequence: '%s' ('%s', '%s')", join(" ", l), r, l[1]);
+                        Rosella.Error.invalid(__FUNCTION__, "Unknown TAP sequence: '%s'", join(" ", l));
                     i += 2;
                     int num = int(l[i++]);
                     if (i >= elements(l))
@@ -78,8 +79,13 @@ namespace Rosella.Harness
                         name = name + string(l[i]);
                         i++;
                     }
-                    if (i < elements(l) && l[i] == "#" && i + 1 < elements(l) && (l[i + 1] == "TODO" || l[i + 2] == "TODO"))
-                        return [name, num, result, 1];
+                    name = Rosella.String.trim(name);
+                    if (i < elements(l) && l[i] == "#") {
+                        if (i + 1 < elements(l) && l[i + 1] == "TODO")
+                            return [name, num, result, 1];
+                        if (i + 2 < elements(l) && l[i + 2] == "TODO")
+                            return [name, num, result, 1];
+                    }
                     return [name, num, result, 0];
                 })
 
