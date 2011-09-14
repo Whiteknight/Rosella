@@ -10,10 +10,10 @@ my $harness := Rosella::construct(Rosella::Harness);
 if (pir::elements(@argv)) {
     for @argv -> $dir {
         my $type := "NQP";
-        if ($dir eq "template") {
+        if ($dir eq "template" || $dir eq "tap_harness") {
             $type := "Winxed";
         }
-        $harness.add_test_dirs($type, "t/$dir", :recurse(1)).setup_test_run();
+        $harness.add_test_dirs($type, "t/$dir", :recurse(1)).setup_test_run(:sort(1));
     }
 } else {
     # Core tests (If these fail, we don't attempt anything else)
@@ -26,12 +26,12 @@ if (pir::elements(@argv)) {
     # winxed.
     $harness.add_test_dirs("Winxed",
         "t/winxed_test",
+        "t/tap_harness", # "harness", can't shadow t/harness program
         "t/template"
     ).setup_test_run();
 
     # Stable library tests
     $harness.add_test_dirs("NQP",
-        #"t/tap_harness",    # "harness", can't shadow t/harness program
         "t/test",
         "t/action",
         "t/container",
@@ -54,7 +54,7 @@ if (pir::elements(@argv)) {
 }
 
 my $result := $harness.run();
-$harness.default_view.show_results();
+$harness.show_results();
 if (!$result) {
     pir::exit(1);
 }

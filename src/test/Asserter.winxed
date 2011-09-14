@@ -118,6 +118,14 @@ namespace Rosella { namespace Test
         function equal(var o1, var o2,
                 string message [optional], int has_msg [opt_flag])
         {
+            if (!has_msg) {
+                try {
+                    string s1 = string(o1);
+                    string s2 = string(o2);
+                    message = sprintf("objects not equal '%s' != '%s'", [s1, s2]);
+                    has_msg = 1;
+                } catch() { }
+            }
             message = self.default_message(message, has_msg, "objects not equal");
             int equal = 0;
             ${ iseq equal, o1, o2 };

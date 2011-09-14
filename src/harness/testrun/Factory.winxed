@@ -1,4 +1,4 @@
-namespace Rosella { namespace Harness { namespace TestRun
+namespace Rosella.Harness.TestRun
 {
     /* TestRun factory type.
         Builds TestRun objects, pre-populating them with a list of TestFile
@@ -106,4 +106,4 @@ namespace Rosella { namespace Harness { namespace TestRun
             }
         }
     }
-}}}
+}

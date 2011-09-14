@@ -537,6 +537,7 @@ namespace Rosella { namespace __PRIVATE_Version
 
 function main[main](var argv)
 {
+    int exit_code = 0;
     if (argv[1] == "test")
         do_test();
     try {
@@ -545,5 +546,7 @@ function main[main](var argv)
         say(e["message"]);
         for (string bt in e.backtrace_strings())
             say(bt);
+        exit_code = 1;
     }
+    exit(exit_code);
 }

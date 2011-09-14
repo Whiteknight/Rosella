@@ -66,11 +66,13 @@ function harness_template_context(string template, var dirs)
 
 function test_template_context(string template, string libname, string classname)
 {
-    var lib = load_packfile(libname);
+    load_bytecode(libname);
     using Rosella.get_type_class;
     using Rosella.String.replace_all;
 
     var targetclass = get_type_class(split(".", classname));
+    if (targetclass == null)
+        Rosella.Error.invalid(__FUNCTION__, "Cannot find class %s", classname);
     var methods = targetclass.methods();
 
     var context = {
