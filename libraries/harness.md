@@ -26,6 +26,27 @@ result information to the user.
 Rosella provides a TAP producer library, the Rosella Test library. However,
 the Harness library should be able to work with any TAP producer.
 
+TAP Producers will output streams of test data that looks like this:
+
+    1..5
+    ok 1
+    ok 2 - test name/description
+    not ok 3
+    # This is a comment
+    ok 4 # TODO
+    not ok 5 - description # TODO
+
+The first line of the TAP stream is called the *plan*. It shows how many tests
+are expected. Every subsequent line will be either a subtest result or a
+comment. Successes are listed with "ok" and the number of the test. Failures
+are listed as "not ok" with the number. Following the "ok"/"not ok" and test
+number there is an optional description and an optional comment. If the first
+text in the comment is the string "TODO", the test is marked as such. A
+passing test marked TODO is reported as an unexpected pass. A failing test
+marked TODO is not listed as a failure in the final report.
+
+Any test file which can generate this kind of output is a valid TAP test.
+
 ### MVC
 
 The Harness library follows an MVC architecture. In MVC there are three basic
@@ -36,17 +57,54 @@ View.
 
 ## Namespaces
 
-None.
+### Rosella.Harness
+
+This namespace contains several helper routines for working with global
+factory instances. You can get access to the global factories (for
+TestExecutor, TapParser, and FileResult objects) in this namespace, or you can
+set your own factories for these purposes if you need custom behavior.
 
 ## Public Classes
 
 ### Harness
 
-The Harness class is the Controller portion of the library. It is responsible
-for taking in a TestRun object or a sequence of them, and executing all tests
-therein.
+The Harness class is a facade over the inner complexity of the library. It
+contains the user-friendly methods you need for basic test management and
+test suite execution. The Harness creates and manages a list of TestRun
+objects, it creates and manages the test results View, and does some other
+bookkeeping.
 
     my $harness := Rosella::build(Rosella::Harness);
+    $harness.add_test_dirs(...);
+    $harness.add_test_files(...);
+    $harness.run();
+    $harness.show_results;
+
+### Harness.FileResult
+
+A `Rosella.Harness.FileResult` object represents the result of executing a
+TestFile. The Harness essentially acts like a map, taking a list of TestFile
+objects and creating a FileResult object for each one. The View operates on
+the list of FileResult objects to display information and statistics to the
+user.
+
+### Harness.TapParser
+
+The `Rosella.Harness.TapParser` object is responsible for parsing the incoming
+TAP stream from an executing test. The TapParser `parse` method takes an input
+Query.Stream object with TAP text separated into lines, a FileResult object
+and a View object
+
+    // Get a new instance of a TapParser from the default global factory
+    var parser = Rosella.Harness.default_tapparser_factory().create();
+    parser.parse(stream, view, result);
+
+### Harness.TestExecutor
+
+The `Rosella.Harness.TestExecutor` object is the engine which executes
+individual TestFiles. The TestExecutor sets up and executes the test, and
+generates a Stream of input lines. It passes that stream to the TapParser,
+and then passing on details to the FileResult and the View.
 
 ### Harness.TestFile
 
@@ -58,15 +116,16 @@ subclasses for specific types of file.
 TestFile objects should be created using the
 `Rosella.Harness.TestFile.Factory` class. Do not try to create them directly.
 
-### Harness.TestFile.Custom
+### Harness.TestFile.Automatic
 
-A Custom TestFile is one where the user can specify the details of how to
-compile and execute the file.
+A `Rosella.Harness.TestFile.Automatic` object is a TestFile which
+automatically determines how to execute a file based on the first "she-bang"
+line in a file. This is a Unix convention. The first line in a test file can
+contain the special sequence "`#!`" followed by the name of an executable
+program to run with the test file.
 
-    my $factory := Rosella::build(Rosella::Harness::TestFile::Factory,
-        Rosella::Harness::TestFile::Custom
-    );
-    my $testfile := $factory.create("t/foo/whatever.t");
+Automatic files can only be executed in "spawn" mode. It cannot be used in
+"inline" mode.
 
 ### Harness.TestFile.Factory
 
@@ -96,8 +155,7 @@ A TestFile type for executing tests written in PIR.
 
 ### Harness.TestFile.Winxed
 
-A TestFile type for executing tests written in Winxed. Notice that you must
-have Winxed installed for this to work.
+A TestFile type for executing tests written in Winxed.
 
 ### Harness.TestRun
 
@@ -124,36 +182,23 @@ result information on the command-line in a manner similar to standard TAP
 harnesses from the world of Perl. The interface for View is simplistic, and
 can be easily subclassed or replaced entirely to get new behavior.
 
-## Private Classes
-
-### Harness.TestFile.Line
-
-This class is an implementation detail of the TAP parser and will be going
-away in the next round of refactors. Do not use this class or rely on it for
-any reason.
-
-### Harness.TestRun.ResultSet
-
-This is an internal class to help organize tests and test files by result.
-
 ## Examples
 
 ### Winxed
 
-Here is a minimal harness written in Winxed:
+Here is a minimal harness written in Winxed, which runs files in "Automatic"
+mode in the "t" directory and subdirectories:
 
     function main[main]() {
         var rosella = load_packfile("rosella/core.pbc");
-        using Rosella.initialize_rosella;
-        initialize_rosella("harness");
-        var factory = new Rosella.Harness.TestRun.Factory();
+        var(Rosella.initialize_rosella)("harness");
+
         var harness = new Rosella.Harness();
-        var view = harness.default_view();
-        factory.add_test_dirs("Winxed", "t", 1:[named("recurse")]);
-        var testrun = factory.create();
-        view.add_run(testrun, 0);
-        harness.run(testrun, view);
-        view.show_results();
+        harness
+            .add_test_dirs("Automatic", "t", 1:[named("recurse")])
+            .setup_test_run();
+        harness.run();
+        harness.show_results();
     }
 
 Here is a version of the harness which takes a list of test directories from
@@ -161,24 +206,16 @@ the command line:
 
     function main[main](var args) {
         var rosella = load_packfile("rosella/core.pbc");
-        using Rosella.initialize_rosella;
-        initialize_rosella("harness");
-        var factory = new Rosella.Harness.TestRun.Factory();
+        var(Rosella.initialize_rosella)("harness");
+
         var harness = new Rosella.Harness();
-        var view = harness.default_view();
-        var testruns = [];
         for (var dir in args) {
-            var testrun = factory.create();
-            view.add_run(testrun, 0);
-            push(testruns, testrun);
+            harness
+                .add_test_dirs("Automatic", dir, 1:[named("recurse")])
+                .setup_test_run();
         }
-        for (var run in testruns) {
-            if (!harness.run(run, view)) {
-                view.show_results();
-                exit(1);
-            }
-        }
-        view.show_results();
+        harness.run();
+        harness.show_results();
     }
 
 ### NQP-rx
@@ -189,17 +226,14 @@ Here is a minimal harness written in NQP:
         my $rosella := pir::load_bytecode__PS("rosella/core.pbc");
         Rosella::initialize_rosella("harness");
     }
-    my $factory := Rosella::construct(Rosella::Harness::TestRunFactory);
-    $factory.add_test_dirs("NQP", "t", :recurse(1));
-    my $testrun := $factory.create();
     my $harness := Rosella::construct(Rosella::Harness);
-    my $testview := $harness.default_view();
-    $testview.add_run($testrun, 0);
-    $harness.run($corerun, $testview);
-    $testview.show_results();
+    $harness.add_test_dirs("Automatic", "t", :recurse(1)).setup_test_run;
+    $harness.run;
+    $harness.show_results;
 
 ## Users
 
 * Rosella uses the Harness library to implement its own unit test harness
 * [Parrot-Linear-Algebra](http://github.com/Whiteknight/parrot-linear-algebra)
 uses the Harness library for its test harness
+* [Jaesop](http://github.com/Whiteknight/jaesop) uses the Harness library.
