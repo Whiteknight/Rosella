@@ -1,4 +1,4 @@
-namespace Rosella { namespace Query { namespace Provider
+namespace Rosella.Query.Provider
 {
     class Factory : Rosella.ObjectFactory
     {
@@ -30,4 +30,4 @@ namespace Rosella { namespace Query { namespace Provider
             self.role_map[role] = provider;
         }
     }
-}}}
+}

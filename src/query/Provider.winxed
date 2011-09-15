@@ -1,4 +1,4 @@
-namespace Rosella { namespace Query
+namespace Rosella.Query
 {
     /* Provider Namespace
         This namespace has some helper methods for maintaining singletons for
@@ -233,4 +233,4 @@ namespace Rosella { namespace Query
             return target;
         }
     }
-}}
+}

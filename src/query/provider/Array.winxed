@@ -1,4 +1,4 @@
-namespace Rosella { namespace Query { namespace Provider
+namespace Rosella.Query.Provider
 {
     /* Array Query Provider
         This provider operates on Array data.
@@ -148,4 +148,4 @@ namespace Rosella { namespace Query { namespace Provider
             return false;
         }
     }
-}}}
+}
