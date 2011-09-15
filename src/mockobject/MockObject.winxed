@@ -17,11 +17,14 @@ namespace Rosella
         function default_mock_factory()
         {
             var temp = Rosella.Globals.get_global(DEFAULT_MOCK_FACTORY_KEY);
-            if (temp == null)
-                Rosella.Globals.register_global(DEFAULT_MOCK_FACTORY_KEY, new Rosella.MockObject.Factory());
-            yield temp;
-            while(1)
+            if (temp == null) {
+                temp = new Rosella.MockObject.Factory();
+                Rosella.Globals.register_global(DEFAULT_MOCK_FACTORY_KEY, temp);
+            }
+            while(1) {
                 yield temp;
+                temp = Rosella.Globals.get_global(DEFAULT_MOCK_FACTORY_KEY);
+            }
         }
 
         // Set a new MockObject instance in the global instance registry.

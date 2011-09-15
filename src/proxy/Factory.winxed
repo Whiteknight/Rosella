@@ -49,8 +49,7 @@ namespace Rosella { namespace Proxy
         {
             if (!has_target)
                 target = null;
-            string type_name = self.target_name;
-            var proxy_class = self.proxy_classes[type_name];
+            var proxy_class = self.get_proxy_class_for();
             return self.create_proxy_internal(proxy_class, controller, target);
         }
 
@@ -64,16 +63,23 @@ namespace Rosella { namespace Proxy
         {
             if (!has_target)
                 target = null;
-            var target_class = Rosella.get_type_class(target_type);
-            var type_name = Rosella.get_type_name(target_type);
-            var proxy_class = null;
-            if (exists self.proxy_classes[type_name])
-                proxy_class = self.proxy_classes[type_name];
-            else {
-                proxy_class = self.create_proxy_class_internal(target_class);
-                self.proxy_classes[type_name] = proxy_class;
-            }
+            var proxy_class = self.get_proxy_class_for(target_type);
             return self.create_proxy_internal(proxy_class, controller, target);
+        }
+
+        function get_proxy_class_for(var target_type [optional], int has_type [opt_flag])
+        {
+            if (!has_type)
+                target_type = self.target_type;
+            var target_class = Rosella.get_type_class(target_type);
+            string type_name = Rosella.get_type_name(target_type);
+            if (exists self.proxy_classes[type_name])
+                return self.proxy_classes[type_name];
+            else {
+                var proxy_class = self.create_proxy_class_internal(target_class);
+                self.proxy_classes[type_name] = proxy_class;
+                return proxy_class;
+            }
         }
 
         /* Internal Routines

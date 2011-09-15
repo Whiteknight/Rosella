@@ -1,15 +1,25 @@
-namespace Rosella { namespace Harness
+namespace Rosella.Harness
 {
+    /* An individual Test File
+        The TestFile class represents a single file in the test suite. It
+        contains information about the file type, and holds result information
+        about the file after it has been executed. Subclasses of TestFile
+        hold information about how to run different types of test.
+
+        Do not use this type directly, use a subclass instead
+    */
     class TestFile
     {
-        var filename;
-        var result;
+        var filename;   /* The String filename */
+        var result;     /* The FileResult Object */
 
+        // Constructor. Set the filename
         function TestFile(string filename)
         {
             self.filename = filename;
         }
 
+        // get_String vtable. Get the filename string
         function get_string[vtable]()
         {
             return string(self.filename);
@@ -18,23 +28,30 @@ namespace Rosella { namespace Harness
         /* Compile and execute routines
         */
 
+        // Set the FileResult object for this file
         function set_result(var result)
         {
             self.result = result;
         }
 
+        // Compile the contents of the file inline, in this process. Do not
+        // spawn a separate interpreter to execute it. Compile the file and
+        // return an invokable Sub PMC that can be used to execute it
         function compile_test(string filename)
         {
             Rosella.Error.must_subclass(__CLASS__);
         }
 
+        // Prepare for a spawn command. Return the filename to use
         function setup_spawn() { return string(self.filename); }
 
-        function get_spawn_command()
+        // Get the command used to spawn the test
+        function get_spawn_command(string filename)
         {
             Rosella.Error.must_subclass(__CLASS__);
         }
 
+        // Cleanup after a spawn command
         function cleanup_spawn() { }
     }
-}}
+}

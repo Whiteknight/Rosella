@@ -114,29 +114,40 @@
 .annotate 'line', 53
     .return()
   __label_1: # endif
+.annotate 'line', 54
+# var debug: $P2
+# predefined var
+    $P2 = __ARG_1["winxed_debug"]
 .annotate 'line', 55
-    if_null $P1, __label_3
-    iter $P2, $P1
-    set $P2, 0
-  __label_2: # for iteration
-    unless $P2 goto __label_3
-    shift $S1, $P2
-# {
+    unless_null $P2, __label_2
 .annotate 'line', 56
+    box $P2, 0
+  __label_2: # endif
+.annotate 'line', 58
+    if_null $P1, __label_4
+    iter $P3, $P1
+    set $P3, 0
+  __label_3: # for iteration
+    unless $P3 goto __label_4
+    shift $S1, $P3
+# {
+.annotate 'line', 59
 # winxed_file: $S2
     $S2 = $P1[$S1]
-.annotate 'line', 57
-    $P3 = WSubId_9($S2, $S1)
-    if_null $P3, __label_4
-    unless $P3 goto __label_4
-.annotate 'line', 58
-    WSubId_10($S2, $S1)
-  __label_4: # endif
-# }
-    goto __label_2
-  __label_3: # endfor
-# }
 .annotate 'line', 60
+    $P4 = WSubId_9($S2, $S1)
+    if_null $P4, __label_5
+    unless $P4 goto __label_5
+.annotate 'line', 61
+# predefined int
+    set $I1, $P2
+    WSubId_10($S2, $S1, $I1)
+  __label_5: # endif
+# }
+    goto __label_3
+  __label_4: # endfor
+# }
+.annotate 'line', 63
 
 .end # build_winxed_files
 
@@ -147,15 +158,15 @@
 .const 'Sub' WSubId_11 = "WSubId_11"
 # Body
 # {
-.annotate 'line', 66
+.annotate 'line', 69
 # var winxed_files: $P1
     $P1 = __ARG_1["include_winxed"]
-.annotate 'line', 67
+.annotate 'line', 70
     unless_null $P1, __label_1
-.annotate 'line', 68
+.annotate 'line', 71
     .return()
   __label_1: # endif
-.annotate 'line', 70
+.annotate 'line', 73
     if_null $P1, __label_3
     iter $P2, $P1
     set $P2, 0
@@ -163,21 +174,21 @@
     unless $P2 goto __label_3
     shift $S1, $P2
 # {
-.annotate 'line', 71
+.annotate 'line', 74
 # winxed_file: $S2
     $S2 = $P1[$S1]
-.annotate 'line', 72
+.annotate 'line', 75
     $P3 = WSubId_9($S2, $S1)
     if_null $P3, __label_4
     unless $P3 goto __label_4
-.annotate 'line', 73
+.annotate 'line', 76
     WSubId_11($S2, $S1)
   __label_4: # endif
 # }
     goto __label_2
   __label_3: # endfor
 # }
-.annotate 'line', 75
+.annotate 'line', 78
 
 .end # build_winxed_const_includes
 
@@ -188,15 +199,15 @@
 .const 'Sub' WSubId_13 = "WSubId_13"
 # Body
 # {
-.annotate 'line', 81
+.annotate 'line', 84
 # var dest_files: $P1
     $P1 = __ARG_1["winxed_winxed"]
-.annotate 'line', 82
+.annotate 'line', 85
     unless_null $P1, __label_1
-.annotate 'line', 83
+.annotate 'line', 86
     .return()
   __label_1: # endif
-.annotate 'line', 86
+.annotate 'line', 89
     if_null $P1, __label_3
     iter $P3, $P1
     set $P3, 0
@@ -204,21 +215,21 @@
     unless $P3 goto __label_3
     shift $S1, $P3
 # {
-.annotate 'line', 87
+.annotate 'line', 90
 # var source_files: $P2
     $P2 = $P1[$S1]
-.annotate 'line', 88
+.annotate 'line', 91
     $P4 = WSubId_12($P2, $S1)
     if_null $P4, __label_4
     unless $P4 goto __label_4
-.annotate 'line', 89
+.annotate 'line', 92
     WSubId_13($P2, $S1)
   __label_4: # endif
 # }
     goto __label_2
   __label_3: # endfor
 # }
-.annotate 'line', 91
+.annotate 'line', 94
 
 .end # build_concat_winxed_files
 
@@ -228,24 +239,24 @@
 .const 'Sub' WSubId_14 = "WSubId_14"
 # Body
 # {
-.annotate 'line', 96
+.annotate 'line', 99
     unless_null __ARG_1, __label_1
-.annotate 'line', 97
+.annotate 'line', 100
     .return()
   __label_1: # endif
-.annotate 'line', 99
+.annotate 'line', 102
     if_null __ARG_1, __label_3
     iter $P1, __ARG_1
     set $P1, 0
   __label_2: # for iteration
     unless $P1 goto __label_3
     shift $S1, $P1
-.annotate 'line', 100
+.annotate 'line', 103
     WSubId_14($S1)
     goto __label_2
   __label_3: # endfor
 # }
-.annotate 'line', 101
+.annotate 'line', 104
 
 .end # delete_files
 
@@ -254,30 +265,30 @@
         .param string __ARG_1
 # Body
 # {
-.annotate 'line', 111
+.annotate 'line', 114
 # index: $I1
     null $I1
-.annotate 'line', 112
+.annotate 'line', 115
 # pirop index
     index $I1, __ARG_1, ".winxed"
-.annotate 'line', 113
+.annotate 'line', 116
     ne $I1, -1, __label_1
-.annotate 'line', 114
+.annotate 'line', 117
     concat $S2, __ARG_1, " is not a winxed file"
 # predefined die
     die $S2
   __label_1: # endif
-.annotate 'line', 115
+.annotate 'line', 118
 # pir_file: $S1
     null $S1
-.annotate 'line', 116
+.annotate 'line', 119
 # pirop substr
     substr $S1, __ARG_1, 0, $I1
-.annotate 'line', 117
+.annotate 'line', 120
     concat $S2, $S1, ".pir"
     .return($S2)
 # }
-.annotate 'line', 118
+.annotate 'line', 121
 
 .end # get_pir_file_name
 
@@ -285,37 +296,48 @@
 .sub 'compile_to_pir' :subid('WSubId_10')
         .param string __ARG_1
         .param string __ARG_2
+        .param int __ARG_3
 .const 'Sub' WSubId_15 = "WSubId_15"
 # Body
 # {
-.annotate 'line', 123
+.annotate 'line', 126
     WSubId_15(__ARG_2)
-.annotate 'line', 124
+.annotate 'line', 127
 # cmd: $S1
-    concat $S1, "winxed -o ", __ARG_2
-    concat $S1, $S1, " -c "
-    concat $S1, $S1, __ARG_1
-.annotate 'line', 125
+    root_new $P1, ['parrot';'ResizablePMCArray']
+    assign $P1, 3
+    if __ARG_3, __label_2
+    set $S2, ""
+    goto __label_1
+  __label_2:
+    set $S2, "--debug"
+  __label_1:
+    $P1[0] = $S2
+    $P1[1] = __ARG_2
+    $P1[2] = __ARG_1
+# predefined sprintf
+    sprintf $S1, "winxed %s -o %s -c %s", $P1
+.annotate 'line', 128
 # result: $I1
     null $I1
-.annotate 'line', 126
+.annotate 'line', 129
 # predefined say
     say $S1
-.annotate 'line', 127
+.annotate 'line', 130
 # pirop spawnw
     spawnw $I1, $S1
-.annotate 'line', 128
-    eq $I1, 0, __label_1
-.annotate 'line', 129
+.annotate 'line', 131
+    unless $I1, __label_3
+.annotate 'line', 132
     set $S3, $I1
     concat $S2, "exit status: ", $S3
     concat $S4, $S2, "\ncommand: "
     concat $S4, $S4, $S1
 # predefined die
     die $S4
-  __label_1: # endif
+  __label_3: # endif
 # }
-.annotate 'line', 130
+.annotate 'line', 133
 
 .end # compile_to_pir
 
@@ -326,31 +348,30 @@
 .const 'Sub' WSubId_15 = "WSubId_15"
 # Body
 # {
-.annotate 'line', 135
+.annotate 'line', 138
     WSubId_15(__ARG_2)
-.annotate 'line', 136
-# cmd: $S1
-.annotate 'line', 137
-    root_new $P1, ['parrot';'ResizablePMCArray']
-    box $P2, __ARG_2
-    push $P1, $P2
-    box $P2, __ARG_1
-    push $P1, $P2
-# predefined sprintf
-.annotate 'line', 136
-    sprintf $S1, "winxed --nowarn -o %s --target=include %s", $P1
 .annotate 'line', 139
+# cmd: $S1
+.annotate 'line', 140
+    root_new $P1, ['parrot';'ResizablePMCArray']
+    assign $P1, 2
+    $P1[0] = __ARG_2
+    $P1[1] = __ARG_1
+# predefined sprintf
+.annotate 'line', 139
+    sprintf $S1, "winxed --nowarn -o %s --target=include %s", $P1
+.annotate 'line', 142
 # result: $I1
     null $I1
-.annotate 'line', 140
+.annotate 'line', 143
 # predefined say
     say $S1
-.annotate 'line', 141
+.annotate 'line', 144
 # pirop spawnw
     spawnw $I1, $S1
-.annotate 'line', 142
-    eq $I1, 0, __label_1
-.annotate 'line', 143
+.annotate 'line', 145
+    unless $I1, __label_1
+.annotate 'line', 146
     set $S3, $I1
     concat $S2, "exit status: ", $S3
     concat $S4, $S2, "\ncommand: "
@@ -359,7 +380,7 @@
     die $S4
   __label_1: # endif
 # }
-.annotate 'line', 144
+.annotate 'line', 147
 
 .end # compile_to_pasm_include
 
@@ -368,27 +389,27 @@
         .param string __ARG_1
 # Body
 # {
-.annotate 'line', 149
+.annotate 'line', 152
     get_hll_global $P1, 'unlink'
-.annotate 'line', 150
+.annotate 'line', 153
 # e: $I1
     null $I1
-.annotate 'line', 151
+.annotate 'line', 154
 # pirop stat
     stat $I1, __ARG_1, 0
-.annotate 'line', 152
+.annotate 'line', 155
     unless $I1 goto __label_1
 # {
-.annotate 'line', 153
+.annotate 'line', 156
     concat $S1, "unlink ", __ARG_1
 # predefined say
     say $S1
-.annotate 'line', 154
+.annotate 'line', 157
     $P1(__ARG_1)
 # }
   __label_1: # endif
 # }
-.annotate 'line', 156
+.annotate 'line', 159
 
 .end # delete_file
 
@@ -398,26 +419,26 @@
         .param string __ARG_2
 # Body
 # {
-.annotate 'line', 162
+.annotate 'line', 165
     unless_null __ARG_1, __label_1
-.annotate 'line', 163
+.annotate 'line', 166
     .return(0)
   __label_1: # endif
-.annotate 'line', 165
+.annotate 'line', 168
     get_hll_global $P1, 'newer'
-.annotate 'line', 166
+.annotate 'line', 169
 # e: $I1
     null $I1
-.annotate 'line', 167
+.annotate 'line', 170
 # pirop stat
     stat $I1, __ARG_2, 0
-.annotate 'line', 168
+.annotate 'line', 171
     not $I2, $I1
     unless $I2 goto __label_2
-.annotate 'line', 169
+.annotate 'line', 172
     .return(1)
   __label_2: # endif
-.annotate 'line', 171
+.annotate 'line', 174
     if_null __ARG_1, __label_4
     iter $P2, __ARG_1
     set $P2, 0
@@ -425,20 +446,20 @@
     unless $P2 goto __label_4
     shift $S1, $P2
 # {
-.annotate 'line', 172
+.annotate 'line', 175
     $P3 = $P1($S1, __ARG_2)
     if_null $P3, __label_5
     unless $P3 goto __label_5
-.annotate 'line', 173
+.annotate 'line', 176
     .return(1)
   __label_5: # endif
 # }
     goto __label_3
   __label_4: # endfor
-.annotate 'line', 175
+.annotate 'line', 178
     .return(0)
 # }
-.annotate 'line', 176
+.annotate 'line', 179
 
 .end # needs_updating_all
 
@@ -448,27 +469,27 @@
         .param string __ARG_2
 # Body
 # {
-.annotate 'line', 182
+.annotate 'line', 185
     get_hll_global $P1, 'newer'
-.annotate 'line', 183
+.annotate 'line', 186
 # e: $I1
     null $I1
-.annotate 'line', 184
+.annotate 'line', 187
 # pirop stat
     stat $I1, __ARG_2, 0
-.annotate 'line', 185
+.annotate 'line', 188
     not $I2, $I1
     if $I2 goto __label_2
     $I2 = $P1(__ARG_1, __ARG_2)
   __label_2:
     unless $I2 goto __label_1
-.annotate 'line', 186
+.annotate 'line', 189
     .return(1)
   __label_1: # endif
-.annotate 'line', 187
+.annotate 'line', 190
     .return(0)
 # }
-.annotate 'line', 188
+.annotate 'line', 191
 
 .end # needs_updating
 
@@ -480,59 +501,59 @@
 .const 'Sub' WSubId_14 = "WSubId_14"
 # Body
 # {
-.annotate 'line', 193
+.annotate 'line', 196
     WSubId_15(__ARG_2)
-.annotate 'line', 194
+.annotate 'line', 197
     WSubId_14(__ARG_2)
-.annotate 'line', 195
+.annotate 'line', 198
     root_new $P3, ['parrot';'ResizablePMCArray']
-    push $P3, __ARG_2
+    assign $P3, 2
+    $P3[0] = __ARG_2
 # predefined join
     join $S4, ", ", __ARG_1
-    box $P4, $S4
-    push $P3, $P4
+    $P3[1] = $S4
 # predefined sprintf
     sprintf $S3, "concat %s = %s", $P3
 # predefined say
     say $S3
-.annotate 'line', 196
+.annotate 'line', 199
 # var dest_fh: $P1
     new $P1, [ 'FileHandle' ]
-.annotate 'line', 197
+.annotate 'line', 200
     $P1.'open'(__ARG_2, "w")
-.annotate 'line', 198
+.annotate 'line', 201
     if_null __ARG_1, __label_2
-    iter $P5, __ARG_1
-    set $P5, 0
+    iter $P4, __ARG_1
+    set $P4, 0
   __label_1: # for iteration
-    unless $P5 goto __label_2
-    shift $S1, $P5
+    unless $P4 goto __label_2
+    shift $S1, $P4
 # {
-.annotate 'line', 199
+.annotate 'line', 202
 # var source_fh: $P2
     new $P2, [ 'FileHandle' ]
-.annotate 'line', 200
+.annotate 'line', 203
     $P2.'open'($S1, "r")
-.annotate 'line', 201
+.annotate 'line', 204
 # contents: $S2
     $P3 = $P2.'readall'()
     null $S2
     if_null $P3, __label_3
     set $S2, $P3
   __label_3:
-.annotate 'line', 202
+.annotate 'line', 205
     $P2.'close'()
-.annotate 'line', 203
+.annotate 'line', 206
     $P1.'print'($S2)
-.annotate 'line', 204
+.annotate 'line', 207
     $P1.'print'("\n")
 # }
     goto __label_1
   __label_2: # endfor
-.annotate 'line', 206
+.annotate 'line', 209
     $P1.'close'()
 # }
-.annotate 'line', 207
+.annotate 'line', 210
 
 .end # concat_files
 
