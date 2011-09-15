@@ -1,0 +1,55 @@
+// TAP Test Harness
+
+// Forward declaration of classes.
+namespace Rosella {
+    class Harness;
+}
+
+// Harness Main. Execute tests in directories and display results.
+function harness_main(var args)
+{
+    var harness = new Rosella.Harness();
+
+    // Default directories. These are executed if none are specified in args
+    if (elements(args) == 0) {
+        args = ["t"];
+    }
+
+    harness
+        .add_test_dirs("Automatic", args:[flat], 1:[named("recurse")])
+        .setup_test_run(1:[named("sort")]);
+    harness.run();
+    harness.default_run().show_results();
+}
+
+// Show help message
+function show_help(string program_name)
+{
+    string msg = sprintf(<<:
+winxed %s [<DIRS>]
+winxed %s --help
+Rosella TAP Harness. Execute test suite in folders. If <DIRS> is passed,
+execute tests in those directories only. Otherwise, execute tests in default
+directories: (t/).
+
+    <DIRS>      A list of test directories to execute
+    --help      Show this help message
+:>>
+    , [program_name, program_name]);
+    say(msg);
+}
+
+// Main function. Load in the libraries and run the test, catching errors.
+function main[main](var args)
+{
+    var rosella = load_packfile("rosella/core.pbc");
+    var(Rosella.initialize_rosella)("harness");
+    var(Rosella.Parrot.try_report)(function() {
+        string program_name = args.shift();
+        if (elements(args) == 1 && args[0] == "--help")
+            show_help(program_name);
+        else
+            harness_main(args);
+    });
+}
+
