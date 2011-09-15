@@ -80,6 +80,41 @@ namespace Rosella.Query
             return item;
         }
 
+        // Return a count of elements
+        function count(var func [optional], int has_func [opt_flag])
+        {
+            if (!has_func || func == null) {
+                var d = self.data();
+                for (var i in d)
+                    push(self.output_cache, i);
+                return elements(self.output_cache);
+            } else {
+                var d = self.filter(func).data();
+                for (var i in d)
+                    push(self.output_cache, i);
+                return elements(d);
+            }
+        }
+
+        // Return true if any element in the aggregate satisfies the predicate
+        // false otherwise. Short-circuits
+        function any(var func [optional], int has_func [opt_flag])
+        {
+            if (!has_func || func == null)
+                return self.has_more();
+            int is_valid = true;
+            var value;
+            while (is_valid) {
+                :(is_valid, value) = self.get_next();
+                if (!is_valid)
+                    return false;
+                push(self.output_cache, value);
+                if (func(value))
+                    return true;
+            }
+            return false;
+        }
+
         /* Delayed Execution Query Routines
         */
 
@@ -128,19 +163,6 @@ namespace Rosella.Query
         {
             var last_stage = new Rosella.Query.Stage.Sort(self.last_stage, func);
             return new Rosella.Query.Stream(self, last_stage);
-        }
-
-        // Return a count of elements
-        function count(var func [optional], int has_func [opt_flag])
-        {
-            // TODO
-        }
-
-        // Return true if any element in the aggregate satisfies the predicate
-        // false otherwise. Short-circuits
-        function any(var func [optional], int has_func [opt_flag])
-        {
-            // TODO
         }
 
         // Return an aggregate of the first N elements in the data. If a
