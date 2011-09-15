@@ -309,5 +309,33 @@ namespace Rosella.Query
                 return false, null;
             }
         }
+
+        class Append : Rosella.Query.Stage
+        {
+            var cache;
+            var use_cache;
+            function Append(var p, var s)
+            {
+                self.Stage(p, null);
+                self.cache = s;
+                self.use_cache = false;
+            }
+
+            function next()
+            {
+                if (self.use_cache == true) {
+                    if (elements(self.cache) > 0)
+                        return true, self.cache.shift();
+                    return false, null;
+                }
+                :(int is_valid, var value) = self.previous.next();
+                if (is_valid == true)
+                    return true, value;
+                self.use_cache = true;
+                if (elements(self.cache) > 0)
+                    return true, self.cache.shift();
+                return false, null;
+            }
+        }
     }
 }

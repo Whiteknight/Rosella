@@ -172,7 +172,8 @@ namespace Rosella.Query
 
         function append(var s)
         {
-            // TODO
+            var last_stage = new Rosella.Query.Stage.Append(self.last_stage, s);
+            return new Rosella.Query.Stream(self, last_stage);
         }
 
         function project(var func)
