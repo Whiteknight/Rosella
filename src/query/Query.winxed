@@ -24,7 +24,7 @@ namespace Rosella
 
         function as_stream(var data)
         {
-            return new Rosella.Query.Queryable.Stream(data);
+            return new Rosella.Query.Stream(data);
         }
 
         // Helper function. Determine if the aggregate is an array

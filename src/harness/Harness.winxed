@@ -151,7 +151,7 @@ namespace Rosella
 
         function show_results()
         {
-            var view = self.default_view();
+            var view = self.view();
             view.show_results();
         }
 
