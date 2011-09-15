@@ -1,21 +1,29 @@
 namespace Rosella.Query
 {
+    /* Stream stages
+        Stages implement most of the higher-order operations on Streams.
+        This is an abstract base class. Use a subclass instead.
+    */
     class Stage
     {
-        var previous;
-        var func;
+        var previous;   // The previous stage, from which we pull values
+        var func;       // The function reference to use, if any
 
+        // Basic constructor. Save the previous stage and the func reference
         function Stage(var prev, var func)
         {
             self.previous = prev;
             self.func = func;
         }
 
+        // Get the next value from the previous stage
         function next()
         {
             Rosella.Error.must_subclass(__CLASS__);
         }
 
+        // Gobble all data from previous stages. This is bad to do if the
+        // source iterator is infinite.
         function gobble_all()
         {
             var d = [];
@@ -33,6 +41,11 @@ namespace Rosella.Query
 
 namespace Rosella.Query.Stage
 {
+    /* The Source stage
+        The soruce stage performs low-level iteration on the data source. It
+        pulls data from the source one item at a time and feeds that data to
+        subsequent stages.
+    */
     class Source : Rosella.Query.Stage
     {
         var iterator;
@@ -55,6 +68,10 @@ namespace Rosella.Query.Stage
         }
     }
 
+    /* Foreach Stage
+        Perform an action for each data item. Pass the data item along
+        unaltered.
+    */
     class ForEach : Rosella.Query.Stage
     {
         function ForEach(var p, var f) { self.Stage(p, f); }
@@ -85,6 +102,10 @@ namespace Rosella.Query.Stage
         }
     }
 
+    /* Map Stage
+        Perform a mapping. For each input, call a function and return the
+        result instead.
+    */
     class Map : Rosella.Query.Stage
     {
         function Map(var p, var f) { self.Stage(p, f); }
@@ -99,6 +120,10 @@ namespace Rosella.Query.Stage
         }
     }
 
+    /* Filter Stage
+        For each item, execute a predicate. If true, the item is returned.
+        If false, get the next item.
+    */
     class Filter : Rosella.Query.Stage
     {
         function Filter(var p, var f) { self.Stage(p, f); }
@@ -122,6 +147,10 @@ namespace Rosella.Query.Stage
         }
     }
 
+    /* Fold Stage
+        Gobble all data eagerly and fold it all into a single value. This is
+        an eager stage and is bad to use on an infinite source
+    */
     class Fold : Rosella.Query.Stage
     {
         var seed;
@@ -144,6 +173,10 @@ namespace Rosella.Query.Stage
         }
     }
 
+    /* Sort Stage
+        Sort the data according to a given sort routine. This is an eager
+        stage and should not be used on infinite sources.
+    */
     class Sort : Rosella.Query.Stage
     {
         var cache;
@@ -163,6 +196,10 @@ namespace Rosella.Query.Stage
         }
     }
 
+    /* Take Stage
+        Limiter. Only read the first N values from the stream. Subsequent
+        read attempts will fail.
+    */
     class Take : Rosella.Query.Stage
     {
         var limit;
@@ -171,6 +208,8 @@ namespace Rosella.Query.Stage
         {
             self.Stage(p, f);
             self.count = 0;
+            if (i <= 0)
+                Rosella.Error.invalid(__FUNCTION__, "value in take must be positive: %d", i);
             self.limit = i;
         }
 
@@ -202,6 +241,10 @@ namespace Rosella.Query.Stage
         }
     }
 
+    /* Skip Stage
+        Read and discard the first N items in the stream. Return the
+        remainder.
+    */
     class Skip : Rosella.Query.Stage
     {
         var limit;
@@ -209,6 +252,8 @@ namespace Rosella.Query.Stage
         function Skip(var p, var f, int i)
         {
             self.Stage(p, f);
+            if (i <= 0)
+                Rosella.Error.invalid(__FUNCTION__, "value in skip must be positive: %d", i);
             self.limit = i;
             self.count = 0;
         }
@@ -234,6 +279,10 @@ namespace Rosella.Query.Stage
         }
     }
 
+    /* Project Stage
+        For every item, replace it with several values, added to the stream
+        inline.
+    */
     class Project : Rosella.Query.Stage
     {
         var cache;
@@ -260,6 +309,9 @@ namespace Rosella.Query.Stage
         }
     }
 
+    /* Flatten Stage
+        Flatten a nested aggregate and return a sequence of scalar values
+    */
     class Flatten : Rosella.Query.Stage
     {
         var in_cache;
