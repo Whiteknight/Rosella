@@ -1,0 +1,23 @@
+namespace Rosella.Query.Stream
+{
+    class Iterator
+    {
+        var stream;
+        function Iterator(var stream)
+        {
+            self.stream = stream;
+        }
+
+        function set_integer_native[vtable](int ignore) { }
+
+        function get_bool[vtable]()
+        {
+            return self.stream.has_more();
+        }
+
+        function shift_pmc[vtable]()
+        {
+            return self.stream.next();
+        }
+    }
+}

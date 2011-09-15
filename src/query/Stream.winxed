@@ -209,7 +209,7 @@ namespace Rosella.Query
         // Get an iterator over the data
         function get_iter[vtable]()
         {
-            // TODO
+            return new Rosella.Query.Stream.Iterator(self);
         }
 
         /* Internal Helper Routines
