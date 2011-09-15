@@ -29,313 +29,313 @@ namespace Rosella.Query
             return d;
         }
     }
+}
 
-    namespace Stage
+namespace Rosella.Query.Stage
+{
+    class Source : Rosella.Query.Stage
     {
-        class Source : Rosella.Query.Stage
+        var iterator;
+        function Source(var data)
         {
-            var iterator;
-            function Source(var data)
-            {
-                var i;
-                ${ iter i, data };
-                self.iterator = i;
-            }
+            var i;
+            ${ iter i, data };
+            self.iterator = i;
+        }
 
-            function next()
-            {
-                if (self.iterator) {
-                    var d;
-                    var i = self.iterator;
-                    ${ shift d, i };
-                    return true, d;
-                }
+        function next()
+        {
+            if (self.iterator) {
+                var d;
+                var i = self.iterator;
+                ${ shift d, i };
+                return true, d;
+            }
+            return false, null;
+        }
+    }
+
+    class ForEach : Rosella.Query.Stage
+    {
+        function ForEach(var p, var f) { self.Stage(p, f); }
+
+        function next()
+        {
+            :(var is_valid, var value) = self.previous.next();
+            if (!is_valid)
                 return false, null;
-            }
+            var f = self.func;
+            f(value);
+            return true, value;
         }
+    }
 
-        class ForEach : Rosella.Query.Stage
+    class Tap : Rosella.Query.Stage
+    {
+        var cache;
+        function Tap(var p, var f) { self.Stage(p, f); }
+
+        function next()
         {
-            function ForEach(var p, var f) { self.Stage(p, f); }
+            if (self.cache == null)
+                self.cache = self.gobble_all();
+            if (elements(self.cache) == 0)
+                return false, null;
+            return true, self.cache.shift();
+        }
+    }
 
-            function next()
-            {
-                :(var is_valid, var value) = self.previous.next();
+    class Map : Rosella.Query.Stage
+    {
+        function Map(var p, var f) { self.Stage(p, f); }
+
+        function next()
+        {
+            :(int is_valid, var value) = self.previous.next();
+            if (!is_valid)
+                return false, null;
+            var f = self.func;
+            return true, f(value);
+        }
+    }
+
+    class Filter : Rosella.Query.Stage
+    {
+        function Filter(var p, var f) { self.Stage(p, f); }
+
+        function next()
+        {
+            :(int is_valid, var value) = self.previous.next();
+            if (!is_valid)
+                return false, null;
+            var f = self.func;
+            int matches_filter = f(value);
+            while (is_valid && !matches_filter) {
+                :(is_valid, value) = self.previous.next();
                 if (!is_valid)
-                    return false, null;
-                var f = self.func;
-                f(value);
+                    break;
+                matches_filter = f(value);
+            }
+            if (is_valid && matches_filter)
                 return true, value;
-            }
+            return false, null;
+        }
+    }
+
+    class Fold : Rosella.Query.Stage
+    {
+        var seed;
+        function Fold(var p, var f, var seed)
+        {
+            self.Stage(p, f);
+            self.seed = seed;
         }
 
-        class Tap : Rosella.Query.Stage
+        function next()
         {
-            var cache;
-            function Tap(var p, var f) { self.Stage(p, f); }
+            var d = self.gobble_all();
+            if (d == null || elements(d) == 0)
+                return false, null;
+            var value = self.seed;
+            var f = self.func;
+            for (int i = 0; i < elements(d); i++)
+                value = f(value, d[i]);
+            return true, value;
+        }
+    }
 
-            function next()
-            {
-                if (self.cache == null)
-                    self.cache = self.gobble_all();
-                if (elements(self.cache) == 0)
-                    return false, null;
-                return true, self.cache.shift();
+    class Sort : Rosella.Query.Stage
+    {
+        var cache;
+        function Sort(var p, var f) { self.Stage(p, f); }
+
+        function next()
+        {
+            if (self.cache == null) {
+                var d = self.gobble_all();
+                Rosella.Query.Provider.qsort(d, 0, elements(d), self.func);
+                self.cache = d;
             }
+
+            if (elements(self.cache) == 0)
+                return false, null;
+            return true, self.cache.shift();
+        }
+    }
+
+    class Take : Rosella.Query.Stage
+    {
+        var limit;
+        var count;
+        function Take(var p, var f, int i)
+        {
+            self.Stage(p, f);
+            self.count = 0;
+            self.limit = i;
         }
 
-        class Map : Rosella.Query.Stage
+        function next()
         {
-            function Map(var p, var f) { self.Stage(p, f); }
+            if (self.count >= self.limit)
+                return false, null;
+            :(int is_valid, var value) = self.previous.next();
+            if (!is_valid)
+                return false, null;
 
-            function next()
-            {
-                :(int is_valid, var value) = self.previous.next();
-                if (!is_valid)
-                    return false, null;
-                var f = self.func;
-                return true, f(value);
-            }
-        }
-
-        class Filter : Rosella.Query.Stage
-        {
-            function Filter(var p, var f) { self.Stage(p, f); }
-
-            function next()
-            {
-                :(int is_valid, var value) = self.previous.next();
-                if (!is_valid)
-                    return false, null;
-                var f = self.func;
-                int matches_filter = f(value);
-                while (is_valid && !matches_filter) {
+            var f = self.func;
+            if (f == null) {
+                self.count = self.count + 1;
+                return is_valid, value;
+            } else {
+                int matches = f(value);
+                while (!matches) {
                     :(is_valid, value) = self.previous.next();
                     if (!is_valid)
                         break;
-                    matches_filter = f(value);
+                    matches = f(value);
                 }
-                if (is_valid && matches_filter)
-                    return true, value;
-                return false, null;
-            }
-        }
-
-        class Fold : Rosella.Query.Stage
-        {
-            var seed;
-            function Fold(var p, var f, var seed)
-            {
-                self.Stage(p, f);
-                self.seed = seed;
-            }
-
-            function next()
-            {
-                var d = self.gobble_all();
-                if (d == null || elements(d) == 0)
+                if (!is_valid || !matches)
                     return false, null;
-                var value = self.seed;
-                var f = self.func;
-                for (int i = 0; i < elements(d); i++)
-                    value = f(value, d[i]);
+
                 return true, value;
             }
         }
+    }
 
-        class Sort : Rosella.Query.Stage
+    class Skip : Rosella.Query.Stage
+    {
+        var limit;
+        var count;
+        function Skip(var p, var f, int i)
         {
-            var cache;
-            function Sort(var p, var f) { self.Stage(p, f); }
-
-            function next()
-            {
-                if (self.cache == null) {
-                    var d = self.gobble_all();
-                    Rosella.Query.Provider.qsort(d, 0, elements(d), self.func);
-                    self.cache = d;
-                }
-
-                if (elements(self.cache) == 0)
-                    return false, null;
-                return true, self.cache.shift();
-            }
+            self.Stage(p, f);
+            self.limit = i;
+            self.count = 0;
         }
 
-        class Take : Rosella.Query.Stage
+        function next()
         {
-            var limit;
-            var count;
-            function Take(var p, var f, int i)
-            {
-                self.Stage(p, f);
-                self.count = 0;
-                self.limit = i;
-            }
-
-            function next()
-            {
-                if (self.count >= self.limit)
-                    return false, null;
-                :(int is_valid, var value) = self.previous.next();
-                if (!is_valid)
-                    return false, null;
-
-                var f = self.func;
-                if (f == null) {
-                    self.count = self.count + 1;
-                    return is_valid, value;
-                } else {
-                    int matches = f(value);
-                    while (!matches) {
-                        :(is_valid, value) = self.previous.next();
-                        if (!is_valid)
-                            break;
-                        matches = f(value);
-                    }
-                    if (!is_valid || !matches)
-                        return false, null;
-
-                    return true, value;
-                }
-            }
-        }
-
-        class Skip : Rosella.Query.Stage
-        {
-            var limit;
-            var count;
-            function Skip(var p, var f, int i)
-            {
-                self.Stage(p, f);
-                self.limit = i;
-                self.count = 0;
-            }
-
-            function next()
-            {
-                var f = self.func;
-                int is_valid = false;
-                var value = null;
-                while (self.count < self.limit) {
-                    :(is_valid, value) = self.previous.next();
-                    if (!is_valid)
-                        return false, null;
-                    if (f == null || f(value))
-                        self.count = self.count + 1;
-                }
+            var f = self.func;
+            int is_valid = false;
+            var value = null;
+            while (self.count < self.limit) {
                 :(is_valid, value) = self.previous.next();
                 if (!is_valid)
                     return false, null;
                 if (f == null || f(value))
-                    return true, value;
-                return false, null;
+                    self.count = self.count + 1;
             }
+            :(is_valid, value) = self.previous.next();
+            if (!is_valid)
+                return false, null;
+            if (f == null || f(value))
+                return true, value;
+            return false, null;
+        }
+    }
+
+    class Project : Rosella.Query.Stage
+    {
+        var cache;
+        function Project(var p, var f)
+        {
+            self.Stage(p, f);
+            self.cache = [];
         }
 
-        class Project : Rosella.Query.Stage
+        function next()
         {
-            var cache;
-            function Project(var p, var f)
-            {
-                self.Stage(p, f);
-                self.cache = [];
-            }
+            if (elements(self.cache) > 0)
+                return true, self.cache.shift();
+            :(int is_valid, var value) = self.previous.next();
+            if (!is_valid)
+                return false, null;
+            var f = self.func;
+            var results = f(value);
+            for (var r in results)
+                push(self.cache, r);
+            if (elements(self.cache) > 0)
+                return true, self.cache.shift();
+            return false, null;
+        }
+    }
 
-            function next()
-            {
-                if (elements(self.cache) > 0)
-                    return true, self.cache.shift();
-                :(int is_valid, var value) = self.previous.next();
+    class Flatten : Rosella.Query.Stage
+    {
+        var in_cache;
+        var out_cache;
+
+        function Flatten(var p)
+        {
+            self.Stage(p, null);
+            self.in_cache = [];
+            self.out_cache = [];
+        }
+
+        function __next_input()
+        {
+            if (elements(self.in_cache) > 0)
+                return true, self.in_cache.shift();
+            :(int is_valid, var value) = self.previous.next();
+            return is_valid, value;
+        }
+
+        function next()
+        {
+            if (elements(self.out_cache) > 0)
+                return true, self.out_cache.shift();
+            int is_valid = false;
+            while (!is_valid) {
+                :(is_valid, var value) = self.__next_input();
                 if (!is_valid)
                     return false, null;
-                var f = self.func;
-                var results = f(value);
-                for (var r in results)
-                    push(self.cache, r);
-                if (elements(self.cache) > 0)
-                    return true, self.cache.shift();
-                return false, null;
-            }
-        }
 
-        class Flatten : Rosella.Query.Stage
-        {
-            var in_cache;
-            var out_cache;
-
-            function Flatten(var p)
-            {
-                self.Stage(p, null);
-                self.in_cache = [];
-                self.out_cache = [];
-            }
-
-            function __next_input()
-            {
-                if (elements(self.in_cache) > 0)
-                    return true, self.in_cache.shift();
-                :(int is_valid, var value) = self.previous.next();
-                return is_valid, value;
-            }
-
-            function next()
-            {
-                if (elements(self.out_cache) > 0)
-                    return true, self.out_cache.shift();
-                int is_valid = false;
-                while (!is_valid) {
-                    :(is_valid, var value) = self.__next_input();
-                    if (!is_valid)
-                        return false, null;
-
-                    Rosella.Query.array_or_hash(value,
-                        function(a) {
-                            for (var item in a)
-                                push(self.in_cache, item);
-                            is_valid = false;
-                        },
-                        function(h) {
-                            var a = Rosella.Query.as_queryable(h).to_array().data();
-                            for (var item in a)
-                                push(self.in_cache, item);
-                            is_valid = false;
-                        },
-                        function(s) { is_valid = true; }
-                    );
-                    if (is_valid)
-                        return true, value;
-                }
-                return false, null;
-            }
-        }
-
-        class Append : Rosella.Query.Stage
-        {
-            var cache;
-            var use_cache;
-            function Append(var p, var s)
-            {
-                self.Stage(p, null);
-                self.cache = s;
-                self.use_cache = false;
-            }
-
-            function next()
-            {
-                if (self.use_cache == true) {
-                    if (elements(self.cache) > 0)
-                        return true, self.cache.shift();
-                    return false, null;
-                }
-                :(int is_valid, var value) = self.previous.next();
-                if (is_valid == true)
+                Rosella.Query.array_or_hash(value,
+                    function(a) {
+                        for (var item in a)
+                            push(self.in_cache, item);
+                        is_valid = false;
+                    },
+                    function(h) {
+                        var a = Rosella.Query.as_queryable(h).to_array().data();
+                        for (var item in a)
+                            push(self.in_cache, item);
+                        is_valid = false;
+                    },
+                    function(s) { is_valid = true; }
+                );
+                if (is_valid)
                     return true, value;
-                self.use_cache = true;
+            }
+            return false, null;
+        }
+    }
+
+    class Append : Rosella.Query.Stage
+    {
+        var cache;
+        var use_cache;
+        function Append(var p, var s)
+        {
+            self.Stage(p, null);
+            self.cache = s;
+            self.use_cache = false;
+        }
+
+        function next()
+        {
+            if (self.use_cache == true) {
                 if (elements(self.cache) > 0)
                     return true, self.cache.shift();
                 return false, null;
             }
+            :(int is_valid, var value) = self.previous.next();
+            if (is_valid == true)
+                return true, value;
+            self.use_cache = true;
+            if (elements(self.cache) > 0)
+                return true, self.cache.shift();
+            return false, null;
         }
     }
 }
