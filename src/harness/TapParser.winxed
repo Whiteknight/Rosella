@@ -26,21 +26,19 @@ namespace Rosella.Harness
         function parse(var stream, var view, var result)
         {
             // Get the plan. That should be the first line of the stream.
-            stream
+            var plan_stream = stream
                 .take(1)
                 .map(function(l) {
                     self.tokenizer.add_data(l);
                     return self.get_plan(self.tokenizer.all_tokens(), result);
                 });
-            if (stream.has_more() == false || stream.next() == false) {
+            if (plan_stream.has_more() == false || plan_stream.next() == false) {
                 result.mark_test_empty();
                 return;
             }
 
             // Now, parse the remainder of the stream
             stream
-                .clear_stages()
-
                 // Turn each line into an array of tokens
                 .map(function(string l) {
                     l = Rosella.String.trim(l);

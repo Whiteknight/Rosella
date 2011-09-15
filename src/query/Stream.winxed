@@ -59,12 +59,6 @@ namespace Rosella.Query
             return f(self.data);
         }
 
-        function clear_stages()
-        {
-            self.last_stage = self.source_stage;
-            return self;
-        }
-
         function has_more()
         {
             if (elements(self.output_cache) > 0)
