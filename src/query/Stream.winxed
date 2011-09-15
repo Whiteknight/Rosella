@@ -25,8 +25,7 @@ namespace Rosella.Query
             self.input_cache = parent.output_cache;
         }
 
-        /* Queryable API
-            These routines are used to create and manipulate Queryables
+        /* Data Manipulation Routines
         */
 
         // Get the raw data back
@@ -81,7 +80,7 @@ namespace Rosella.Query
             return item;
         }
 
-        /* Query Routines
+        /* Delayed Execution Query Routines
         */
 
         // Perform some action for every element in the aggregate
@@ -144,28 +143,6 @@ namespace Rosella.Query
             // TODO
         }
 
-        // Return the first item in the aggregate if the aggregate contains
-        // only one item. If it contains more items, throw an exception
-        function single(var func [optional], int has_func [opt_flag])
-        {
-            // TODO
-        }
-
-        // Return the first item in the aggregate, throwing an exception if
-        // it is empty.
-        function first(var func [optional], int has_func [opt_flag])
-        {
-            // TODO
-        }
-
-        // Return the first item in the aggregate, returning a default value
-        // if empty
-        function first_or_default(var func [optional], int has_func [opt_flag],
-                var def [optional], int has_def [opt_flag])
-        {
-            // TODO
-        }
-
         // Return an aggregate of the first N elements in the data. If a
         // predicate is provided, return the first N which satisfy the
         // prediate
@@ -189,7 +166,8 @@ namespace Rosella.Query
 
         function flatten()
         {
-            // TODO
+            var last_stage = new Rosella.Query.Stage.Flatten(self.last_stage);
+            return new Rosella.Query.Stream(self, last_stage);
         }
 
         function append(var s)
