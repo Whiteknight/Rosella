@@ -258,5 +258,56 @@ namespace Rosella.Query
                 return false, null;
             }
         }
+
+        class Flatten : Rosella.Query.Stage
+        {
+            var in_cache;
+            var out_cache;
+
+            function Flatten(var p)
+            {
+                self.Stage(p, null);
+                self.in_cache = [];
+                self.out_cache = [];
+            }
+
+            function __next_input()
+            {
+                if (elements(self.in_cache) > 0)
+                    return true, self.in_cache.shift();
+                :(int is_valid, var value) = self.previous.next();
+                return is_valid, value;
+            }
+
+            function next()
+            {
+                if (elements(self.out_cache) > 0)
+                    return true, self.out_cache.shift();
+                int is_valid = false;
+                while (!is_valid) {
+                    :(is_valid, var value) = self.__next_input();
+                    if (!is_valid)
+                        return false, null;
+
+                    Rosella.Query.array_or_hash(value,
+                        function(a) {
+                            for (var item in a)
+                                push(self.in_cache, item);
+                            is_valid = false;
+                        },
+                        function(h) {
+                            var a = Rosella.Query.as_queryable(h).to_array().data();
+                            for (var item in a)
+                                push(self.in_cache, item);
+                            is_valid = false;
+                        },
+                        function(s) { is_valid = true; }
+                    );
+                    if (is_valid)
+                        return true, value;
+                }
+                return false, null;
+            }
+        }
     }
 }
