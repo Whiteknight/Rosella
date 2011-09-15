@@ -1,4 +1,4 @@
-namespace Rosella { namespace Query { namespace Queryable
+namespace Rosella.Query.Queryable
 {
     /* In-Place Queryable
         This Queryable variant reuses itself for each result, instead of
@@ -22,4 +22,4 @@ namespace Rosella { namespace Query { namespace Queryable
             return self;
         }
     }
-}}}
+}

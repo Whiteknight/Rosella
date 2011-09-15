@@ -1,4 +1,4 @@
-namespace Rosella { namespace Query { namespace Provider
+namespace Rosella.Query.Provider
 {
     /* Hash Query Provider
         This provider works with hashes
@@ -181,4 +181,4 @@ namespace Rosella { namespace Query { namespace Provider
             return false;
         }
     }
-}}}
+}

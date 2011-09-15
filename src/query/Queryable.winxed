@@ -1,4 +1,4 @@
-namespace Rosella { namespace Query
+namespace Rosella.Query
 {
     /* Queryable Class
         This class is a wrapper type which provides higher-order behaviorsor
@@ -236,4 +236,4 @@ namespace Rosella { namespace Query
         }
         */
     }
-}}
+}
