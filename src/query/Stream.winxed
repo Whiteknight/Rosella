@@ -6,12 +6,23 @@ namespace Rosella.Query
         var last_stage;
         var source_stage;
         var output_cache;
+        var input_cache;
 
         function Stream(var data)
         {
             self.data = data;
             self.source_stage = self.last_stage = new Rosella.Query.Stage.Source(data);
             self.output_cache = [];
+            self.input_cache = null;
+        }
+
+        function Stream(var parent, var stage)
+        {
+            self.data = parent.data;
+            self.source_stage = parent.source_stage;
+            self.output_cache = [];
+            self.last_stage = stage;
+            self.input_cache = parent.output_cache;
         }
 
         /* Queryable API
@@ -82,31 +93,31 @@ namespace Rosella.Query
         // Perform some action for every element in the aggregate
         function foreach(var func)
         {
-            self.last_stage = new Rosella.Query.Stage.ForEach(self.last_stage, func);
-            return self;
+            var last_stage = new Rosella.Query.Stage.ForEach(self.last_stage, func);
+            return new Rosella.Query.Stream(self, last_stage);
         }
 
         // Perform a callback on the current value of the data
         function tap(var func)
         {
-            self.last_stage = new Rosella.Query.Stage.Tap(self.last_stage, func);
-            return self;
+            var last_stage = new Rosella.Query.Stage.Tap(self.last_stage, func);
+            return new Rosella.Query.Stream(self, last_stage);
         }
 
         // Return a new aggregate where each element is a function of the
         // elements in the data
         function map(var func)
         {
-            self.last_stage = new Rosella.Query.Stage.Map(self.last_stage, func);
-            return self;
+            var last_stage = new Rosella.Query.Stage.Map(self.last_stage, func);
+            return new Rosella.Query.Stream(self, last_stage);
         }
 
         // Return a new aggregate where only the elements from the original
         // data which satisfy a test are included
         function filter(var func)
         {
-            self.last_stage = new Rosella.Query.Stage.Filter(self.last_stage, func);
-            return self;
+            var last_stage = new Rosella.Query.Stage.Filter(self.last_stage, func);
+            return new Rosella.Query.Stream(self, last_stage);
         }
 
         // Combine elements from the aggregate into a single value and
@@ -115,15 +126,15 @@ namespace Rosella.Query
         {
             if (!has_seed)
                 seed = null;
-            self.last_stage = new Rosella.Query.Stage.Fold(self.last_stage, func, seed);
-            return self;
+            var last_stage = new Rosella.Query.Stage.Fold(self.last_stage, func, seed);
+            return new Rosella.Query.Stream(self, last_stage);
         }
 
         // Sort the data using a given comparison routine
         function sort(var func)
         {
-            self.last_stage = new Rosella.Query.Stage.Sort(self.last_stage, func);
-            return self;
+            var last_stage = new Rosella.Query.Stage.Sort(self.last_stage, func);
+            return new Rosella.Query.Stream(self, last_stage);
         }
 
         // Return a count of elements
@@ -168,8 +179,8 @@ namespace Rosella.Query
         {
             if (!has_func)
                 func = null;
-            self.last_stage = new Rosella.Query.Stage.Take(self.last_stage, func, count);
-            return self;
+            var last_stage = new Rosella.Query.Stage.Take(self.last_stage, func, count);
+            return new Rosella.Query.Stream(self, last_stage);
         }
 
         // Return all but the first N elements. If a predicate is provided,
@@ -178,8 +189,8 @@ namespace Rosella.Query
         {
             if (!has_func)
                 func = null;
-            self.last_stage = new Rosella.Query.Stage.Skip(self.last_stage, func, count);
-            return self;
+            var last_stage = new Rosella.Query.Stage.Skip(self.last_stage, func, count);
+            return new Rosella.Query.Stream(self, last_stage);
         }
 
         function flatten()
@@ -194,8 +205,8 @@ namespace Rosella.Query
 
         function project(var func)
         {
-            self.last_stage = new Rosella.Query.Stage.Project(self.last_stage, func);
-            return self;
+            var last_stage = new Rosella.Query.Stage.Project(self.last_stage, func);
+            return new Rosella.Query.Stream(self, last_stage);
         }
 
         /* Vtables and Low-level access
@@ -212,6 +223,8 @@ namespace Rosella.Query
 
         function get_next()
         {
+            if (self.input_cache != null && elements(self.input_cache) > 0)
+                return true, self.input_cache.shift();
             :(int is_valid, var value) = self.last_stage.next();
             return is_valid, value;
         }
