@@ -1,5 +1,5 @@
 ---
-layout: rosella
+layout: winxed
 title: Namespaces and Classes
 ---
 
