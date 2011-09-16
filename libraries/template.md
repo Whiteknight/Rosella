@@ -305,11 +305,15 @@ opposite of the `if` handler.
 Rendering a template with Winxed is easy. The real complications come in the
 syntax for defining templates.
 
+    var rosella = load_packfile("rosella/core.pbc");
+    var(Rosella.initialize_rosella)("template");
     var engine = new Rosella.Template.Engine();
     string output = engine.generate(template, context);
 
 ### NQP
 
+    my $rosella := pir::load_bytecode__ps("rosella/core.pbc");
+    Rosella::initialize_rosella("template");
     my $engine := Rosella::construct(Rosella::Template::Engine);
     my $output := $engine.generate: $template, $context;
 
@@ -339,6 +343,6 @@ Given this context:
 
 ## Users
 
-* Rosella has several utility programs which use the template library to
-automatically generate files and code snippets, such as unit tests and test
-harnesses.
+* Rosella has several [utility programs](/Rosella/libraries/utilities.html)
+which use the template library to automatically generate files and code
+snippets, such as unit tests and test harnesses.

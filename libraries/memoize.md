@@ -69,8 +69,8 @@ working with proxy-based memoizers. Do not use this class directly.
 
 ### Memoize.Factory
 
-`Rosella.Memoize.Factory` is uses `Rosella.Proxy.Factory` to create memoize
-proxies.
+`Rosella.Memoize.Factory` is a factory for creating memozing sub proxies.
+It uses `Rosella.Proxy.Factory` to create memoize proxies.
 
 ### Memoize.Cache
 

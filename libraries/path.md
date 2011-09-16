@@ -105,3 +105,5 @@ value lookups.
 
 ## Users
 
+* The Rosella Template library uses path to search for user data values in
+context aggregates

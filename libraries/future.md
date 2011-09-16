@@ -34,13 +34,20 @@ These libraries exist, but are either incomplete, not tested, not documented,
 have bad interfaces, suffer from bad or incomplete design, or are otherwise
 not mature enough to be considered a stable part of Rosella.
 
-### Contract
+### Assert
 
-A library for performing runtime checks and assertions. The Contract library
+A library for performing runtime checks and assertions. The Assert library
 implements functionality to verify that certain values hold in certain
 ranges, that objects implement required interfaces, and that functions are
 both being called correctly and returning correct values. At runtime, the
-Contract library can be "turned off", and will not perform any costly checks.
+Assert library can be "turned off", and will not perform any costly checks.
+The Assert library can be integrated with the Test library to add more tools
+for unit and integration testing.
+
+### Benchmark
+
+The Benchmark library will contain tools and utilities for benchmarking and
+measuring the performance of code.
 
 ### Decorate
 
@@ -48,6 +55,21 @@ Based on the Proxy library, the Decorate library provides a mechanism for
 creating cheap Decorators. A Decorator is an object which adds new
 attributes and methods to an object of an existing class, without violating
 encapsulation.
+
+### Dumper
+
+A replacement for the Data::Dumper that ships with Parrot, Rosella Dumper is
+a full-featured tool for providing a text representation of a complex nested
+object for human readability. It is not a general-purpose serialization
+library. Dumper is fully configurable, and the way dumping occurs can be
+controlled through subclassing and other configurability options.
+
+### Lazy
+
+The Lazy library implements lazy objects. Lazy objects are proxies which take
+a target type but which only instantiate the targe object on demand. This is
+useful for when you need to have and pass an object "instance", but creating
+the object is too expensive to do eagerly.
 
 ### Prototype
 
@@ -57,25 +79,10 @@ object creation where objects are allocated fresh and separate initialized.
 The Prototype library allows you to register both a prototype object and an
 initializer method for each type, then ask for objects of that type by name.
 
-### Lazy
+### Reflect
 
-The Lazy library implements lazy objects. Lazy objects are proxies which take
-a target type but which only instantiate the targe object on demand. This is
-useful for when you need to have and pass an object "instance", but creating
-the object is too expensive to do eagerly.
-
-### Template
-
-The Template library performs text-formatting and text-templating. It will
-have a default syntax familiar, but not identical, to other well-known text
-templating packages. In addition, it will provide a powerful customization
-interace to change both syntax and semanics of text templating for particular
-purposes.
-
-### Benchmark
-
-The Benchmark library will contain tools and utilities for benchmarking and
-measuring the performance of code.
+The Reflect library provides a familiar and powerful interface for doing
+runtime type reflection.
 
 ### Utilities
 
@@ -98,3 +105,9 @@ using an MVC architecture.
 
 This library will provide higher-order routines for combining functions
 together in logical ways to be executed as a single unit.
+
+### Commandline
+
+This library will provide tools for working with the commandline, including
+commandline argument parsing, spawning and managing processes, and doing
+other similar tasks.

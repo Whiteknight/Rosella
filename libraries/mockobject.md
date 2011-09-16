@@ -7,11 +7,12 @@ title: Rosella Mock Object
 
 Mock Objects are tools for use in unit testing. Unlike a real object, a
 mock object doesn't implement any program logic. Instead, a mock object is
-used to verify that code under test is interfacing with objects in a correct
-way.
+used to verify that code under test is interfacing with other objects in a
+correct way.
 
 The Rosella MockObject library uses the Rosella Proxy library as the
-underlying implementation mechanism for its mock objects.
+underlying implementation mechanism for its mock objects. Accesses on the
+mock proxy are redirected to a testing controller for verification.
 
 ## Concepts
 

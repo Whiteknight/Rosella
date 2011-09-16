@@ -6,7 +6,7 @@ title: Rosella Harness
 ## Overview
 
 The Harness library provides utilities necessary to create a custom test
-harness for a test suite.
+harness for a TAP-based test suite.
 
 ## Concepts
 
@@ -237,3 +237,6 @@ Here is a minimal harness written in NQP:
 * [Parrot-Linear-Algebra](http://github.com/Whiteknight/parrot-linear-algebra)
 uses the Harness library for its test harness
 * [Jaesop](http://github.com/Whiteknight/jaesop) uses the Harness library.
+* Several Rosella Utility programs use Harness. `rosella_harness` is a default
+harness implementation, and `rosella_test_template` can be used to buld a
+custom harness.

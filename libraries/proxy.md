@@ -6,16 +6,19 @@ title: Rosella Proxy
 ## Overview
 
 The Rosella Proxy Library provides a mechanism for creating configurable,
-transparent proxy objects.
+transparent proxy objects. The proxy library provides the mechanisms for
+creating and working with proxies, but does not provide or suggest any
+particular usages for them. Other Rosella libraries show examples of how
+Proxies can be used for a variety of purposes.
 
 ## Concepts
 
 ### Proxies
 
-A Proxy is a stand-in object, which can be used in place of a "real" object
-to provide a variety of behaviors. For instance, a remoting proxy can be used
+A Proxy is a stand-in object which can be used in place of a "real" object
+to provide a variety of behaviors. For instance a remoting proxy can be used
 to provide access to an object which exists remotely, such as in a different
-process address space, or on a different machine over the network. An
+process address space or on a different machine over the network. An
 intercepting proxy can intercept certain accesses, such as certain method
 calls, and redirect them or wrap them with additional behaviors. A lazy
 loading proxy can be used as a cheap stand-in for an object which is very
@@ -30,7 +33,7 @@ the proxy. When the factory is asked to create a proxy, a
 
 Builders install certain intercepting behaviors on the proxy, which cause
 accesses to be redirected. If provided, behaviors will typically be redirected
-to the controller. If no controller is provided, the behavior will fallback
+to the controller. If no controller is provided, the behavior will fall back
 to the target object or the target class.
 
 ## Namespaces
@@ -38,7 +41,10 @@ to the target object or the target class.
 ### Proxy
 
 The `Rosella.Proxy` namespace provides some utilities which are mostly for
-internal use by the Proxy library.
+internal use by the Proxy library. Some important routines from the Proxy
+namespace are:
+
+* `is_proxy` Returns true if if the given object is a proxy. False otherwise.
 
 ## Classes
 
@@ -57,14 +63,13 @@ the individual proxy object when it is created.
 ### Proxy.Builder.Array
 
 `Rosella.Proxy.Builder.Array` sets up the proxy to intercept array-like
-integer keyed accesses. If you do not use this Builder, and treat the proxy
+integer keyed accesses. If you do not use this Builder and treat the proxy
 like an array, you will probably get an error about not having the necessary
 vtables defined. There is no default fallback behavior for proxies for integer
 keyed access without this builder.
 
-    using Rosella.build;
-    var factory = build(class Rosella.Proxy.Factory, class My.Test.Class, [
-        build(Rosella.Proxy.Builder.Array)
+    var factory = new Rosella.Proxy.Factory(class My.Test.Class, [
+        new Rosella.Proxy.Builder.Array()
     ]);
     var proxy = factory.create(controller);
     proxy[5] = "hello";
@@ -75,9 +80,8 @@ keyed access without this builder.
 `Rosella.Proxy.Builder.AttributeIntercept` is used to intercept accesses for
 getting and setting attributes.
 
-    using Rosella.build;
-    var factory = build(class Rosella.Proxy.Factory, class My.Test.Class, [
-        build(Rosella.Proxy.Builder.AttributeIntercept)
+    var factory = new Rosella.Proxy.Factory(class My.Test.Class, [
+        new Rosella.Proxy.Builder.AttributeIntercept()
     ]);
     var target = "This will be a String PMC"
     var proxy = factory.create(controller, target);
@@ -94,6 +98,9 @@ built-in PMC type, you *must* use AttributeIntercept to provide this behavior.
 More details about this will be found in the section about the Passthrough
 builder.
 
+Once Parrot fixes this situation, Rosella Proxy will be updated to avoid the
+special case.
+
 ### Proxy.Builder.Imitate
 
 `Rosella.Proxy.Builder.Imitate` causes the proxy to look like it is from a
@@ -102,7 +109,7 @@ this builder, the proxy should be able to pass runtime checks and pretend to
 be a member of a type or types which it otherwise would not appear to be.
 
 Notice that the "can" vtable is tied to the find_method vtable. If you want to
-override the behavior of "can", you should use MethodIntercept.
+override the behavior of "can" you should use MethodIntercept.
 
 ### Proxy.Builder.Immutable
 
@@ -115,10 +122,9 @@ by other Builders. Immutable should typically be accompanied by the
 Passthrough builder, so that other non-write accesses are allowed to pass
 through to the target type transparently.
 
-    using Rosella.build;
-    var factory = build(class Rosella.Proxy.Factory, class My.Test.Class, [
-        build(Rosella.Proxy.Builder.Passthrough),
-        build(Rosella.Proxy.Builder.Immutable)
+    var factory = new Rosella.Proxy.Factory(class My.Test.Class, [
+        new Rosella.Proxy.Builder.Passthrough(),
+        new Rosella.Proxy.Builder.Immutable()
     ]);
     var target = build(class My.Test.Class);
     var proxy = factory.create(controller, target);
@@ -129,9 +135,8 @@ through to the target type transparently.
 `Rosella.Proxy.Builder.InvokeIntercept` is used to intercept the invoke vtable
 for types like Sub which can be invoked.
 
-    using Rosella.build;
-    var factory = build(class Rosella.Proxy.Factory, class My.Test.Class, [
-        build(Rosella.Proxy.Builder.InvokeIntercept)
+    var factory = new Rosella.Proxy.Factory(class My.Test.Class, [
+        new Rosella.Proxy.Builder.InvokeIntercept()
     ]);
     var proxy = factory.create(controller);
     proxy("args");
@@ -141,9 +146,8 @@ for types like Sub which can be invoked.
 `Rosella.Proxy.Builder.MethodIntercept` is used to intercept find_method
 vtable calls.
 
-    using Rosella.build;
-    var factory = build(class Rosella.Proxy.Factory, class My.Test.Class, [
-        build(Rosella.Proxy.Builder.MethodIntercept)
+    var factory = new Rosella.Proxy.Factory(class My.Test.Class, [
+        new Rosella.Proxy.Builder.MethodIntercept()
     ]);
     var proxy = factory.create(controller);
     proxy.foo("args");
@@ -160,10 +164,9 @@ In this example, we are trying to proxy the built-in PMC type "String". To do
 this, we must also use the AttributeIntercept builder to prevent a variety of
 errors.
 
-    using Rosella.build;
-    var factory = build(class Rosella.Proxy.Factory, "String", [
-        build(Rosella.Proxy.Builder.AttributeIntercept),
-        build(Rosella.Proxy.Builder.Passthrough)
+    var factory = new Rosella.Proxy.Factory("String", [
+        new Rosella.Proxy.Builder.AttributeIntercept(),
+        new Rosella.Proxy.Builder.Passthrough()
     ]);
     var target = "This will be a String PMC"
     var proxy = factory.create(controller, target);
@@ -175,9 +178,8 @@ errors.
 `Rosella.Proxy.Builder.PMCKeyedHash` intercepts hash-like keyed accesses on
 the object.
 
-    using Rosella.build;
-    var factory = build(class Rosella.Proxy.Factory, class My.Test.Class, [
-        build(Rosella.Proxy.Builder.PMCKeyedHash)
+    var factory = new Rosella.Proxy.Factory(class My.Test.Class, [
+        new Rosella.Proxy.Builder.PMCKeyedHash()
     ]);
     var proxy = factory.create(controller);
     proxy["test"] = "foo";
@@ -205,7 +207,7 @@ that it only attempts to pass through vtable accesses which most common
 builders would be overriding. The Controller does not attempt to pass through
 all vtable accesses. For that, use the Passthrough builder instead.
 
-For more interesting behaviors you should provide your own Constroller
+For more interesting behaviors you should provide your own Controller
 subclass and override the methods you want. Look at the source code for the
 Controller type and the various Builder types to figure out which methods
 would need to be provided or overridden by your Controller type to provide the
@@ -229,3 +231,6 @@ controllers instead.
 
 * The Rosella MockObject library uses Proxy to implement its access intercept
 logic
+* The Rosella Memoize library uses Proxies to implement transparent
+memoization of invokable objects
+

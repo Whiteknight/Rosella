@@ -34,8 +34,11 @@ methods and routines for working with files. Among these:
   in the test suite to replace the default `OS` PMC with a mock object for
   testing without needing to create and play with files.
 * `is_file(string)`: Determine if the given path points to an existing file.
+  Returns false if the item is not a file (a directory, for instance) or if it
+  does not exist.
 * `is_directory(string)`: Determine if the given path points to an existing
-  directory.
+  directory. Returns false if the item is not a directory (a file, for
+  instance) or if the directory does not exist.
 
 ## Classes
 
@@ -46,6 +49,8 @@ in a file system. The main items are files and directories. Entries have some
 common methods: `rename`, `delete`, `exists` and `short_name`. The `rename`
 operation renames the file on disk and updates the path string stored in the
 Entry object.
+
+Entry is an abstract parent type and should not be used directly.
 
 ### FileSystem.File
 
@@ -86,6 +91,10 @@ Here are some example usages of Directory:
     var dirs = dir.get_subdirectories();
     var contents = dir.walk();
     dir.walk_func(function(var f) { say("File: " + string(f)); });
+
+### FileSystem.FileIterator
+
+### FileSystem.IterableHandle
 
 ### FileSystem.Visitor
 
@@ -147,3 +156,6 @@ Get a file from the current directory:
 
 
 ## Users
+
+* Rosella.Harness uses FileSystem for interacting with test files.
+* Rosella.Template uses FileSystem for working with template files.

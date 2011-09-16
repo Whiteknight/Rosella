@@ -8,7 +8,7 @@ title: Rosella Test
 The Rosella Test library implements a series of utilities for implementing a
 suite of unit tests. By default, the Test library is configured to output
 TAP to the console, although other mechanisms of reporting results can be
-substituted.
+substituted with custom subclassing and configurations.
 
 ## Concepts
 
@@ -31,6 +31,21 @@ type which overrides the `find_method` VTABLE will not be able to use that
 mechanism to override or dynamically generate the list of test methods to
 execute, because method extraction goes through the Class directly instead of
 through the object and its overrides.
+
+### Test Vectors and Lists
+
+In addition to `Rosella.Test.test()` described above, there are two other
+mechanisms for specifying tests. These other mechanisms are useful in certain
+situations and in certain HLLs that have a different notion of "method" from
+the default Parrot implementation.
+
+`Rosella.Test.test_vector()` takes a function reference and a data set. The
+test function is executed sequentially on each element in the data set.
+
+`Rosella.Test.test_list()` takes an array of test functions and executes each
+sequentially. This is useful in languages like JavaScript or Python where
+we want to execute several functions but the same mechanisms of method
+extraction used by `Rosella.Test.test` would not work.
 
 ### Test Methods and Test Functions
 
@@ -181,9 +196,11 @@ library.
 
 Another way to use the library is with the `test_vector` function.
 `test_vector` is used to execute a series of repetitive tests over a
-collection of data. `test_vector` executes a single test method on every item
-in an array or hash. Here's how to set up a test sequence with `test_vector`,
-in NQP:
+collection of data. `test_vector` executes a single test function on every
+item in an array or hash. The first argument to the test function will be the
+TestCase instance, and the second argument will be the individual peice of
+data being currently tested. Here's how to set up a test sequence with
+`test_vector`, in NQP:
 
     Rosella::Test::test_vector(method($item) {
         # Test logic goes here
@@ -206,7 +223,6 @@ Similarly, you can use a hash to give names to each test. This example is in
 Winxed:
 
     function main[main]() {
-        using tester;
         using Rosella.Test.test_vector;
         test_vector(function (obj, data) {
             obj.assert.equal(data[0] + data[1], data[2]);
@@ -217,9 +233,29 @@ Winxed:
         });
     }
 
+The third way to use the library is with `test_list`. This takes an array of
+non-method functions to execute:
+
+    function main[main]() {
+        using Rosella.Test.test_list;
+        test_list([
+            function(var obj) {
+                obj.assert.equal(1, 1);
+            },
+            function(var obj) {
+                ...
+            }
+        ]);
+    }
+
 The `test` function executes multiple test methods over a single bit of common
-data (the TestContext). The `test_vector` function executes a single test
-method over an array of data.
+data (the TestContext). The test methods are extracted from a class
+definition. The `test_vector` function executes a single test method over an
+array of data. The `test_list` function works very similarly to `test` except
+the way the list of tests is provided is different (an array vs a class
+definition). Also, the way the tests are executed is differed: `test` executes
+tests as methods on the TestCase. `test_list` executes tests as functions
+where the TestCase is the first argument.
 
 ## Public Classes
 
@@ -240,7 +276,8 @@ Whatever you pass as the "asserter" argument will be passed directly to the
 subclass which either overrides any of the default methods or avoids them
 entirely, your tests will not be able to use the features discussed below.
 
-Here are some examples of common assertions in NQP:
+Here are some examples of common assertions on the default Asserter type in
+NQP:
 
     $!assert.fail("whoops!");        # Unconditional failure
     $!assert.equal("A", "A");        # Test for equality
@@ -358,6 +395,11 @@ a collection of TestCase objects and a TestContext. This is called from
 
 `Rosella.Test.SuiteFactory.Vector` is used to build a Suite object for
 vectorized tests. This is called from `Rosella.Test.test_vector`.
+
+### Test.SuiteFactory.List
+
+`Rosella.Test.SuiteFactory.List` is used to build a Suite object for a list
+of tests. This is called from `Rosella.Test.test_list`.
 
 ### Test.TestCase
 
@@ -593,3 +635,5 @@ give each item in the test a name:
 * Rosella uses the Test library to implement its own unit tests
 * [Parrot-Linear-Algebra](http://github.com/Whiteknight/parrot-linear-algebra)
 uses the Test library for unit tests
+* [Jaesop][http://github.com/Whiteknight/jaesop) uses the Test library for
+unit testing JavaScript code and the runtime.

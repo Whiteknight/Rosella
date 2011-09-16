@@ -24,32 +24,35 @@ Array. A Stream uses an iterator approach to operate lazily on a source, and
 executes stages in order, one data item at a time.
 
 Calling the "map" method on a Queryable Array will perform the mapping in a
-tight loop and return a new array. Calling the map method on an Array Stream
-will return the Stream with that mapping integrated into the fetch logic.
-Every access of an item on the Stream reads a new item from the Array and
-performs the mapping on that item only. All other consumers of the stream will
-not know that any mappings have been applied to it, and the data source (the
-Array) will be read lazily.
+tight loop and return a fresh new array. Calling the map method on an Array
+Stream will return the Stream with that mapping integrated into the fetch
+logic. Every access of an item on the Stream reads a new item from the Array
+and performs the mapping on that item only. All other consumers of the stream
+will not know that any mappings have been applied to it, and the data source
+(the Array) will be read lazily.
 
 Queryables tend to work best with in-memory objects which are Arrays or
 Hashes. They are eager and relatively quick, using type-specific optimizations
-for different operations where possible. Queryables will try to preserve
-semantics of the input type. For instance, creating a Queryable for an Array
-object will typically return results in an array format. Queryables with Hash
-data will typically return results as Hashes. Methods such as `.to_array()`,
-`.to_hash()`, or `.fold()` will modify the storage type.
+for different operations where possible. The downside is that most operations
+return a new PMC, such as a new hash or a new array to hold the results.
+Queryables will try to preserve semantics of the input type. For instance,
+creating a Queryable for an Array object will typically return results in an
+array format. Queryables with Hash data will typically return results as
+Hashes. Methods such as `.to_array()`, `.to_hash()`, `.sort()` or `.fold()`
+will modify the storage type.
 
 Streams tend to work best with objects which are lazy and iterable. For
 instance, the lines of text in a very large file may be best read one at a
 time instead of reading the whole contents of a file into a large blob of
-in-memory text. Lines of input from a Pipe from a long-lived subprocess, or
-a network Socket might not be limited in number, and attempting to read all
-data into a single blob may hang the program. Using a Stream over these
-sources ensures that lines would be read individually and only on demand.
-Streams always treat data as sequential and array-like. Streams also tend to
-be one-way structures. Once you read data from the stream you can't typically
-un-read it. You can push values back onto the stream, but those values are
-not propagated back to the original data iterator.
+in-memory text and attempting to work with it all at once. Lines of input from
+a Pipe from a long-lived subprocess, or a network Socket might not be limited
+in number, and attempting to read all data into a single blob may hang the
+program. Using a Stream over these sources ensures that lines would be read
+individually and only on demand. Streams always treat data as sequential and
+array-like. Streams also tend to be one-way structures. Once you read data
+from the stream you can't typically un-read it. You can push values back onto
+the stream, but those values are not propagated back to the original data
+iterator.
 
 Streams maintain an output cache so that stages which read data from the
 source but do not return that data to the user do not lose data. For instance,

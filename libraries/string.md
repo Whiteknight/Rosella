@@ -6,7 +6,10 @@ title: Rosella String
 ## Overview
 
 The Rosella String library provides a number of tools and utilities for
-working with strings and text in Parrot.
+working with strings and text in Parrot. It serves two purposes: First, to
+provide easy access to several important string-handling routines and Second,
+to provide an abstraction layers over details of the strings system which
+might not be good to rely upon directly.
 
 ## Concepts
 
@@ -16,7 +19,9 @@ Character classes are numeric identifiers that represent certain types of
 characters in a string. Parrot defines a list of these identifiers for things
 like "word", "whitespace", "alphabetic", "numeric", "punctuation" and other
 classes. Several routines in the String library work with these identifiers
-for identifying characters of a particular type in a string.
+for identifying characters of a particular type in a string. Parrot works with
+character classes using a set of named integer values. Rosella adds the
+ability to look up these class identifier numbers by name.
 
 ### Tokenizers
 
@@ -26,7 +31,9 @@ a type name, and arbitrary metadata.
 
 Tokenizers are lazy and support several semantics which would be useful for
 building higher-level utilities such as lexical analyzers, parsers, and other
-types of programs.
+types of programs. The String library ships with a few simple types of
+tokenizers. Additional functionality can be easily added by subclassing
+`Rosella.String.Tokenizer`.
 
 ## Namespaces
 
@@ -128,6 +135,11 @@ The output to the above code would be:
 This can be extremely handy when you are working with text markup languages
 like HTML, XML, Wikitext or Markdown.
 
+### String.Tokenizer.Iterator
+
+`Rosella.String.Tokenizer.Iterator` is a simple iterator type which allows
+the contents of a Tokenizer to be iterated.
+
 ### String.Tokenizer.Token
 
 `Rosella.String.Tokenizer.Token` is the data object returned from a Tokenizer.
@@ -135,18 +147,26 @@ It has three data fields: `data` is the piece of string matched by the
 tokenizer, `type_name` is the name of the token, if available, and `metadata`
 is a storage slot for arbitrary metadata to be attached.
 
+Different tokenizers will populate the name and metadata fields differently.
+For instance, the CClass tokenizer will add the integer character class
+identifier as the token metadata. The simple Delimiter tokenizer populates
+neither the name nor the metadata fields in the tokens.
+
 ## Examples
 
 ### Winxed
 
-    function main[main](var args) {
-        var rosella = load_packfile("rosella/core.pbc");
-        using Rosella.initialize_rosella;
-        initialize_rosella("string");
-    }
+    var rosella = load_packfile("rosella/core.pbc");
+    var(Rosella.initialize_rosella)("string");
+
+    var t = new Rosella.String.Tokenizer.CClass();
+    t.add_data("1234+*&^abcd");
+    for(string s in t)
+        say(s);
 
 ### NQP
 
 ## Users
 
-* The Rosella Template library uses String
+* The Rosella Template library uses String for tokenization and string
+manipulation needs.

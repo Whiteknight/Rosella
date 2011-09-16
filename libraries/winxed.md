@@ -21,8 +21,11 @@ The Distutils library is part of the Parrot distribution. It is used to help
 create building, installation, packaging, and testing infrastructure for a
 project. Distutils contains built-in functionality to support library projects
 written in PIR and NQP, as well as other types of extension and embedding
-projects. Distutils by default does not contain features for building
-libraries written in Winxed (such as Rosella).
+projects. Historically, Distutils has not included a full set of tools for
+working with Winxed files. Some functionality has been added since a Winxed
+snapshot has been included witht the Parrot distribution. This library aims
+to help fill in any missing bits of functionality which are not included in
+Distutils by default.
 
 ### Winxed Build Rules
 
@@ -32,6 +35,10 @@ PIR files to PBC files. The Winxed library adds the "pir_winxed" rule,
 which compiles a .winxed file down to a .pir file.
 
 ### REPL
+
+The REPL portion of the library is used to help building a Winxed
+Read-Eval-Print-Loop program. This portion of the library is in development
+and is subject to change.
 
 ## Namespaces
 
