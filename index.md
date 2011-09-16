@@ -76,12 +76,11 @@ event subscribers, and vice-versa. Applications become easier to maintain
 because important communication pathways do not need to have hard-coded
 senders and receivers.
 
-#### [Test](/Rosella/libraries/test.html)
+#### [FileSystem](/Rosella/libraries/filesystem.html)
 
-Inspired by testing libraries such as xUnit and Test::More,
-The Rosella Test library provides the tools and utilities to
-quickly write unit tests for your software. Rosella's own test
-suite is written using this library.
+The FileSystem library provides a friendly interface for working with the
+filesystem. It provides object types for files and directories and a number
+of utilities for working with each.
 
 #### [Harness](/Rosella/libraries/harness.html)
 
@@ -90,10 +89,11 @@ implements the logic necessary to quickly construct a TAP harness
 for executing unit tests and reporting the results. Rosella's own
 test harness is written using this library.
 
-#### [Proxy](/Rosella/libraries/proxy.html)
+#### [Memoize](/Rosella/libraries/memoize.html)
 
-The Proxy library provides the tools necessary to create a wide
-array of proxy objects.
+The Memoize library adds in functionality to add memoization and caching to
+subroutines. There is a simple version and a version which uses proxies to add
+more features, but is slower.
 
 #### [Mock Object](/Rosella/libraries/mockobject.html)
 
@@ -102,11 +102,41 @@ full-featured mock objects for use in testing with the Test
 library. Several tests in the Rosella test suite are implemented
 using this library.
 
-#### [Memoize](/Rosella/libraries/memoize.html)
+#### [Path](/rosella/libraryes/path.html)
 
-The Memoize library adds in functionality to add memoization and caching to
-subroutines. There is a simple version and a version which uses proxies to add
-more features, but is slower.
+The Path library provides utilities for searching the contents of large nested
+aggregate objects using string names.
+
+#### [Proxy](/Rosella/libraries/proxy.html)
+
+The Proxy library provides the tools necessary to create a wide
+array of proxy objects.
+
+#### [Query](/Rosella/libraries/query.html)
+
+The Query library provides a number of utilities for working with aggregate
+objects including higher-order functions, group operations, and data streams.
+
+#### [String](/Rosella/libraries/string.html)
+
+The String library provides a number of utilities and powerful interfaces for
+working with strings.
+
+#### [Test](/Rosella/libraries/test.html)
+
+Inspired by testing libraries such as xUnit and Test::More,
+The Rosella Test library provides the tools and utilities to
+quickly write unit tests for your software. Rosella's own test
+suite is written using this library.
+
+#### [Template](/Rosella/libraries/template.html)
+
+The Template library provides an engine for text templating tasks.
+
+#### [Winxed](/Rosella/libraries/winxed.html)
+
+The Winxed library contains a number of tools for building Winxed-based
+projects.
 
 ### Rosella Development Libraries
 
