@@ -94,11 +94,12 @@ namespace Rosella.Query.Stage
 
         function next()
         {
-            if (self.cache == null)
-                self.cache = self.gobble_all();
-            if (elements(self.cache) == 0)
-                return false, null;
-            return true, self.cache.shift();
+            :(int is_valid, var value) = self.previous.next();
+            if (is_valid && self.func != null) {
+                var f = var(self.func);
+                f();
+            }
+            return is_valid, value;
         }
     }
 
@@ -363,6 +364,10 @@ namespace Rosella.Query.Stage
         }
     }
 
+    /* Append Stage
+        Append additional data items to the end of the stream. The new data
+        items are only added when the stream has been exhaused
+    */
     class Append : Rosella.Query.Stage
     {
         var cache;

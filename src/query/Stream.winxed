@@ -1,5 +1,9 @@
 namespace Rosella.Query
 {
+    /* Stream class
+        A stream is a sequence of data items from an iterable source. Items
+        are read lazily from the source.
+    */
     class Stream : Rosella.Query
     {
         var data;
@@ -8,6 +12,7 @@ namespace Rosella.Query
         var output_cache;
         var input_cache;
 
+        // Constructor. Create a new stream for the given data
         function Stream(var data)
         {
             self.data = data;
@@ -16,6 +21,8 @@ namespace Rosella.Query
             self.input_cache = null;
         }
 
+        // Constructor. Create a new stream from an existing stream and a new
+        // stage.
         function Stream(var parent, var stage)
         {
             self.data = parent.data;
@@ -28,7 +35,8 @@ namespace Rosella.Query
         /* Data Manipulation Routines
         */
 
-        // Get the raw data back
+        // Execute the entire stream, exhausting the source. Return whatever
+        // results come out of it.
         function data()
         {
             var d = [];
@@ -48,16 +56,19 @@ namespace Rosella.Query
                 :(is_valid, item) = self.get_next();
         }
 
+        // Perform an action on the iterator.
         function on_iterator(var f)
         {
             return f(self.source_stage.iterator);
         }
 
+        // Perform an action on the underlying data source.
         function on_data(var f)
         {
             return f(self.data);
         }
 
+        // Determine if the stream has more data.
         function has_more()
         {
             if (elements(self.output_cache) > 0)
@@ -68,6 +79,7 @@ namespace Rosella.Query
             return is_valid;
         }
 
+        // Read one data item from the stream.
         function next()
         {
             if (elements(self.output_cache) > 0)
@@ -80,7 +92,8 @@ namespace Rosella.Query
             return item;
         }
 
-        // Return a count of elements
+        // Return a count of elements. This requires reading the entire source
+        // which is not a good idea for infinite data sources.
         function count(var func [optional], int has_func [opt_flag])
         {
             if (!has_func || func == null) {
@@ -97,7 +110,8 @@ namespace Rosella.Query
         }
 
         // Return true if any element in the aggregate satisfies the predicate
-        // false otherwise. Short-circuits
+        // false otherwise. Short-circuits if possible. If no elements satisfy
+        // the predicate, the entire stream will be exhausted.
         function any(var func [optional], int has_func [opt_flag])
         {
             if (!has_func || func == null)
@@ -116,16 +130,22 @@ namespace Rosella.Query
         }
 
         /* Delayed Execution Query Routines
+            All delayed-execution methods return a new stream with the new
+            behavior added to the end. The existing stream is not affected.
+            Both streams share the same data object and draw from the same
+            iterable.
         */
 
-        // Perform some action for every element in the aggregate
+        // Perform some action for every element in the aggregate. Return the
+        // items without modification.
         function foreach(var func)
         {
             var last_stage = new Rosella.Query.Stage.ForEach(self.last_stage, func);
             return new Rosella.Query.Stream(self, last_stage);
         }
 
-        // Perform a callback on the current value of the data
+        // Perform a callback at this stage in the Stream. It performs no
+        // action at all on the data.
         function tap(var func)
         {
             var last_stage = new Rosella.Query.Stage.Tap(self.last_stage, func);
@@ -133,7 +153,8 @@ namespace Rosella.Query
         }
 
         // Return a new aggregate where each element is a function of the
-        // elements in the data
+        // elements in the data. This is like .foreach(), but without passing
+        // the data to the callback.
         function map(var func)
         {
             var last_stage = new Rosella.Query.Stage.Map(self.last_stage, func);
@@ -186,18 +207,22 @@ namespace Rosella.Query
             return new Rosella.Query.Stream(self, last_stage);
         }
 
+        // Flatten a nested aggregate into a flat stream of scalars
         function flatten()
         {
             var last_stage = new Rosella.Query.Stage.Flatten(self.last_stage);
             return new Rosella.Query.Stream(self, last_stage);
         }
 
+        // Append a data sequence to the end of the stream
         function append(var s)
         {
             var last_stage = new Rosella.Query.Stage.Append(self.last_stage, s);
             return new Rosella.Query.Stream(self, last_stage);
         }
 
+        // For each element in the sequence, replace it with a sequence of
+        // zero or more elements to be inserted at that point in the stream.
         function project(var func)
         {
             var last_stage = new Rosella.Query.Stage.Project(self.last_stage, func);
@@ -216,6 +241,7 @@ namespace Rosella.Query
         /* Internal Helper Routines
         */
 
+        // Get the next item from the stream.
         function get_next()
         {
             if (self.input_cache != null && elements(self.input_cache) > 0)
