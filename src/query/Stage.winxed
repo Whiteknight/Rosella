@@ -187,7 +187,7 @@ namespace Rosella.Query.Stage
         {
             if (self.cache == null) {
                 var d = self.gobble_all();
-                Rosella.Query.Provider.qsort(d, 0, elements(d), self.func);
+                Rosella.Query.qsort(d, 0, elements(d), self.func);
                 self.cache = d;
             }
 
