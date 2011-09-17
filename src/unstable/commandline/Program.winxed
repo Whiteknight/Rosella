@@ -1,0 +1,66 @@
+namespace Rosella.CommandLine
+{
+    class Program
+    {
+        var main_args;
+        var extra_args;
+        var program_name;
+
+        function Program(string program_name)
+        {
+            self.program_name = program_name;
+        }
+
+        function setup_args(var raw_args, var arg_defs)
+        {
+            var args = new Rosella.CommandLine.Arguments(raw_args);
+            if (arg_defs != null) {
+                self.main_args = args;
+                self.extra_args = args.remainder();
+                for (string key in arg_defs) {
+                    var def = arg_defs[key];
+
+                    int does_invoke;
+                    ${ does does_invoke, def, "invokable" };
+                    if (does_invoke) {
+                        if (args.fetch_flag(key))
+                            def();
+                        continue;
+                    }
+
+                    string def_s = string(def);
+                    if (def_s == "f")
+                        args.fetch_flag(key);
+                    else if (def_s == "s")
+                        args.fetch_scalar(key);
+                    else if (def_s == "l")
+                        args.fetch_scalar_list(key);
+                    else if (def_s == "p")
+                        args.fetch_pair(key);
+                    else if (def_s == "h")
+                        args.fetch_pair_hash(key);
+                    else if (def_s == "*")
+                        args.fetch_unparsed(key);
+                    else
+                        Rosella.Error.invalid(__FUNCTION__, "Can not parse arg modifier %s", def_s);
+                }
+            } else {
+                self.main_args = args.raw_args();
+                self.extra_args = args.remainder();
+            }
+        }
+
+        function run(var main_func)
+        {
+            int exit_code = 0;
+            int has_ec = false;
+            Rosella.Parrot.try_report(function () {
+                :(int ec [optional], int hec [opt_flag]) = main_func(self.main_args, self.extra_args);
+                exit_code = ec;
+                has_ec = hec;
+            });
+            if (has_ec)
+                exit(exit_code);
+        }
+    }
+}

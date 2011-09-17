@@ -1,0 +1,209 @@
+namespace Rosella.CommandLine
+{
+    class Arguments
+    {
+        var args;
+        var remainder;
+        var cache;
+
+        function Arguments(var args)
+        {
+            var a = [];
+            for (var arg in args)
+                push(a, arg);
+            self.cache = {};
+            self.presort(a);
+        }
+
+        function presort(var args)
+        {
+            self.remainder = [];
+            var sorted = [];
+            int do_process = true;
+            for (string a in args) {
+                if (do_process && length(a) >= 2 && substr(a, 0, 1) == "-" && substr(a, 1, 1) != "-") {
+                    if (length(a) >= 4 && substr(a, 2, 1) == '=') {
+                        push(sorted, substr(a, 0, 2));
+                        push(sorted, substr(a, 3));
+                        continue;
+                    }
+                    for (int i = 1; i < length(a); i++)
+                        push(sorted, "-" + substr(a, i, 1));
+                    continue;
+                }
+                if (do_process && length(a) >= 3 && substr(a, 0, 2) == "--" && substr(a, 2, 1) != "-") {
+                    int eq_idx = indexof(a, "=");
+                    if (eq_idx != -1) {
+                        var parts = split("=", a);
+                        for (string b in parts)
+                            push(sorted, b);
+                    } else
+                        push(sorted, a);
+                    continue;
+                }
+                if (indexof(a, "=") != -1) {
+                    var parts = split("=", a);
+                    for (string b in parts)
+                        push(sorted, b);
+                    continue;
+                }
+                if (do_process && length(a) == 2 && a == "--") {
+                    do_process = false;
+                    continue;
+                }
+                if (do_process)
+                    push(sorted, a);
+                else
+                    push(self.remainder, a);
+            }
+            self.args = sorted;
+        }
+
+        function fetch_flag(string name)
+        {
+            int found = false;
+            for (int i = 0; i < elements(self.args); i++) {
+                string a = self.args[i];
+                if (a == "")
+                    continue;
+                if (a == name) {
+                    if (!found) {
+                        found = true;
+                        self.args[i] = "";
+                    } else
+                        Rosella.Error.invalid(__FUNCTION__, "Argument '%s' specified more than once", name);
+                }
+            }
+            self.cache[name] = found;
+            return found;
+        }
+
+        function fetch_scalar(string name)
+        {
+            int found = false;
+            string value = "";
+            for (int i = 0; i < elements(self.args) - 1; i++) {
+                string a = self.args[i];
+                if (a == "")
+                    continue;
+                if (a == name) {
+                    if (!found) {
+                        found = true;
+                        self.args[i] = "";
+                    } else
+                        Rosella.Error.invalid(__FUNCTION__, "Argument '%s' specified more than once", name);
+                    value = self.args[i + 1];
+                    self.args[i + 1] = "";
+                    i++;
+                }
+            }
+            self.cache[name] = value;
+            return value;
+        }
+
+        function fetch_scalar_list(string name)
+        {
+            var value = [];
+            for (int i = 0; i < elements(self.args) - 1; i++) {
+                string a = self.args[i];
+                if (a == "")
+                    continue;
+                if (a == name && self.args[i + 1] != "") {
+                    self.args[i] = "";
+                    push(value, self.args[i + 1]);
+                    self.args[i + 1] = "";
+                    i++;
+                }
+            }
+            self.cache[name] = value;
+            return value;
+        }
+
+        function fetch_pair(string name)
+        {
+            int found = false;
+            string key = "";
+            string value = "";
+            for (int i = 0; i < elements(self.args) - 2; i++) {
+                string a = self.args[i];
+                if (a == "")
+                    continue;
+                if (a == name && self.args[i + 1] != "" && self.args[i + 2] != "") {
+                    if (!found) {
+                        found = true;
+                        self.args[i] = "";
+                        key = self.args[i + 1];
+                        self.args[i + 1] = "";
+                        value = self.args[i + 2];
+                        self.args[i + 2] = "";
+                        i += 2;
+                    } else
+                        Rosella.Error.invalid(__FUNCTION__, "Argument '%s' specified more than once", name);
+                }
+            }
+            var ret = { key: value };
+            self.cache[name] = ret;
+            return ret;
+        }
+
+        function fetch_pair_hash(string name)
+        {
+            var values = {};
+            for (int i = 0; i < elements(self.args) - 2; i++) {
+                string a = self.args[i];
+                if (a == "")
+                    continue;
+                if (a == name && self.args[i + 1] != "" && self.args[i + 2] != "") {
+                    self.args[i] = "";
+                    string key = self.args[i + 1];
+                    self.args[i + 1] = "";
+                    string value = self.args[i + 2];
+                    self.args[i + 2] = "";
+                    values[key] = value;
+                    i += 2;
+                }
+            }
+            self.cache[name] = values;
+            return values;
+        }
+
+        function fetch_unparsed(string name)
+        {
+            var args = [];
+            for (int i = 0; i < elements(self.args); i++) {
+                string a = self.args[i];
+                if (a == "")
+                    continue;
+                push(args, a);
+                self.args[i] = "";
+            }
+            self.cache[name] = args;
+        }
+
+        function remainder()
+        {
+            return self.remainder;
+        }
+
+        function raw_args()
+        {
+            return self.args;
+        }
+
+        function get_string_keyed[vtable](string name)
+        {
+            if (exists self.cache[name])
+                // TODO: Check if it's a string. Lists and hashes shouldn't be
+                //       accessed like this
+                return self.cache[name];
+            return "";
+        }
+
+        function get_pmc_keyed[vtable](string name)
+        {
+            if (exists self.cache[name])
+                return self.cache[name];
+            return null;
+        }
+    }
+}

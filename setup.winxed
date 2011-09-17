@@ -311,6 +311,11 @@ function setup_experimental_libraries(var rosella)
         "dumper/dumphandler/Object",
         "dumper/dumphandler/Null"
     );
+
+    setup_unstable_lib(rosella, "commandline", ["Core"],
+        "commandline/Arguments",
+        "commandline/Program"
+    );
 }
 
 function setup_utilities(var rosella)
