@@ -6,7 +6,7 @@
 src/_build/*
 _site
 /test.*
-src/unstable/utilities/installable_winxed_repl
+src/utilities/installable_*
 rosella/*.winxed
 rosella/*.pir
 rosella/*.pbc

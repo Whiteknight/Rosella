@@ -324,9 +324,10 @@ function setup_utilities(var rosella)
         "winxed_repl" : "winxed_repl",
         "test_all_lib" : "rosella_test_all_lib",
         "test_template" : "rosella_test_template",
-        "mk_winxed_header" : "winxed_mk_header"
+        "mk_winxed_header" : "winxed_mk_header",
+        "harness" : "rosella_harness"
     };
-    string prefix = "src/unstable/utilities/";
+    string prefix = "src/utilities/";
     for (string util_source in utilities) {
         string winxed_file = prefix + util_source + ".winxed";
         string pir_file = prefix + util_source + ".pir";
