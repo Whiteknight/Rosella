@@ -178,6 +178,21 @@ namespace Rosella.CommandLine
                 self.args[i] = "";
             }
             self.cache[name] = args;
+            return args;
+        }
+
+        function fetch_value(string name)
+        {
+            string value = "";
+            for (int i = 0; i < elements(self.args); i++) {
+                string a = self.args[i];
+                if (a == "" || (length(a) >= 2 && substr(a, 0, 1) == "-") || (length(a) >= 3 && substr(a, 0, 2) == "--"))
+                    continue;
+                value = a;
+                break;
+            }
+            self.cache[name] = value;
+            return value;
         }
 
         function remainder()

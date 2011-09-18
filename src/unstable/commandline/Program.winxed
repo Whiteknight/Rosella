@@ -29,6 +29,7 @@ namespace Rosella.CommandLine
                     }
 
                     string def_s = string(def);
+
                     if (def_s == "f")
                         args.fetch_flag(key);
                     else if (def_s == "s")
@@ -41,7 +42,13 @@ namespace Rosella.CommandLine
                         args.fetch_pair_hash(key);
                     else if (def_s == "*")
                         args.fetch_unparsed(key);
-                    else
+                    else if (def_s == "?")
+                        args.fetch_value(key);
+                    else if (def_s == "+") {
+                        var r = args.fetch_value(key);
+                        if (r == "")
+                            Rosella.Error.invalid(__FUNCTION__, "Missing required argument %s", key);
+                    } else
                         Rosella.Error.invalid(__FUNCTION__, "Can not parse arg modifier %s", def_s);
                 }
             } else {
@@ -55,7 +62,7 @@ namespace Rosella.CommandLine
             int exit_code = 0;
             int has_ec = false;
             Rosella.Parrot.try_report(function () {
-                :(int ec [optional], int hec [opt_flag]) = main_func(self.main_args, self.extra_args);
+                :(int ec [optional], int hec [opt_flag]) = main_func(self.main_args);
                 exit_code = ec;
                 has_ec = hec;
             });

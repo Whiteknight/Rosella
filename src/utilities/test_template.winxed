@@ -3,24 +3,23 @@ const string TEMPLATE_FILE_FMT = "%s.%s.template";
 function main[main](var args)
 {
     var rosella = load_packfile("rosella/core.pbc");
-    using Rosella.initialize_rosella; initialize_rosella("filesystem", "template");
+    var(Rosella.initialize_rosella)("commandline", "filesystem", "template");
 
-    if (elements(args) < 3) {
-        show_help();
-        exit(0);
-    }
-    string programname = args.shift();
-    string mode = args.shift();
-    string language = args.shift();
-
-    using Rosella.Parrot.try_report;
-    try_report(function() {
-        template_main(mode, language, args);
+    var program = new Rosella.CommandLine.Program(args.shift());
+    program.setup_args(args, {
+        "--help" : show_help,
+        "mode" : "+",
+        "language" : "+",
+        "args" : "*"
     });
+    program.run(template_main);
 }
 
-function template_main(string mode, string language, var args)
+function template_main(var args)
 {
+    string mode = args["mode"];
+    string language = args["language"];
+    var args = args["args"];
     string template;
     var context;
     switch (mode) {
@@ -102,4 +101,5 @@ Options:
 :>>
 ;
     say(text);
+    exit(0);
 }
