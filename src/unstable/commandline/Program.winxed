@@ -2,67 +2,59 @@ namespace Rosella.CommandLine
 {
     class Program
     {
-        var main_args;
-        var extra_args;
         var program_name;
+        var default_mode;
+        var on_error;
+        var modes;
 
         function Program(string program_name)
         {
             self.program_name = program_name;
+            //var pm = new Rosella.CommandLine.ProgramMode("default");
+            //pm.set_function(main_
+            self.modes = [
+//                (new Rosella.CommandLine.ProgramMode("default")).set_function(main_func);
+            ];
         }
 
-        function setup_args(var raw_args, var arg_defs)
+        function on_error(var e)
+        {
+            self.on_error = e;
+        }
+
+        function add_mode(string name)
+        {
+            var mode = new Rosella.CommandLine.ProgramMode(name);
+            push(self.modes, mode);
+            return mode;
+        }
+
+        function run(var raw_args)
         {
             var args = new Rosella.CommandLine.Arguments(raw_args);
-            if (arg_defs != null) {
-                self.main_args = args;
-                self.extra_args = args.remainder();
-                for (string key in arg_defs) {
-                    var def = arg_defs[key];
-
-                    int does_invoke;
-                    ${ does does_invoke, def, "invokable" };
-                    if (does_invoke) {
-                        if (args.fetch_flag(key))
-                            def();
-                        continue;
-                    }
-
-                    string def_s = string(def);
-
-                    if (def_s == "f")
-                        args.fetch_flag(key);
-                    else if (def_s == "s")
-                        args.fetch_scalar(key);
-                    else if (def_s == "l")
-                        args.fetch_scalar_list(key);
-                    else if (def_s == "p")
-                        args.fetch_pair(key);
-                    else if (def_s == "h")
-                        args.fetch_pair_hash(key);
-                    else if (def_s == "*")
-                        args.fetch_unparsed(key);
-                    else if (def_s == "?")
-                        args.fetch_value(key);
-                    else if (def_s == "+") {
-                        var r = args.fetch_value(key);
-                        if (r == "")
-                            Rosella.Error.invalid(__FUNCTION__, "Missing required argument %s", key);
-                    } else
-                        Rosella.Error.invalid(__FUNCTION__, "Can not parse arg modifier %s", def_s);
+            var main_func = null;
+            for (var mode in self.modes)
+            {
+                if (mode.can_accept(args)) {
+                    mode.fetch_all_args(args);
+                    main_func = mode.main_function();
+                    break;
                 }
-            } else {
-                self.main_args = args.raw_args();
-                self.extra_args = args.remainder();
             }
-        }
+            if (main_func == null) {
+                var e = self.on_error;
+                if (e == null)
+                    Rosella.Error.invalid(__FUNCTION__, "Invalid parameter combination");
+                else {
+                    e();
+                    exit(1);
+                }
+            }
 
-        function run(var main_func)
-        {
             int exit_code = 0;
             int has_ec = false;
             Rosella.Parrot.try_report(function () {
-                :(int ec [optional], int hec [opt_flag]) = main_func(self.main_args);
+                :(int ec [optional], int hec [opt_flag]) = main_func(args);
                 exit_code = ec;
                 has_ec = hec;
             });

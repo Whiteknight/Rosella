@@ -314,7 +314,8 @@ function setup_experimental_libraries(var rosella)
 
     setup_unstable_lib(rosella, "commandline", ["Core"],
         "commandline/Arguments",
-        "commandline/Program"
+        "commandline/Program",
+        "commandline/ProgramMode"
     );
 }
 

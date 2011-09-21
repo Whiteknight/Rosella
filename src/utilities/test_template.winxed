@@ -6,13 +6,19 @@ function main[main](var args)
     var(Rosella.initialize_rosella)("commandline", "filesystem", "template");
 
     var program = new Rosella.CommandLine.Program(args.shift());
-    program.setup_args(args, {
-        "--help" : show_help,
-        "mode" : "+",
-        "language" : "+",
-        "args" : "*"
-    });
-    program.run(template_main);
+    //program.add_mode("help").set_flag("--help").set_function(show_help).no_args();
+    //program.add_mode("version").set_flag("--version").set_function(show_version).no_args();
+    //program.add_mode("harness").set_flag("--mode", "harness").set_function(harness_main).with_args({
+        //"language" : "1",
+        //"args" : "*"
+    //});
+    //program.add_mode("test").set_flag("--mode", "test").set_function(test_main).with_args({
+        //"language" : "p1",
+        //"libname" : "p2",
+        //"classname" : "p3"
+    //});
+
+    program.run(args);
 }
 
 function template_main(var args)
