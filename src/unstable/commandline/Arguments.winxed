@@ -155,7 +155,8 @@ namespace Rosella.CommandLine
                         Rosella.Error.invalid(__FUNCTION__, "Argument '%s' specified more than once", name);
                 }
             }
-            var ret = { key: value };
+            var ret = { };
+            ret[key] = value;
             self.cache[name] = ret;
             return ret;
         }

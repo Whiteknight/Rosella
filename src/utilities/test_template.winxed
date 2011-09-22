@@ -131,7 +131,7 @@ function harness_template_context(string template, var dirs)
 // Get the template DataContext for a test file
 function test_template_context(string template, string libname, string classname)
 {
-    load_bytecode(libname);
+    var pf = load_packfile(libname);
     using Rosella.get_type_class;
     using Rosella.String.replace_all;
 

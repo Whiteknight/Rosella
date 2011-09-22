@@ -45,7 +45,13 @@ class NamespaceEntry
     function add_class_method(string c, var m)
     {
         self.add_class(c);
-        self.classes[c].add_method(string(m), m);
+        var cl = self.classes[c];
+        string m_name = string(m);
+        var old_m = cl.find_method(m_name);
+        if (old_m != null) {
+            // TODO: We have a :multi :method. How to handle that? For now, ignore it
+        } else
+            self.classes[c].add_method(string(m), m);
     }
 
     function add_sub(var sub) { push(self.subs, sub); }
@@ -196,10 +202,11 @@ function get_class_context(string libname, string nsname, string classname, var 
 // Try to load the specified library, by name.
 function try_load_lib(string libpath)
 {
-    var pf = new 'PackfileView';
-    pf.read_from_file(libpath);
-    for (var sub in pf.subs_by_tag("load"))
-        sub();
+    var pf = load_packfile(libpath);
+    //var pf = new 'PackfileView';
+    //pf.read_from_file(libpath);
+    //for (var sub in pf.subs_by_tag("load"))
+        //sub();
     if (pf == null) {
         Rosella.IO.sayf("FAIL.");
         Rosella.Error.invalid(__FUNCTION__, "Cannot load '%s'", libpath);
