@@ -2,17 +2,24 @@ namespace Rosella.CommandLine
 {
     class Arguments
     {
+        var program;
         var args;
         var remainder;
         var cache;
 
-        function Arguments(var args)
+        function Arguments(var program, var args)
         {
+            self.program = program;
             var a = [];
             for (var arg in args)
                 push(a, arg);
             self.cache = {};
             self.presort(a);
+        }
+
+        function program_name()
+        {
+            return self.program.program_name;
         }
 
         function presort(var args)

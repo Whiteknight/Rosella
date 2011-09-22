@@ -1,25 +1,30 @@
+// Forward declarations.
 namespace Rosella
 {
-    namespace Error
-    {
-        extern function invalid;
-    }
-    namespace IO
-    {
+    namespace Error { extern function invalid; }
+    namespace IO {
         extern function sayf;
         extern function printf;
     }
-    namespace Template
-    {
+    namespace Template {
+        class Engine;
         extern function get_standard_template_file;
     }
+    namespace FileSystem {
+        class File;
+        class FilePath;
+        class Directory;
+    }
+    namespace CommandLine { class Program; }
 }
 
+// Constants.
 const int SUB_FLAG_METHOD = 0x04;
 const int SUB_FLAG_INIT = 0x400;
 const int PF_FLAG_ANON = 0x08;
 const int PF_FLAG_LOAD = 0x20;
 
+// Class for keeping track of Namespaces and contents
 class NamespaceEntry
 {
     var classes;
@@ -36,37 +41,50 @@ class NamespaceEntry
         if (!(exists self.classes[c]))
             self.classes[c] = new 'Class';
     }
+
     function add_class_method(string c, var m)
     {
         self.add_class(c);
         self.classes[c].add_method(string(m), m);
     }
+
     function add_sub(var sub) { push(self.subs, sub); }
 }
 
 function main[main](var args)
 {
-    load_bytecode("rosella/core.pbc");
-    load_bytecode("rosella/filesystem.pbc");
-    load_bytecode("rosella/template.pbc");
-
-    string program_name = args.shift();
-    if (elements(args) != 3)
-        usage_and_exit(program_name);
-    string lang = args.shift();
-    string libpath = args.shift();
-    string folder = args.shift();
-    using Rosella.Parrot.try_report;
-    try_report(function() {
-        var lib = try_load_lib(libpath);
-        var entries = get_lib_entries(lib);
-        output_test_files(lang, libpath, entries, folder);
-    });
+    var rosella = load_packfile("rosella/core.pbc");
+    var(Rosella.initialize_rosella)("filesystem", "template", "commandline");
+    var p = new Rosella.CommandLine.Program(args.shift());
+    p.default_mode().set_function(test_all_main)
+        .require_positional("language", 0)
+        .require_positional("libpath", 1)
+        .require_positional("folder", 2);
+    p.add_mode("help").set_flag("--help").set_function(usage_and_exit);
+    p.on_error(usage_and_exit);
+    p.run(args);
 }
 
-function usage_and_exit(string prog_name)
+function test_all_main(var args)
 {
-    prog_name = (new Rosella.FileSystem.FilePath(prog_name)).short_name();
+    string libpath = args["libpath"];
+    var lib = try_load_lib(libpath);
+    var entries = get_lib_entries(lib);
+    output_test_files(args["language"], libpath, entries, args["folder"]);
+}
+
+function usage_and_exit(var args)
+{
+    if (__DEBUG__ && args instanceof 'Exception') {
+        say(args.message);
+        for (string bt in args.backtrace_strings())
+            say(bt);
+    }
+    string prog_name;
+    if (args == null || args instanceof 'Exception')
+        prog_name = "rosella_test_all_lib";
+    else
+        prog_name = (new Rosella.FileSystem.FilePath(args.program_name())).short_name();
     string fmt = <<:
 Usage: %s <lang> <library> <folder>
 

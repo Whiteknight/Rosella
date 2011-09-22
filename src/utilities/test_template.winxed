@@ -3,7 +3,10 @@ const string TEMPLATE_FILE_FMT = "%s.%s.template";
 namespace Rosella {
     namespace CommandLine { class Program; }
     namespace Template { class Engine; }
-    namespace FileSystem { class File; }
+    namespace FileSystem {
+        class File;
+        class FilePath;
+    }
 }
 
 // Entry point. Parse args and dispatch
@@ -53,24 +56,35 @@ function harness_main(var args)
 }
 
 // Show the help message
-function show_help()
+function show_help(var args)
 {
+    if (__DEBUG__ && args instanceof 'Exception') {
+        say(args.message);
+        for (string bt in args.backtrace_strings())
+            say(bt);
+    }
     string text = <<:
-winxed test_template.winxed harness <lang> <dirs...>
+%s harness <lang> <dirs...>
     Create a test harness
 
-winxed test_template.winxed test <lang> <.pbc_file> <class_name>
+%s test <lang> <.pbc_file> <class_name>
     Creates a stub test file for an existing library class
 
 Options:
     <lang> one of "nqp" or "winxed"
 :>>
 ;
-    say(text);
+
+    string program_name;
+    if (args == null || args instanceof 'Exception')
+        program_name = "rosella_test_template";
+    else
+        program_name = (new Rosella.FileSystem.FilePath(args.program_name())).short_name();
+    Rosella.IO.sayf(text, program_name, program_name);
 }
 
 // Show version information
-function show_version()
+function show_version(var args)
 {
     say("test_template utility version 1");
     var v = Rosella.Version.get_version("core");
@@ -91,6 +105,7 @@ function show_version()
 function get_template_text(string type, string lang)
 {
     using Rosella.Template.get_standard_template_file;
+
     string filename = sprintf(TEMPLATE_FILE_FMT, [type, lang]);
     filename = get_standard_template_file(filename);
     var file = new Rosella.FileSystem.File(filename);

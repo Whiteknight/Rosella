@@ -38,7 +38,7 @@ namespace Rosella.CommandLine
 
         function run(var raw_args)
         {
-            var args = new Rosella.CommandLine.Arguments(raw_args);
+            var args = new Rosella.CommandLine.Arguments(self, raw_args);
             var main_func = null;
             try {
                 for (var mode in self.modes)
