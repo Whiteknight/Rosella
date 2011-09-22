@@ -1,6 +1,7 @@
 action: 2 Stable
 assert: 0 Alpha
 benchmark: 0 Alpha
+commandline: 0 Alpha
 container: 2 Stable
 core: 2 Stable
 decorate: 0 Beta

@@ -6,6 +6,7 @@ namespace Rosella {
     namespace FileSystem { class File; }
 }
 
+// Entry point. Parse args and dispatch
 function main[main](var args)
 {
     var rosella = load_packfile("rosella/core.pbc");
@@ -25,6 +26,7 @@ function main[main](var args)
     program.run(args);
 }
 
+// Generate a test file from template
 function test_main(var args)
 {
     string language = args["language"];
@@ -37,6 +39,7 @@ function test_main(var args)
     say(output);
 }
 
+// Generate a test harness from template
 function harness_main(var args)
 {
     string mode = args["mode"];
@@ -49,6 +52,42 @@ function harness_main(var args)
     say(output);
 }
 
+// Show the help message
+function show_help()
+{
+    string text = <<:
+winxed test_template.winxed harness <lang> <dirs...>
+    Create a test harness
+
+winxed test_template.winxed test <lang> <.pbc_file> <class_name>
+    Creates a stub test file for an existing library class
+
+Options:
+    <lang> one of "nqp" or "winxed"
+:>>
+;
+    say(text);
+}
+
+// Show version information
+function show_version()
+{
+    say("test_template utility version 1");
+    var v = Rosella.Version.get_version("core");
+    say(sprintf("\tRosella %s: %s", [v.library_name(), v.library_version()]));
+    v = Rosella.Version.get_version("template");
+    say(sprintf("\tRosella %s: %s", [v.library_name(), v.library_version()]));
+    v = Rosella.Version.get_version("test");
+    say(sprintf("\tRosella %s: %s", [v.library_name(), v.library_version()]));
+    v = Rosella.Version.get_version("harness");
+    say(sprintf("\tRosella %s: %s", [v.library_name(), v.library_version()]));
+    v = Rosella.Version.get_version("commandline");
+    say(sprintf("\tRosella %s: %s", [v.library_name(), v.library_version()]));
+    v = Rosella.Version.get_version("filesystem");
+    say(sprintf("\tRosella %s: %s", [v.library_name(), v.library_version()]));
+}
+
+// Get the template text string
 function get_template_text(string type, string lang)
 {
     using Rosella.Template.get_standard_template_file;
@@ -63,6 +102,7 @@ function get_template_text(string type, string lang)
     return file.read_all_text();
 }
 
+// Get the template DataContext for a harness
 function harness_template_context(string template, var dirs)
 {
     var context = {
@@ -73,6 +113,7 @@ function harness_template_context(string template, var dirs)
     return context;
 }
 
+// Get the template DataContext for a test file
 function test_template_context(string template, string libname, string classname)
 {
     load_bytecode(libname);
@@ -97,23 +138,3 @@ function test_template_context(string template, string libname, string classname
     return context;
 }
 
-function show_help()
-{
-    string text = <<:
-winxed test_template.winxed harness <lang> <dirs...>
-    Create a test harness
-
-winxed test_template.winxed test <lang> <.pbc_file> <class_name>
-    Creates a stub test file for an existing library class
-
-Options:
-    <lang> one of "nqp" or "winxed"
-:>>
-;
-    say(text);
-}
-
-function show_version()
-{
-    say("test_template version 1");
-}
