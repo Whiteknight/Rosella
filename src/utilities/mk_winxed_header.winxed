@@ -1,6 +1,14 @@
-class ClassEntry {
+// Forward declarations.
+namespace Rosella {
+    namespace IO {
+        extern function sayf;
+        extern function printf;
+    }
+    namespace CommandLine { class Program; }
+    namespace FileSystem { class FilePath; }
 }
 
+// Entry object to collect information from the packfile
 class NamespaceEntry {
     var classes;
     var subs;
@@ -22,24 +30,30 @@ class NamespaceEntry {
     }
 }
 
+// Useful constants
 const int SUB_FLAG_METHOD = 0x04;
 const int SUB_FLAG_INIT = 0x400;
 const int PF_FLAG_ANON = 0x08;
 const int PF_FLAG_LOAD = 0x20;
 
+// Main entry point. Parse the arguments and call the main function
 function main[main](var args)
 {
-    load_bytecode("rosella/core.pbc");
-    string program_name = args.shift();
-    string libpath = args.shift();
-    using Rosella.Parrot.try_report;
-    try_report(function() {
-        mk_header_main(libpath);
-    });
+    var rosella = load_packfile("rosella/core.pbc");
+    var(Rosella.initialize_rosella)("commandline", "filesystem");
+
+    var p = new Rosella.CommandLine.Program(args.shift());
+    p.default_mode().set_function(mk_header_main)
+        .require_positional("libpath", 0);
+    p.add_mode("help").set_flag("--help").set_function(show_help);
+    p.on_error(show_help);
+    p.run(args);
 }
 
-function mk_header_main(string libpath)
+// Main driver routine. Read the .pbc files and output the include text
+function mk_header_main(var args)
 {
+    string libpath = args["libpath"];
     using Rosella.IO.sayf;
     var lib;
     ${ load_bytecode lib, libpath };
@@ -78,4 +92,27 @@ function mk_header_main(string libpath)
             sayf("\textern function %s;", sub);
         say("}\n");
     }
+}
+
+// Show the help message
+function show_help(var args)
+{
+    if (__DEBUG__ && args instanceof 'Exception') {
+        say(args.message);
+        for (string bt in args.backtrace_strings())
+            say(bt);
+    }
+    string text = <<:
+%s <libname>
+    Create a winxed include file for the given PBC library.
+
+:>>
+;
+
+    string program_name;
+    if (args == null || args instanceof 'Exception')
+        program_name = "winxed_mk_header";
+    else
+        program_name = (new Rosella.FileSystem.FilePath(args.program_name())).short_name();
+    Rosella.IO.sayf(text, program_name, program_name);
 }

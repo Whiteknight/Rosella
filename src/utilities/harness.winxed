@@ -25,7 +25,7 @@ function harness_main(var args)
 // Show help message
 function show_help(string program_name)
 {
-    string msg = sprintf(<<:
+    string fmt = <<:
 winxed %s [<DIRS>]
 winxed %s --help
 Rosella TAP Harness. Execute test suite in folders. If <DIRS> is passed,
@@ -35,7 +35,8 @@ directories: (t/).
     <DIRS>      A list of test directories to execute
     --help      Show this help message
 :>>
-    , [program_name, program_name]);
+;
+    string msg = sprintf(fmt, [program_name, program_name]);
     say(msg);
 }
 
