@@ -10,11 +10,13 @@ namespace Rosella.CommandLine
         function Program(string program_name)
         {
             self.program_name = program_name;
-            //var pm = new Rosella.CommandLine.ProgramMode("default");
-            //pm.set_function(main_
-            self.modes = [
-//                (new Rosella.CommandLine.ProgramMode("default")).set_function(main_func);
-            ];
+            self.modes = [];
+            self.default_mode = new Rosella.CommandLine.ProgramMode("default");
+            self.on_error = function(var e) {
+                say("Error parsing arguments");
+                if (e != null)
+                    say(e.message);
+            };
         }
 
         function on_error(var e)
@@ -29,26 +31,36 @@ namespace Rosella.CommandLine
             return mode;
         }
 
+        function default_mode()
+        {
+            return self.default_mode;
+        }
+
         function run(var raw_args)
         {
             var args = new Rosella.CommandLine.Arguments(raw_args);
             var main_func = null;
-            for (var mode in self.modes)
-            {
-                if (mode.can_accept(args)) {
-                    mode.fetch_all_args(args);
-                    main_func = mode.main_function();
-                    break;
+            try {
+                for (var mode in self.modes)
+                {
+                    if (mode.can_accept(args)) {
+                        mode.fetch_all_args(args);
+                        main_func = mode.main_function();
+                        break;
+                    }
                 }
+                if (main_func == null) {
+                    main_func = self.default_mode.main_function();
+                    if (main_func != null)
+                        self.default_mode.fetch_all_args(args);
+                }
+            } catch (e) {
+                self.try_handle_error(e);
+                return;
             }
             if (main_func == null) {
-                var e = self.on_error;
-                if (e == null)
-                    Rosella.Error.invalid(__FUNCTION__, "Invalid parameter combination");
-                else {
-                    e();
-                    exit(1);
-                }
+                self.try_handle_error(null);
+                return;
             }
 
             int exit_code = 0;
@@ -60,6 +72,18 @@ namespace Rosella.CommandLine
             });
             if (has_ec)
                 exit(exit_code);
+        }
+
+        function try_handle_error(var e)
+        {
+            var on_error = self.on_error;
+            if (on_error == null) {
+                if (e == null)
+                    Rosella.Error.invalid(__FUNCTION__, "Invalid parameter combination");
+                else
+                    throw e;
+            }
+            on_error(e);
         }
     }
 }

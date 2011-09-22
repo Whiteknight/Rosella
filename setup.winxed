@@ -312,7 +312,7 @@ function setup_experimental_libraries(var rosella)
         "dumper/dumphandler/Null"
     );
 
-    setup_unstable_lib(rosella, "commandline", ["Core"],
+    setup_unstable_lib(rosella, "commandline", ["Core", "String"],
         "commandline/Arguments",
         "commandline/Program",
         "commandline/ProgramMode"

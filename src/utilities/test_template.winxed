@@ -1,45 +1,49 @@
 const string TEMPLATE_FILE_FMT = "%s.%s.template";
 
+namespace Rosella {
+    namespace CommandLine { class Program; }
+    namespace Template { class Engine; }
+    namespace FileSystem { class File; }
+}
+
 function main[main](var args)
 {
     var rosella = load_packfile("rosella/core.pbc");
     var(Rosella.initialize_rosella)("commandline", "filesystem", "template");
 
     var program = new Rosella.CommandLine.Program(args.shift());
-    //program.add_mode("help").set_flag("--help").set_function(show_help).no_args();
-    //program.add_mode("version").set_flag("--version").set_function(show_version).no_args();
-    //program.add_mode("harness").set_flag("--mode", "harness").set_function(harness_main).with_args({
-        //"language" : "1",
-        //"args" : "*"
-    //});
-    //program.add_mode("test").set_flag("--mode", "test").set_function(test_main).with_args({
-        //"language" : "p1",
-        //"libname" : "p2",
-        //"classname" : "p3"
-    //});
-
+    program.add_mode("help").set_flag("--help").set_function(show_help);
+    program.add_mode("version").set_flag("--version").set_function(show_version);
+    program.add_mode("harness").set_flag("harness").set_function(harness_main)
+        .require_positional("language", 1)
+        .require_args({ "dirs" : "*" });
+    program.add_mode("test").set_flag("test").set_function(test_main)
+        .require_positional("language", 1)
+        .require_positional("libname", 2)
+        .require_positional("classname", 3);
+    program.on_error(show_help);
     program.run(args);
 }
 
-function template_main(var args)
+function test_main(var args)
+{
+    string language = args["language"];
+    string libname = args["libname"];
+    string classname = args["classname"];
+    string template = get_template_text("test_class", language);
+    var context = test_template_context(language, libname, classname);
+    var engine = new Rosella.Template.Engine();
+    string output = engine.generate(template, context);
+    say(output);
+}
+
+function harness_main(var args)
 {
     string mode = args["mode"];
     string language = args["language"];
-    var args = args["args"];
-    string template;
-    var context;
-    switch (mode) {
-        case "harness":
-            template = get_template_text("test_harness", language);
-            context = harness_template_context(template, args);
-            break;
-        case "test":
-            template = get_template_text("test_class", language);
-            context = test_template_context(language, args[0], args[1]);
-            break;
-        default:
-            show_help();
-    }
+    var dirs = args["dirs"];
+    string template = get_template_text("test_harness", language);
+    var context = harness_template_context(template, dirs);
     var engine = new Rosella.Template.Engine();
     string output = engine.generate(template, context);
     say(output);
@@ -107,5 +111,9 @@ Options:
 :>>
 ;
     say(text);
-    exit(0);
+}
+
+function show_version()
+{
+    say("test_template version 1");
 }

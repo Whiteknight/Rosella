@@ -108,6 +108,20 @@ namespace Rosella
             return substr(str, start_idx, end_idx - start_idx);
         }
 
+        function is_all_cclass(string str, int cclass)
+        {
+            int idx = first_not_cclass(str, cclass);
+            return idx == -1;
+        }
+
+        function is_all_cclass(string str, string cclass_name)
+        {
+            int cclass = get_character_class(cclass_name);
+            int idx = first_not_cclass(str, cclass);
+            return idx == -1;
+        }
+
+
         // sprintf wrapper function
         function sprintf(string format, var args [slurpy])
         {

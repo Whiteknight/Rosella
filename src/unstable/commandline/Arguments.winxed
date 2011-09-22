@@ -205,6 +205,32 @@ namespace Rosella.CommandLine
             return value;
         }
 
+        function fetch_positional(string name, int keep, int idx [optional], int has_idx [opt_flag])
+        {
+            string arg = "";
+            if (has_idx) {
+                if (idx >= elements(self.args)) {
+                    self.cache[name] = "";
+                    return "";
+                }
+                arg = self.args[idx];
+                if (keep)
+                    self.args[idx] = "";
+            } else {
+                for (int i = 0; i < elements(self.args); i++) {
+                    string a = self.args[i];
+                    if (a != "") {
+                        arg = a;
+                        if (keep)
+                            self.args[i] = "";
+                        break;
+                    }
+                }
+            }
+            self.cache[name] = arg;
+            return arg;
+        }
+
         function remainder()
         {
             return self.remainder;
@@ -219,10 +245,8 @@ namespace Rosella.CommandLine
         {
             for (int i = 0; i < elements(self.args); i++) {
                 string a = self.args[i];
-                if (a != "") {
-                    say("unparsed arg: " + a);
+                if (a != "")
                     return true;
-                }
             }
             return false;
         }
