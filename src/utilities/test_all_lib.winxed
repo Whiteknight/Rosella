@@ -51,6 +51,7 @@ class NamespaceEntry
     function add_sub(var sub) { push(self.subs, sub); }
 }
 
+// Main entry point. Parse arguments and dispatch to the main handler
 function main[main](var args)
 {
     var rosella = load_packfile("rosella/core.pbc");
@@ -65,6 +66,7 @@ function main[main](var args)
     p.run(args);
 }
 
+// Main handler. Pull out the arguments by name and run the program.
 function test_all_main(var args)
 {
     string libpath = args["libpath"];
@@ -73,6 +75,7 @@ function test_all_main(var args)
     output_test_files(args["language"], libpath, entries, args["folder"]);
 }
 
+// Help handler. Show usage information on --help or error
 function usage_and_exit(var args)
 {
     if (__DEBUG__ && args instanceof 'Exception') {
@@ -96,6 +99,8 @@ to <folder>. Tests will be in language <lang>. <lang> is probably one of
     Rosella.IO.sayf(fmt, prog_name);
 }
 
+// Main driver routine. Read the PBC, extract subs and information, and
+// output test files.
 function output_test_files(string lang, string libname, var entries, string folderpath)
 {
     var dir = new Rosella.FileSystem.Directory(folderpath);
@@ -130,6 +135,7 @@ function output_test_files(string lang, string libname, var entries, string fold
     }
 }
 
+// Get the Directory object for the given namespace
 function get_namespace_directory(var dir, string ns)
 {
     var cur_dir = dir;
@@ -142,6 +148,7 @@ function get_namespace_directory(var dir, string ns)
     return cur_dir;
 }
 
+// Get the templates for test files
 function get_templates(string lang)
 {
     string class_tmpl = Rosella.Template.get_standard_template_file("test_class." + lang + ".template");
@@ -149,6 +156,7 @@ function get_templates(string lang)
     return class_tmpl, ns_tmpl;
 }
 
+// Get the context object for the test template of subs in a namespace
 function get_subs_list_context(string libname, string nsname, var subslist)
 {
     using Rosella.String.replace_all;
@@ -166,6 +174,7 @@ function get_subs_list_context(string libname, string nsname, var subslist)
     return context;
 }
 
+// Get the context object for the test template of methods in a class
 function get_class_context(string libname, string nsname, string classname, var classobj)
 {
     using Rosella.String.replace_all;
@@ -184,6 +193,7 @@ function get_class_context(string libname, string nsname, string classname, var 
     return context;
 }
 
+// Try to load the specified library, by name.
 function try_load_lib(string libpath)
 {
     var pf = new 'PackfileView';
@@ -197,6 +207,8 @@ function try_load_lib(string libpath)
     return pf;
 }
 
+// Extract a list of Sub PMCs from the packfile, and create NamespaceEntry
+// objects to hold them.
 function get_lib_entries(var lib)
 {
     var all_subs = lib.all_subs();
