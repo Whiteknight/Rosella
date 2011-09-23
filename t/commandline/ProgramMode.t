@@ -1,60 +1,55 @@
 // Automatically generated test for Class Rosella.CommandLine.ProgramMode
 class Test_Rosella_CommandLine_ProgramMode
 {
-    function test_sanity()
-    {
-        self.assert.is_true(1);
-    }
-
     function test_new()
     {
-        var obj = new Rosella.CommandLine.ProgramMode();
+        var obj = new Rosella.CommandLine.ProgramMode("");
         self.assert.not_null(obj);
         self.assert.instance_of(obj, class Rosella.CommandLine.ProgramMode);
-    }
-
-
-    function ProgramMode()
-    {
-        self.status.verify("Test Rosella.CommandLine.ProgramMode.ProgramMode()");
-        var obj = new Rosella.CommandLine.ProgramMode();
-
-        var arg_0 = null;
-        var result = obj.ProgramMode(arg_0);
     }
 
     function set_function()
     {
         self.status.verify("Test Rosella.CommandLine.ProgramMode.set_function()");
-        var obj = new Rosella.CommandLine.ProgramMode();
+        var obj = new Rosella.CommandLine.ProgramMode("");
 
         var arg_0 = null;
         var result = obj.set_function(arg_0);
     }
 
-    function set_flag()
+    function set_flag_1()
     {
         self.status.verify("Test Rosella.CommandLine.ProgramMode.set_flag()");
-        var obj = new Rosella.CommandLine.ProgramMode();
+        var obj = new Rosella.CommandLine.ProgramMode("");
 
-        var arg_0 = null;
+        string arg_0 = "";
         var result = obj.set_flag(arg_0);
+    }
+
+    function set_flag_2()
+    {
+        self.status.verify("Test Rosella.CommandLine.ProgramMode.set_flag()");
+        var obj = new Rosella.CommandLine.ProgramMode("");
+
+        string arg_0 = "";
+        string arg_1 = "";
+        var result = obj.set_flag(arg_0, arg_1);
     }
 
     function require_positional()
     {
         self.status.verify("Test Rosella.CommandLine.ProgramMode.require_positional()");
-        var obj = new Rosella.CommandLine.ProgramMode();
+        var obj = new Rosella.CommandLine.ProgramMode("");
 
-        var arg_0 = null;
-        var arg_1 = null;
+        string arg_0 = "";
+        int arg_1 = 0;
         var result = obj.require_positional(arg_0, arg_1);
     }
 
     function require_args()
     {
         self.status.verify("Test Rosella.CommandLine.ProgramMode.require_args()");
-        var obj = new Rosella.CommandLine.ProgramMode();
+        var obj = new Rosella.CommandLine.ProgramMode("");
 
         var arg_0 = null;
         var result = obj.require_args(arg_0);
@@ -63,7 +58,7 @@ class Test_Rosella_CommandLine_ProgramMode
     function optional_args()
     {
         self.status.verify("Test Rosella.CommandLine.ProgramMode.optional_args()");
-        var obj = new Rosella.CommandLine.ProgramMode();
+        var obj = new Rosella.CommandLine.ProgramMode("");
 
         var arg_0 = null;
         var result = obj.optional_args(arg_0);
@@ -72,7 +67,7 @@ class Test_Rosella_CommandLine_ProgramMode
     function can_accept()
     {
         self.status.verify("Test Rosella.CommandLine.ProgramMode.can_accept()");
-        var obj = new Rosella.CommandLine.ProgramMode();
+        var obj = new Rosella.CommandLine.ProgramMode("");
 
         var arg_0 = null;
         var result = obj.can_accept(arg_0);
@@ -81,28 +76,28 @@ class Test_Rosella_CommandLine_ProgramMode
     function match_positionals()
     {
         self.status.verify("Test Rosella.CommandLine.ProgramMode.match_positionals()");
-        var obj = new Rosella.CommandLine.ProgramMode();
+        var obj = new Rosella.CommandLine.ProgramMode("");
 
         var arg_0 = null;
-        var arg_1 = null;
+        int arg_1 = 0;
         var result = obj.match_positionals(arg_0, arg_1);
     }
 
     function match_args()
     {
         self.status.verify("Test Rosella.CommandLine.ProgramMode.match_args()");
-        var obj = new Rosella.CommandLine.ProgramMode();
+        var obj = new Rosella.CommandLine.ProgramMode("");
 
         var arg_0 = null;
         var arg_1 = null;
-        var arg_2 = null;
+        int arg_2 = 0;
         var result = obj.match_args(arg_0, arg_1, arg_2);
     }
 
     function fetch_all_args()
     {
         self.status.verify("Test Rosella.CommandLine.ProgramMode.fetch_all_args()");
-        var obj = new Rosella.CommandLine.ProgramMode();
+        var obj = new Rosella.CommandLine.ProgramMode("");
 
         var arg_0 = null;
         var result = obj.fetch_all_args(arg_0);
@@ -111,7 +106,7 @@ class Test_Rosella_CommandLine_ProgramMode
     function main_function()
     {
         self.status.verify("Test Rosella.CommandLine.ProgramMode.main_function()");
-        var obj = new Rosella.CommandLine.ProgramMode();
+        var obj = new Rosella.CommandLine.ProgramMode("");
 
         var result = obj.main_function();
     }
