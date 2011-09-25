@@ -51,6 +51,11 @@ if (pir::elements(@argv)) {
         "t/prototype",
         :recurse(1)
     ).setup_test_run();
+
+    $harness.add_test_dirs("Winxed",
+        "t/commandline",
+        :recurse(1)
+    ).setup_test_run();
 }
 
 my $result := $harness.run();
