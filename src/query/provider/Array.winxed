@@ -147,5 +147,22 @@ namespace Rosella.Query.Provider
             }
             return false;
         }
+
+        function group_by(var data, var func)
+        {
+            var keys = {};
+            var result = [];
+            for (int i = 0; i < elements(data); i++) {
+                var d = data[i];
+                string key = func(d);
+                if (!(exists keys[key])) {
+                    var new_array = [];
+                    keys[key] = new_array;
+                    push(result, new_array);
+                }
+                push(keys[key], d);
+            }
+            return result;
+        }
     }
 }

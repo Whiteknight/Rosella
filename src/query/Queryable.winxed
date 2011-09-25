@@ -199,6 +199,12 @@ namespace Rosella.Query
             return self.as_queryable(result);
         }
 
+        function group_by(var f)
+        {
+            var groups = self.provider.group_by(self.data, f);
+            return self.as_queryable(groups);
+        }
+
         /* Vtables and Low-level access
         */
 

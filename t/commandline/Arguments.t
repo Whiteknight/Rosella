@@ -30,37 +30,72 @@ class Test_Rosella_CommandLine_Arguments
         var obj = create_new();
 
         var arg_0 = null;
-        var result = obj.presort(arg_0);
+        obj.presort(arg_0);
     }
 
     function fetch_flag()
     {
         self.status.verify("Test Rosella.CommandLine.Arguments.fetch_flag()");
-        var obj = create_new();
+        var obj = create_new("-x", "-y", "--foo");
 
-        string arg_0 = "";
+        string arg_0 = "-x";
         int arg_1 = 0;
-        var result = obj.fetch_flag(arg_0, arg_1);
+        int result = obj.fetch_flag(arg_0, arg_1);
+        self.assert.equal(result, 1);
+
+        arg_0 = "-z";
+        result = obj.fetch_flag(arg_0, arg_1);
+        self.assert.equal(result, 0);
+
+        arg_0 = "--foo";
+        result = obj.fetch_flag(arg_0, arg_1);
+        self.assert.equal(result, 1);
+
+        arg_0 = "--bar";
+        result = obj.fetch_flag(arg_0, arg_1);
+        self.assert.equal(result, 0);
     }
 
     function fetch_scalar()
     {
         self.status.verify("Test Rosella.CommandLine.Arguments.fetch_scalar()");
-        var obj = create_new();
+        var obj = create_new("--foo", "bar", "--baz=fie");
 
-        string arg_0 = "";
+        string arg_0 = "--foo";
         int arg_1 = 0;
-        var result = obj.fetch_scalar(arg_0, arg_1);
+        string result = obj.fetch_scalar(arg_0, arg_1);
+        self.assert.equal(result, "bar");
+
+        arg_0 = "--baz";
+        result = obj.fetch_scalar(arg_0, arg_1);
+        self.assert.equal(result, "fie");
+
+        arg_0 = "--whatever";
+        result = obj.fetch_scalar(arg_0, arg_1);
+        self.assert.equal(result, "");
     }
 
     function fetch_scalar_list()
     {
         self.status.verify("Test Rosella.CommandLine.Arguments.fetch_scalar_list()");
-        var obj = create_new();
+        var obj = create_new("-x", "a", "-x", "b", "-x", "c", "-y", "d");
 
-        string arg_0 = "";
+        string arg_0 = "-x";
         int arg_1 = 0;
         var result = obj.fetch_scalar_list(arg_0, arg_1);
+        self.assert.equal(elements(result), 3);
+        self.assert.equal(result[0], "a");
+        self.assert.equal(result[1], "b");
+        self.assert.equal(result[2], "c");
+
+        arg_0 = "-y";
+        result = obj.fetch_scalar_list(arg_0, arg_1);
+        self.assert.equal(elements(result), 1);
+        self.assert.equal(result[0], "d");
+
+        arg_0 = "-z";
+        result = obj.fetch_scalar_list(arg_0, arg_1);
+        self.assert.equal(elements(result), 0);
     }
 
     function fetch_pair()

@@ -201,5 +201,10 @@ namespace Rosella.Query
                 push(target, i);
             return target;
         }
+
+        function group_by(var target, var f)
+        {
+            Rosella.Error.invalid(__FUNCTION__, "Provider %s does not support .group_by()", self.name());
+        }
     }
 }

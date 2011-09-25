@@ -10,7 +10,7 @@ my $harness := Rosella::construct(Rosella::Harness);
 if (pir::elements(@argv)) {
     for @argv -> $dir {
         my $type := "NQP";
-        if ($dir eq "template" || $dir eq "tap_harness") {
+        if ($dir eq "template" || $dir eq "tap_harness" || $dir eq "commandline") {
             $type := "Winxed";
         }
         $harness.add_test_dirs($type, "t/$dir", :recurse(1)).setup_test_run(:sort(1));
