@@ -148,6 +148,15 @@ namespace Rosella { namespace FileSystem
                 os.rm(name);
         }
 
+        function get_iter[vtable]()
+        {
+            // TODO: This is naive. We need an iterator which is more lazy
+            var entries = self.__get_entries(1, 1);
+            var e_iter;
+            ${ iter e_iter, entries };
+            return e_iter;
+        }
+
         /* Private Helper Methods
         */
 
