@@ -1,0 +1,127 @@
+namespace Rosella.CommandLine
+{
+    class ProgramMode
+    {
+        var name;
+        var func;
+        var condition;
+        var required_positionals;
+        var required_args;
+        var optional_args;
+
+        function ProgramMode(string name)
+        {
+            self.name = name;
+            self.required_positionals = {};
+        }
+
+        function set_function(var func)
+        {
+            self.func = func;
+            return self;
+        }
+
+        function set_flag(string name)
+        {
+            self.condition = [name, ""];
+            return self;
+        }
+
+        function set_flag(string name, string value)
+        {
+            self.condition = [name, value];
+            return self;
+        }
+
+        function require_positional(string name, int position)
+        {
+            self.required_positionals[name] = position;
+            return self;
+        }
+
+        function require_args(var args)
+        {
+            self.required_args = args;
+            return self;
+        }
+
+        function optional_args(var args)
+        {
+            self.optional_args = args;
+            return self;
+        }
+
+        function can_accept(var args)
+        {
+            if (self.condition == null)
+                return true;
+
+            string c_name = self.condition[0];
+            string c_value = self.condition[1];
+            if (c_value == "") {
+                int have_flag = args.fetch_flag(c_name, 0);
+                return have_flag;
+            } else {
+                string flag_value = args.fetch_scalar(c_name, 0);
+                return flag_value == c_value;
+            }
+        }
+
+        function match_positionals(var args, int keep)
+        {
+            for (string key in self.required_positionals) {
+                int idx = int(self.required_positionals[key]);
+                string arg;
+                if (idx < 0)
+                    arg = args.fetch_positional(key, keep);
+                else
+                    arg = args.fetch_positional(key, keep, idx);
+                if (arg == "")
+                    Rosella.Error.invalid(__FUNCTION__, "Can not find positional argument '%s' (%d)", key, idx);
+            }
+        }
+
+        function match_args(var args, var arg_defs, int keep)
+        {
+            if (arg_defs == null || elements(arg_defs) == 0)
+                return true;
+
+            for (string key in arg_defs) {
+                string def = arg_defs[key];
+
+                if (def == "f")
+                    args.fetch_flag(key, keep);
+                else if (def == "s")
+                    args.fetch_scalar(key, keep);
+                else if (def == "l")
+                    args.fetch_scalar_list(key, keep);
+                else if (def == "p")
+                    args.fetch_pair(key, keep);
+                else if (def == "h")
+                    args.fetch_pair_hash(key, keep);
+                else if (def == "*")
+                    args.fetch_unparsed(key, keep);
+            }
+        }
+
+        function fetch_all_args(var args)
+        {
+            if (args == null)
+                return;
+            if (self.condition != null) {
+                string c_name = self.condition[0];
+                args.fetch_flag(c_name, 1);
+            }
+            self.match_positionals(args, 1);
+            self.match_args(args, self.required_args, 1);
+            self.match_args(args, self.optional_args, 1);
+            if (args.has_unparsed_args())
+                Rosella.Error.invalid(__FUNCTION__, "Unrecognized arguments: %s", join(" ", args.fetch_unparsed("args", 0)));
+        }
+
+        function main_function()
+        {
+            return self.func;
+        }
+    }
+}
