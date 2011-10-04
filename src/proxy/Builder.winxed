@@ -1,40 +1,37 @@
-namespace Rosella { namespace Proxy
+/* A Builder is an object that configures a proxy and its class. Builders
+   must implement two methods: setup_proxy_class is called on the proxy
+   class to configure settings common to all instances. setup_proxy_object
+   is called on each instance to configure that instance */
+class Rosella.Proxy.Builder
 {
-    /* A Builder is an object that configures a proxy and its class. Builders
-       must implement two methods: setup_proxy_class is called on the proxy
-       class to configure settings common to all instances. setup_proxy_object
-       is called on each instance to configure that instance */
-    class Builder
-    {
-        // Do nothing. All interesting behavior is performed in subclasses
-        function setup_proxy_class(var target_class, var proxy_class) { }
-        function setup_proxy_object(var proxy_obj, var controller) { }
-    }
+    // Do nothing. All interesting behavior is performed in subclasses
+    function setup_proxy_class(var target_class, var proxy_class) { }
+    function setup_proxy_object(var proxy_obj, var controller) { }
+}
 
-    namespace Builder
+namespace Rosella.Proxy.Builder
+{
+    function get_builders(var builders)
     {
-        function get_builders(var builders)
-        {
-            var array = [];
-            for (string builder in builders) {
-                if (builder == "MethodIntercept")
-                    push(array, new Rosella.Proxy.Builder.MethodIntercept);
-                else if (builder == "AttributeIntercept")
-                    push(array, new Rosella.Proxy.Builder.AttributeIntercept);
-                else if (builder == "Imitate")
-                    push(array, new Rosella.Proxy.Builder.Imitate);
-                else if (builder == "InvokeIntercept")
-                    push(array, new Rosella.Proxy.Builder.InvokeIntercept);
-                else if (builder == "PMCKeyedHash")
-                    push(array, new Rosella.Proxy.Builder.PMCKeyedHash);
-                else if (builder == "StringKeyedHash")
-                    push(array, new Rosella.Proxy.Builder.StringKeyedHash);
-                else if (builder == "Array")
-                    push(array, new Rosella.Proxy.Builder.Array);
-                else
-                    Rosella.Error.invalid(__FUNCTION__, "Do not know builder type " + builder);
-            }
-            return array;
+        var array = [];
+        for (string builder in builders) {
+            if (builder == "MethodIntercept")
+                push(array, new Rosella.Proxy.Builder.MethodIntercept);
+            else if (builder == "AttributeIntercept")
+                push(array, new Rosella.Proxy.Builder.AttributeIntercept);
+            else if (builder == "Imitate")
+                push(array, new Rosella.Proxy.Builder.Imitate);
+            else if (builder == "InvokeIntercept")
+                push(array, new Rosella.Proxy.Builder.InvokeIntercept);
+            else if (builder == "PMCKeyedHash")
+                push(array, new Rosella.Proxy.Builder.PMCKeyedHash);
+            else if (builder == "StringKeyedHash")
+                push(array, new Rosella.Proxy.Builder.StringKeyedHash);
+            else if (builder == "Array")
+                push(array, new Rosella.Proxy.Builder.Array);
+            else
+                Rosella.Error.invalid(__FUNCTION__, "Do not know builder type " + builder);
         }
+        return array;
     }
-}}
+}

@@ -1,19 +1,16 @@
-namespace Rosella { namespace Proxy { namespace Builder
+class Rosella.Proxy.Builder.InvokeIntercept : Rosella.Proxy.Builder
 {
-    class InvokeIntercept : Rosella.Proxy.Builder
+    function setup_proxy_class(var target_class, var proxy_class)
     {
-        function setup_proxy_class(var target_class, var proxy_class)
-        {
-            using Rosella.Proxy.Builder.InvokeIntercept.intercept_invoke;
-            proxy_class.add_vtable_override("invoke", intercept_invoke);
-        }
-
-        function intercept_invoke[nsentry](var pos [slurpy], var named [slurpy,named])
-        {
-            var controller = Rosella.Proxy.get_proxy_private_attr(self, "proxy_controller");
-            if (controller != null)
-                return controller.invoke(self, pos, named);
-            return null;
-        }
+        using Rosella.Proxy.Builder.InvokeIntercept.intercept_invoke;
+        proxy_class.add_vtable_override("invoke", intercept_invoke);
     }
-}}}
+
+    function intercept_invoke[nsentry](var pos [slurpy], var named [slurpy,named])
+    {
+        var controller = Rosella.Proxy.get_proxy_private_attr(self, "proxy_controller");
+        if (controller != null)
+            return controller.invoke(self, pos, named);
+        return null;
+    }
+}
