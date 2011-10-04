@@ -1,44 +1,41 @@
-namespace Rosella { namespace Test
+namespace Rosella.Test.Failure
 {
-    namespace Failure
+    // Extract a Failure object from an Exception, if available. If the
+    // exception is not a Failure, return null
+    function get_exception_failure(var ex)
     {
-        // Extract a Failure object from an Exception, if available. If the
-        // exception is not a Failure, return null
-        function get_exception_failure(var ex)
-        {
-            var payload = ex.payload;
-            if (payload == null)
-                return null;
-            if (Rosella.isa_type(class Rosella.Test.Failure, payload))
-                return payload;
+        var payload = ex.payload;
+        if (payload == null)
             return null;
-        }
+        if (Rosella.isa_type(class Rosella.Test.Failure, payload))
+            return payload;
+        return null;
     }
+}
 
-    /* A test failure. Set up and throw an exception with this object as a
-       payload to signal an assertion failure (as opposed to other kind of
-       runtime error).
-    */
-    class Failure
+/* A test failure. Set up and throw an exception with this object as a
+   payload to signal an assertion failure (as opposed to other kind of
+   runtime error).
+*/
+class Rosella.Test.Failure
+{
+    var exception;
+    var inner_ex;
+    var is_internal;
+
+    // Build the exception object. If the exception is_internal, we won't
+    // show a backtrace.
+    function Failure(string msg, var inner_ex, int is_internal)
     {
-        var exception;
-        var inner_ex;
-        var is_internal;
-
-        // Build the exception object. If the exception is_internal, we won't
-        // show a backtrace.
-        function Failure(string msg, var inner_ex, int is_internal)
-        {
-            self.is_internal = is_internal;
-            self.exception = new 'Exception';
-            self.exception.message = msg;
-            self.exception.payload = self;
-            self.inner_ex = inner_ex;
-        }
-
-        function throw()
-        {
-            throw self.exception;
-        }
+        self.is_internal = is_internal;
+        self.exception = new 'Exception';
+        self.exception.message = msg;
+        self.exception.payload = self;
+        self.inner_ex = inner_ex;
     }
-}}
+
+    function throw()
+    {
+        throw self.exception;
+    }
+}

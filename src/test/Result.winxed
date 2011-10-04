@@ -1,84 +1,81 @@
-namespace Rosella { namespace Test
+/* Test Result Class. The Result monitors the running suite and handles
+   test events. The Result maintains a list of Listener objects, and
+   broadcasts events to all Listeners. Unless specified otherwise, the
+   default Listener is Rosella::Test::Listener::TAP.
+*/
+class Rosella.Test.Result
 {
-    /* Test Result Class. The Result monitors the running suite and handles
-       test events. The Result maintains a list of Listener objects, and
-       broadcasts events to all Listeners. Unless specified otherwise, the
-       default Listener is Rosella::Test::Listener::TAP.
-    */
-    class Result
+    var total_tests;
+    var num_failures;
+    var listeners;
+
+    // Constructor. Take a list of listeners and initialize the Result
+    function Result(var listeners)
     {
-        var total_tests;
-        var num_failures;
-        var listeners;
-
-        // Constructor. Take a list of listeners and initialize the Result
-        function Result(var listeners)
-        {
-            self.total_tests = 0;
-            self.num_failures = 0;
-            self.listeners = listeners;
-        }
-
-        /* Interface Methods
-        */
-
-        // set the expected number of tests to run
-        function plan_tests(int num_tests)
-        {
-            self.notify_listeners("plan_tests", num_tests);
-        }
-
-        // Start a test
-        function start_test(var test, var context)
-        {
-            self.total_tests = self.total_tests + 1;
-            self.notify_listeners("start_test", test, context);
-        }
-
-        // Add a failure test. This picks out the type of failure (either an
-        // assertion failure or a stray exception), and passes on the data
-        // to the relevant methods on the Listener.
-        function add_failure(var test, var context, var ex)
-        {
-            self.num_failures = self.num_failures + 1;
-
-            if (Rosella.isa_type("String", ex)) {
-                self.notify_listeners("add_failure_msg", test, context, ex);
-                return;
-            }
-
-            self.notify_listeners("add_exception", test, context, ex);
-        }
-
-        // End the test, presuming success
-        function end_test(var test, var context)
-        {
-            self.notify_listeners("end_test", test, context);
-        }
-
-        // Boolean whether the whole run was successful
-        function was_successful()
-        {
-            return int(self.num_failures) == 0;
-        }
-
-        // Tell the listeners that all tests have executed
-        function tests_complete()
-        {
-            self.notify_listeners("tests_complete", self.total_tests, self.num_failures);
-        }
-
-        /* Internal Routines
-            These methods are not part of the external interface and should
-            not be used elsewhere.
-        */
-
-        // Notify all listeners
-        function notify_listeners(string method, var args [slurpy])
-        {
-            for (var listener in self.listeners)
-                listener.*method(args:[flat]);
-            return self;
-        }
+        self.total_tests = 0;
+        self.num_failures = 0;
+        self.listeners = listeners;
     }
-}}
+
+    /* Interface Methods
+    */
+
+    // set the expected number of tests to run
+    function plan_tests(int num_tests)
+    {
+        self.notify_listeners("plan_tests", num_tests);
+    }
+
+    // Start a test
+    function start_test(var test, var context)
+    {
+        self.total_tests = self.total_tests + 1;
+        self.notify_listeners("start_test", test, context);
+    }
+
+    // Add a failure test. This picks out the type of failure (either an
+    // assertion failure or a stray exception), and passes on the data
+    // to the relevant methods on the Listener.
+    function add_failure(var test, var context, var ex)
+    {
+        self.num_failures = self.num_failures + 1;
+
+        if (Rosella.isa_type("String", ex)) {
+            self.notify_listeners("add_failure_msg", test, context, ex);
+            return;
+        }
+
+        self.notify_listeners("add_exception", test, context, ex);
+    }
+
+    // End the test, presuming success
+    function end_test(var test, var context)
+    {
+        self.notify_listeners("end_test", test, context);
+    }
+
+    // Boolean whether the whole run was successful
+    function was_successful()
+    {
+        return int(self.num_failures) == 0;
+    }
+
+    // Tell the listeners that all tests have executed
+    function tests_complete()
+    {
+        self.notify_listeners("tests_complete", self.total_tests, self.num_failures);
+    }
+
+    /* Internal Routines
+        These methods are not part of the external interface and should
+        not be used elsewhere.
+    */
+
+    // Notify all listeners
+    function notify_listeners(string method, var args [slurpy])
+    {
+        for (var listener in self.listeners)
+            listener.*method(args:[flat]);
+        return self;
+    }
+}

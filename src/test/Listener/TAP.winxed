@@ -1,85 +1,84 @@
-namespace Rosella { namespace Test { namespace Listener
+/* TAP Listener Class
+    The TAP listener listens for test results, and passes them on to the
+    simple TAP output builder
+*/
+class Rosella.Test.Listener.TAP : Rosella.Test.Listener
 {
-    // The TAP listener listens for test results, and passes them on to the
-    // simple TAP output builder
-    class TAP : Rosella.Test.Listener
+    var test_builder;
+
+    function TAP()
     {
-        var test_builder;
+        self.test_builder = new Rosella.Test.Builder();
+    }
 
-        function TAP()
-        {
-            self.test_builder = new Rosella.Test.Builder();
-        }
+    // Add a new exception result. This test is a failure, unless todo'd
+    function add_exception(var test, var context, var ex)
+    {
+        string label = context.display_name();
+        string todo = context.test_todo();
+        if (todo != null)
+            self.test_builder.todo(0, label, todo);
+        else
+            self.test_builder.ok(0, label);
+        self.display_failure(ex);
+    }
 
-        // Add a new exception result. This test is a failure, unless todo'd
-        function add_exception(var test, var context, var ex)
-        {
-            string label = context.display_name();
-            string todo = context.test_todo();
-            if (todo != null)
-                self.test_builder.todo(0, label, todo);
-            else
-                self.test_builder.ok(0, label);
-            self.display_failure(ex);
-        }
+    // The test is a failure with an error message
+    function add_failure_msg(var test, var context, string msg)
+    {
+        string label = context.display_name();
+        string todo = context.test_todo();
+        if (todo != null)
+            self.test_builder.todo(0, label, todo);
+        else
+            self.test_builder.ok(0, label);
+        self.test_builder.diag(msg);
+    }
 
-        // The test is a failure with an error message
-        function add_failure_msg(var test, var context, string msg)
-        {
-            string label = context.display_name();
-            string todo = context.test_todo();
-            if (todo != null)
-                self.test_builder.todo(0, label, todo);
-            else
-                self.test_builder.ok(0, label);
-            self.test_builder.diag(msg);
-        }
-
-        // Pass information about a failure to the builder
-        function display_failure(var ex)
-        {
-            while (ex != null) {
-                var failure = Rosella.Test.Failure.get_exception_failure(ex);
-                if (failure == null) {
-                    self.test_builder.diag(ex);
-                    break;
-                }
-
-                if (failure.is_internal)
-                    self.test_builder.diag(ex.message);
-                else
-                    self.test_builder.diag(ex);
-
-                ex = failure.inner_ex;
+    // Pass information about a failure to the builder
+    function display_failure(var ex)
+    {
+        while (ex != null) {
+            var failure = Rosella.Test.Failure.get_exception_failure(ex);
+            if (failure == null) {
+                self.test_builder.diag(ex);
+                break;
             }
-        }
 
-        // End a test successfully
-        function end_test(var test, var context)
-        {
-            string label = context.display_name();
-            string todo = context.test_todo();
-            if (todo != null)
-                self.test_builder.todo(1, label, todo);
+            if (failure.is_internal)
+                self.test_builder.diag(ex.message);
             else
-                self.test_builder.ok(1, label);
-            return self;
-        }
+                self.test_builder.diag(ex);
 
-        // Plan a number of tests
-        function plan_tests(int num_tests)
-        {
-            self.test_builder.plan(num_tests);
-        }
-
-        // Mark all tests complete, and show any summary information.
-        function tests_complete(int total_tests, int num_failures)
-        {
-            if (num_failures == 0)
-                self.test_builder.diag(Winxed_Builtins.sprintf("You passed all %d tests", [total_tests]));
-            else
-                self.test_builder.diag(Winxed_Builtins.sprintf("Looks like you failed %d of %d tests", [num_failures, total_tests]));
+            ex = failure.inner_ex;
         }
     }
-}}}
+
+    // End a test successfully
+    function end_test(var test, var context)
+    {
+        string label = context.display_name();
+        string todo = context.test_todo();
+        if (todo != null)
+            self.test_builder.todo(1, label, todo);
+        else
+            self.test_builder.ok(1, label);
+        return self;
+    }
+
+    // Plan a number of tests
+    function plan_tests(int num_tests)
+    {
+        self.test_builder.plan(num_tests);
+    }
+
+    // Mark all tests complete, and show any summary information.
+    function tests_complete(int total_tests, int num_failures)
+    {
+        if (num_failures == 0)
+            self.test_builder.diag(Winxed_Builtins.sprintf("You passed all %d tests", [total_tests]));
+        else
+            self.test_builder.diag(Winxed_Builtins.sprintf("Looks like you failed %d of %d tests", [num_failures, total_tests]));
+    }
+}
 

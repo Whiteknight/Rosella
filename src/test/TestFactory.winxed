@@ -1,44 +1,41 @@
-namespace Rosella { namespace Test
+/* TestFactory, factory for building TestCases
+    TestCase has read-only attributes so they can't be played with during
+    test execution. Initializing the values of those attributes takes a
+    little bit of work and we do that here.
+*/
+class Rosella.Test.TestFactory : Rosella.ObjectFactory
 {
-    /* TestFactory, factory for building TestCases
-        TestCase has read-only attributes so they can't be played with during
-        test execution. Initializing the values of those attributes takes a
-        little bit of work and we do that here.
-    */
-    class TestFactory : Rosella.ObjectFactory
+    var options;
+
+    // Set up the factory with the type to create (TestCase or look-alike)
+    // and the TestContext object to use.
+    function TestFactory(var options)
     {
-        var options;
-
-        // Set up the factory with the type to create (TestCase or look-alike)
-        // and the TestContext object to use.
-        function TestFactory(var options)
-        {
-            self.target_type = options["testcase_type"];
-            self.options = options;
-        }
-
-        // Create the TestCase object with the given test method and test
-        // method name. Use the existing context object. TestFactory.create
-        // calls this method with the type passed in the constructor.
-        function create_typed(var type, var test_name, var test_method,
-                var p [slurpy], var n [slurpy,named])
-        {
-            var test = Rosella.construct(type);
-            var asserter = self.options["asserter"];
-            var status = new Rosella.Test.TestStatus(test_name, test_method);
-            var context = self.options["context"];
-
-            // setattribute_p_p_s_p sets attributes through a different
-            // mechanism and does not get routed through VTABLE_set_attr_str.
-            // This is important, because TestCase is locked down so that
-            // normal accesses through VTABLE_set_attr_str are blocked.
-            var testcase_class = class Rosella.Test.TestCase;
-            ${ setattribute test, testcase_class, "test_method", test_method };
-            ${ setattribute test, testcase_class, "test_context", context };
-            ${ setattribute test, testcase_class, "test_status", status };
-            ${ setattribute test, testcase_class, "test_assert", asserter };
-
-            return test;
-        }
+        self.target_type = options["testcase_type"];
+        self.options = options;
     }
-}}
+
+    // Create the TestCase object with the given test method and test
+    // method name. Use the existing context object. TestFactory.create
+    // calls this method with the type passed in the constructor.
+    function create_typed(var type, var test_name, var test_method,
+            var p [slurpy], var n [slurpy,named])
+    {
+        var test = Rosella.construct(type);
+        var asserter = self.options["asserter"];
+        var status = new Rosella.Test.TestStatus(test_name, test_method);
+        var context = self.options["context"];
+
+        // setattribute_p_p_s_p sets attributes through a different
+        // mechanism and does not get routed through VTABLE_set_attr_str.
+        // This is important, because TestCase is locked down so that
+        // normal accesses through VTABLE_set_attr_str are blocked.
+        var testcase_class = class Rosella.Test.TestCase;
+        ${ setattribute test, testcase_class, "test_method", test_method };
+        ${ setattribute test, testcase_class, "test_context", context };
+        ${ setattribute test, testcase_class, "test_status", status };
+        ${ setattribute test, testcase_class, "test_assert", asserter };
+
+        return test;
+    }
+}
