@@ -1,253 +1,250 @@
-namespace Rosella.Query
+/* Stream class
+    A stream is a sequence of data items from an iterable source. Items
+    are read lazily from the source.
+*/
+class Rosella.Query.Stream : Rosella.Query
 {
-    /* Stream class
-        A stream is a sequence of data items from an iterable source. Items
-        are read lazily from the source.
-    */
-    class Stream : Rosella.Query
+    var data;
+    var last_stage;
+    var source_stage;
+    var output_cache;
+    var input_cache;
+
+    // Constructor. Create a new stream for the given data
+    function Stream(var data)
     {
-        var data;
-        var last_stage;
-        var source_stage;
-        var output_cache;
-        var input_cache;
+        self.data = data;
+        self.source_stage = self.last_stage = new Rosella.Query.Stage.Source(data);
+        self.output_cache = [];
+        self.input_cache = null;
+    }
 
-        // Constructor. Create a new stream for the given data
-        function Stream(var data)
-        {
-            self.data = data;
-            self.source_stage = self.last_stage = new Rosella.Query.Stage.Source(data);
-            self.output_cache = [];
-            self.input_cache = null;
-        }
+    // Constructor. Create a new stream from an existing stream and a new
+    // stage.
+    function Stream(var parent, var stage)
+    {
+        self.data = parent.data;
+        self.source_stage = parent.source_stage;
+        self.output_cache = [];
+        self.last_stage = stage;
+        self.input_cache = parent.output_cache;
+    }
 
-        // Constructor. Create a new stream from an existing stream and a new
-        // stage.
-        function Stream(var parent, var stage)
-        {
-            self.data = parent.data;
-            self.source_stage = parent.source_stage;
-            self.output_cache = [];
-            self.last_stage = stage;
-            self.input_cache = parent.output_cache;
-        }
+    /* Data Manipulation Routines
+    */
 
-        /* Data Manipulation Routines
-        */
-
-        // Execute the entire stream, exhausting the source. Return whatever
-        // results come out of it.
-        function data()
-        {
-            var d = [];
-            :(int is_valid, var item) = self.get_next();
-            while (is_valid) {
-                push(d, item);
-                :(is_valid, item) = self.get_next();
-            }
-            return d;
-        }
-
-        // Run the stream to the end, ignores return values;
-        function execute()
-        {
-            :(int is_valid, var item) = self.get_next();
-            while (is_valid)
-                :(is_valid, item) = self.get_next();
-        }
-
-        // Perform an action on the iterator.
-        function on_iterator(var f)
-        {
-            return f(self.source_stage.iterator);
-        }
-
-        // Perform an action on the underlying data source.
-        function on_data(var f)
-        {
-            return f(self.data);
-        }
-
-        // Determine if the stream has more data.
-        function has_more()
-        {
-            if (elements(self.output_cache) > 0)
-                return true;
-            :(int is_valid, var item) = self.get_next();
-            if (is_valid)
-                push(self.output_cache, item);
-            return is_valid;
-        }
-
-        // Read one data item from the stream.
-        function next()
-        {
-            if (elements(self.output_cache) > 0)
-                return self.output_cache.shift();
-            int is_valid;
-            var item;
+    // Execute the entire stream, exhausting the source. Return whatever
+    // results come out of it.
+    function data()
+    {
+        var d = [];
+        :(int is_valid, var item) = self.get_next();
+        while (is_valid) {
+            push(d, item);
             :(is_valid, item) = self.get_next();
+        }
+        return d;
+    }
+
+    // Run the stream to the end, ignores return values;
+    function execute()
+    {
+        :(int is_valid, var item) = self.get_next();
+        while (is_valid)
+            :(is_valid, item) = self.get_next();
+    }
+
+    // Perform an action on the iterator.
+    function on_iterator(var f)
+    {
+        return f(self.source_stage.iterator);
+    }
+
+    // Perform an action on the underlying data source.
+    function on_data(var f)
+    {
+        return f(self.data);
+    }
+
+    // Determine if the stream has more data.
+    function has_more()
+    {
+        if (elements(self.output_cache) > 0)
+            return true;
+        :(int is_valid, var item) = self.get_next();
+        if (is_valid)
+            push(self.output_cache, item);
+        return is_valid;
+    }
+
+    // Read one data item from the stream.
+    function next()
+    {
+        if (elements(self.output_cache) > 0)
+            return self.output_cache.shift();
+        int is_valid;
+        var item;
+        :(is_valid, item) = self.get_next();
+        if (!is_valid)
+            Rosella.Error.invalid(__FUNCTION__, "Cannot get next from empty iterable");
+        return item;
+    }
+
+    // Return a count of elements. This requires reading the entire source
+    // which is not a good idea for infinite data sources.
+    function count(var func [optional], int has_func [opt_flag])
+    {
+        if (!has_func || func == null) {
+            var d = self.data();
+            for (var i in d)
+                push(self.output_cache, i);
+            return elements(self.output_cache);
+        } else {
+            var d = self.filter(func).data();
+            for (var i in d)
+                push(self.output_cache, i);
+            return elements(d);
+        }
+    }
+
+    // Return true if any element in the aggregate satisfies the predicate
+    // false otherwise. Short-circuits if possible. If no elements satisfy
+    // the predicate, the entire stream will be exhausted.
+    function any(var func [optional], int has_func [opt_flag])
+    {
+        if (!has_func || func == null)
+            return self.has_more();
+        int is_valid = true;
+        var value;
+        while (is_valid) {
+            :(is_valid, value) = self.get_next();
             if (!is_valid)
-                Rosella.Error.invalid(__FUNCTION__, "Cannot get next from empty iterable");
-            return item;
+                return false;
+            push(self.output_cache, value);
+            if (func(value))
+                return true;
         }
+        return false;
+    }
 
-        // Return a count of elements. This requires reading the entire source
-        // which is not a good idea for infinite data sources.
-        function count(var func [optional], int has_func [opt_flag])
-        {
-            if (!has_func || func == null) {
-                var d = self.data();
-                for (var i in d)
-                    push(self.output_cache, i);
-                return elements(self.output_cache);
-            } else {
-                var d = self.filter(func).data();
-                for (var i in d)
-                    push(self.output_cache, i);
-                return elements(d);
-            }
-        }
+    /* Delayed Execution Query Routines
+        All delayed-execution methods return a new stream with the new
+        behavior added to the end. The existing stream is not affected.
+        Both streams share the same data object and draw from the same
+        iterable.
+    */
 
-        // Return true if any element in the aggregate satisfies the predicate
-        // false otherwise. Short-circuits if possible. If no elements satisfy
-        // the predicate, the entire stream will be exhausted.
-        function any(var func [optional], int has_func [opt_flag])
-        {
-            if (!has_func || func == null)
-                return self.has_more();
-            int is_valid = true;
-            var value;
-            while (is_valid) {
-                :(is_valid, value) = self.get_next();
-                if (!is_valid)
-                    return false;
-                push(self.output_cache, value);
-                if (func(value))
-                    return true;
-            }
-            return false;
-        }
+    // Perform some action for every element in the aggregate. Return the
+    // items without modification.
+    function foreach(var func)
+    {
+        var last_stage = new Rosella.Query.Stage.ForEach(self.last_stage, func);
+        return new Rosella.Query.Stream(self, last_stage);
+    }
 
-        /* Delayed Execution Query Routines
-            All delayed-execution methods return a new stream with the new
-            behavior added to the end. The existing stream is not affected.
-            Both streams share the same data object and draw from the same
-            iterable.
-        */
+    // Perform a callback at this stage in the Stream. It performs no
+    // action at all on the data.
+    function tap(var func)
+    {
+        var last_stage = new Rosella.Query.Stage.Tap(self.last_stage, func);
+        return new Rosella.Query.Stream(self, last_stage);
+    }
 
-        // Perform some action for every element in the aggregate. Return the
-        // items without modification.
-        function foreach(var func)
-        {
-            var last_stage = new Rosella.Query.Stage.ForEach(self.last_stage, func);
-            return new Rosella.Query.Stream(self, last_stage);
-        }
+    // Return a new aggregate where each element is a function of the
+    // elements in the data. This is like .foreach(), but without passing
+    // the data to the callback.
+    function map(var func)
+    {
+        var last_stage = new Rosella.Query.Stage.Map(self.last_stage, func);
+        return new Rosella.Query.Stream(self, last_stage);
+    }
 
-        // Perform a callback at this stage in the Stream. It performs no
-        // action at all on the data.
-        function tap(var func)
-        {
-            var last_stage = new Rosella.Query.Stage.Tap(self.last_stage, func);
-            return new Rosella.Query.Stream(self, last_stage);
-        }
+    // Return a new aggregate where only the elements from the original
+    // data which satisfy a test are included
+    function filter(var func)
+    {
+        var last_stage = new Rosella.Query.Stage.Filter(self.last_stage, func);
+        return new Rosella.Query.Stream(self, last_stage);
+    }
 
-        // Return a new aggregate where each element is a function of the
-        // elements in the data. This is like .foreach(), but without passing
-        // the data to the callback.
-        function map(var func)
-        {
-            var last_stage = new Rosella.Query.Stage.Map(self.last_stage, func);
-            return new Rosella.Query.Stream(self, last_stage);
-        }
+    // Combine elements from the aggregate into a single value and
+    // return that.
+    function fold(var func, var seed [optional], int has_seed [opt_flag])
+    {
+        if (!has_seed)
+            seed = null;
+        var last_stage = new Rosella.Query.Stage.Fold(self.last_stage, func, seed);
+        return new Rosella.Query.Stream(self, last_stage);
+    }
 
-        // Return a new aggregate where only the elements from the original
-        // data which satisfy a test are included
-        function filter(var func)
-        {
-            var last_stage = new Rosella.Query.Stage.Filter(self.last_stage, func);
-            return new Rosella.Query.Stream(self, last_stage);
-        }
+    // Sort the data using a given comparison routine
+    function sort(var func)
+    {
+        var last_stage = new Rosella.Query.Stage.Sort(self.last_stage, func);
+        return new Rosella.Query.Stream(self, last_stage);
+    }
 
-        // Combine elements from the aggregate into a single value and
-        // return that.
-        function fold(var func, var seed [optional], int has_seed [opt_flag])
-        {
-            if (!has_seed)
-                seed = null;
-            var last_stage = new Rosella.Query.Stage.Fold(self.last_stage, func, seed);
-            return new Rosella.Query.Stream(self, last_stage);
-        }
+    // Return an aggregate of the first N elements in the data. If a
+    // predicate is provided, return the first N which satisfy the
+    // prediate
+    function take(int count, var func [optional], int has_func [opt_flag])
+    {
+        if (!has_func)
+            func = null;
+        var last_stage = new Rosella.Query.Stage.Take(self.last_stage, func, count);
+        return new Rosella.Query.Stream(self, last_stage);
+    }
 
-        // Sort the data using a given comparison routine
-        function sort(var func)
-        {
-            var last_stage = new Rosella.Query.Stage.Sort(self.last_stage, func);
-            return new Rosella.Query.Stream(self, last_stage);
-        }
+    // Return all but the first N elements. If a predicate is provided,
+    // return all by the first N elements which satisfy the predicate.
+    function skip(int count, var func [optional], int has_func [opt_flag])
+    {
+        if (!has_func)
+            func = null;
+        var last_stage = new Rosella.Query.Stage.Skip(self.last_stage, func, count);
+        return new Rosella.Query.Stream(self, last_stage);
+    }
 
-        // Return an aggregate of the first N elements in the data. If a
-        // predicate is provided, return the first N which satisfy the
-        // prediate
-        function take(int count, var func [optional], int has_func [opt_flag])
-        {
-            if (!has_func)
-                func = null;
-            var last_stage = new Rosella.Query.Stage.Take(self.last_stage, func, count);
-            return new Rosella.Query.Stream(self, last_stage);
-        }
+    // Flatten a nested aggregate into a flat stream of scalars
+    function flatten()
+    {
+        var last_stage = new Rosella.Query.Stage.Flatten(self.last_stage);
+        return new Rosella.Query.Stream(self, last_stage);
+    }
 
-        // Return all but the first N elements. If a predicate is provided,
-        // return all by the first N elements which satisfy the predicate.
-        function skip(int count, var func [optional], int has_func [opt_flag])
-        {
-            if (!has_func)
-                func = null;
-            var last_stage = new Rosella.Query.Stage.Skip(self.last_stage, func, count);
-            return new Rosella.Query.Stream(self, last_stage);
-        }
+    // Append a data sequence to the end of the stream
+    function append(var s)
+    {
+        var last_stage = new Rosella.Query.Stage.Append(self.last_stage, s);
+        return new Rosella.Query.Stream(self, last_stage);
+    }
 
-        // Flatten a nested aggregate into a flat stream of scalars
-        function flatten()
-        {
-            var last_stage = new Rosella.Query.Stage.Flatten(self.last_stage);
-            return new Rosella.Query.Stream(self, last_stage);
-        }
+    // For each element in the sequence, replace it with a sequence of
+    // zero or more elements to be inserted at that point in the stream.
+    function project(var func)
+    {
+        var last_stage = new Rosella.Query.Stage.Project(self.last_stage, func);
+        return new Rosella.Query.Stream(self, last_stage);
+    }
 
-        // Append a data sequence to the end of the stream
-        function append(var s)
-        {
-            var last_stage = new Rosella.Query.Stage.Append(self.last_stage, s);
-            return new Rosella.Query.Stream(self, last_stage);
-        }
+    /* Vtables and Low-level access
+    */
 
-        // For each element in the sequence, replace it with a sequence of
-        // zero or more elements to be inserted at that point in the stream.
-        function project(var func)
-        {
-            var last_stage = new Rosella.Query.Stage.Project(self.last_stage, func);
-            return new Rosella.Query.Stream(self, last_stage);
-        }
+    // Get an iterator over the data
+    function get_iter[vtable]()
+    {
+        return new Rosella.Query.Stream.Iterator(self);
+    }
 
-        /* Vtables and Low-level access
-        */
+    /* Internal Helper Routines
+    */
 
-        // Get an iterator over the data
-        function get_iter[vtable]()
-        {
-            return new Rosella.Query.Stream.Iterator(self);
-        }
-
-        /* Internal Helper Routines
-        */
-
-        // Get the next item from the stream.
-        function get_next()
-        {
-            if (self.input_cache != null && elements(self.input_cache) > 0)
-                return true, self.input_cache.shift();
-            :(int is_valid, var value) = self.last_stage.next();
-            return is_valid, value;
-        }
+    // Get the next item from the stream.
+    function get_next()
+    {
+        if (self.input_cache != null && elements(self.input_cache) > 0)
+            return true, self.input_cache.shift();
+        :(int is_valid, var value) = self.last_stage.next();
+        return is_valid, value;
     }
 }

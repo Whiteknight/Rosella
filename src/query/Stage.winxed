@@ -1,41 +1,38 @@
-namespace Rosella.Query
+/* Stream stages
+    Stages implement most of the higher-order operations on Streams.
+    This is an abstract base class. Use a subclass instead.
+*/
+class Rosella.Query.Stage
 {
-    /* Stream stages
-        Stages implement most of the higher-order operations on Streams.
-        This is an abstract base class. Use a subclass instead.
-    */
-    class Stage
+    var previous;   // The previous stage, from which we pull values
+    var func;       // The function reference to use, if any
+
+    // Basic constructor. Save the previous stage and the func reference
+    function Stage(var prev, var func)
     {
-        var previous;   // The previous stage, from which we pull values
-        var func;       // The function reference to use, if any
+        self.previous = prev;
+        self.func = func;
+    }
 
-        // Basic constructor. Save the previous stage and the func reference
-        function Stage(var prev, var func)
-        {
-            self.previous = prev;
-            self.func = func;
-        }
+    // Get the next value from the previous stage
+    function next()
+    {
+        Rosella.Error.must_subclass(__CLASS__);
+    }
 
-        // Get the next value from the previous stage
-        function next()
-        {
-            Rosella.Error.must_subclass(__CLASS__);
+    // Gobble all data from previous stages. This is bad to do if the
+    // source iterator is infinite.
+    function gobble_all()
+    {
+        var d = [];
+        :(int is_valid, var value) = self.previous.next();
+        if (!is_valid)
+            return null;
+        while (is_valid) {
+            push(d, value);
+            :(is_valid, value) = self.previous.next();
         }
-
-        // Gobble all data from previous stages. This is bad to do if the
-        // source iterator is infinite.
-        function gobble_all()
-        {
-            var d = [];
-            :(int is_valid, var value) = self.previous.next();
-            if (!is_valid)
-                return null;
-            while (is_valid) {
-                push(d, value);
-                :(is_valid, value) = self.previous.next();
-            }
-            return d;
-        }
+        return d;
     }
 }
 
