@@ -1,87 +1,85 @@
-namespace Rosella
+/* Rosella FileSystem Library
+    This library provides object-oriented interfaces for dealing with
+    files and directories, in addition to a number of helper routines and
+    convenience utilities for making file and directory operations
+    easier.
+*/
+namespace Rosella.FileSystem
 {
-    /* Rosella FileSystem Library
-        This library provides object-oriented interfaces for dealing with
-        files and directories, in addition to a number of helper routines and
-        convenience utilities for making file and directory operations
-        easier.
-    */
-    namespace FileSystem
+    const string OS_PMC_GLOBAL = "Rosella.FileSystem.OS";
+
+    // Get an OS PMC from the Parrot distribution. Register it as a global
+    function get_os_pmc()
     {
-        const string OS_PMC_GLOBAL = "Rosella.FileSystem.OS";
-
-        // Get an OS PMC from the Parrot distribution. Register it as a global
-        function get_os_pmc()
-        {
-            var os = Rosella.Globals.get_global(OS_PMC_GLOBAL);
-            if (os == null) {
-                loadlib("os");
-                os = new OS;
-                set_os_pmc(os);
-            }
-            while (1) {
-                yield os;
-                os = Rosella.Globals.get_global(OS_PMC_GLOBAL);
-            }
+        var os = Rosella.Globals.get_global(OS_PMC_GLOBAL);
+        if (os == null) {
+            loadlib("os");
+            os = new OS;
+            set_os_pmc(os);
         }
-
-        // Set the OS PMC instance that should be used by low-level
-        // operations.
-        function set_os_pmc(var os)
-        {
-            Rosella.Globals.register_global(OS_PMC_GLOBAL, os);
+        while (1) {
+            yield os;
+            os = Rosella.Globals.get_global(OS_PMC_GLOBAL);
         }
+    }
 
-        // Determine if the given path is a file. Returns 0 if not, non-zero
-        // if it is a file.
-        function is_file(string path)
-        {
-            var os = get_os_pmc();
-            if (!os.exists(path))
-                return 0;
-            var stat = os.stat(path);
-            int mode = stat[2];
-            int isfile = 0;
-            ${ band isfile, mode, STAT_ISREG };
-            return isfile;
-        }
+    // Set the OS PMC instance that should be used by low-level
+    // operations.
+    function set_os_pmc(var os)
+    {
+        Rosella.Globals.register_global(OS_PMC_GLOBAL, os);
+    }
 
-        // Determine if the given path is a directory. Returns non-zero if it
-        // is a directory, zero otherwise.
-        function is_directory(string path)
-        {
-            var os = get_os_pmc();
-            if (!os.exists(path))
-                return 0;
-            var stat = os.stat(path);
-            int mode = stat[2];
-            int isdir = 0;
-            ${ band isdir, mode, STAT_ISDIR };
-            return isdir;
-        }
+    // Determine if the given path is a file. Returns 0 if not, non-zero
+    // if it is a file.
+    function is_file(string path)
+    {
+        var os = get_os_pmc();
+        if (!os.exists(path))
+            return 0;
+        var stat = os.stat(path);
+        int mode = stat[2];
+        int isfile = 0;
+        ${ band isfile, mode, STAT_ISREG };
+        return isfile;
+    }
 
-        // Get the path separator for this system
-        function path_separator()
-        {
-            using Rosella.Parrot.get_config_hash;
-            var config = get_config_hash();
-            string sep = config["slash"];
-            while(1)
-                return sep;
-        }
+    // Determine if the given path is a directory. Returns non-zero if it
+    // is a directory, zero otherwise.
+    function is_directory(string path)
+    {
+        var os = get_os_pmc();
+        if (!os.exists(path))
+            return 0;
+        var stat = os.stat(path);
+        int mode = stat[2];
+        int isdir = 0;
+        ${ band isdir, mode, STAT_ISDIR };
+        return isdir;
+    }
 
-        // Combine strings together with the platform-specific path separator.
-        function join_path_parts(var parts [slurpy])
-        {
-            string path_sep = path_separator();
-            return join(path_sep, parts);
-        }
+    // Get the path separator for this system
+    function path_separator()
+    {
+        using Rosella.Parrot.get_config_hash;
+        var config = get_config_hash();
+        string sep = config["slash"];
+        while(1)
+            return sep;
+    }
 
-        function iterable_handle(var handle)
-        {
-            if (handle instanceof "Handle")
-                return new Rosella.FileSystem.IterableHandle(handle);
-            Rosella.Error.invalid(__FUNCTION__, "handle_iterator expects a Handle object");
-        }
+    // Combine strings together with the platform-specific path separator.
+    function join_path_parts(var parts [slurpy])
+    {
+        string path_sep = path_separator();
+        return join(path_sep, parts);
+    }
+
+    // Get an IterableHandle object for a Hande object
+    function iterable_handle(var handle)
+    {
+        if (handle instanceof "Handle")
+            return new Rosella.FileSystem.IterableHandle(handle);
+        Rosella.Error.invalid(__FUNCTION__, "handle_iterator expects a Handle object");
     }
 }

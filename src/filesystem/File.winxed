@@ -1,181 +1,181 @@
-namespace Rosella { namespace FileSystem
+/* File Namespace
+    This namespace provides utilities to set a global FileHandle factory
+    instance, and use it to get instances of FileHandle for various
+    purposes. The user can set a custom factory for creating FileHandles
+    if a subclass or replacement class should be used instead.
+*/
+namespace Rosella.FileSystem.File
 {
-    /* File Namespace
-        This namespace provides utilities to set a global FileHandle factory
-        instance, and use it to get instances of FileHandle for various
-        purposes. The user can set a custom factory for creating FileHandles
-        if a subclass or replacement class should be used instead.
-    */
-    namespace File
+    const string FILEHANDLE_FACTORY_GLOBAL = "Rosella.FileSystem.FileHandleFactory";
+
+    // Get a FileHandle object from a filehandle factory.
+    function get_filehandle()
     {
-        const string FILEHANDLE_FACTORY_GLOBAL = "Rosella.FileSystem.FileHandleFactory";
-
-        // Get a FileHandle object from a filehandle factory.
-        function get_filehandle()
-        {
-            var factory = Rosella.Globals.get_global(FILEHANDLE_FACTORY_GLOBAL);
-            if (factory == null) {
-                factory = new Rosella.ObjectFactory("FileHandle");
-                set_filehandle_factory(factory);
-            }
-            while(1) {
-                yield factory.create();
-                factory = Rosella.Globals.get_global(FILEHANDLE_FACTORY_GLOBAL);
-            }
+        var factory = Rosella.Globals.get_global(FILEHANDLE_FACTORY_GLOBAL);
+        if (factory == null) {
+            factory = new Rosella.ObjectFactory("FileHandle");
+            set_filehandle_factory(factory);
         }
-
-        // Set the global FileHandle factory to use.
-        function set_filehandle_factory(var factory)
-        {
-            Rosella.Globals.register_global(FILEHANDLE_FACTORY_GLOBAL, factory);
+        while(1) {
+            yield factory.create();
+            factory = Rosella.Globals.get_global(FILEHANDLE_FACTORY_GLOBAL);
         }
     }
 
-    /* File Class
-        This class represents a file. The file can be created, examined,
-        modified, and deleted using methods on this object.
-    */
-    class File : Rosella.FileSystem.Entry
+    // Set the global FileHandle factory to use.
+    function set_filehandle_factory(var factory)
     {
-        // Constructor
-        function File(string filepath,
-                var parent_dir [optional], int has_dir [opt_flag])
-        {
-            if (has_dir)
-                filepath = string(parent_dir) + filepath;
-            self.Entry(filepath);
-        }
-
-        // Open the file for reading, returning the open FileHandle. The user
-        // must close the filehandle themselves.
-        function open_read(string encoding [optional], int has_e [opt_flag])
-        {
-            int is_binary = 0;
-            var filehandle = get_filehandle();
-            if (has_e) {
-                string mode = (encoding == "binary") ? "rb" : "r";
-                filehandle.open(self.path, mode);
-                filehandle.encoding(encoding);
-            } else
-                filehandle.open(self.path, "r");
-            return filehandle;
-        }
-
-        // Open the file for writing, returning the open FileHandle. The user
-        // must close the FileHandle themselves.
-        function open_write(string encoding [optional], int has_e [opt_flag])
-        {
-            var filehandle = get_filehandle();
-            if (has_e) {
-                string mode = (encoding == "binary") ? "wb" : "w";
-                filehandle.open(self.path, mode);
-                filehandle.encoding(encoding);
-            } else
-                filehandle.open(self.path, "w");
-            return filehandle;
-        }
-
-        // Open the file for appending.
-        function open_append()
-        {
-            var filehandle = get_filehandle();
-            filehandle.open(self.path, "a");
-            return filehandle;
-        }
-
-        // Return all text from the file in a single string.
-        function read_all_text(string encoding [optional], int has_e [opt_flag])
-        {
-            var filehandle;
-            if (has_e && encoding != null)
-                filehandle = self.open_read(encoding);
-            else
-                filehandle = self.open_read();
-            string text = filehandle.readall();
-            filehandle.close();
-            return text;
-        }
-
-        // Return all text from the file, as an array of lines.
-        function read_all_lines(string delim [optional], int has_d [opt_flag],
-            string encoding [optional], int has_encoding [opt_flag])
-        {
-            if (!has_d)
-                delim = "\n";
-            string text;
-            if (has_encoding && encoding != null)
-                text = self.read_all_text(encoding);
-            else
-                text = self.read_all_text();
-            return split(delim, text);
-        }
-
-        function read_top_lines(int count, string encoding [optional], int has_e [opt_flag])
-        {
-            var fh;
-            if (has_e && encoding != null)
-                fh = self.open_read(encoding);
-            else
-                fh = self.open_read();
-            var lines = [];
-            for (int i = 0; i < count && !fh.eof(); i++)
-                push(lines, fh.readline_interactive());
-            fh.close();
-            return lines;
-        }
-
-        // Write the text to the file. Create the file if it does not exist,
-        // overwrite it if it does.
-        function write_all_text(string text,
-                string encoding [optional], int has_e [opt_flag])
-        {
-            var filehandle;
-            if (has_e && encoding != null)
-                filehandle = self.open_write(encoding);
-            else
-                filehandle = self.open_write();
-            filehandle.print(text);
-            filehandle.close();
-        }
-
-        // Write the array of lines to the file, separated by newlines
-        function write_all_lines(var lines, string delim [optional], int has_d [opt_flag])
-        {
-            if (!has_d)
-                delim = "\n";
-            string text = join(delim, lines);
-            self.write_all_text(text);
-        }
-
-        // Append the given text to the file without disrupting the existing
-        // contents.
-        function append_text(string text)
-        {
-            var filehandle = self.open_append();
-            filehandle.print(text);
-            filehandle.close();
-        }
-
-        // Copy one file to a new destination.
-        function copy(string dest)
-        {
-            var file = new Rosella.FileSystem.File(dest);
-            string txt = self.read_all_text("binary");
-            file.write_all_text(txt, "binary");
-            return file;
-        }
-
-        // Get a Rosella.FileSystem.Path object to get path information about
-        // the filename
-        function path_obj()
-        {
-            string path = self.path;
-            return new Rosella.FileSystem.FilePath(path);
-        }
-
-        function get_iter[vtable]()
-        {
-            return new Rosella.FileSystem.FileIterator(self);
-        }
+        Rosella.Globals.register_global(FILEHANDLE_FACTORY_GLOBAL, factory);
     }
-}}
+}
+
+/* File Class
+    This class represents a file. The file can be created, examined,
+    modified, and deleted using methods on this object.
+*/
+class Rosella.FileSystem.File : Rosella.FileSystem.Entry
+{
+    // Constructor
+    function File(string filepath,
+            var parent_dir [optional], int has_dir [opt_flag])
+    {
+        if (has_dir)
+            filepath = string(parent_dir) + filepath;
+        self.Entry(filepath);
+    }
+
+    // Open the file for reading, returning the open FileHandle. The user
+    // must close the filehandle themselves.
+    function open_read(string encoding [optional], int has_e [opt_flag])
+    {
+        int is_binary = 0;
+        var filehandle = get_filehandle();
+        if (has_e) {
+            string mode = (encoding == "binary") ? "rb" : "r";
+            filehandle.open(self.path, mode);
+            filehandle.encoding(encoding);
+        } else
+            filehandle.open(self.path, "r");
+        return filehandle;
+    }
+
+    // Open the file for writing, returning the open FileHandle. The user
+    // must close the FileHandle themselves.
+    function open_write(string encoding [optional], int has_e [opt_flag])
+    {
+        var filehandle = get_filehandle();
+        if (has_e) {
+            string mode = (encoding == "binary") ? "wb" : "w";
+            filehandle.open(self.path, mode);
+            filehandle.encoding(encoding);
+        } else
+            filehandle.open(self.path, "w");
+        return filehandle;
+    }
+
+    // Open the file for appending.
+    function open_append()
+    {
+        var filehandle = get_filehandle();
+        filehandle.open(self.path, "a");
+        return filehandle;
+    }
+
+    // Return all text from the file in a single string.
+    function read_all_text(string encoding [optional], int has_e [opt_flag])
+    {
+        var filehandle;
+        if (has_e && encoding != null)
+            filehandle = self.open_read(encoding);
+        else
+            filehandle = self.open_read();
+        string text = filehandle.readall();
+        filehandle.close();
+        return text;
+    }
+
+    // Return all text from the file, as an array of lines.
+    function read_all_lines(string delim [optional], int has_d [opt_flag],
+        string encoding [optional], int has_encoding [opt_flag])
+    {
+        if (!has_d)
+            delim = "\n";
+        string text;
+        if (has_encoding && encoding != null)
+            text = self.read_all_text(encoding);
+        else
+            text = self.read_all_text();
+        return split(delim, text);
+    }
+
+    // Read the top N lines from the file.
+    function read_top_lines(int count, string encoding [optional], int has_e [opt_flag])
+    {
+        var fh;
+        if (has_e && encoding != null)
+            fh = self.open_read(encoding);
+        else
+            fh = self.open_read();
+        var lines = [];
+        for (int i = 0; i < count && !fh.eof(); i++)
+            push(lines, fh.readline());
+        fh.close();
+        return lines;
+    }
+
+    // Write the text to the file. Create the file if it does not exist,
+    // overwrite it if it does.
+    function write_all_text(string text,
+            string encoding [optional], int has_e [opt_flag])
+    {
+        var filehandle;
+        if (has_e && encoding != null)
+            filehandle = self.open_write(encoding);
+        else
+            filehandle = self.open_write();
+        filehandle.print(text);
+        filehandle.close();
+    }
+
+    // Write the array of lines to the file, separated by newlines
+    function write_all_lines(var lines, string delim [optional], int has_d [opt_flag])
+    {
+        if (!has_d)
+            delim = "\n";
+        string text = join(delim, lines);
+        self.write_all_text(text);
+    }
+
+    // Append the given text to the file without disrupting the existing
+    // contents.
+    function append_text(string text)
+    {
+        var filehandle = self.open_append();
+        filehandle.print(text);
+        filehandle.close();
+    }
+
+    // Copy one file to a new destination.
+    function copy(string dest)
+    {
+        var file = new Rosella.FileSystem.File(dest);
+        string txt = self.read_all_text("binary");
+        file.write_all_text(txt, "binary");
+        return file;
+    }
+
+    // Get a Rosella.FileSystem.Path object to get path information about
+    // the filename
+    function path_obj()
+    {
+        string path = self.path;
+        return new Rosella.FileSystem.FilePath(path);
+    }
+
+    // Get a FileIterator object for this file, to read it in line by
+    // line
+    function get_iter[vtable]()
+    {
+        return new Rosella.FileSystem.FileIterator(self);
+    }
+}

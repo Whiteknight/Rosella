@@ -1,67 +1,64 @@
-namespace Rosella { namespace FileSystem
+/* File system Path object
+    This object represents a Path on a filesystem. It can be used to
+    extract information about a path.
+*/
+class Rosella.FileSystem.FilePath
 {
-    /* File system Path object
-        This object represents a Path on a filesystem. It can be used to
-        extract information about a path.
-    */
-    class FilePath
+    var details;
+
+    // Constructor. Parse the path string out into named parts
+    function FilePath(string path)
     {
-        var details;
+        self.details = {};
+        using Rosella.FileSystem.path_separator;
+        string pathsep = path_separator();
+        var pathparts = split(pathsep, path);
+        string entryname = pathparts.pop();
+        var entryparts = split(".", entryname);
 
-        // Constructor. Parse the path string out into named parts
-        function FilePath(string path)
-        {
-            self.details = {};
-            using Rosella.FileSystem.path_separator;
-            string pathsep = path_separator();
-            var pathparts = split(pathsep, path);
-            string entryname = pathparts.pop();
-            var entryparts = split(".", entryname);
-
-            if (elements(entryparts) > 1)
-                self.details["extension"] = entryparts.pop();
-            else
-                self.details["extension"] = "";
-            self.details["shortname_noext"] = join(".", entryparts);
-            self.details["fullpath"] = path;
-            self.details["shortname"] = entryname;
-            self.details["pathseparator"] = pathsep;
-            self.details["basepath_parts"] = pathparts;
-            self.details["basepath"] = join(pathsep, pathparts);
-        }
-
-        // The file extension, without "."
-        function extension()
-        {
-            return self.details["extension"];
-        }
-
-        // The full base path. This is the folder path that contains the file
-        // starting at the file system root.
-        function full_base_path()
-        {
-            using Rosella.FileSystem.Directory.current_directory;
-            var cwd = current_directory();
-            return string(cwd) + string(self.details["basepath"]);
-        }
-
-        // The base path of the file starting from the current working
-        // directory
-        function relative_base_path()
-        {
-            return self.details["basepath"];
-        }
-
-        // The short name of the file, without folder path information
-        function short_name()
-        {
-            return self.details["shortname"];
-        }
-
-        // The short name of the file without the extension
-        function short_name_no_ext()
-        {
-            return self.details["shortname_noext"];
-        }
+        if (elements(entryparts) > 1)
+            self.details["extension"] = entryparts.pop();
+        else
+            self.details["extension"] = "";
+        self.details["shortname_noext"] = join(".", entryparts);
+        self.details["fullpath"] = path;
+        self.details["shortname"] = entryname;
+        self.details["pathseparator"] = pathsep;
+        self.details["basepath_parts"] = pathparts;
+        self.details["basepath"] = join(pathsep, pathparts);
     }
-}}
+
+    // The file extension, without "."
+    function extension()
+    {
+        return self.details["extension"];
+    }
+
+    // The full base path. This is the folder path that contains the file
+    // starting at the file system root.
+    function full_base_path()
+    {
+        using Rosella.FileSystem.Directory.current_directory;
+        var cwd = current_directory();
+        return string(cwd) + string(self.details["basepath"]);
+    }
+
+    // The base path of the file starting from the current working
+    // directory
+    function relative_base_path()
+    {
+        return self.details["basepath"];
+    }
+
+    // The short name of the file, without folder path information
+    function short_name()
+    {
+        return self.details["shortname"];
+    }
+
+    // The short name of the file without the extension
+    function short_name_no_ext()
+    {
+        return self.details["shortname_noext"];
+    }
+}
