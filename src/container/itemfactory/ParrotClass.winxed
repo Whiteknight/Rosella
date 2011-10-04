@@ -1,35 +1,32 @@
-namespace Rosella { namespace Container { namespace ItemFactory
+// An ItemFactory for resolving from a Parrot Class PMC (or anything
+// that can be resolved to a class using Rosella.construct)
+class Rosella.Container.ItemFactory.ParrotClass : Rosella.Container.ItemFactory
 {
-    // An ItemFactory for resolving from a Parrot Class PMC (or anything
-    // that can be resolved to a class using Rosella.construct)
-    class ParrotClass : Rosella.Container.ItemFactory
+    var class_obj;
+    var init_pmc;
+
+    function ParrotClass(var class_obj, var init, var inits)
     {
-        var class_obj;
-        var init_pmc;
-
-        function ParrotClass(var class_obj, var init, var inits)
-        {
-            if (class_obj == null)
-                Rosella.Error.invalid(__FUNCTION__, "class_obj may not be null");
-            self.class_obj = class_obj;
-            self.init_pmc = init;
-            self.protected_method_initializers(inits);
-        }
-
-        // Instantiate the class, using the various data
-        function protected_resolve_instance()
-        {
-            int have_init_pmc = 0;
-            var init_pmc = self.init_pmc;
-            ${ defined have_init_pmc, init_pmc };
-            var object = null;
-            var class_obj = self.class_obj;
-            if (have_init_pmc) {
-                var init_pmc = self.init_pmc;
-                ${ new object, class_obj, init_pmc };
-            } else
-                ${ new object, class_obj };
-            return object;
-        }
+        if (class_obj == null)
+            Rosella.Error.invalid(__FUNCTION__, "class_obj may not be null");
+        self.class_obj = class_obj;
+        self.init_pmc = init;
+        self.protected_method_initializers(inits);
     }
-}}}
+
+    // Instantiate the class, using the various data
+    function protected_resolve_instance()
+    {
+        int have_init_pmc = 0;
+        var init_pmc = self.init_pmc;
+        ${ defined have_init_pmc, init_pmc };
+        var object = null;
+        var class_obj = self.class_obj;
+        if (have_init_pmc) {
+            var init_pmc = self.init_pmc;
+            ${ new object, class_obj, init_pmc };
+        } else
+            ${ new object, class_obj };
+        return object;
+    }
+}

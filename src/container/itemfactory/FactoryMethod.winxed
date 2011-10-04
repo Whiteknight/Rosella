@@ -1,31 +1,28 @@
-namespace Rosella { namespace Container { namespace ItemFactory
+/* An ItemFactory to resolve from a factory method object.
+*/
+class Rosella.Container.ItemFactory.FactoryMethod : Rosella.Container.ItemFactory
 {
-    /* An ItemFactory to resolve from a factory method object.
-    */
-    class FactoryMethod : Rosella.Container.ItemFactory
+    var sub;
+    var arg_initializers;
+
+    function FactoryMethod(var sub, var inits, var arg_inits)
     {
-        var sub;
-        var arg_initializers;
-
-        function FactoryMethod(var sub, var inits, var arg_inits)
-        {
-            if (sub == null)
-                Rosella.Error.invalid(__FUNCTION__, "sub may not be null. It must be an invokable object");
-            self.sub = sub;
-            Rosella.Action.Argument.verify_all_arguments(__FUNCTION__, arg_inits);
-            self.arg_initializers = arg_inits;
-            self.protected_method_initializers(inits);
-        }
-
-        // Execute the factory method to return an instance of the object.
-        function protected_resolve_instance()
-        {
-            var pos = [];
-            var named = {};
-            for (var arg_init in self.arg_initializers)
-                arg_init.prepare_args(pos, named);
-            var sub = self.sub;
-            return sub(pos:[flat], named:[flat,named]);
-        }
+        if (sub == null)
+            Rosella.Error.invalid(__FUNCTION__, "sub may not be null. It must be an invokable object");
+        self.sub = sub;
+        Rosella.Action.Argument.verify_all_arguments(__FUNCTION__, arg_inits);
+        self.arg_initializers = arg_inits;
+        self.protected_method_initializers(inits);
     }
-}}}
+
+    // Execute the factory method to return an instance of the object.
+    function protected_resolve_instance()
+    {
+        var pos = [];
+        var named = {};
+        for (var arg_init in self.arg_initializers)
+            arg_init.prepare_args(pos, named);
+        var sub = self.sub;
+        return sub(pos:[flat], named:[flat,named]);
+    }
+}
