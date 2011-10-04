@@ -57,35 +57,6 @@ namespace Rosella
             return scalar_func(data);
         }
 
-        /* Default Provider Factory
-        */
-
-        const string DEFAULT_PROVIDER_FACTORY = "Rosella.Query.default_provider_factory";
-
-        // Get the global default provider factory
-        function default_provider_factory()
-        {
-            var temp = Rosella.Globals.get_global(DEFAULT_PROVIDER_FACTORY);
-            if (temp == null) {
-                temp = new Rosella.Query.Provider.Factory(
-                    new Rosella.Query.Provider.Scalar(), {
-                        "array" : new Rosella.Query.Provider.Array(),
-                        "hash"  : new Rosella.Query.Provider.Hash()
-                    }, null);
-                Rosella.Globals.register_global(DEFAULT_PROVIDER_FACTORY, temp);
-            }
-            while(1) {
-                yield temp;
-                temp = Rosella.Globals.get_global(DEFAULT_PROVIDER_FACTORY);
-            }
-        }
-
-        // Set a customer global provider factory
-        function set_provider_factory(var factory)
-        {
-            Rosella.Globals.register_global(DEFAULT_PROVIDER_FACTORY, factory);
-        }
-
         // lightly-optimized implementation of Quicksort.
         function qsort(var d, int s, int n, var cmp)
         {
@@ -116,5 +87,46 @@ namespace Rosella
                 s = pivot + 1;
             }
         }
+
+        function install_to_type(var type)
+        {
+            var type_class = Rosella.get_type_class(type);
+            type_class.add_method("queryable", function(var obj) {
+                return Rosella.Query.as_queryable(obj);
+            });
+            type_class.add_method("stream", function(var obj) {
+                return Rosella.Query.as_queryable(obj);
+            });
+        }
+
+        /* Default Provider Factory
+        */
+
+        const string DEFAULT_PROVIDER_FACTORY = "Rosella.Query.default_provider_factory";
+
+        // Get the global default provider factory
+        function default_provider_factory()
+        {
+            var temp = Rosella.Globals.get_global(DEFAULT_PROVIDER_FACTORY);
+            if (temp == null) {
+                temp = new Rosella.Query.Provider.Factory(
+                    new Rosella.Query.Provider.Scalar(), {
+                        "array" : new Rosella.Query.Provider.Array(),
+                        "hash"  : new Rosella.Query.Provider.Hash()
+                    }, null);
+                Rosella.Globals.register_global(DEFAULT_PROVIDER_FACTORY, temp);
+            }
+            while(1) {
+                yield temp;
+                temp = Rosella.Globals.get_global(DEFAULT_PROVIDER_FACTORY);
+            }
+        }
+
+        // Set a customer global provider factory
+        function set_provider_factory(var factory)
+        {
+            Rosella.Globals.register_global(DEFAULT_PROVIDER_FACTORY, factory);
+        }
+
     }
 }
