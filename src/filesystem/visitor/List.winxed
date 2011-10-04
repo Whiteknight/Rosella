@@ -1,30 +1,28 @@
-namespace Rosella { namespace FileSystem { namespace Visitor
+/* Listing Visitor
+    Adds all visited entries to a list, and returns that list at the end
+    of the walk. Useful for getting a list of files and folders in a
+    folder.
+*/
+class Rosella.FileSystem.Visitor.List : Rosella.FileSystem.Visitor
 {
-    /* Listing Visitor
-        Adds all visited entries to a list, and returns that list at the end
-        of the walk. Useful for getting a list of files and folders in a
-        folder.
-    */
-    class List : Rosella.FileSystem.Visitor
+    var entries;
+
+    // Constructor
+    function List()
     {
-        var entries;
-
-        // Constructor
-        function List()
-        {
-            self.entries = [];
-        }
-
-        // Add the item to the list
-        function process(var file)
-        {
-            push(self.entries, file);
-        }
-
-        // Return the list
-        function result()
-        {
-            return self.entries;
-        }
+        self.entries = [];
     }
-}}}
+
+    // Add the item to the list
+    function process(var file)
+    {
+        push(self.entries, file);
+    }
+
+    // Return the list
+    function result()
+    {
+        return self.entries;
+    }
+}
+

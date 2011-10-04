@@ -1,43 +1,40 @@
-namespace Rosella
+/* Common error routines */
+namespace Rosella.Error
 {
-    /* Common error routines */
-    namespace Error
+    // Error that we are using an abstract parent method or class when we
+    // are expected to be using a subclass
+    function must_subclass(string caller)
     {
-        // Error that we are using an abstract parent method or class when we
-        // are expected to be using a subclass
-        function must_subclass(string caller)
-        {
-            throw_error("(%s) : You must use a subclass instead", caller);
-        }
+        throw_error("(%s) : You must use a subclass instead", caller);
+    }
 
-        // Error that we are attempting to use a feature which is not
-        // implemented yet.
-        function not_implemented(string func)
-        {
-            throw_error("(%s) : Not implemented", func);
-        }
+    // Error that we are attempting to use a feature which is not
+    // implemented yet.
+    function not_implemented(string func)
+    {
+        throw_error("(%s) : Not implemented", func);
+    }
 
-        // Error when we are attempting an invalid operation
-        function invalid(string caller, string msg, var args [slurpy])
-        {
-            msg = sprintf(msg, args);
-            throw_error("Invalid Operation in %s: %s", caller, msg);
-        }
+    // Error when we are attempting an invalid operation
+    function invalid(string caller, string msg, var args [slurpy])
+    {
+        msg = sprintf(msg, args);
+        throw_error("Invalid Operation in %s: %s", caller, msg);
+    }
 
-        // Error when we are using an invalid type in an operation
-        function invalid_type(string caller, var wanted_type, var type)
-        {
-            using Rosella.get_type_name;
-            throw_error("Invalid Type in %s: Expected %s, have %s",
-                caller, get_type_name(wanted_type), get_type_name(type)
-            );
-        }
+    // Error when we are using an invalid type in an operation
+    function invalid_type(string caller, var wanted_type, var type)
+    {
+        using Rosella.get_type_name;
+        throw_error("Invalid Type in %s: Expected %s, have %s",
+            caller, get_type_name(wanted_type), get_type_name(type)
+        );
+    }
 
-        // Throw a rosella error
-        function throw_error(string msg, var args [slurpy])
-        {
-            string real_msg = sprintf(msg, args);
-            die("Rosella " + real_msg);
-        }
+    // Throw a rosella error
+    function throw_error(string msg, var args [slurpy])
+    {
+        string real_msg = sprintf(msg, args);
+        die("Rosella " + real_msg);
     }
 }

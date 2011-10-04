@@ -1,78 +1,76 @@
 $include_const "iglobals.pasm";
 
-namespace Rosella
+/* Utilities for Parrot-Specific things
+*/
+namespace Rosella.Parrot
 {
-    /* Utilities for Parrot-Specific things
-    */
-    namespace Parrot
+    // Get the Config hash
+    function get_config_hash()
     {
-        // Get the Config hash
-        function get_config_hash()
-        {
-            var config = getinterp()[IGLOBALS_CONFIG_HASH];
-            while(1)
-                return config;
-        }
+        var config = getinterp()[IGLOBALS_CONFIG_HASH];
+        while(1)
+            return config;
+    }
 
-        // Get an array of strings representing a backtrace from the caller
-        function get_backtrace_strings()
-        {
-            var cur_ctx = getinterp()["context"];
-            var last_ctx = cur_ctx.caller_ctx;
-            return format_backtrace(last_ctx.backtrace());
-        }
+    // Get an array of strings representing a backtrace from the caller
+    function get_backtrace_strings()
+    {
+        var cur_ctx = getinterp()["context"];
+        var last_ctx = cur_ctx.caller_ctx;
+        return format_backtrace(last_ctx.backtrace());
+    }
 
-        // Get an array of strings representing a backtrace from the exception
-        function get_backtrace_ex_strings(var ex)
-        {
-            var bt = ex.backtrace();
-            return format_backtrace(bt);
-        }
+    // Get an array of strings representing a backtrace from the exception
+    function get_backtrace_ex_strings(var ex)
+    {
+        var bt = ex.backtrace();
+        return format_backtrace(bt);
+    }
 
-        // Execute a function. Catch any exceptions and print the message and
-        // backtrace out to a specified handle. If no handle is specified,
-        // use stdout.
-        function try_report(var sub, var handle [optional],
-                int has_handle [opt_flag])
-        {
-            if (!has_handle)
-                handle = getstdout();
-            try {
-                sub();
-            } catch (e) {
-                handle.print(e["message"]);
-                handle.print("\n");
-                for (string bt in get_backtrace_ex_strings(e))
-                    handle.print(Winxed_Builtins.sprintf("%s\n", [bt]));
-            }
-        }
-
-        function format_frame(var frame)
-        {
-            var sub = frame["sub"];
-            string subname = "(entry)";
-            if (sub != null)
-                subname = string(sub);
-            var annotations = frame["annotations"];
-            string filename = annotations["file"];
-            int lineno = annotations["line"];
-            string text = Winxed_Builtins.sprintf("'%s' (%s : %d)", [subname, filename, lineno]);
-            return sub, text;
-        }
-
-        // private routine. Format backtrace information into an array of
-        // human-readable strings
-        function format_backtrace(var bt)
-        {
-            var bts = [];
-            for (int i = 0; i < elements(bt); i++) {
-                var sub; string text;
-                :(sub, text) = format_frame(bt[i]);
-                bts[i] = "Called from " + text;
-                if (sub == null)
-                    break;
-            }
-            return bts;
+    // Execute a function. Catch any exceptions and print the message and
+    // backtrace out to a specified handle. If no handle is specified,
+    // use stdout.
+    function try_report(var sub, var handle [optional],
+            int has_handle [opt_flag])
+    {
+        if (!has_handle)
+            handle = getstdout();
+        try {
+            sub();
+        } catch (e) {
+            handle.print(e["message"]);
+            handle.print("\n");
+            for (string bt in get_backtrace_ex_strings(e))
+                handle.print(Winxed_Builtins.sprintf("%s\n", [bt]));
         }
     }
+
+    function format_frame(var frame)
+    {
+        var sub = frame["sub"];
+        string subname = "(entry)";
+        if (sub != null)
+            subname = string(sub);
+        var annotations = frame["annotations"];
+        string filename = annotations["file"];
+        int lineno = annotations["line"];
+        string text = Winxed_Builtins.sprintf("'%s' (%s : %d)", [subname, filename, lineno]);
+        return sub, text;
+    }
+
+    // private routine. Format backtrace information into an array of
+    // human-readable strings
+    function format_backtrace(var bt)
+    {
+        var bts = [];
+        for (int i = 0; i < elements(bt); i++) {
+            var sub; string text;
+            :(sub, text) = format_frame(bt[i]);
+            bts[i] = "Called from " + text;
+            if (sub == null)
+                break;
+        }
+        return bts;
+    }
 }
+

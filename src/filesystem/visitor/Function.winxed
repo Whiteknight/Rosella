@@ -1,36 +1,33 @@
-namespace Rosella { namespace FileSystem { namespace Visitor
+/* Function Visitor
+    This visitor class executes an arbitrary function reference on all
+    entries.
+*/
+class Rosella.FileSystem.Visitor.Function : Rosella.FileSystem.Visitor
 {
-    /* Function Visitor
-        This visitor class executes an arbitrary function reference on all
-        entries.
-    */
-    class Function : Rosella.FileSystem.Visitor
+    var func;
+    var values;
+
+    // Constructor
+    function Function(var func)
     {
-        var func;
-        var values;
-
-        // Constructor
-        function Function(var func)
-        {
-            self.func = func;
-            self.values = [];
-        }
-
-        // Run the function on the entry. Save the return values, if any
-        // in a growing list of results
-        function process(var entry)
-        {
-            var func = self.func;
-            var args;
-            :(args [slurpy]) = func(entry);
-            for (var arg in args)
-                push(self.values, arg);
-        }
-
-        // Return the lits of results, if any
-        function result()
-        {
-            return self.values;
-        }
+        self.func = func;
+        self.values = [];
     }
-}}}
+
+    // Run the function on the entry. Save the return values, if any
+    // in a growing list of results
+    function process(var entry)
+    {
+        var func = self.func;
+        var args;
+        :(args [slurpy]) = func(entry);
+        for (var arg in args)
+            push(self.values, arg);
+    }
+
+    // Return the lits of results, if any
+    function result()
+    {
+        return self.values;
+    }
+}

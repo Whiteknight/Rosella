@@ -1,114 +1,111 @@
-namespace Rosella
+/* Rosella IO Routines
+    These are convenience routines for doing some common IO-related tasks
+    in Rosella.
+*/
+namespace Rosella.IO
 {
-    /* Rosella IO Routines
-        These are convenience routines for doing some common IO-related tasks
-        in Rosella.
-    */
-    namespace IO
+    // swap the interpreter standard input, error and output handles with
+    // a named hash of replacements. Return a hash of the previous values
+    // by name
+    function swap_handles(var handles)
     {
-        // swap the interpreter standard input, error and output handles with
-        // a named hash of replacements. Return a hash of the previous values
-        // by name
-        function swap_handles(var handles)
-        {
-            var save_handles = {};
-            var interp = getinterp();
+        var save_handles = {};
+        var interp = getinterp();
 
-            if (exists handles["stderr"]) {
-                save_handles["stderr"] = interp.stderr_handle();
-                interp.stderr_handle(handles["stderr"]);
-            }
-
-            if (exists handles["stdin"]) {
-                save_handles["stdin"] = interp.stdin_handle();
-                interp.stdin_handle(handles["stdin"]);
-            }
-
-            if (exists handles["stdout"]) {
-                save_handles["stdout"] = interp.stdout_handle();
-                interp.stdout_handle(handles["stdout"]);
-            }
-
-            return save_handles;
+        if (exists handles["stderr"]) {
+            save_handles["stderr"] = interp.stderr_handle();
+            interp.stderr_handle(handles["stderr"]);
         }
 
-        function capture_output(int together, var func,
-                var err_func [optional], int has_err [opt_flag])
-        {
-            var stdout = new "StringHandle";
-            stdout.open("blah", "rw");
-            var stderr;
-            if (together)
-                stderr = stdout;
-            else {
-                stderr = new "StringHandle";
-                stderr.open("blah", "rw");
-            }
-            var exception = null;
-            var save_handles = swap_handles({"stdout" : stdout, "stderr" : stderr});
-            string msg;
-            try {
-                func();
-            } catch(e) {
-                exception = e;
-            }
-            swap_handles(save_handles);
-            if (exception != null && has_err && err_func != null)
-                err_func(exception);
-            if (together)
-                return stdout;
-            else
-                return stdout, stderr;
+        if (exists handles["stdin"]) {
+            save_handles["stdin"] = interp.stdin_handle();
+            interp.stdin_handle(handles["stdin"]);
         }
 
-        function execute_pipe(string cmd,
-                var on_err [optional], int has_err [opt_flag])
-        {
-            var pipe = open_pipe(cmd);
-            string output = pipe.readall();
-            int exit_status = close_pipe(pipe);
-            if (exit_status != 0 && has_err && on_err != null)
-                on_err(exit_status);
-            return output;
+        if (exists handles["stdout"]) {
+            save_handles["stdout"] = interp.stdout_handle();
+            interp.stdout_handle(handles["stdout"]);
         }
 
-        function open_pipe(string cmd)
-        {
-            var pipe = new "FileHandle";
-            pipe.encoding('utf8');
-            pipe.open(cmd, "rp");
-            return pipe;
-        }
+        return save_handles;
+    }
 
-        function close_pipe(var pipe)
-        {
-            // TODO: See if we have any more data and empty the buffer
-            pipe.close();
-            int exit_status = pipe.exit_status();
-            return exit_status;
+    function capture_output(int together, var func,
+            var err_func [optional], int has_err [opt_flag])
+    {
+        var stdout = new "StringHandle";
+        stdout.open("blah", "rw");
+        var stderr;
+        if (together)
+            stderr = stdout;
+        else {
+            stderr = new "StringHandle";
+            stderr.open("blah", "rw");
         }
-
-        /* Convenience routines for performing formatted output
-        */
-
-        // Say. Print with a trailing newline
-        function sayf(string fmt, var args[slurpy], var handle[named,optional], int has_h [opt_flag])
-        {
-            string msg = sprintf(fmt, args);
-            if (!has_h || handle == null)
-                say(msg);
-            else
-                handle.print(msg + "\n");
+        var exception = null;
+        var save_handles = swap_handles({"stdout" : stdout, "stderr" : stderr});
+        string msg;
+        try {
+            func();
+        } catch(e) {
+            exception = e;
         }
+        swap_handles(save_handles);
+        if (exception != null && has_err && err_func != null)
+            err_func(exception);
+        if (together)
+            return stdout;
+        else
+            return stdout, stderr;
+    }
 
-        // Print with a trailing newline
-        function printf(string fmt, var args[slurpy], var handle[named,optional], int has_h [opt_flag])
-        {
-            string msg = sprintf(fmt, args);
-            if (!has_h || handle == null)
-                print(msg);
-            else
-                handle.print(msg);
-        }
+    function execute_pipe(string cmd,
+            var on_err [optional], int has_err [opt_flag])
+    {
+        var pipe = open_pipe(cmd);
+        string output = pipe.readall();
+        int exit_status = close_pipe(pipe);
+        if (exit_status != 0 && has_err && on_err != null)
+            on_err(exit_status);
+        return output;
+    }
+
+    function open_pipe(string cmd)
+    {
+        var pipe = new "FileHandle";
+        pipe.encoding('utf8');
+        pipe.open(cmd, "rp");
+        return pipe;
+    }
+
+    function close_pipe(var pipe)
+    {
+        // TODO: See if we have any more data and empty the buffer
+        pipe.close();
+        int exit_status = pipe.exit_status();
+        return exit_status;
+    }
+
+    /* Convenience routines for performing formatted output
+    */
+
+    // Say. Print with a trailing newline
+    function sayf(string fmt, var args[slurpy], var handle[named,optional], int has_h [opt_flag])
+    {
+        string msg = sprintf(fmt, args);
+        if (!has_h || handle == null)
+            say(msg);
+        else
+            handle.print(msg + "\n");
+    }
+
+    // Print with a trailing newline
+    function printf(string fmt, var args[slurpy], var handle[named,optional], int has_h [opt_flag])
+    {
+        string msg = sprintf(fmt, args);
+        if (!has_h || handle == null)
+            print(msg);
+        else
+            handle.print(msg);
     }
 }
