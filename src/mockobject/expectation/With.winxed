@@ -1,84 +1,81 @@
-namespace Rosella { namespace MockObject { namespace Expectation
+/* Class to tell what arguments or values an action is expected to have.
+*/
+class Rosella.MockObject.Expectation.With
 {
-    /* Class to tell what arguments or values an action is expected to have.
-    */
-    class With
+    function match(var pos, var named)
     {
+        Rosella.Error.must_subclass(__CLASS__);
+    }
+}
+
+namespace Rosella.MockObject.Expectation.With
+{
+    class Args : Rosella.MockObject.Expectation.With
+    {
+        var pos_args;          // Positional arguments
+        var named_args;        // Named arguments
+
+        function Args(var pos, var named)
+        {
+            self.pos_args = pos;
+            self.named_args = named;
+        }
+
         function match(var pos, var named)
         {
-            Rosella.Error.must_subclass(__CLASS__);
+            // Check that we have the correct number of args.
+            if (int(pos) != int(self.pos_args))
+                return 0;
+            if (int(named) != int(self.named_args))
+                return 0;
+
+            // Check that we have the correct values
+            for (int i = 0; i < int(pos); i++) {
+                if (!self.check_equality(pos[i], self.pos_args[i]))
+                    return 0;
+            }
+            for (string name in named) {
+                if (!(exists self.named_args[name]))
+                    return 0;
+                if (!self.check_equality(named[name], self.named_args[name]))
+                    return 0;
+            }
+            return 1;
+        }
+
+        function check_equality(var a, var b)
+        {
+            try {
+                if (a != b)
+                    return 0;
+            } catch(e) {
+                // there's a problem with is_equal. Try is_same
+                if (a !== b)
+                    return 0;
+            }
+            return 1;
         }
     }
 
-    namespace With
+    class Any : Rosella.MockObject.Expectation.With
     {
-        class Args : Rosella.MockObject.Expectation.With
+        function Any() { }
+
+        function match(var pos, var named)
         {
-            var pos_args;          // Positional arguments
-            var named_args;        // Named arguments
-
-            function Args(var pos, var named)
-            {
-                self.pos_args = pos;
-                self.named_args = named;
-            }
-
-            function match(var pos, var named)
-            {
-                // Check that we have the correct number of args.
-                if (int(pos) != int(self.pos_args))
-                    return 0;
-                if (int(named) != int(self.named_args))
-                    return 0;
-
-                // Check that we have the correct values
-                for (int i = 0; i < int(pos); i++) {
-                    if (!self.check_equality(pos[i], self.pos_args[i]))
-                        return 0;
-                }
-                for (string name in named) {
-                    if (!(exists self.named_args[name]))
-                        return 0;
-                    if (!self.check_equality(named[name], self.named_args[name]))
-                        return 0;
-                }
-                return 1;
-            }
-
-            function check_equality(var a, var b)
-            {
-                try {
-                    if (a != b)
-                        return 0;
-                } catch(e) {
-                    // there's a problem with is_equal. Try is_same
-                    if (a !== b)
-                        return 0;
-                }
-                return 1;
-            }
-        }
-
-        class Any : Rosella.MockObject.Expectation.With
-        {
-            function Any() { }
-
-            function match(var pos, var named)
-            {
-                return 1;
-            }
-        }
-
-        class None : Rosella.MockObject.Expectation.With
-        {
-            function None() { }
-
-            function match(var pos, var named)
-            {
-                if (int(pos) != 0 || int(named) != 0)
-                    return 0;
-                return 1;
-            }
+            return 1;
         }
     }
-}}}
+
+    class None : Rosella.MockObject.Expectation.With
+    {
+        function None() { }
+
+        function match(var pos, var named)
+        {
+            if (int(pos) != 0 || int(named) != 0)
+                return 0;
+            return 1;
+        }
+    }
+}

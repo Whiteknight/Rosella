@@ -1,204 +1,201 @@
-namespace Rosella { namespace MockObject
+/* Mock Object Controller
+    configures expectations on the mock, and handles all the messy details
+    of object proxying and expectation setup/verification. This controller
+    type allows expectations to be met in any order. For ordered behavior,
+    use Controller.Ordered instead. For other behavior, subclass.
+
+    In a mockobject-based test, there are a few basic steps:
+
+    1. Create a mock object factory
+    2. Use the factory to create a controller
+    3. Use the controller to setup expectations.
+    4. Get the mock from the controller
+    5. Run your test logic, executing requests against the mock
+    6. Call controller.verify() to verify all expectations have been met.
+*/
+class Rosella.MockObject.Controller : Rosella.Proxy.Controller
 {
-    /* Mock Object Controller
-        configures expectations on the mock, and handles all the messy details
-        of object proxying and expectation setup/verification. This controller
-        type allows expectations to be met in any order. For ordered behavior,
-        use Controller.Ordered instead. For other behavior, subclass.
+    var mock;
+    var expectations;
+    var proxy_class;
 
-        In a mockobject-based test, there are a few basic steps:
-
-        1. Create a mock object factory
-        2. Use the factory to create a controller
-        3. Use the controller to setup expectations.
-        4. Get the mock from the controller
-        5. Run your test logic, executing requests against the mock
-        6. Call controller.verify() to verify all expectations have been met.
-    */
-    class Controller : Rosella.Proxy.Controller
+    // Constructor
+    function Controller()
     {
-        var mock;
-        var expectations;
-        var proxy_class;
-
-        // Constructor
-        function Controller()
-        {
-            self.expectations = [];
-        }
-
-        /* Mocking Methods
-            These methods are used to help setup and control the mock
-        */
-
-        // Create and return a new expectation object.
-        function expect_method(string name)
-        {
-            var expect = new Rosella.MockObject.Expectation.Method(name);
-            push(self.expectations, expect);
-            return expect;
-        }
-
-        // Expect a get attribute call
-        function expect_get(string name)
-        {
-            var expect = new Rosella.MockObject.Expectation.Get(name);
-            push(self.expectations, expect);
-            return expect;
-        }
-
-        // Expect a set attribute call
-        function expect_set(string name)
-        {
-            var expect = new Rosella.MockObject.Expectation.Set(name);
-            push(self.expectations, expect);
-            return expect;
-        }
-
-        // Expect the object to be invoked
-        function expect_invoke()
-        {
-            var expect = new Rosella.MockObject.Expectation.Invoke("");
-            push(self.expectations, expect);
-            return expect;
-        }
-
-        // Get the associated mock. There is exactly one mock for each
-        // MockObject.Controller
-        function mock()
-        {
-            return self.mock;
-        }
-
-        // At the end of the test, verify that all expectations have been
-        // met.
-        function verify()
-        {
-            var missed_expectations = [];
-            for (var expect in self.expectations) {
-                if (!expect.__satisfied())
-                    push(missed_expectations, expect);
-            }
-            if (int(missed_expectations) == 0)
-                return;
-
-            // If we have unmatched expectations, create a detailed report
-            // of them and include that with the error message.
-            string errmsg = "Not all expectations have been met!";
-            for (var missed in missed_expectations)
-                errmsg = errmsg + "\n\t" + string(missed.to_string());
-            Rosella.Test.internal_fail(errmsg, 0, null);
-        }
-
-        /* Controller Methods
-            These methods are used to satisfy the Rosella::Proxy::Controller
-            interface. These are the routines used by the mock to intercept
-            and validate behavior.
-        */
-
-        // intercept find_method vtable calls. Check if we have any
-        // expectations available by this name. If we do, return a stub
-        // method object to be used in place of the method call.
-        function find_method(var proxy, string name)
-        {
-            int expects = self.have_method_expectations(name);
-            if (expects == 0)
-                self.unmatched("method '" + name + "'");
-            var controller = self;
-            var name_pmc = name; // needs to be a PMC to be lexically scoped
-            return function(var pos [slurpy], var named [slurpy,named]) {
-                controller.proxy_class.clear_method_cache();
-                pos.shift(); // remove the invocant. We know it's the mock
-                return controller.match_function(name_pmc, pos, named);
-            };
-        }
-
-        // Callback when the mock receives a get_attr_str request
-        function get_attr_str(var proxy, string name)
-        {
-            var expectations = self.available_expectations();
-            for (var expect in expectations) {
-                if (expect.__can_match("get", name, null, null))
-                    return self.complete_expectation(expect);
-            }
-            self.unmatched("get_attr '" + name + "'");
-        }
-
-        // Callback when the mock receives a set_attr_str request
-        function set_attr_str(var proxy, string name, var value)
-        {
-            var expectations = self.available_expectations();
-            for (var expect in expectations) {
-                if (expect.__can_match("set", name, [value], {})) {
-                    self.complete_expectation(expect);
-                    return;
-                }
-            }
-            self.unmatched("set_attr '" + name + "'");
-        }
-
-        // Callback for when the mock is invoked. Note that not all mocks
-        // support invoke. You need to specify that behavior in the factory.
-        function invoke(var proxy, var pos, var named)
-        {
-            var expectations = self.available_expectations();
-            for (var expect in expectations) {
-                if (expect.__can_match("invoke", "", pos, named))
-                    return self.complete_expectation(expect);
-            }
-            self.unmatched("invoke");
-        }
-
-        /* Support Routines
-            These routines are used internally to the Controller and should
-            not be used by other code
-        */
-
-        // return 1 if we have an expectation available for the given method
-        // name. 0 otherwise. This way we can identify the expectation failure
-        // inside find_method instead of after we invoke the method.
-        function have_method_expectations(string name)
-        {
-            var expect_method = class Rosella.MockObject.Expectation.Method;
-            int count = 0;
-
-            for (var expect in self.expectations) {
-                if (Rosella.isa_type(expect_method, expect) && expect.name == name && expect.__available())
-                    return 1;
-            }
-            return 0;
-        }
-
-        // Fail the test because we could not match
-        function unmatched(string type)
-        {
-            Rosella.Test.internal_fail("Can not match " + type, 0, null);
-        }
-
-        // Attempt to match a method invoke to an expectation.
-        function match_function(string name, var pos, var named)
-        {
-            var expectations = self.available_expectations();
-            for (var expect in expectations) {
-                if (expect.__can_match("method", name, pos, named))
-                    return self.complete_expectation(expect);
-            }
-            self.unmatched("method invoke '" + name + "'");
-        }
-
-        // We have a matching expectation. Do whatever we need to do to mark
-        // it matched and execute any necessary behaviors
-        function complete_expectation(var expect)
-        {
-            expect.__match();
-            return expect.__run_will_behavior();
-        }
-
-        // Get a list of all available expectations. In the default case,
-        // all expectations are available because we don't care about order.
-        function available_expectations()
-        {
-            return self.expectations;
-        }
+        self.expectations = [];
     }
-}}
+
+    /* Mocking Methods
+        These methods are used to help setup and control the mock
+    */
+
+    // Create and return a new expectation object.
+    function expect_method(string name)
+    {
+        var expect = new Rosella.MockObject.Expectation.Method(name);
+        push(self.expectations, expect);
+        return expect;
+    }
+
+    // Expect a get attribute call
+    function expect_get(string name)
+    {
+        var expect = new Rosella.MockObject.Expectation.Get(name);
+        push(self.expectations, expect);
+        return expect;
+    }
+
+    // Expect a set attribute call
+    function expect_set(string name)
+    {
+        var expect = new Rosella.MockObject.Expectation.Set(name);
+        push(self.expectations, expect);
+        return expect;
+    }
+
+    // Expect the object to be invoked
+    function expect_invoke()
+    {
+        var expect = new Rosella.MockObject.Expectation.Invoke("");
+        push(self.expectations, expect);
+        return expect;
+    }
+
+    // Get the associated mock. There is exactly one mock for each
+    // MockObject.Controller
+    function mock()
+    {
+        return self.mock;
+    }
+
+    // At the end of the test, verify that all expectations have been
+    // met.
+    function verify()
+    {
+        var missed_expectations = [];
+        for (var expect in self.expectations) {
+            if (!expect.__satisfied())
+                push(missed_expectations, expect);
+        }
+        if (int(missed_expectations) == 0)
+            return;
+
+        // If we have unmatched expectations, create a detailed report
+        // of them and include that with the error message.
+        string errmsg = "Not all expectations have been met!";
+        for (var missed in missed_expectations)
+            errmsg = errmsg + "\n\t" + string(missed.to_string());
+        Rosella.Test.internal_fail(errmsg, 0, null);
+    }
+
+    /* Controller Methods
+        These methods are used to satisfy the Rosella::Proxy::Controller
+        interface. These are the routines used by the mock to intercept
+        and validate behavior.
+    */
+
+    // intercept find_method vtable calls. Check if we have any
+    // expectations available by this name. If we do, return a stub
+    // method object to be used in place of the method call.
+    function find_method(var proxy, string name)
+    {
+        int expects = self.have_method_expectations(name);
+        if (expects == 0)
+            self.unmatched("method '" + name + "'");
+        var controller = self;
+        var name_pmc = name; // needs to be a PMC to be lexically scoped
+        return function(var pos [slurpy], var named [slurpy,named]) {
+            controller.proxy_class.clear_method_cache();
+            pos.shift(); // remove the invocant. We know it's the mock
+            return controller.match_function(name_pmc, pos, named);
+        };
+    }
+
+    // Callback when the mock receives a get_attr_str request
+    function get_attr_str(var proxy, string name)
+    {
+        var expectations = self.available_expectations();
+        for (var expect in expectations) {
+            if (expect.__can_match("get", name, null, null))
+                return self.complete_expectation(expect);
+        }
+        self.unmatched("get_attr '" + name + "'");
+    }
+
+    // Callback when the mock receives a set_attr_str request
+    function set_attr_str(var proxy, string name, var value)
+    {
+        var expectations = self.available_expectations();
+        for (var expect in expectations) {
+            if (expect.__can_match("set", name, [value], {})) {
+                self.complete_expectation(expect);
+                return;
+            }
+        }
+        self.unmatched("set_attr '" + name + "'");
+    }
+
+    // Callback for when the mock is invoked. Note that not all mocks
+    // support invoke. You need to specify that behavior in the factory.
+    function invoke(var proxy, var pos, var named)
+    {
+        var expectations = self.available_expectations();
+        for (var expect in expectations) {
+            if (expect.__can_match("invoke", "", pos, named))
+                return self.complete_expectation(expect);
+        }
+        self.unmatched("invoke");
+    }
+
+    /* Support Routines
+        These routines are used internally to the Controller and should
+        not be used by other code
+    */
+
+    // return 1 if we have an expectation available for the given method
+    // name. 0 otherwise. This way we can identify the expectation failure
+    // inside find_method instead of after we invoke the method.
+    function have_method_expectations(string name)
+    {
+        var expect_method = class Rosella.MockObject.Expectation.Method;
+        int count = 0;
+
+        for (var expect in self.expectations) {
+            if (Rosella.isa_type(expect_method, expect) && expect.name == name && expect.__available())
+                return 1;
+        }
+        return 0;
+    }
+
+    // Fail the test because we could not match
+    function unmatched(string type)
+    {
+        Rosella.Test.internal_fail("Can not match " + type, 0, null);
+    }
+
+    // Attempt to match a method invoke to an expectation.
+    function match_function(string name, var pos, var named)
+    {
+        var expectations = self.available_expectations();
+        for (var expect in expectations) {
+            if (expect.__can_match("method", name, pos, named))
+                return self.complete_expectation(expect);
+        }
+        self.unmatched("method invoke '" + name + "'");
+    }
+
+    // We have a matching expectation. Do whatever we need to do to mark
+    // it matched and execute any necessary behaviors
+    function complete_expectation(var expect)
+    {
+        expect.__match();
+        return expect.__run_will_behavior();
+    }
+
+    // Get a list of all available expectations. In the default case,
+    // all expectations are available because we don't care about order.
+    function available_expectations()
+    {
+        return self.expectations;
+    }
+}

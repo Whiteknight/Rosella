@@ -1,46 +1,43 @@
-namespace Rosella { namespace MockObject { namespace Controller
+/* MockObject Controller class to require expectations be satisfied in
+  strict order.
+*/
+class Rosella.MockObject.Controller.Ordered : Rosella.MockObject.Controller
 {
-    /* MockObject Controller class to require expectations be satisfied in
-      strict order.
-    */
-    class Ordered : Rosella.MockObject.Controller
+    function Ordered(var p [slurpy]) { self.Controller(p:[flat]); }
+
+    // Mark the expectation complete, and if necessary shift it off the
+    // front of the list. Keep shifting until we get to the one that was
+    // satisfied.
+    function complete_expectation(var expect)
     {
-        function Ordered(var p [slurpy]) { self.Controller(p:[flat]); }
+        expect.__match();
+        var expectations = self.expectations;
+        var dummy = null;
 
-        // Mark the expectation complete, and if necessary shift it off the
-        // front of the list. Keep shifting until we get to the one that was
-        // satisfied.
-        function complete_expectation(var expect)
-        {
-            expect.__match();
-            var expectations = self.expectations;
-            var dummy = null;
+        // Shift off all the ones on the list before the match
+        while (expect !== expectations[0])
+            expectations.shift();
 
-            // Shift off all the ones on the list before the match
-            while (expect !== expectations[0])
-                expectations.shift();
+        // If this one is still available, keep it. Otherwise, remove it
+        // so we can continue.
+        if (!expect.__available())
+            expectations.shift();
 
-            // If this one is still available, keep it. Otherwise, remove it
-            // so we can continue.
-            if (!expect.__available())
-                expectations.shift();
-
-            return expect.__run_will_behavior();
-        }
-
-        // Get a list of all available expectations. In the case of an ordered
-        // list, this is the first expectation on the list. If the first one
-        // is satisfied but still available ("at_least(n)"), we can also
-        // return the second item.
-        function available_expectations()
-        {
-            int num_expects = elements(self.expectations);
-            if (num_expects == 0)
-                return [];
-            var available_expects = [self.expectations[0]];
-            if (num_expects > 1 && self.expectations[0].__satisfied())
-                available_expects[1] = self.expectations[1];
-            return available_expects;
-        }
+        return expect.__run_will_behavior();
     }
-}}}
+
+    // Get a list of all available expectations. In the case of an ordered
+    // list, this is the first expectation on the list. If the first one
+    // is satisfied but still available ("at_least(n)"), we can also
+    // return the second item.
+    function available_expectations()
+    {
+        int num_expects = elements(self.expectations);
+        if (num_expects == 0)
+            return [];
+        var available_expects = [self.expectations[0]];
+        if (num_expects > 1 && self.expectations[0].__satisfied())
+            available_expects[1] = self.expectations[1];
+        return available_expects;
+    }
+}
