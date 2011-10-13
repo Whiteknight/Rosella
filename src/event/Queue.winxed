@@ -1,158 +1,155 @@
-namespace Rosella { namespace Event
+/* Event Queue Class
+    Queue contains lists of subscribers that might be invoked when an
+    event is raised. There are two types of lists: A generic list for
+    subscribers which receive all events (event_name == null) and named
+    lists for subscribers to particular events by name.
+
+    The basic Queue does not delay events or make them available outside
+    the process or any other advanced features that might be found in a
+    distributed pub/sub system. The default implementation immediately
+    triggers all subscribers that are registered. Additional or more
+    advanced features might be provided in subclasses.
+*/
+class Rosella.Event.Queue
 {
-    /* Event Queue Class
-        Queue contains lists of subscribers that might be invoked when an
-        event is raised. There are two types of lists: A generic list for
-        subscribers which receive all events (event_name == null) and named
-        lists for subscribers to particular events by name.
+    var accept_func;            // Function for accepting events
+    var subscribers;            // Event-name -> subscribers hash.
+    var generic_subscribers;    // subscribers that subscribe to all events
+    var id_count;               // Counter for producing unique ids
+    var enabled;                // Flag whether we are enabled
 
-        The basic Queue does not delay events or make them available outside
-        the process or any other advanced features that might be found in a
-        distributed pub/sub system. The default implementation immediately
-        triggers all subscribers that are registered. Additional or more
-        advanced features might be provided in subclasses.
-    */
-    class Queue
+    // Constructor
+    function Queue(int start_count,
+            var accept [optional], int has_accept [opt_flag])
     {
-        var accept_func;            // Function for accepting events
-        var subscribers;            // Event-name -> subscribers hash.
-        var generic_subscribers;    // subscribers that subscribe to all events
-        var id_count;               // Counter for producing unique ids
-        var enabled;                // Flag whether we are enabled
+        self.accept_func = accept;
+        self.subscribers = {};
+        self.generic_subscribers = {};
+        self.id_count = start_count;
+        self.enabled = 1;
+    }
 
-        // Constructor
-        function Queue(int start_count,
-                var accept [optional], int has_accept [opt_flag])
-        {
-            self.accept_func = accept;
-            self.subscribers = {};
-            self.generic_subscribers = {};
-            self.id_count = start_count;
-            self.enabled = 1;
-        }
-
-        // Determine if this queue can handle the given event.
-        function can_raise(string event_name, var event)
-        {
-            if (!self.enabled)
-                return 0;
-            if (exists self.subscribers[event_name] ||
-                    elements(self.generic_subscribers) > 0) {
-                var accept_func = self.accept_func;
-                if (accept_func != null)
-                    return accept_func(event_name, event);
-                return 1;
-            }
+    // Determine if this queue can handle the given event.
+    function can_raise(string event_name, var event)
+    {
+        if (!self.enabled)
             return 0;
+        if (exists self.subscribers[event_name] ||
+                elements(self.generic_subscribers) > 0) {
+            var accept_func = self.accept_func;
+            if (accept_func != null)
+                return accept_func(event_name, event);
+            return 1;
         }
+        return 0;
+    }
 
-        // Toggle the Queue on or off. A disabled queue cannot pass any
-        // events to subscribers.
-        function enable(int enable [optional], int has_e [opt_flag])
-        {
-            if (has_e)
-                self.enabled = enable;
-            return self.enabled;
-        }
+    // Toggle the Queue on or off. A disabled queue cannot pass any
+    // events to subscribers.
+    function enable(int enable [optional], int has_e [opt_flag])
+    {
+        if (has_e)
+            self.enabled = enable;
+        return self.enabled;
+    }
 
-        // Set a predicate function instance that will be used to determine if
-        // we can handle an exception
-        function set_accept_rule(var accept_func)
-        {
-            self.accept_func = accept_func;
-        }
+    // Set a predicate function instance that will be used to determine if
+    // we can handle an exception
+    function set_accept_rule(var accept_func)
+    {
+        self.accept_func = accept_func;
+    }
 
-        // Add a new Action to the list of subscribers. Overwrites old entries
-        // without asking.
-        function add_subscriber_action(string event_name, string id, var action)
-        {
-            if (id == null)
-                id = self.__get_new_id();
-            if (event_name == null)
-                self.generic_subscribers[id] = action;
-            else {
-                if (!(exists self.subscribers[event_name]))
-                    self.subscribers[event_name] = {};
-                self.subscribers[event_name][id] = action;
-            }
-            self.id_count = self.id_count + 1;
-            return id;
-        }
-
-        // Add a new object as a subscriber. The specified method will be
-        // invoked on the subscriber with the Event as an argument
-        function add_subscriber_object(string event_name, string id, var object, var meth)
-        {
-            var action = new Rosella.Action.Sub(
-                function(var e) {
-                    Rosella.invoke_method(object, meth, [e], {});
-                }
-            );
-            return self.add_subscriber_action(event_name, id, action);
-        }
-
-        // Remove a subscriber by name
-        function remove_subscriber(string event_name, string id)
-        {
-            if (event_name == null && exists self.generic_subscribers[id])
-                delete self.generic_subscribers[id];
-            if (event_name != null && exists self.subscribers[event_name]) {
-                var event_queue = self.subscribers[event_name];
-                if (exists event_queue[id])
-                    delete event_queue[id];
-            }
-        }
-
-        // Remove all subscribers for the given event, leaving other
-        // subscribers for other events, and generic subscribers untouched.
-        // If event_name is null, all the generic subscribers are cleared.
-        function remove_subscribers_for_event(string event_name)
-        {
-            if (event_name == null)
-                self.generic_subscribers = {};
-            else {
-                if (exists self.subscribers[event_name])
-                    delete self.subscribers[event_name];
-            }
-        }
-
-        // Raise the event. The given arguments are packed up into the payload
-        // of this Event object and passed to all subscribers.
-        function raise_event(string event_name, var event, var pos, var named)
-        {
-            event.prepare_to_raise(pos, named);
-            for (string subscriber_name in self.generic_subscribers) {
-                event.set_active_subscriber(subscriber_name);
-                self.generic_subscribers[subscriber_name].execute(event);
-                if (event.handled())
-                    return;
-            }
-
+    // Add a new Action to the list of subscribers. Overwrites old entries
+    // without asking.
+    function add_subscriber_action(string event_name, string id, var action)
+    {
+        if (id == null)
+            id = self.__get_new_id();
+        if (event_name == null)
+            self.generic_subscribers[id] = action;
+        else {
             if (!(exists self.subscribers[event_name]))
-                return;
-
-            var event_queue = self.subscribers[event_name];
-            for (string subscriber_name in event_queue) {
-                event.action_name(subscriber_name);
-                event_queue[subscriber_name].execute(event);
-                if (event.handled())
-                    return;
-            }
+                self.subscribers[event_name] = {};
+            self.subscribers[event_name][id] = action;
         }
+        self.id_count = self.id_count + 1;
+        return id;
+    }
 
-        /* Internal Routines
-        */
+    // Add a new object as a subscriber. The specified method will be
+    // invoked on the subscriber with the Event as an argument
+    function add_subscriber_object(string event_name, string id, var object, var meth)
+    {
+        var action = new Rosella.Action.Sub(
+            function(var e) {
+                Rosella.invoke_method(object, meth, [e], {});
+            }
+        );
+        return self.add_subscriber_action(event_name, id, action);
+    }
 
-        // Get a new ID name which does not conflict with an existing entry
-        // name
-        function __get_new_id()
-        {
-            string id = null;
-            do {
-                self.id_count = self.id_count + 1;
-                id = "__subscriber_" + string(self.id_count);
-            } while (exists self.generic_subscribers[id]);
-            return id;
+    // Remove a subscriber by name
+    function remove_subscriber(string event_name, string id)
+    {
+        if (event_name == null && exists self.generic_subscribers[id])
+            delete self.generic_subscribers[id];
+        if (event_name != null && exists self.subscribers[event_name]) {
+            var event_queue = self.subscribers[event_name];
+            if (exists event_queue[id])
+                delete event_queue[id];
         }
     }
-}}
+
+    // Remove all subscribers for the given event, leaving other
+    // subscribers for other events, and generic subscribers untouched.
+    // If event_name is null, all the generic subscribers are cleared.
+    function remove_subscribers_for_event(string event_name)
+    {
+        if (event_name == null)
+            self.generic_subscribers = {};
+        else {
+            if (exists self.subscribers[event_name])
+                delete self.subscribers[event_name];
+        }
+    }
+
+    // Raise the event. The given arguments are packed up into the payload
+    // of this Event object and passed to all subscribers.
+    function raise_event(string event_name, var event, var pos, var named)
+    {
+        event.prepare_to_raise(pos, named);
+        for (string subscriber_name in self.generic_subscribers) {
+            event.set_active_subscriber(subscriber_name);
+            self.generic_subscribers[subscriber_name].execute(event);
+            if (event.handled())
+                return;
+        }
+
+        if (!(exists self.subscribers[event_name]))
+            return;
+
+        var event_queue = self.subscribers[event_name];
+        for (string subscriber_name in event_queue) {
+            event.action_name(subscriber_name);
+            event_queue[subscriber_name].execute(event);
+            if (event.handled())
+                return;
+        }
+    }
+
+    /* Internal Routines
+    */
+
+    // Get a new ID name which does not conflict with an existing entry
+    // name
+    function __get_new_id()
+    {
+        string id = null;
+        do {
+            self.id_count = self.id_count + 1;
+            id = "__subscriber_" + string(self.id_count);
+        } while (exists self.generic_subscribers[id]);
+        return id;
+    }
+}

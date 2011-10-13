@@ -1,85 +1,82 @@
-namespace Rosella
+/* Event Class.
+    An Event is basically a data object that holds information from the
+    publisher to transmit to various subscribers. When an event is raised,
+    the event and all its data are passed to Queues and, ultimately, to
+    subscribers.
+
+    See the Queue and Manager class documentation for more details.
+*/
+class Rosella.Event
 {
-    /* Event Class.
-        An Event is basically a data object that holds information from the
-        publisher to transmit to various subscribers. When an event is raised,
-        the event and all its data are passed to Queues and, ultimately, to
-        subscribers.
+    var current_action_name;
+    var current_pos_payload;
+    var current_named_payload;
+    var handled;
 
-        See the Queue and Manager class documentation for more details.
-    */
-    class Event
+    // Constructor
+    function Event()
     {
-        var current_action_name;
-        var current_pos_payload;
-        var current_named_payload;
-        var handled;
+        self.handled = 0;
+    }
 
-        // Constructor
-        function Event()
-        {
-            self.handled = 0;
-        }
+    /* Payload Routines
+        The Event class provides read-only Hash- and Array-like access for
+        payload values. Also, the payload properties can be accessed
+        directly as a raw Array and Hash.
+    */
 
-        /* Payload Routines
-            The Event class provides read-only Hash- and Array-like access for
-            payload values. Also, the payload properties can be accessed
-            directly as a raw Array and Hash.
-        */
+    // Get named data by name
+    function get_pmc_keyed[vtable](var key)
+    {
+        return self.current_named_payload[key];
+    }
 
-        // Get named data by name
-        function get_pmc_keyed[vtable](var key)
-        {
-            return self.current_named_payload[key];
-        }
+    // Get position data by index
+    function get_pmc_keyed_int[vtable](int key)
+    {
+        return self.current_pos_payload[key];
+    }
 
-        // Get position data by index
-        function get_pmc_keyed_int[vtable](int key)
-        {
-            return self.current_pos_payload[key];
-        }
+    // Get the raw positionals array
+    function positional_payload()
+    {
+        return self.current_pos_payload;
+    }
 
-        // Get the raw positionals array
-        function positional_payload()
-        {
-            return self.current_pos_payload;
-        }
+    // Get the raw named hash
+    function named_payload()
+    {
+        return self.current_named_payload;
+    }
 
-        // Get the raw named hash
-        function named_payload()
-        {
-            return self.current_named_payload;
-        }
+    /* Event Raise Routines
+    */
 
-        /* Event Raise Routines
-        */
+    // Get the name of the currently executing Action. This is only
+    // defined during Event raise
+    function action_name(string name [optional], int has_name [opt_flag])
+    {
+        if (has_name)
+            self.current_action_name = name;
+        return self.current_action_name;
+    }
 
-        // Get the name of the currently executing Action. This is only
-        // defined during Event raise
-        function action_name(string name [optional], int has_name [opt_flag])
-        {
-            if (has_name)
-                self.current_action_name = name;
-            return self.current_action_name;
-        }
+    // Set to 0 at the beginning of the raise sequence. The Event
+    // continues to execute its member actions until handled is set to 1
+    // or until it runs out of actions
+    function handled(int handled [optional], int has_h [opt_flag])
+    {
+        if (has_h)
+            self.handled = handled;
+        return self.handled;
+    }
 
-        // Set to 0 at the beginning of the raise sequence. The Event
-        // continues to execute its member actions until handled is set to 1
-        // or until it runs out of actions
-        function handled(int handled [optional], int has_h [opt_flag])
-        {
-            if (has_h)
-                self.handled = handled;
-            return self.handled;
-        }
-
-        // Prepare to raise the event, by providing data to pass to the
-        // subscribers
-        function prepare_to_raise(var pos, var named)
-        {
-            self.handled = 0;
-            self.current_pos_payload = pos;
-            self.current_named_payload = named;
-        }
+    // Prepare to raise the event, by providing data to pass to the
+    // subscribers
+    function prepare_to_raise(var pos, var named)
+    {
+        self.handled = 0;
+        self.current_pos_payload = pos;
+        self.current_named_payload = named;
     }
 }
