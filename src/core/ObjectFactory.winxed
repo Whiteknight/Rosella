@@ -1,46 +1,43 @@
-namespace Rosella
+/* A generic object factory type, that serves as the basis for other
+   factory types. A factory must provide a "create" method, which returns
+   an object of the type which the factory is responsible for. Also, the
+   factory should provide a "create_typed" method, to attempt creating
+   an object of a different type (such as a subclass).
+
+   This is the base class for other factory-like classes in Rosella.
+*/
+class Rosella.ObjectFactory
 {
-    /* A generic object factory type, that serves as the basis for other
-       factory types. A factory must provide a "create" method, which returns
-       an object of the type which the factory is responsible for. Also, the
-       factory should provide a "create_typed" method, to attempt creating
-       an object of a different type (such as a subclass).
+    var target_type;
 
-       This is the base class for other factory-like classes in Rosella.
-    */
-    class ObjectFactory
+    function ObjectFactory(var target_type [optional], int has_type [opt_flag])
     {
-        var target_type;
+        if (has_type)
+            self.target_type = target_type;
+        else
+            self.target_type = null;
+    }
 
-        function ObjectFactory(var target_type [optional], int has_type [opt_flag])
-        {
-            if (has_type)
-                self.target_type = target_type;
-            else
-                self.target_type = null;
-        }
+    // If the default target type is set, call .create_typed with it.
+    // Otherwise, throw an error.
+    function create(var pos [slurpy], var named [slurpy,named])
+    {
+        if (self.target_type != null)
+            return self.create_typed(self.target_type, pos:[flat], named:[flat,named]);
+        using Rosella.Error.invalid;
+        invalid(__FUNCTION__,
+            "Cannot create an object without at type.\n" +
+            "You must provide a type to create_typed, pass one to the " +
+            "constructor for ObjectFactory"
+        );
+    }
 
-        // If the default target type is set, call .create_typed with it.
-        // Otherwise, throw an error.
-        function create(var pos [slurpy], var named [slurpy,named])
-        {
-            if (self.target_type != null)
-                return self.create_typed(self.target_type, pos:[flat], named:[flat,named]);
-            using Rosella.Error.invalid;
-            invalid(__FUNCTION__,
-                "Cannot create an object without at type.\n" +
-                "You must provide a type to create_typed, pass one to the " +
-                "constructor for ObjectFactory"
-            );
-        }
-
-        // Create an object given a type and a list of parameters. The default
-        // behavior is to pass the given parameters to the object constructor.
-        // subclasses may do something different
-        function create_typed(var type, var pos [slurpy], var named [slurpy,named])
-        {
-            using Rosella.construct;
-            return construct(type, pos:[flat], named:[flat,named]);
-        }
+    // Create an object given a type and a list of parameters. The default
+    // behavior is to pass the given parameters to the object constructor.
+    // subclasses may do something different
+    function create_typed(var type, var pos [slurpy], var named [slurpy,named])
+    {
+        using Rosella.construct;
+        return construct(type, pos:[flat], named:[flat,named]);
     }
 }

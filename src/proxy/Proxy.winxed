@@ -1,60 +1,57 @@
-namespace Rosella
+namespace Rosella.Proxy
 {
-    namespace Proxy
+    // Determine if an object is secretly a proxy.
+    function is_proxy(var obj)
     {
-        // Determine if an object is secretly a proxy.
-        function is_proxy(var obj)
-        {
-            int is_p = 0;
-            try {
-                var factory = get_proxy_private_attr(obj, "proxy_factory");
-                if (factory != null)
-                    is_p = Rosella.isa_type(class Rosella.Proxy.Factory, factory);
-            } catch (e) {
-                is_p = 0;
-            }
-            return is_p;
+        int is_p = 0;
+        try {
+            var factory = get_proxy_private_attr(obj, "proxy_factory");
+            if (factory != null)
+                is_p = Rosella.isa_type(class Rosella.Proxy.Factory, factory);
+        } catch (e) {
+            is_p = 0;
         }
+        return is_p;
+    }
 
-        // Get a name for the attribute which contains special characters
-        // that are unlikely to be used by the object systems in any HLLs
-        function get_private_attr_name(string attr)
-        {
-            return "!!!" + attr;
-        }
+    // Get a name for the attribute which contains special characters
+    // that are unlikely to be used by the object systems in any HLLs
+    function get_private_attr_name(string attr)
+    {
+        return "!!!" + attr;
+    }
 
-        // Add a private proxy attribute to the proxy class
-        function add_proxy_class_private_attr(var proxy_class, string attr)
-        {
-            attr = get_private_attr_name(attr);
-            proxy_class.add_attribute(attr);
-        }
+    // Add a private proxy attribute to the proxy class
+    function add_proxy_class_private_attr(var proxy_class, string attr)
+    {
+        attr = get_private_attr_name(attr);
+        proxy_class.add_attribute(attr);
+    }
 
-        // The 4-argument getattribute and setattribute ops point to the
-        // [get|set]_attr_keyed vtable, which cannot be overridden
-        function get_proxy_private_attr(var proxy, string attr)
-        {
-            var value = null;
-            attr = get_private_attr_name(attr);
-            var class_obj = typeof(proxy);
-            ${ getattribute value, proxy, class_obj, attr };
-            return value;
-        }
+    // The 4-argument getattribute and setattribute ops point to the
+    // [get|set]_attr_keyed vtable, which cannot be overridden
+    function get_proxy_private_attr(var proxy, string attr)
+    {
+        var value = null;
+        attr = get_private_attr_name(attr);
+        var class_obj = typeof(proxy);
+        ${ getattribute value, proxy, class_obj, attr };
+        return value;
+    }
 
-        // Set the value of a private proxy attribute
-        function set_proxy_private_attr(var proxy, string attr, var value)
-        {
-            attr = get_private_attr_name(attr);
-            var class_obj = typeof(proxy);
-            ${ setattribute proxy, class_obj, attr, value };
-        }
+    // Set the value of a private proxy attribute
+    function set_proxy_private_attr(var proxy, string attr, var value)
+    {
+        attr = get_private_attr_name(attr);
+        var class_obj = typeof(proxy);
+        ${ setattribute proxy, class_obj, attr, value };
+    }
 
-        // Add a vtable override
-        function add_vtable_override(var proxy_class, string name, var override)
-        {
-            var overrides = null;
-            ${ inspect overrides, proxy_class, "vtable_overrides" };
-            overrides[name] = override;
-        }
+    // Add a vtable override
+    function add_vtable_override(var proxy_class, string name, var override)
+    {
+        var overrides = null;
+        ${ inspect overrides, proxy_class, "vtable_overrides" };
+        overrides[name] = override;
     }
 }

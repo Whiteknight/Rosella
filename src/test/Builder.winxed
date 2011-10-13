@@ -1,95 +1,92 @@
-namespace Rosella { namespace Test
+/* A TAP output builder. Can be used similarly to Test::More from the Parrot
+   library.
+*/
+class Rosella.Test.Builder
 {
-    /* A TAP output builder. Can be used similarly to Test::More from the Parrot
-       library.
-    */
-    class Builder
+    var test_number;
+    var output;
+
+    // Constructor
+    function Builder(var output [optional], int has_out [opt_flag])
     {
-        var test_number;
-        var output;
-
-        // Constructor
-        function Builder(var output [optional], int has_out [opt_flag])
-        {
-            self.test_number = 0;
-            if (!has_out)
-                output = getstdout();
-            self.output = output;
-        }
-
-        // Helper printf function
-        function _printf(string fmt, var args [slurpy])
-        {
-            self.output.print(sprintf(fmt, args));
-        }
-
-        // Reset the count
-        function reset()
-        {
-            self.test_number = 0;
-        }
-
-        // Display a todo result. pass=1 means an unexpected pass. pass=0 is
-        // an expected failure
-        function todo(int pass, string msg,
-                string todo [optional], int has_todo [opt_flag])
-        {
-            self.test_number = self.test_number + 1;
-            string output = self._get_result_text(self.test_number, pass, msg);
-            if (!has_todo)
-                todo = "";
-            self._printf("%s # TODO %s\n", output, todo);
-        }
-
-        // Display a normal result. pass=1 is an expected test pass. pass=0
-        // is an unexpected failure
-        function ok(int pass, string msg [optional], int has_msg [opt_flag])
-        {
-            self.test_number = self.test_number + 1;
-            if (!has_msg)
-                msg = null;
-            string result_text = self._get_result_text(self.test_number, pass, msg);
-            self._printf("%s\n", result_text);
-        }
-
-        // helper function to get the display text for the result
-        function _get_result_text(int number, int pass, string msg)
-        {
-            string result = null;
-            if (pass)
-                result = "ok " + number;
-            else
-                result = "not ok " + number;
-            if (msg != null)
-                return result + " - " + msg;
-            else
-                return result;
-        }
-
-        // display diagnostics information as comments
-        function diag(var error)
-        {
-            if (error instanceof "Exception") {
-                var errmsg = error.message;
-                var lines = split("\n", errmsg);
-                for (string line in lines)
-                    self._printf("# %s\n", line);
-
-                // TODO: scan the backtrace, looking for subs that aren't
-                // part of Rosella. Don't show internal functions in the bt
-                using Rosella.Parrot.get_backtrace_ex_strings;
-                var bt_list = get_backtrace_ex_strings(error);
-                for (string bt in bt_list)
-                    self._printf("# %s\n", bt);
-            } else
-                self._printf("# %s\n", string(error));
-        }
-
-        // print out a plan
-        function plan(int count)
-        {
-            // TODO: Error checking
-            self._printf("1..%d\n", count);
-        }
+        self.test_number = 0;
+        if (!has_out)
+            output = getstdout();
+        self.output = output;
     }
-}}
+
+    // Helper printf function
+    function _printf(string fmt, var args [slurpy])
+    {
+        self.output.print(sprintf(fmt, args));
+    }
+
+    // Reset the count
+    function reset()
+    {
+        self.test_number = 0;
+    }
+
+    // Display a todo result. pass=1 means an unexpected pass. pass=0 is
+    // an expected failure
+    function todo(int pass, string msg,
+            string todo [optional], int has_todo [opt_flag])
+    {
+        self.test_number = self.test_number + 1;
+        string output = self._get_result_text(self.test_number, pass, msg);
+        if (!has_todo)
+            todo = "";
+        self._printf("%s # TODO %s\n", output, todo);
+    }
+
+    // Display a normal result. pass=1 is an expected test pass. pass=0
+    // is an unexpected failure
+    function ok(int pass, string msg [optional], int has_msg [opt_flag])
+    {
+        self.test_number = self.test_number + 1;
+        if (!has_msg)
+            msg = null;
+        string result_text = self._get_result_text(self.test_number, pass, msg);
+        self._printf("%s\n", result_text);
+    }
+
+    // helper function to get the display text for the result
+    function _get_result_text(int number, int pass, string msg)
+    {
+        string result = null;
+        if (pass)
+            result = "ok " + number;
+        else
+            result = "not ok " + number;
+        if (msg != null)
+            return result + " - " + msg;
+        else
+            return result;
+    }
+
+    // display diagnostics information as comments
+    function diag(var error)
+    {
+        if (error instanceof "Exception") {
+            var errmsg = error.message;
+            var lines = split("\n", errmsg);
+            for (string line in lines)
+                self._printf("# %s\n", line);
+
+            // TODO: scan the backtrace, looking for subs that aren't
+            // part of Rosella. Don't show internal functions in the bt
+            using Rosella.Parrot.get_backtrace_ex_strings;
+            var bt_list = get_backtrace_ex_strings(error);
+            for (string bt in bt_list)
+                self._printf("# %s\n", bt);
+        } else
+            self._printf("# %s\n", string(error));
+    }
+
+    // print out a plan
+    function plan(int count)
+    {
+        // TODO: Error checking
+        self._printf("1..%d\n", count);
+    }
+}

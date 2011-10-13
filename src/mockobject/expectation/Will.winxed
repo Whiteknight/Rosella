@@ -1,54 +1,51 @@
-namespace Rosella { namespace MockObject { namespace Expectation
+/* Class to contain information about what an expectation will do, once
+   matched.
+*/
+class Rosella.MockObject.Expectation.Will
 {
-    /* Class to contain information about what an expectation will do, once
-       matched.
-    */
-    class Will
-    {
-        var value;
+    var value;
 
-        function Will(var value)
-        {
-            self.value = value;
-        }
+    function Will(var value)
+    {
+        self.value = value;
+    }
+
+    function execute()
+    {
+        Rosella.Error.must_subclass(__CLASS__);
+    }
+}
+
+namespace Rosella.MockObject.Expectation.Will
+{
+    class Return : Rosella.MockObject.Expectation.Will
+    {
+        function Return(var p [slurpy]) { self.Will(p:[flat]); }
 
         function execute()
         {
-            Rosella.Error.must_subclass(__CLASS__);
+            return self.value;
         }
     }
 
-    namespace Will
+    class Throw : Rosella.MockObject.Expectation.Will
     {
-        class Return : Rosella.MockObject.Expectation.Will
+        function Throw(var p [slurpy]) { self.Will(p:[flat]); }
+
+        function execute()
         {
-            function Return(var p [slurpy]) { self.Will(p:[flat]); }
-
-            function execute()
-            {
-                return self.value;
-            }
-        }
-
-        class Throw : Rosella.MockObject.Expectation.Will
-        {
-            function Throw(var p [slurpy]) { self.Will(p:[flat]); }
-
-            function execute()
-            {
-                throw self.value;
-            }
-        }
-
-        class Do : Rosella.MockObject.Expectation.Will
-        {
-            function Do(var p [slurpy]) { self.Will(p:[flat]); }
-
-            function execute()
-            {
-                var sub = self.value;
-                return sub();
-            }
+            throw self.value;
         }
     }
-}}}
+
+    class Do : Rosella.MockObject.Expectation.Will
+    {
+        function Do(var p [slurpy]) { self.Will(p:[flat]); }
+
+        function execute()
+        {
+            var sub = self.value;
+            return sub();
+        }
+    }
+}

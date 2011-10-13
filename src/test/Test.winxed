@@ -1,100 +1,97 @@
-namespace Rosella
+/* The Rosella Test Library
+    This library is used to implement the logic of unit tests. It is not
+    used to implement a test harness. Use the Rosella Harness for making a
+    harness. By default, the test library produces TAP output, although
+    that and much other behavior can be overridden by subclassing.
+
+    The routines in this namespace are convenience facade routines for
+    interacting with the Test library. This is not the only way to use the
+    library, just the most convenient.
+*/
+namespace Rosella.Test
 {
-    /* The Rosella Test Library
-        This library is used to implement the logic of unit tests. It is not
-        used to implement a test harness. Use the Rosella Harness for making a
-        harness. By default, the test library produces TAP output, although
-        that and much other behavior can be overridden by subclassing.
-
-        The routines in this namespace are convenience facade routines for
-        interacting with the Test library. This is not the only way to use the
-        library, just the most convenient.
+    /* Public API functions
     */
-    namespace Test
+
+    /* Test options:
+        suite_type: The type of Suite object to use.
+        testcase_type: The type of TestCase object to use.
+        context: The TestContext object instance to use. Stored in $!context
+        test_prefix: A prefix string that all test methods must have.
+        asserter: The assertion object. Stored in $!assert
+    */
+
+    // Setup and run a test using Testcase-based tests. This is basically
+    // a thin facade over SuiteFactory and Suite with some defaults thrown
+    // in. Returns 1 if the test was a success, 0 otherwise.
+    function test(var test_type, var options [slurpy,named])
     {
-        /* Public API functions
-        */
+        __default_options(options);
+        var suitefactory = new Rosella.Test.SuiteFactory(test_type, options);
+        var suite = suitefactory.create();
+        var result = suite.run();
+        return result.was_successful();
+    }
 
-        /* Test options:
-            suite_type: The type of Suite object to use.
-            testcase_type: The type of TestCase object to use.
-            context: The TestContext object instance to use. Stored in $!context
-            test_prefix: A prefix string that all test methods must have.
-            asserter: The assertion object. Stored in $!assert
-        */
+    // Setup and run a single test function over a sequence of data
+    // objects.
+    function test_vector(var func, var tests, var options [slurpy,named])
+    {
+        __default_options(options);
+        var suitefactory = new Rosella.Test.SuiteFactory.Vector(func, tests, options);
+        var suite = suitefactory.create();
+        var result = suite.run();
+        return result.was_successful();
+    }
 
-        // Setup and run a test using Testcase-based tests. This is basically
-        // a thin facade over SuiteFactory and Suite with some defaults thrown
-        // in. Returns 1 if the test was a success, 0 otherwise.
-        function test(var test_type, var options [slurpy,named])
-        {
-            __default_options(options);
-            var suitefactory = new Rosella.Test.SuiteFactory(test_type, options);
-            var suite = suitefactory.create();
-            var result = suite.run();
-            return result.was_successful();
-        }
+    function test_list(var list, var options [slurpy,named])
+    {
+        __default_options(options);
+        var suitefactory = new Rosella.Test.SuiteFactory.List(list, options);
+        var suite = suitefactory.create();
+        var result = suite.run();
+        return result.was_successful();
+    }
 
-        // Setup and run a single test function over a sequence of data
-        // objects.
-        function test_vector(var func, var tests, var options [slurpy,named])
-        {
-            __default_options(options);
-            var suitefactory = new Rosella.Test.SuiteFactory.Vector(func, tests, options);
-            var suite = suitefactory.create();
-            var result = suite.run();
-            return result.was_successful();
-        }
+    function make_suite(var test_type, var options [slurpy,named])
+    {
+        __default_options(options);
+        var suitefactory = new Rosella.Test.SuiteFactory(test_type, options);
+        return suitefactory.create();
+    }
 
-        function test_list(var list, var options [slurpy,named])
-        {
-            __default_options(options);
-            var suitefactory = new Rosella.Test.SuiteFactory.List(list, options);
-            var suite = suitefactory.create();
-            var result = suite.run();
-            return result.was_successful();
-        }
+    function make_suite_vector(var func, var tests, var options [slurpy,named])
+    {
+        __default_options(options);
+        var suitefactory = new Rosella.Test.SuiteFactory.Vector(func, tests, options);
+        return suitefactory.create();
+    }
 
-        function make_suite(var test_type, var options [slurpy,named])
-        {
-            __default_options(options);
-            var suitefactory = new Rosella.Test.SuiteFactory(test_type, options);
-            return suitefactory.create();
-        }
+    /* Private or Internal Routines
+    */
 
-        function make_suite_vector(var func, var tests, var options [slurpy,named])
-        {
-            __default_options(options);
-            var suitefactory = new Rosella.Test.SuiteFactory.Vector(func, tests, options);
-            return suitefactory.create();
-        }
+    // Make sure that we have some values for the important option keys.
+    // If the user has provided an override for any of these, ignore.
+    function __default_options(var options)
+    {
+        if (!(exists options["suite_type"]))
+            options["suite_type"] = class Rosella.Test.Suite;
+        if (!(exists options["testcase_type"]))
+            options["testcase_type"] = class Rosella.Test.TestCase;
+        if (!(exists options["context"]))
+            options["context"] = new Rosella.Test.TestContext();
+        if (!(exists options["test_prefix"]))
+            options["test_prefix"] = "";
+        if (!(exists options["asserter"]))
+            options["asserter"] = new Rosella.Test.Asserter;
+    }
 
-        /* Private or Internal Routines
-        */
-
-        // Make sure that we have some values for the important option keys.
-        // If the user has provided an override for any of these, ignore.
-        function __default_options(var options)
-        {
-            if (!(exists options["suite_type"]))
-                options["suite_type"] = class Rosella.Test.Suite;
-            if (!(exists options["testcase_type"]))
-                options["testcase_type"] = class Rosella.Test.TestCase;
-            if (!(exists options["context"]))
-                options["context"] = new Rosella.Test.TestContext();
-            if (!(exists options["test_prefix"]))
-                options["test_prefix"] = "";
-            if (!(exists options["asserter"]))
-                options["asserter"] = new Rosella.Test.Asserter;
-        }
-
-        // Unconditional fail. Throws a Rosella.Test.Failure
-        // This is for internal use only. You probably want Asserter.fail
-        // instead.
-        function internal_fail(string why, int is_internal, var exception)
-        {
-            var ex = new Rosella.Test.Failure(why, exception, is_internal);
-            ex.throw();
-        }
+    // Unconditional fail. Throws a Rosella.Test.Failure
+    // This is for internal use only. You probably want Asserter.fail
+    // instead.
+    function internal_fail(string why, int is_internal, var exception)
+    {
+        var ex = new Rosella.Test.Failure(why, exception, is_internal);
+        ex.throw();
     }
 }

@@ -1,24 +1,21 @@
-namespace Rosella { namespace FileSystem { namespace Visitor
+/* Deletion Visitor
+    This visitor deletes all files and directories passed to it. This is
+    used to implement recursive directory deletions.
+*/
+class Rosella.FileSystem.Visitor.Delete : Rosella.FileSystem.Visitor
 {
-    /* Deletion Visitor
-        This visitor deletes all files and directories passed to it. This is
-        used to implement recursive directory deletions.
-    */
-    class Delete : Rosella.FileSystem.Visitor
+    // Constructor
+    function Delete() {}
+
+    // Delete the file
+    function process(var file)
     {
-        // Constructor
-        function Delete() {}
-
-        // Delete the file
-        function process(var file)
-        {
-            file.delete();
-        }
-
-        // When we've deleted everything in the folder, delete the folder.
-        function end_directory(var dir)
-        {
-            dir.delete();
-        }
+        file.delete();
     }
-}}}
+
+    // When we've deleted everything in the folder, delete the folder.
+    function end_directory(var dir)
+    {
+        dir.delete();
+    }
+}

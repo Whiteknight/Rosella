@@ -1,26 +1,23 @@
-namespace Rosella { namespace Test
+/* A Listener is an object that receives event notifications from the
+   test Result object. The listener takes the information from Result and
+   does something with the data, such as output it in a particular format
+   to the user.
+
+   the default listener does nothing. Everything interesting must be done
+   in subclasses.
+*/
+class Rosella.Test.Listener
 {
-    /* A Listener is an object that receives event notifications from the
-       test Result object. The listener takes the information from Result and
-       does something with the data, such as output it in a particular format
-       to the user.
+    // Start the test
+    function start_test(var test, var context) { }
 
-       the default listener does nothing. Everything interesting must be done
-       in subclasses.
-    */
-    class Listener
-    {
-        // Start the test
-        function start_test(var test, var context) { }
+    // End the test successfully
+    function end_test(var test, var context) { }
 
-        // End the test successfully
-        function end_test(var test, var context) { }
+    // An error condition, such as an unhandled runtime exception
+    function add_exception(var test, var context, var ex) { }
 
-        // An error condition, such as an unhandled runtime exception
-        function add_exception(var test, var context, var ex) { }
+    function add_failure_msg(var test, var context, string msg) { }
 
-        function add_failure_msg(var test, var context, string msg) { }
-
-        function tests_complete(int total_tests, int num_failures) { }
-    }
-}}
+    function tests_complete(int total_tests, int num_failures) { }
+}

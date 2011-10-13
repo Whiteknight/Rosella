@@ -1,18 +1,15 @@
-namespace Rosella.FileSystem
+class Rosella.FileSystem.IterableHandle
 {
-    class IterableHandle
+    var handle;
+    function IterableHandle(var handle)
     {
-        var handle;
-        function IterableHandle(var handle)
-        {
-            self.handle = handle;
-        }
+        self.handle = handle;
+    }
 
-        function handle() { return self.handle; }
+    function handle() { return self.handle; }
 
-        function get_iter[vtable]()
-        {
-            return new Rosella.FileSystem.FileIterator(self.handle);
-        }
+    function get_iter[vtable]()
+    {
+        return new Rosella.FileSystem.FileIterator(self.handle);
     }
 }

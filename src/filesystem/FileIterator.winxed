@@ -1,63 +1,82 @@
-namespace Rosella.FileSystem
+/* File Line-Reading Iterator Class
+    This class is an iterator type for a Handle object. It reads in
+    data from a handle line at a time.
+*/
+class Rosella.FileSystem.FileIterator
 {
-    class FileIterator
+    var file;
+    var handle;
+
+    // Constructor. Takes either a Parrot Handle type or a Rosella File
+    // object
+    function FileIterator(var file)
     {
-        var file;
-        var handle;
+        if (file instanceof Rosella.FileSystem.File)
+            self.file = file;
+        else if (file instanceof "Handle") {
+            if (file.is_closed())
+                Rosella.Error.invalid(__FUNCTION__, "Handle object must be open in FileIterator");
+            self.handle = file;
+        } else
+            Rosella.Error.invalid(__FUNCTION__, "Unknown object '%s'. Expected Rosella.FileSystem.File or parrot.Handle");
+    }
 
-        function FileIterator(var file)
-        {
-            if (file instanceof Rosella.FileSystem.File)
-                self.file = file;
-            else if (file instanceof "Handle") {
-                if (file.is_closed())
-                    Rosella.Error.invalid(__FUNCTION__, "Handle object must be open in FileIterator");
-                self.handle = file;
-            } else
-                Rosella.Error.invalid(__FUNCTION__, "Unknown object '%s'. Expected Rosella.FileSystem.File or parrot.Handle");
-        }
+    // Constructor. Take the string name of the file to read.
+    function FileIterator(string filename)
+    {
+        var f = new Rosella.FileSystem.File(filename);
+        self.FileIterator(f);
+    }
 
-        function close()
-        {
-            if (self.handle != null && !self.handle.is_closed())
-                self.handle.close();
-        }
+    // Close the handle
+    function close()
+    {
+        if (self.handle != null && !self.handle.is_closed())
+            self.handle.close();
+    }
 
-        function FileIterator(string filename)
-        {
-            var f = new Rosella.FileSystem.File(filename);
-            self.FileIterator(f);
-        }
+    /* Iterator Interface
+        These vtable routines represent the low-level iterator interface
+    */
 
-        function get_bool[vtable]()
-        {
-            if (self.handle == null)
-                self.handle = self.file.open_read();
-            if (self.handle.eof()) {
-                self.close();
-                return false;
-            }
-            return true;
+    // Determine if the file has more contents or not. Returns true if the
+    // handle is not at EOF. Returns false if it is.
+    function get_bool[vtable]()
+    {
+        if (self.handle == null)
+            self.handle = self.file.open_read();
+        if (self.handle.eof()) {
+            self.close();
+            return false;
         }
+        return true;
+    }
 
-        function shift_string[vtable]()
-        {
-            if (self.handle == null)
-                self.handle = self.file.open_read();
-            string line = self.handle.readline();
-            if (line == null)
-                return "";
-            return line;
-        }
+    // Read the next line from the handle.
+    function shift_string[vtable]()
+    {
+        if (self.handle == null)
+            self.handle = self.file.open_read();
+        string line = self.handle.readline();
+        if (line == null)
+            return "";
+        return line;
+    }
 
-        function shift_pmc[vtable]()
-        {
-            if (self.handle == null)
-                self.handle = self.file.open_read();
-            string line = self.handle.readline();
-            if (line == null)
-                return "";
-            return line;
-        }
+    // Read the next line from the handle, as a PMC
+    function shift_pmc[vtable]()
+    {
+        if (self.handle == null)
+            self.handle = self.file.open_read();
+        string line = self.handle.readline();
+        if (line == null)
+            return "";
+        return line;
+    }
+
+    // set_integer is used for certain iterator types to set the direction
+    // of the iteration. Ignored here, since we do not use that feature.
+    function set_integer_native[vtable]()
+    {
     }
 }

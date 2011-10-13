@@ -1,97 +1,94 @@
-namespace Rosella.Query.Provider
+/* Scalar Query Provider
+    This Query Provider wraps any arbitrary scalar value. It makes a
+    Scalar look like an aggregate
+*/
+class Rosella.Query.Provider.Scalar : Rosella.Query.Provider
 {
-    /* Scalar Query Provider
-        This Query Provider wraps any arbitrary scalar value. It makes a
-        Scalar look like an aggregate
-    */
-    class Scalar : Rosella.Query.Provider
+    // Constructor
+    function Scalar() {}
+
+    // Return the name of the type
+    function name() { return string(__CLASS__); }
+
+    // Execute the callback on the item
+    function foreach(var data, var func)
     {
-        // Constructor
-        function Scalar() {}
+        func(data);
+    }
 
-        // Return the name of the type
-        function name() { return string(__CLASS__); }
+    // Map the scalar
+    function map(var data, var mapper)
+    {
+        return mapper(data);
+    }
 
-        // Execute the callback on the item
-        function foreach(var data, var func)
-        {
-            func(data);
-        }
-
-        // Map the scalar
-        function map(var data, var mapper)
-        {
-            return mapper(data);
-        }
-
-        // Return the scalar if it matches, null otherwise
-        function filter(var data, var func,
-            int limit [optional], int has_limit [opt_flag])
-        {
-            if (func(data))
-                return data;
-            return null;
-        }
-
-        // Fold the scalar and the seed
-        function fold(var seed, var data, var func)
-        {
-            var result = seed;
-            if (result == null)
-                result = "";
-            return func(result, data);
-        }
-
-        // Get a count. 1 or 0, depending on the predicate
-        function count(var data, var func)
-        {
-            if (func == null || func(data))
-                return 1;
-            return 0;
-        }
-
-        // Return true if the aggregate contains any elements, or any elements
-        // which match the predicate.
-        function any(var data, var func)
-        {
-            if (func == null)
-                return true;
-            return func(data);
-        }
-
-        // Return the scalar, or null if it does not match the predicate
-        function take(var data, var limit, var func)
-        {
-            if (func != null)
-                return self.filter(data, func, limit);
+    // Return the scalar if it matches, null otherwise
+    function filter(var data, var func,
+        int limit [optional], int has_limit [opt_flag])
+    {
+        if (func(data))
             return data;
-        }
+        return null;
+    }
 
-        // Combine
-        function combine(var a, var b,
-                var filter [optional], int has_filter [opt_flag],
-                var key_func [optional], int has_key_func [opt_flag],
-                var dispute [optional], int has_dispute [opt_flag])
-        {
-            Rosella.Error.invalid(__FUNCTION__, "Cannot combine scalars");
-        }
+    // Fold the scalar and the seed
+    function fold(var seed, var data, var func)
+    {
+        var result = seed;
+        if (result == null)
+            result = "";
+        return func(result, data);
+    }
 
-        // Return the item
-        function unwrap_first(var data)
-        {
-            return data;
-        }
+    // Get a count. 1 or 0, depending on the predicate
+    function count(var data, var func)
+    {
+        if (func == null || func(data))
+            return 1;
+        return 0;
+    }
 
-        // Return an array with the scalar as the only element
-        function to_array(var data)
-        {
-            return [data];
-        }
+    // Return true if the aggregate contains any elements, or any elements
+    // which match the predicate.
+    function any(var data, var func)
+    {
+        if (func == null)
+            return true;
+        return func(data);
+    }
 
-        // Return a hash with the scalar at a key determined by the function
-        function to_hash(var data, var func)
-        {
-            return { func(data) : data };
-        }
+    // Return the scalar, or null if it does not match the predicate
+    function take(var data, var limit, var func)
+    {
+        if (func != null)
+            return self.filter(data, func, limit);
+        return data;
+    }
+
+    // Combine
+    function combine(var a, var b,
+            var filter [optional], int has_filter [opt_flag],
+            var key_func [optional], int has_key_func [opt_flag],
+            var dispute [optional], int has_dispute [opt_flag])
+    {
+        Rosella.Error.invalid(__FUNCTION__, "Cannot combine scalars");
+    }
+
+    // Return the item
+    function unwrap_first(var data)
+    {
+        return data;
+    }
+
+    // Return an array with the scalar as the only element
+    function to_array(var data)
+    {
+        return [data];
+    }
+
+    // Return a hash with the scalar at a key determined by the function
+    function to_hash(var data, var func)
+    {
+        return { func(data) : data };
     }
 }

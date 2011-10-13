@@ -1,73 +1,71 @@
-namespace Rosella { namespace MockObject
+/* Mock Object Factory.
+    Uses the Proxy factory to create and configure mock object
+    controllers.
+*/
+class Rosella.MockObject.Factory : Rosella.ObjectFactory
 {
-    /* Mock Object Factory.
-        Uses the Proxy factory to create and configure mock object
-        controllers.
-    */
-    class Factory : Rosella.ObjectFactory
+    var proxy_factories;            // A hash of proxy factories, by target type name key
+    var controller_factory;         // A MockObject.Controller factory
+    var ordered_controller_factory; // A MockObject.Controller.Ordered factory
+
+    // Constructor
+    function Factory()
     {
-        var proxy_factories;            // A hash of proxy factories, by target type name key
-        var controller_factory;         // A MockObject.Controller factory
-        var ordered_controller_factory; // A MockObject.Controller.Ordered factory
-
-        // Constructor
-        function Factory()
-        {
-            self.proxy_factories = {};
-            var c_type = class Rosella.MockObject.Controller;
-            self.controller_factory = new Rosella.ObjectFactory(c_type);
-            c_type = class Rosella.MockObject.Controller.Ordered;
-            self.ordered_controller_factory = new Rosella.ObjectFactory(c_type);
-        }
-
-        // Get a new Mock and Controller. Return the Controller, from which
-        // we can get the mock later
-        function create_typed(var type_to_mock, var opts [slurpy,named])
-        {
-            var controller = null;
-            if (exists opts["ordered"] && opts["ordered"] == 1)
-                controller = self.ordered_controller_factory.create();
-            else
-                controller = self.controller_factory.create();
-            var mock_factory = self.get_mock_factory_internal(type_to_mock, opts);
-            var mock_class = mock_factory.get_proxy_class_for();
-            controller.mock = mock_factory.create(controller, null);
-            controller.proxy_class = mock_class;
-            return controller;
-        }
-
-        // Get a new proxy factory for the given type. For internal use only.
-        function get_mock_factory_internal(var type_to_mock, var opts)
-        {
-            string type_name = Rosella.get_type_name(type_to_mock);
-            if (exists self.proxy_factories[type_name])
-                return self.proxy_factories[type_name];
-
-            var builders = self.get_builder_types(opts);
-            var factory = new Rosella.Proxy.Factory(type_to_mock, builders);
-            self.proxy_factories[type_name] = factory;
-            return factory;
-        }
-
-        // Get a default array of builders based on a hash of options.
-        function get_builder_types(var opts)
-        {
-            var builder_types = [
-                "MethodIntercept",
-                "AttributeIntercept"
-            ];
-            if (exists opts["invoke"] && opts["invoke"] == 1)
-                push(builder_types, "InvokeIntercept");
-            if (exists opts["pmc_key"] && opts["pmc_key"] == 1)
-                push(builder_types, "PMCKeyedHash");
-            // No reason to do this, we can't access the *keyed_str vtables
-            // from PIR code.
-            //if (exists opts["string_key"] && opts["string_key"] == 1)
-            //    push(builder_types, "StringKeyedHash");
-            if (exists opts["array"] && opts["array"] == 1)
-                push(builder_types, "Array");
-
-            return Rosella.Proxy.Builder.get_builders(builder_types);
-        }
+        self.proxy_factories = {};
+        var c_type = class Rosella.MockObject.Controller;
+        self.controller_factory = new Rosella.ObjectFactory(c_type);
+        c_type = class Rosella.MockObject.Controller.Ordered;
+        self.ordered_controller_factory = new Rosella.ObjectFactory(c_type);
     }
-}}
+
+    // Get a new Mock and Controller. Return the Controller, from which
+    // we can get the mock later
+    function create_typed(var type_to_mock, var opts [slurpy,named])
+    {
+        var controller = null;
+        if (exists opts["ordered"] && opts["ordered"] == 1)
+            controller = self.ordered_controller_factory.create();
+        else
+            controller = self.controller_factory.create();
+        var mock_factory = self.get_mock_factory_internal(type_to_mock, opts);
+        var mock_class = mock_factory.get_proxy_class_for();
+        controller.mock = mock_factory.create(controller, null);
+        controller.proxy_class = mock_class;
+        return controller;
+    }
+
+    // Get a new proxy factory for the given type. For internal use only.
+    function get_mock_factory_internal(var type_to_mock, var opts)
+    {
+        string type_name = Rosella.get_type_name(type_to_mock);
+        if (exists self.proxy_factories[type_name])
+            return self.proxy_factories[type_name];
+
+        var builders = self.get_builder_types(opts);
+        var factory = new Rosella.Proxy.Factory(type_to_mock, builders);
+        self.proxy_factories[type_name] = factory;
+        return factory;
+    }
+
+    // Get a default array of builders based on a hash of options.
+    function get_builder_types(var opts)
+    {
+        var builder_types = [
+            "MethodIntercept",
+            "AttributeIntercept"
+        ];
+        if (exists opts["invoke"] && opts["invoke"] == 1)
+            push(builder_types, "InvokeIntercept");
+        if (exists opts["pmc_key"] && opts["pmc_key"] == 1)
+            push(builder_types, "PMCKeyedHash");
+        // No reason to do this, we can't access the *keyed_str vtables
+        // from PIR code.
+        //if (exists opts["string_key"] && opts["string_key"] == 1)
+        //    push(builder_types, "StringKeyedHash");
+        if (exists opts["array"] && opts["array"] == 1)
+            push(builder_types, "Array");
+
+        return Rosella.Proxy.Builder.get_builders(builder_types);
+    }
+}
+

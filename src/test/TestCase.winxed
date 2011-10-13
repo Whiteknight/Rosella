@@ -1,66 +1,63 @@
-namespace Rosella { namespace Test
+/* The TestCase object
+    The TestCase is a shim object which contains read-only attributes
+    needed to organize and execute tests. Methods are extracted from the
+    target class, and those methods are executed on the TestCase object
+    instead of an instance of the target class. This helps to isolate
+    tests from side-effects and persistant class state.
+
+    TestCase intercepts attribute accesses. Attributes on a TestCase are
+    read-only, and any attempt to modify them from within a running test
+    will cause an exception.
+
+    By default, TestCase provides two attributes, one for the currently
+    executing test method object, and one for the current TestContext data
+    object. Subclasses of TestCase can add additional attributes or
+    methods which can be used from inside tests.
+
+    TestCase maps attribute names to private internal attributes. This is
+    done to make sure attributes are "natural" for use in both NQP and
+    Winxed. Also, the names need to be translated anyway to allow them to
+    be intercepted. Here's a basic mapping:
+
+    "attr"   -> "test_attr"
+    "$!attr" -> "test_attr"
+
+    The attributes "context" and "$!context" both map to the attribute
+    "test_context. "method" and "$!method" both map to "test_method".
+    Subclasses of TestCase can follow this pattern to provide access to
+    additional attributes, if needed.
+
+    For most data access, especially data which should be kept persistant
+    between test runs, use TestContext instead.
+*/
+class Rosella.Test.TestCase
 {
-    /* The TestCase object
-        The TestCase is a shim object which contains read-only attributes
-        needed to organize and execute tests. Methods are extracted from the
-        target class, and those methods are executed on the TestCase object
-        instead of an instance of the target class. This helps to isolate
-        tests from side-effects and persistant class state.
+    var test_method;    // The method object to execute
+    var test_context;   // The TestContext
+    var test_status;    // The TestStatus
+    var test_assert;    // The Asserter
 
-        TestCase intercepts attribute accesses. Attributes on a TestCase are
-        read-only, and any attempt to modify them from within a running test
-        will cause an exception.
-
-        By default, TestCase provides two attributes, one for the currently
-        executing test method object, and one for the current TestContext data
-        object. Subclasses of TestCase can add additional attributes or
-        methods which can be used from inside tests.
-
-        TestCase maps attribute names to private internal attributes. This is
-        done to make sure attributes are "natural" for use in both NQP and
-        Winxed. Also, the names need to be translated anyway to allow them to
-        be intercepted. Here's a basic mapping:
-
-        "attr"   -> "test_attr"
-        "$!attr" -> "test_attr"
-
-        The attributes "context" and "$!context" both map to the attribute
-        "test_context. "method" and "$!method" both map to "test_method".
-        Subclasses of TestCase can follow this pattern to provide access to
-        additional attributes, if needed.
-
-        For most data access, especially data which should be kept persistant
-        between test runs, use TestContext instead.
-    */
-    class TestCase
+    // Lock attribute access to be read-only
+    function set_attr_str[vtable](string attr, var value)
     {
-        var test_method;    // The method object to execute
-        var test_context;   // The TestContext
-        var test_status;    // The TestStatus
-        var test_assert;    // The Asserter
-
-        // Lock attribute access to be read-only
-        function set_attr_str[vtable](string attr, var value)
-        {
-            Rosella.Error.invalid(__FUNCTION__, "Cannot modify the details of the TestCase. Use TestContext instead.");
-        }
-
-        // Translate attribute names, so we can use TestCase in a language
-        // agnostic way.
-        function get_attr_str[vtable](string attr_raw)
-        {
-            var myclass = class Rosella.Test.TestCase;
-            var value = null;
-            string attr = attr_raw;
-            if (substr(attr, 0, 2) == '$!')
-                attr = substr(attr, 2);
-            attr = "test_" + attr;
-            try {
-                ${ getattribute value, self, myclass, attr };
-            } catch(e) {
-                Rosella.Error.invalid(__FUNCTION__, "TestCase does not have an attribute '" + attr_raw + "'");
-            }
-            return value;
-        }
+        Rosella.Error.invalid(__FUNCTION__, "Cannot modify the details of the TestCase. Use TestContext instead.");
     }
-}}
+
+    // Translate attribute names, so we can use TestCase in a language
+    // agnostic way.
+    function get_attr_str[vtable](string attr_raw)
+    {
+        var myclass = class Rosella.Test.TestCase;
+        var value = null;
+        string attr = attr_raw;
+        if (substr(attr, 0, 2) == '$!')
+            attr = substr(attr, 2);
+        attr = "test_" + attr;
+        try {
+            ${ getattribute value, self, myclass, attr };
+        } catch(e) {
+            Rosella.Error.invalid(__FUNCTION__, "TestCase does not have an attribute '" + attr_raw + "'");
+        }
+        return value;
+    }
+}

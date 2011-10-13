@@ -1,371 +1,368 @@
-namespace Rosella { namespace Test
+/* Test Asserter class
+    This class provides test assertions. Assertions check various things
+    during the test run and signal failure if the checks are not met.
+    By default an instance of Asserter is located in the
+    "assert"/"$!assert" attribute of the TestCase object during the test
+    run.
+
+    You can provide a custom subclass, a custom instance, or a replacement
+    object for this functionality by passing an object to
+    Rosella.Test.test with the name "asserter".
+*/
+class Rosella.Test.Asserter
 {
-    /* Test Asserter class
-        This class provides test assertions. Assertions check various things
-        during the test run and signal failure if the checks are not met.
-        By default an instance of Asserter is located in the
-        "assert"/"$!assert" attribute of the TestCase object during the test
-        run.
-
-        You can provide a custom subclass, a custom instance, or a replacement
-        object for this functionality by passing an object to
-        Rosella.Test.test with the name "asserter".
-    */
-    class Asserter
+    // Routine to get a default message, if none is provided
+    function default_message(string msg, int has_msg, string def)
     {
-        // Routine to get a default message, if none is provided
-        function default_message(string msg, int has_msg, string def)
-        {
-            if (has_msg)
-                return msg;
-            return def;
-        }
+        if (has_msg)
+            return msg;
+        return def;
+    }
 
-        // Unconditional fail. Throws a Rosella.Test.Failure
-        function fail(string why,
-            int is_internal [optional,named], int has_is_i [opt_flag],
-            var exception [optional,named], int has_ex [opt_flag]
-            )
-        {
-            if (!has_is_i)
-                is_internal = 0;
-            if (!has_ex)
-                exception = null;
+    // Unconditional fail. Throws a Rosella.Test.Failure
+    function fail(string why,
+        int is_internal [optional,named], int has_is_i [opt_flag],
+        var exception [optional,named], int has_ex [opt_flag]
+        )
+    {
+        if (!has_is_i)
+            is_internal = 0;
+        if (!has_ex)
+            exception = null;
 
-            Rosella.Test.internal_fail(why, is_internal, exception);
-        }
+        Rosella.Test.internal_fail(why, is_internal, exception);
+    }
 
-        /* Assertion Functions
-            Each of these functions asserts some condition. If the condition
-            holds, nothing happens. If the condition fails, we call fail().
-        */
+    /* Assertion Functions
+        Each of these functions asserts some condition. If the condition
+        holds, nothing happens. If the condition fails, we call fail().
+    */
 
-        function block(string message, var block)
-        {
-            if (!block())
-                self.fail(message);
-        }
+    function block(string message, var block)
+    {
+        if (!block())
+            self.fail(message);
+    }
 
-        function block_false(string message, var block)
-        {
-            if (block())
-                self.fail(message);
-        }
+    function block_false(string message, var block)
+    {
+        if (block())
+            self.fail(message);
+    }
 
-        function can(var obj, string method,
-                string message [optional], int has_msg [opt_flag])
-        {
-            message = self.default_message(message, has_msg, "item failed 'can'");
-            int i_can = 0;
-            ${ can i_can, obj, method };
-            if (!i_can)
-                self.fail(message);
-        }
+    function can(var obj, string method,
+            string message [optional], int has_msg [opt_flag])
+    {
+        message = self.default_message(message, has_msg, "item failed 'can'");
+        int i_can = 0;
+        ${ can i_can, obj, method };
+        if (!i_can)
+            self.fail(message);
+    }
 
-        function can_not(var obj, string method,
-                string message [optional], int has_msg [opt_flag])
-        {
-            message = self.default_message(message, has_msg, "item failed 'can_not'");
-            int i_can = 0;
-            ${ can i_can, obj, method };
-            if (i_can)
-                self.fail(message);
-        }
+    function can_not(var obj, string method,
+            string message [optional], int has_msg [opt_flag])
+    {
+        message = self.default_message(message, has_msg, "item failed 'can_not'");
+        int i_can = 0;
+        ${ can i_can, obj, method };
+        if (i_can)
+            self.fail(message);
+    }
 
-        function defined(var obj,
-                string message [optional], int has_msg [opt_flag])
-        {
-            message = self.default_message(message, has_msg, "item not defined");
-            int is_defined = 0;
-            ${ defined is_defined, obj };
-            if (!is_defined)
-                self.fail(message);
-        }
+    function defined(var obj,
+            string message [optional], int has_msg [opt_flag])
+    {
+        message = self.default_message(message, has_msg, "item not defined");
+        int is_defined = 0;
+        ${ defined is_defined, obj };
+        if (!is_defined)
+            self.fail(message);
+    }
 
-        function not_defined(var obj,
-                string message [optional], int has_msg [opt_flag])
-        {
-            message = self.default_message(message, has_msg, "item is defined");
-            int is_defined = 0;
-            ${ defined is_defined, obj };
-            if (is_defined)
-                self.fail(message);
-        }
+    function not_defined(var obj,
+            string message [optional], int has_msg [opt_flag])
+    {
+        message = self.default_message(message, has_msg, "item is defined");
+        int is_defined = 0;
+        ${ defined is_defined, obj };
+        if (is_defined)
+            self.fail(message);
+    }
 
-        function does(var obj, var role,
-                string message [optional], int has_msg [opt_flag])
-        {
-            message = self.default_message(message, has_msg, "item failed 'does'");
-            int obj_does = 0;
-            if (role instanceof 'String') {
-                string role_s = role;
-                ${ does obj_does, obj, role_s };
-            } else
-                ${ does obj_does, obj, role };
-            if (!obj_does)
-                self.fail(message);
-        }
-
-        function does_not(obj, role, string message [optional], int has_msg [opt_flag])
-        {
-            message = self.default_message(message, has_msg, "item failed 'does'");
-            int obj_does = 0;
+    function does(var obj, var role,
+            string message [optional], int has_msg [opt_flag])
+    {
+        message = self.default_message(message, has_msg, "item failed 'does'");
+        int obj_does = 0;
+        if (role instanceof 'String') {
+            string role_s = role;
+            ${ does obj_does, obj, role_s };
+        } else
             ${ does obj_does, obj, role };
-            if (obj_does)
-                self.fail(message);
-        }
+        if (!obj_does)
+            self.fail(message);
+    }
 
-        function equal(var o1, var o2,
-                string message [optional], int has_msg [opt_flag])
-        {
-            if (!has_msg) {
-                try {
-                    string s1 = string(o1);
-                    string s2 = string(o2);
-                    message = sprintf("objects not equal '%s' != '%s'", [s1, s2]);
-                    has_msg = 1;
-                } catch() { }
-            }
-            message = self.default_message(message, has_msg, "objects not equal");
-            int equal = 0;
-            ${ iseq equal, o1, o2 };
-            if (!equal)
-                self.fail(message);
-        }
+    function does_not(obj, role, string message [optional], int has_msg [opt_flag])
+    {
+        message = self.default_message(message, has_msg, "item failed 'does'");
+        int obj_does = 0;
+        ${ does obj_does, obj, role };
+        if (obj_does)
+            self.fail(message);
+    }
 
-        function not_equal(var o1, var o2,
-                string message [optional], int has_msg [opt_flag])
-        {
-            message = self.default_message(message, has_msg, "objects equal");
-            int equal = 0;
-            ${ iseq equal, o1, o2 };
-            if (equal)
-                self.fail(message);
-        }
-
-        function instance_of(var obj, var type, string message [optional], int has_msg [opt_flag])
-        {
-            message = self.default_message(message, has_msg, "object is not instance_of");
-            var class_obj = Rosella.get_type_class(type);
-            int it_isa = 0;
-            ${ isa it_isa, obj, class_obj };
-            if (!it_isa)
-                self.fail(message);
-        }
-
-        function not_instance_of(var obj, var type, string message [optional], int has_msg [opt_flag])
-        {
-            message = self.default_message(message, has_msg, "object is instance_of");
-            var class_obj = Rosella.get_type_class(type);
-            int it_isa = 0;
-            ${ isa it_isa, obj, class_obj };
-            if (it_isa)
-                self.fail(message);
-        }
-
-        //function isa($obj, $class, string message [optional], int has_msg [opt_flag] = "object not isa") {
-        //    self.fail($message) unless pir::isa__iPP($obj, P6metaclass.get_parrotclass($class));
-        //}
-
-        //function not_isa($obj, $class, string message [optional], int has_msg [opt_flag] = "object isa") {
-        //    self.fail($message) if pir::isa__iPP($obj, P6metaclass.get_parrotclass($class));
-        //}
-
-        // TODO: Port matcher library
-        //function match($obj, $matcher, string message [optional], int has_msg [opt_flag] = "match failed") {
-        //    unless $matcher.matches($obj) {
-        //        my $explain = $matcher.describe_self("\nExpected ")
-        //            ~ $matcher.describe_failure("\nbut ", $obj);
-        //        self.fail($message ~ $explain);
-        //    }
-        //}
-
-        //function not_match($obj, $matcher, string message [optional], int has_msg [opt_flag]) {
-        //    if $matcher.matches($obj) {
-        //        self.fail($message);
-        //    }
-        //}
-
-        function is_null(var obj, string message [optional], int has_msg [opt_flag])
-        {
-            message = self.default_message(message, has_msg, "object is not null");
-            if (obj != null)
-                self.fail(message);
-        }
-
-        function not_null(var obj, string message [optional], int has_msg [opt_flag])
-        {
-            message = self.default_message(message, has_msg, "object is null");
-            if (obj == null)
-                self.fail(message);
-        }
-
-        function same(var o1, var o2, string message [optional], int has_msg [opt_flag])
-        {
-            message = self.default_message(message, has_msg, "objects not same");
-            if (o1 !== o2)
-                self.fail(message);
-        }
-
-        function not_same(var o1, var o2, string message [optional], int has_msg [opt_flag])
-        {
-            message = self.default_message(message, has_msg, "objects are same");
-            if (o1 === o2)
-                self.fail(message);
-        }
-
-        function throws(var block, string message [optional], int has_msg [opt_flag])
-        {
-            message = self.default_message(message, has_msg, "does not throw");
-            try {
-                block();
-                self.fail(message);
-            } catch() {}
-        }
-
-        function throws_nothing(var block, string message [optional], int has_msg [opt_flag])
-        {
-            message = self.default_message(message, has_msg, "block throws");
-            try {
-                block();
-            } catch(e) {
-                self.fail(message, e:[named("exception")]);
-            }
-        }
-
-        function is_true(var bool, string message [optional], int has_msg [opt_flag])
-        {
-            message = self.default_message(message, has_msg, "is not true");
-            int false_flag;
-            ${ isfalse false_flag, bool };
-            if (false_flag)
-                self.fail(message);
-        }
-
-        function is_false(var bool, string message [optional], int has_msg [opt_flag])
-        {
-            message = self.default_message(message, has_msg, "is not false");
-            int true_flag;
-            ${ istrue true_flag, bool };
-            if (true_flag)
-                self.fail(message);
-        }
-
-        //function within_delta($o1, $o2, $delta, string message [optional], int has_msg [opt_flag] "difference not within delta") {
-        //    my $difference = $o1 - $o2;
-        //    $difference = - $difference if $difference < 0;
-        //    self.fail($message) unless $difference < $delta;
-        //}
-
-        //#~ like(obj, regex, message)
-        //#~ not_like
-
-        //#function want_fail($message, &block) {
-        //#    throws(Exception::RosellaFailure, $message, &block);
-        //#}
-
-        //#function want_pass($message, &block) {
-        //#    throws_nothing($message, &block);
-        //#}
-
-        // meta-test. Runs the block as a test, and expects a failure
-        function expect_fail(var block, string message [optional], int has_msg [opt_flag])
-        {
-            message = self.default_message(message, has_msg, "test did not fail");
-            var exception = null;
-            try {
-                block();
-            } catch (e) {
-                exception = e;
-            }
-            if (exception == null)
-                self.fail(message);
-
-            var payload = exception.payload;
-            if (payload == null)
-                self.fail(message, exception:[named("exception")]);
-
-            using Rosella.isa_type;
-            int isa_failure = isa_type(class Rosella.Test.Failure, payload);
-            if (!isa_failure)
-                self.fail(message, exception:[named("exception")]);
-        }
-
-        // meta-test. Runs the block as a test, and expects a pass
-        function expect_pass(var block, string message [optional], int has_msg [opt_flag])
-        {
-            message = self.default_message(message, has_msg, "test did not pass");
-            var exception = null;
-            try {
-                block();
-            } catch (e) {
-                exception = e;
-            }
-            if (exception != null)
-                self.fail(message, exception:[named("exception")]);
-        }
-
-        // Run the test, show that the output (and maybe the error output) matches
-        // the values expected. Notice that the strings are matched exactly,
-        // including leading and trailing whitespace
-        function output_is(var block, var output,
-                string message [optional], int has_msg [opt_flag],
-                string erroutput [named,optional], int has_erroutput [opt_flag])
-        {
-            message = self.default_message(message, has_msg, "output did not match");
-            var stdout = new "StringHandle";
-            stdout.open("Rosella.Test.Assert.stdout", "rw");
-            var stderr = new "StringHandle";
-            stderr.open("Rosella.Test.Assert.stderr", "rw");
-            var save_handles = Rosella.IO.swap_handles({"stdout": stdout, "stderr": stderr});
-            var exception = null;
-            try {
-                block();
-            } catch (e) {
-                exception = e;
-            }
-            Rosella.IO.swap_handles(save_handles);
-
-            if (exception != null) {
-                say(exception);
-                self.fail("Block threw exception before output received",
-                    exception:[named("exception")]
-                );
-            }
-
-            string output_s;
-            int is_array;
-            ${ does is_array, output, "array" };
-            if (is_array)
-                output_s = join("\n", output);
-            else
-                output_s = string(output);
-            string out_str = stdout.readall();
-            if (out_str != output_s)
-                self.fail(sprintf("%s\nExpected: '%s'\nReceived: '%s'", [message, output_s, out_str]));
-
-            if (!has_erroutput)
-                return;
-
-            string errout_str = stderr.readall();
-            if (errout_str != erroutput)
-                self.fail(message);
-        }
-
-        function exists_keyed_str(var h, string k,
+    function equal(var o1, var o2,
             string message [optional], int has_msg [opt_flag])
-        {
-            message = self.default_message(message, has_msg, sprintf("key '%s' does not exist", [k]));
-            if (!(exists h[k]))
-                self.fail(message);
+    {
+        if (!has_msg) {
+            try {
+                string s1 = string(o1);
+                string s2 = string(o2);
+                message = sprintf("objects not equal '%s' != '%s'", [s1, s2]);
+                has_msg = 1;
+            } catch() { }
         }
+        message = self.default_message(message, has_msg, "objects not equal");
+        int equal = 0;
+        ${ iseq equal, o1, o2 };
+        if (!equal)
+            self.fail(message);
+    }
 
-        function not_exists_keyed_str(var h, string k,
+    function not_equal(var o1, var o2,
             string message [optional], int has_msg [opt_flag])
-        {
-            message = self.default_message(message, has_msg, sprintf("key '%s' does exist", [k]));
-            if (exists h[k])
-                self.fail(message);
+    {
+        message = self.default_message(message, has_msg, "objects equal");
+        int equal = 0;
+        ${ iseq equal, o1, o2 };
+        if (equal)
+            self.fail(message);
+    }
+
+    function instance_of(var obj, var type, string message [optional], int has_msg [opt_flag])
+    {
+        message = self.default_message(message, has_msg, "object is not instance_of");
+        var class_obj = Rosella.get_type_class(type);
+        int it_isa = 0;
+        ${ isa it_isa, obj, class_obj };
+        if (!it_isa)
+            self.fail(message);
+    }
+
+    function not_instance_of(var obj, var type, string message [optional], int has_msg [opt_flag])
+    {
+        message = self.default_message(message, has_msg, "object is instance_of");
+        var class_obj = Rosella.get_type_class(type);
+        int it_isa = 0;
+        ${ isa it_isa, obj, class_obj };
+        if (it_isa)
+            self.fail(message);
+    }
+
+    //function isa($obj, $class, string message [optional], int has_msg [opt_flag] = "object not isa") {
+    //    self.fail($message) unless pir::isa__iPP($obj, P6metaclass.get_parrotclass($class));
+    //}
+
+    //function not_isa($obj, $class, string message [optional], int has_msg [opt_flag] = "object isa") {
+    //    self.fail($message) if pir::isa__iPP($obj, P6metaclass.get_parrotclass($class));
+    //}
+
+    // TODO: Port matcher library
+    //function match($obj, $matcher, string message [optional], int has_msg [opt_flag] = "match failed") {
+    //    unless $matcher.matches($obj) {
+    //        my $explain = $matcher.describe_self("\nExpected ")
+    //            ~ $matcher.describe_failure("\nbut ", $obj);
+    //        self.fail($message ~ $explain);
+    //    }
+    //}
+
+    //function not_match($obj, $matcher, string message [optional], int has_msg [opt_flag]) {
+    //    if $matcher.matches($obj) {
+    //        self.fail($message);
+    //    }
+    //}
+
+    function is_null(var obj, string message [optional], int has_msg [opt_flag])
+    {
+        message = self.default_message(message, has_msg, "object is not null");
+        if (obj != null)
+            self.fail(message);
+    }
+
+    function not_null(var obj, string message [optional], int has_msg [opt_flag])
+    {
+        message = self.default_message(message, has_msg, "object is null");
+        if (obj == null)
+            self.fail(message);
+    }
+
+    function same(var o1, var o2, string message [optional], int has_msg [opt_flag])
+    {
+        message = self.default_message(message, has_msg, "objects not same");
+        if (o1 !== o2)
+            self.fail(message);
+    }
+
+    function not_same(var o1, var o2, string message [optional], int has_msg [opt_flag])
+    {
+        message = self.default_message(message, has_msg, "objects are same");
+        if (o1 === o2)
+            self.fail(message);
+    }
+
+    function throws(var block, string message [optional], int has_msg [opt_flag])
+    {
+        message = self.default_message(message, has_msg, "does not throw");
+        try {
+            block();
+            self.fail(message);
+        } catch() {}
+    }
+
+    function throws_nothing(var block, string message [optional], int has_msg [opt_flag])
+    {
+        message = self.default_message(message, has_msg, "block throws");
+        try {
+            block();
+        } catch(e) {
+            self.fail(message, e:[named("exception")]);
         }
     }
-}}
+
+    function is_true(var bool, string message [optional], int has_msg [opt_flag])
+    {
+        message = self.default_message(message, has_msg, "is not true");
+        int false_flag;
+        ${ isfalse false_flag, bool };
+        if (false_flag)
+            self.fail(message);
+    }
+
+    function is_false(var bool, string message [optional], int has_msg [opt_flag])
+    {
+        message = self.default_message(message, has_msg, "is not false");
+        int true_flag;
+        ${ istrue true_flag, bool };
+        if (true_flag)
+            self.fail(message);
+    }
+
+    //function within_delta($o1, $o2, $delta, string message [optional], int has_msg [opt_flag] "difference not within delta") {
+    //    my $difference = $o1 - $o2;
+    //    $difference = - $difference if $difference < 0;
+    //    self.fail($message) unless $difference < $delta;
+    //}
+
+    //#~ like(obj, regex, message)
+    //#~ not_like
+
+    //#function want_fail($message, &block) {
+    //#    throws(Exception::RosellaFailure, $message, &block);
+    //#}
+
+    //#function want_pass($message, &block) {
+    //#    throws_nothing($message, &block);
+    //#}
+
+    // meta-test. Runs the block as a test, and expects a failure
+    function expect_fail(var block, string message [optional], int has_msg [opt_flag])
+    {
+        message = self.default_message(message, has_msg, "test did not fail");
+        var exception = null;
+        try {
+            block();
+        } catch (e) {
+            exception = e;
+        }
+        if (exception == null)
+            self.fail(message);
+
+        var payload = exception.payload;
+        if (payload == null)
+            self.fail(message, exception:[named("exception")]);
+
+        using Rosella.isa_type;
+        int isa_failure = isa_type(class Rosella.Test.Failure, payload);
+        if (!isa_failure)
+            self.fail(message, exception:[named("exception")]);
+    }
+
+    // meta-test. Runs the block as a test, and expects a pass
+    function expect_pass(var block, string message [optional], int has_msg [opt_flag])
+    {
+        message = self.default_message(message, has_msg, "test did not pass");
+        var exception = null;
+        try {
+            block();
+        } catch (e) {
+            exception = e;
+        }
+        if (exception != null)
+            self.fail(message, exception:[named("exception")]);
+    }
+
+    // Run the test, show that the output (and maybe the error output) matches
+    // the values expected. Notice that the strings are matched exactly,
+    // including leading and trailing whitespace
+    function output_is(var block, var output,
+            string message [optional], int has_msg [opt_flag],
+            string erroutput [named,optional], int has_erroutput [opt_flag])
+    {
+        message = self.default_message(message, has_msg, "output did not match");
+        var stdout = new "StringHandle";
+        stdout.open("Rosella.Test.Assert.stdout", "rw");
+        var stderr = new "StringHandle";
+        stderr.open("Rosella.Test.Assert.stderr", "rw");
+        var save_handles = Rosella.IO.swap_handles({"stdout": stdout, "stderr": stderr});
+        var exception = null;
+        try {
+            block();
+        } catch (e) {
+            exception = e;
+        }
+        Rosella.IO.swap_handles(save_handles);
+
+        if (exception != null) {
+            say(exception);
+            self.fail("Block threw exception before output received",
+                exception:[named("exception")]
+            );
+        }
+
+        string output_s;
+        int is_array;
+        ${ does is_array, output, "array" };
+        if (is_array)
+            output_s = join("\n", output);
+        else
+            output_s = string(output);
+        string out_str = stdout.readall();
+        if (out_str != output_s)
+            self.fail(sprintf("%s\nExpected: '%s'\nReceived: '%s'", [message, output_s, out_str]));
+
+        if (!has_erroutput)
+            return;
+
+        string errout_str = stderr.readall();
+        if (errout_str != erroutput)
+            self.fail(message);
+    }
+
+    function exists_keyed_str(var h, string k,
+        string message [optional], int has_msg [opt_flag])
+    {
+        message = self.default_message(message, has_msg, sprintf("key '%s' does not exist", [k]));
+        if (!(exists h[k]))
+            self.fail(message);
+    }
+
+    function not_exists_keyed_str(var h, string k,
+        string message [optional], int has_msg [opt_flag])
+    {
+        message = self.default_message(message, has_msg, sprintf("key '%s' does exist", [k]));
+        if (exists h[k])
+            self.fail(message);
+    }
+}

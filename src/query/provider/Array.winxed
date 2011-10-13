@@ -1,168 +1,165 @@
-namespace Rosella.Query.Provider
+/* Array Query Provider
+    This provider operates on Array data.
+*/
+class Rosella.Query.Provider.Array : Rosella.Query.Provider
 {
-    /* Array Query Provider
-        This provider operates on Array data.
-    */
-    class Array : Rosella.Query.Provider
+    // Constructor
+    function Array() {}
+
+    // Return the name of this type
+    function name() { return string(__CLASS__); }
+
+    // Execute a callback for each item in the array
+    function foreach(var data, var func)
     {
-        // Constructor
-        function Array() {}
+        for (int i = elements(data) - 1; i >= 0; i--)
+            func(data[i]);
+    }
 
-        // Return the name of this type
-        function name() { return string(__CLASS__); }
+    // Return a new array where the elements are all functions of the
+    // elements in the current array
+    function map(var data, var mapper)
+    {
+        var new_data = [];
+        for (int i = elements(data) - 1; i >= 0; i--)
+            new_data[i] = mapper(data[i]);
+        return new_data;
+    }
 
-        // Execute a callback for each item in the array
-        function foreach(var data, var func)
-        {
-            for (int i = elements(data) - 1; i >= 0; i--)
-                func(data[i]);
-        }
-
-        // Return a new array where the elements are all functions of the
-        // elements in the current array
-        function map(var data, var mapper)
-        {
-            var new_data = [];
-            for (int i = elements(data) - 1; i >= 0; i--)
-                new_data[i] = mapper(data[i]);
+    // Return a new array with only the elements from the original array
+    // which satisfy the predicate. If provided, only return up to N items
+    function filter(var data, var func,
+        int limit [optional], int has_limit [opt_flag])
+    {
+        if (!has_limit)
+            limit = elements(data);
+        var new_data = [];
+        if (limit <= 0)
             return new_data;
-        }
-
-        // Return a new array with only the elements from the original array
-        // which satisfy the predicate. If provided, only return up to N items
-        function filter(var data, var func,
-            int limit [optional], int has_limit [opt_flag])
-        {
-            if (!has_limit)
-                limit = elements(data);
-            var new_data = [];
-            if (limit <= 0)
-                return new_data;
-            int count = 0;
-            for (var item in data) {
-                if (func(item)) {
-                    push(new_data, item);
-                    count = count + 1;
-                    if (count >= limit)
-                        return new_data;
-                }
+        int count = 0;
+        for (var item in data) {
+            if (func(item)) {
+                push(new_data, item);
+                count = count + 1;
+                if (count >= limit)
+                    return new_data;
             }
-            return new_data;
         }
+        return new_data;
+    }
 
-        // Return a single result which is a combination of all elements
-        function fold(var seed, var data, var func)
-        {
-            var result = seed;
-            if (result == null)
-                result = "";
-            for (var item in data)
-                result = func(result, item);
-            return result;
+    // Return a single result which is a combination of all elements
+    function fold(var seed, var data, var func)
+    {
+        var result = seed;
+        if (result == null)
+            result = "";
+        for (var item in data)
+            result = func(result, item);
+        return result;
+    }
+
+    // Return a new array, the first N items which match the optional
+    // predicate
+    function take(var data, var limit, var func)
+    {
+        if (func != null)
+            return self.filter(data, func, limit);
+        var new_data = [];
+        for (int i = 0; i < limit && i < elements(data); i++)
+            new_data[i] = data[i];
+        return new_data;
+    }
+
+    // Skip the first N items which match the predicate, return all
+    // remaining items which match
+    function skip(var data, int count, var func)
+    {
+        if (func != null)
+            data = self.filter(data, func);
+        var new_data = [];
+        for (int i = count; i < elements(data); i++)
+            new_data[i - count] = data[i];
+        return new_data;
+    }
+
+    // Combine
+    function combine(var a, var b,
+            var filter [optional], int has_filter [opt_flag],
+            var key_func [optional], int has_key_func [opt_flag],
+            var dispute [optional], int has_dispute [opt_flag])
+    {
+        if (has_filter) {
+            a = self.filter(a, filter);
+            b = self.filter(b, filter);
         }
-
-        // Return a new array, the first N items which match the optional
-        // predicate
-        function take(var data, var limit, var func)
-        {
-            if (func != null)
-                return self.filter(data, func, limit);
-            var new_data = [];
-            for (int i = 0; i < limit && i < elements(data); i++)
-                new_data[i] = data[i];
-            return new_data;
+        if (has_key_func) {
+            if (!has_dispute)
+                dispute = function (data_a, data_b) { return data_a; };
+            return self.join_key(a, b, key_func, dispute);
         }
+        var new_data = [];
+        for (var item_a in a)
+            push(new_data, item_a);
+        for (var item_b in b)
+            push(new_data, item_b);
+        return new_data;
+    }
 
-        // Skip the first N items which match the predicate, return all
-        // remaining items which match
-        function skip(var data, int count, var func)
-        {
-            if (func != null)
-                data = self.filter(data, func);
-            var new_data = [];
-            for (int i = count; i < elements(data); i++)
-                new_data[i - count] = data[i];
-            return new_data;
+    // Return the first item in the array
+    function unwrap_first(var data)
+    {
+        return data[0];
+    }
+
+    // Return a new array. Clone this one.
+    function to_array(var data)
+    {
+        var new_data = [];
+        for (int i = elements(data) - 1; i >= 0; i--)
+            new_data[i] = data[i];
+        return new_data;
+    }
+
+    // Return a new hash. The keys of which are returned from the function
+    function to_hash(var data, var func)
+    {
+        var new_hash = {};
+        for (var item in data) {
+            string new_key = func(item);
+            new_hash[new_key] = item;
         }
+        return new_hash;
+    }
 
-        // Combine
-        function combine(var a, var b,
-                var filter [optional], int has_filter [opt_flag],
-                var key_func [optional], int has_key_func [opt_flag],
-                var dispute [optional], int has_dispute [opt_flag])
-        {
-            if (has_filter) {
-                a = self.filter(a, filter);
-                b = self.filter(b, filter);
+    // Return true if any element in the sequence satisfies the predicate.
+    // false otherwise. Short-circuit.
+    function any(var data, var func)
+    {
+        if (func == null)
+            return elements(data) > 0 ? true : false;
+
+        for (int i = 0; i < elements(data); i++) {
+            if (func(data[i]))
+                return true;
+        }
+        return false;
+    }
+
+    function group_by(var data, var func)
+    {
+        var keys = {};
+        var result = [];
+        for (int i = 0; i < elements(data); i++) {
+            var d = data[i];
+            string key = func(d);
+            if (!(exists keys[key])) {
+                var new_array = [];
+                keys[key] = new_array;
+                push(result, new_array);
             }
-            if (has_key_func) {
-                if (!has_dispute)
-                    dispute = function (data_a, data_b) { return data_a; };
-                return self.join_key(a, b, key_func, dispute);
-            }
-            var new_data = [];
-            for (var item_a in a)
-                push(new_data, item_a);
-            for (var item_b in b)
-                push(new_data, item_b);
-            return new_data;
+            push(keys[key], d);
         }
-
-        // Return the first item in the array
-        function unwrap_first(var data)
-        {
-            return data[0];
-        }
-
-        // Return a new array. Clone this one.
-        function to_array(var data)
-        {
-            var new_data = [];
-            for (int i = elements(data) - 1; i >= 0; i--)
-                new_data[i] = data[i];
-            return new_data;
-        }
-
-        // Return a new hash. The keys of which are returned from the function
-        function to_hash(var data, var func)
-        {
-            var new_hash = {};
-            for (var item in data) {
-                string new_key = func(item);
-                new_hash[new_key] = item;
-            }
-            return new_hash;
-        }
-
-        // Return true if any element in the sequence satisfies the predicate.
-        // false otherwise. Short-circuit.
-        function any(var data, var func)
-        {
-            if (func == null)
-                return elements(data) > 0 ? true : false;
-
-            for (int i = 0; i < elements(data); i++) {
-                if (func(data[i]))
-                    return true;
-            }
-            return false;
-        }
-
-        function group_by(var data, var func)
-        {
-            var keys = {};
-            var result = [];
-            for (int i = 0; i < elements(data); i++) {
-                var d = data[i];
-                string key = func(d);
-                if (!(exists keys[key])) {
-                    var new_array = [];
-                    keys[key] = new_array;
-                    push(result, new_array);
-                }
-                push(keys[key], d);
-            }
-            return result;
-        }
+        return result;
     }
 }

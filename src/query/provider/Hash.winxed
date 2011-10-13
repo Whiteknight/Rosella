@@ -1,184 +1,181 @@
-namespace Rosella.Query.Provider
+/* Hash Query Provider
+    This provider works with hashes
+*/
+class Rosella.Query.Provider.Hash : Rosella.Query.Provider
 {
-    /* Hash Query Provider
-        This provider works with hashes
-    */
-    class Hash : Rosella.Query.Provider
+    // Constructor
+    function Hash() { }
+
+    // Return the name of this type
+    function name() { return string(__CLASS__); }
+
+    // Execute a callback for each item in the hash
+    function foreach(var data, var func)
     {
-        // Constructor
-        function Hash() { }
+        for (string key in data)
+            func(data[key]);
+    }
 
-        // Return the name of this type
-        function name() { return string(__CLASS__); }
+    // Map all values to a new hash with the same keys
+    function map(var data, var mapper)
+    {
+        var new_data = {};
+        for (string key in data)
+            new_data[key] = mapper(data[key]);
+        return new_data;
+    }
 
-        // Execute a callback for each item in the hash
-        function foreach(var data, var func)
-        {
-            for (string key in data)
-                func(data[key]);
-        }
-
-        // Map all values to a new hash with the same keys
-        function map(var data, var mapper)
-        {
-            var new_data = {};
-            for (string key in data)
-                new_data[key] = mapper(data[key]);
+    // Return a new hash with the key/value pairs that satisfy the
+    // predicate
+    function filter(var data, var func,
+            int limit [optional], int has_limit [opt_flag])
+    {
+        if (!has_limit)
+            limit = elements(data);
+        var new_data = {};
+        int count = 0;
+        if (limit == 0)
             return new_data;
-        }
-
-        // Return a new hash with the key/value pairs that satisfy the
-        // predicate
-        function filter(var data, var func,
-                int limit [optional], int has_limit [opt_flag])
-        {
-            if (!has_limit)
-                limit = elements(data);
-            var new_data = {};
-            int count = 0;
-            if (limit == 0)
-                return new_data;
-            for (string key in data) {
-                var item = data[key];
-                if (func(item)) {
-                    new_data[key] = item;
-                    count = count + 1;
-                    if (count >= limit)
-                        return new_data;
-                }
-            }
-            return new_data;
-        }
-
-        // Return the first element in the hash. Since hashes aren't ordered,
-        // this might return inconsistent results.
-        function unwrap_first(var data)
-        {
-            // Let the iterator decide which entry is "first"
-            for (var item in data)
-                return data[item];
-        }
-
-        // Fold the values into the seed.
-        function fold(var seed, var data, var func)
-        {
-            var result = seed;
-            if (result == null)
-                result = "";
-            for (string key in data)
-                result = func(result, data[key]);
-            return result;
-        }
-
-        // Take the first N key/value pairs which satisfy the predicate
-        function take(var data, var limit, var func)
-        {
-            if (func != null)
-                return self.filter(data, func, limit:[named]);
-            int num = 0;
-            var new_data = {};
-            if (limit == 0)
-                return new_data;
-            for (string key in data) {
-                var item = data[key];
+        for (string key in data) {
+            var item = data[key];
+            if (func(item)) {
                 new_data[key] = item;
-                num = num + 1;
-                if (num >= limit)
+                count = count + 1;
+                if (count >= limit)
                     return new_data;
             }
+        }
+        return new_data;
+    }
+
+    // Return the first element in the hash. Since hashes aren't ordered,
+    // this might return inconsistent results.
+    function unwrap_first(var data)
+    {
+        // Let the iterator decide which entry is "first"
+        for (var item in data)
+            return data[item];
+    }
+
+    // Fold the values into the seed.
+    function fold(var seed, var data, var func)
+    {
+        var result = seed;
+        if (result == null)
+            result = "";
+        for (string key in data)
+            result = func(result, data[key]);
+        return result;
+    }
+
+    // Take the first N key/value pairs which satisfy the predicate
+    function take(var data, var limit, var func)
+    {
+        if (func != null)
+            return self.filter(data, func, limit:[named]);
+        int num = 0;
+        var new_data = {};
+        if (limit == 0)
             return new_data;
+        for (string key in data) {
+            var item = data[key];
+            new_data[key] = item;
+            num = num + 1;
+            if (num >= limit)
+                return new_data;
         }
+        return new_data;
+    }
 
-        // Take all but the first N key/value pairs which satisfy the
-        // predicate
-        function skip(var data, int count, var func)
-        {
-            if (func != null)
-                data = self.filter(data, func);
-            int num = 0;
-            var new_data = {};
-            for (string key in data) {
-                num++;
-                if (num <= count)
-                    continue;
-                new_data[key] = data[key];
-            }
-            return new_data;
+    // Take all but the first N key/value pairs which satisfy the
+    // predicate
+    function skip(var data, int count, var func)
+    {
+        if (func != null)
+            data = self.filter(data, func);
+        int num = 0;
+        var new_data = {};
+        for (string key in data) {
+            num++;
+            if (num <= count)
+                continue;
+            new_data[key] = data[key];
         }
+        return new_data;
+    }
 
-        // Combine
-        function combine(var a, var b,
-                var filter [optional], int has_filter [opt_flag],
-                var key_func [optional], int has_key_func [opt_flag],
-                var dispute [optional], int has_dispute [opt_flag])
-        {
-            if (has_filter) {
-                a = self.filter(a, filter);
-                b = self.filter(b, filter);
-            }
-            if (!has_dispute)
-                dispute = function(key, data_a, data_b) { return data_a; };
-            if (has_key_func)
-                die("Query::Provider::Hash: Cannot combine hashes by keys");
-
-            var new_data = {};
-            var conflict = 0;
-            for (string key_a in a)
-                new_data[key_a] = a[key_a];
-            for (string key_b in b) {
-                var value_b = b[key_b];
-                if (exists new_data[key_b])
-                    new_data[key_b] = dispute(new_data[key_b], value_b);
-                else
-                    new_data[key_b] = value_b;
-            }
-            return new_data;
+    // Combine
+    function combine(var a, var b,
+            var filter [optional], int has_filter [opt_flag],
+            var key_func [optional], int has_key_func [opt_flag],
+            var dispute [optional], int has_dispute [opt_flag])
+    {
+        if (has_filter) {
+            a = self.filter(a, filter);
+            b = self.filter(b, filter);
         }
+        if (!has_dispute)
+            dispute = function(key, data_a, data_b) { return data_a; };
+        if (has_key_func)
+            die("Query::Provider::Hash: Cannot combine hashes by keys");
 
-        // Return an array of all values
-        function to_array(var data)
-        {
-            var new_data = [];
-            for (string key in data) {
-                var item = data[key];
-                push(new_data, item);
-            }
-            return new_data;
+        var new_data = {};
+        var conflict = 0;
+        for (string key_a in a)
+            new_data[key_a] = a[key_a];
+        for (string key_b in b) {
+            var value_b = b[key_b];
+            if (exists new_data[key_b])
+                new_data[key_b] = dispute(new_data[key_b], value_b);
+            else
+                new_data[key_b] = value_b;
         }
+        return new_data;
+    }
 
-        // Create a new hash as a clone of this one
-        function to_hash(var data, var func)
-        {
-            var new_hash = {};
-            for (string key in data) {
-                var item = data[key];
-                string new_key = func(item);
-                new_hash[new_key] = item;
-            }
-            return new_hash;
+    // Return an array of all values
+    function to_array(var data)
+    {
+        var new_data = [];
+        for (string key in data) {
+            var item = data[key];
+            push(new_data, item);
         }
+        return new_data;
+    }
 
-        // Return an array of the keys of the hash
-        function keys(var data)
-        {
-            var keys = [];
-            for (string key in data)
-                push(keys, key);
-            return keys;
+    // Create a new hash as a clone of this one
+    function to_hash(var data, var func)
+    {
+        var new_hash = {};
+        for (string key in data) {
+            var item = data[key];
+            string new_key = func(item);
+            new_hash[new_key] = item;
         }
+        return new_hash;
+    }
 
-        // Return true of any item in the hash matches the predicate. False
-        // otherwise. Short-circuit
-        function any(var data, var func)
-        {
-            if (func == null)
-                return elements(data) > 0 ? true : false;
+    // Return an array of the keys of the hash
+    function keys(var data)
+    {
+        var keys = [];
+        for (string key in data)
+            push(keys, key);
+        return keys;
+    }
 
-            for (string key in data) {
-                if (func(data[key]))
-                    return true;
-            }
-            return false;
+    // Return true of any item in the hash matches the predicate. False
+    // otherwise. Short-circuit
+    function any(var data, var func)
+    {
+        if (func == null)
+            return elements(data) > 0 ? true : false;
+
+        for (string key in data) {
+            if (func(data[key]))
+                return true;
         }
+        return false;
     }
 }

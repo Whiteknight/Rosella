@@ -1,46 +1,43 @@
-namespace Rosella
+/* Global Instance and Bytecode Registry
+    The routines in this file are used to establish a registry for global
+    instances. This is useful for situations where we would like to keep
+    a single instance of a type around globally, or be able to inject
+    global behavior at runtime.
+*/
+namespace Rosella.Globals
 {
-    /* Global Instance and Bytecode Registry
-        The routines in this file are used to establish a registry for global
-        instances. This is useful for situations where we would like to keep
-        a single instance of a type around globally, or be able to inject
-        global behavior at runtime.
-    */
-    namespace Globals
+    const string DEFAULT_FACTORY_GLOBAL = "Rosella.default_factory";
+
+    // Get the hash of globals. Private routine. Should not be called
+    // externally
+    function __get_globals[anon]()
     {
-        const string DEFAULT_FACTORY_GLOBAL = "Rosella.default_factory";
+        var globals = {
+            DEFAULT_FACTORY_GLOBAL : new Rosella.ObjectFactory()
+        };
+        while (1)
+            yield globals;
+    }
 
-        // Get the hash of globals. Private routine. Should not be called
-        // externally
-        function __get_globals[anon]()
-        {
-            var globals = {
-                DEFAULT_FACTORY_GLOBAL : new Rosella.ObjectFactory()
-            };
-            while (1)
-                yield globals;
-        }
+    // Get a global by name
+    function get_global(string name)
+    {
+        var globals = __get_globals();
+        if (exists globals[name])
+            return globals[name];
+        return null;
+    }
 
-        // Get a global by name
-        function get_global(string name)
-        {
-            var globals = __get_globals();
-            if (exists globals[name])
-                return globals[name];
-            return null;
-        }
+    // Register a new global by name
+    function register_global(string name, var value)
+    {
+        var globals = __get_globals();
+        globals[name] = value;
+    }
 
-        // Register a new global by name
-        function register_global(string name, var value)
-        {
-            var globals = __get_globals();
-            globals[name] = value;
-        }
-
-        // Helper method to retrieve a global ObjectFactory instance
-        function get_default_factory()
-        {
-            return __get_globals()[DEFAULT_FACTORY_GLOBAL];
-        }
+    // Helper method to retrieve a global ObjectFactory instance
+    function get_default_factory()
+    {
+        return __get_globals()[DEFAULT_FACTORY_GLOBAL];
     }
 }

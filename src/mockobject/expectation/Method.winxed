@@ -1,16 +1,13 @@
-namespace Rosella { namespace MockObject { namespace Expectation
+class Rosella.MockObject.Expectation.Method : Rosella.MockObject.Expectation
 {
-    class Method : Rosella.MockObject.Expectation
-    {
-        function Method(var p [slurpy]) { self.Expectation(p:[flat]); }
+    function Method(var p [slurpy]) { self.Expectation(p:[flat]); }
 
-        function __can_match_internal(string type, string name, var pos, var named)
-        {
-            if (type != "method")
-                return 0;
-            if (!self.__match_args(pos, named))
-                return 0;
-            return 1;
-        }
+    function __can_match_internal(string type, string name, var pos, var named)
+    {
+        if (type != "method")
+            return 0;
+        if (!self.__match_args(pos, named))
+            return 0;
+        return 1;
     }
-}}}
+}

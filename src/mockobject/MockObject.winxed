@@ -1,46 +1,44 @@
-namespace Rosella
+/* Mock Object Library
+    The MockObject library is an extension library to Rosella.Test for
+    creating tests with mock objects.
+
+    This namespace provides some convenience routines for working with
+    mock objects.
+*/
+namespace Rosella.MockObject
 {
-    /* Mock Object Library
-        The MockObject library is an extension library to Rosella.Test for
-        creating tests with mock objects.
+    const string DEFAULT_MOCK_FACTORY_KEY = "Rosella.MockObject.default_factory";
 
-        This namespace provides some convenience routines for working with
-        mock objects.
-    */
-    namespace MockObject
+    // Get a default MockObject.Factory instance from the global registry.
+    // MockObject.Factory is not a typed ObjectFactory, so a global
+    // instance can typically be used without causing too many problems.
+    function default_mock_factory()
     {
-        const string DEFAULT_MOCK_FACTORY_KEY = "Rosella.MockObject.default_factory";
-
-        // Get a default MockObject.Factory instance from the global registry.
-        // MockObject.Factory is not a typed ObjectFactory, so a global
-        // instance can typically be used without causing too many problems.
-        function default_mock_factory()
-        {
-            var temp = Rosella.Globals.get_global(DEFAULT_MOCK_FACTORY_KEY);
-            if (temp == null) {
-                temp = new Rosella.MockObject.Factory();
-                Rosella.Globals.register_global(DEFAULT_MOCK_FACTORY_KEY, temp);
-            }
-            while(1) {
-                yield temp;
-                temp = Rosella.Globals.get_global(DEFAULT_MOCK_FACTORY_KEY);
-            }
+        var temp = Rosella.Globals.get_global(DEFAULT_MOCK_FACTORY_KEY);
+        if (temp == null) {
+            temp = new Rosella.MockObject.Factory();
+            Rosella.Globals.register_global(DEFAULT_MOCK_FACTORY_KEY, temp);
         }
-
-        // Set a new MockObject instance in the global instance registry.
-        // This is useful for situations where we need to inject new default
-        // behavior, but can have negative effects if used improperly.
-        function set_default_mock_factory(var factory)
-        {
-            Rosella.Globals.register_global(DEFAULT_MOCK_FACTORY_KEY, factory);
-        }
-
-        // Use the default MockObject.Factory instance to create a new
-        // mock controller for the given type.
-        function get_controller(var type)
-        {
-            var factory = default_mock_factory();
-            return factory.create_typed(type);
+        while(1) {
+            yield temp;
+            temp = Rosella.Globals.get_global(DEFAULT_MOCK_FACTORY_KEY);
         }
     }
+
+    // Set a new MockObject instance in the global instance registry.
+    // This is useful for situations where we need to inject new default
+    // behavior, but can have negative effects if used improperly.
+    function set_default_mock_factory(var factory)
+    {
+        Rosella.Globals.register_global(DEFAULT_MOCK_FACTORY_KEY, factory);
+    }
+
+    // Use the default MockObject.Factory instance to create a new
+    // mock controller for the given type.
+    function get_controller(var type)
+    {
+        var factory = default_mock_factory();
+        return factory.create_typed(type);
+    }
 }
+

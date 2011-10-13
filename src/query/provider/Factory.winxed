@@ -1,33 +1,30 @@
-namespace Rosella.Query.Provider
+class Rosella.Query.Provider.Factory : Rosella.ObjectFactory
 {
-    class Factory : Rosella.ObjectFactory
+    var role_map;
+    var type_map;
+    var default_provider;
+
+    function Factory(var default_provider, var role_map, var type_map)
     {
-        var role_map;
-        var type_map;
-        var default_provider;
+        self.default_provider = default_provider;
+        self.role_map = role_map;
+        self.type_map = type_map;
+    }
 
-        function Factory(var default_provider, var role_map, var type_map)
-        {
-            self.default_provider = default_provider;
-            self.role_map = role_map;
-            self.type_map = type_map;
+    function create(var data, var p [slurpy], var n [slurpy,named])
+    {
+        for (string role in self.role_map) {
+            int flag;
+            ${ does flag, data, role };
+            if (flag)
+                return self.role_map[role];
         }
+        // TODO: Type-map
+        return self.default_provider;
+    }
 
-        function create(var data, var p [slurpy], var n [slurpy,named])
-        {
-            for (string role in self.role_map) {
-                int flag;
-                ${ does flag, data, role };
-                if (flag)
-                    return self.role_map[role];
-            }
-            // TODO: Type-map
-            return self.default_provider;
-        }
-
-        function set_role_mapping(string role, var provider)
-        {
-            self.role_map[role] = provider;
-        }
+    function set_role_mapping(string role, var provider)
+    {
+        self.role_map[role] = provider;
     }
 }

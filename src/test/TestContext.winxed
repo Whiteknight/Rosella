@@ -1,46 +1,43 @@
-namespace Rosella { namespace Test
+/* TestContext object
+    The TestContext is a data object which is persistant across all test
+    methods in the test class. It can be used to store data between tests,
+    and also provides access to data about the running test suite and
+    holds information about the currently-executing test.
+*/
+class Rosella.Test.TestContext
 {
-    /* TestContext object
-        The TestContext is a data object which is persistant across all test
-        methods in the test class. It can be used to store data between tests,
-        and also provides access to data about the running test suite and
-        holds information about the currently-executing test.
-    */
-    class TestContext
+    var data;
+
+    // Create the TestContext, initializing the data store with any named
+    // values
+    function TestContext(var data [slurpy,named])
     {
-        var data;
-
-        // Create the TestContext, initializing the data store with any named
-        // values
-        function TestContext(var data [slurpy,named])
-        {
-            self.data = data;
-        }
-
-        /* Test Helpers
-            These routines are provided by the default TestContext as an aide
-            for running tests. These are not required for normal running of
-            the Suite, and can be optionally disallowed or overridden in
-            custom Context objects.
-
-            Notice that if you don't provide some of these things, they won't
-            be available to running tests. For instance, this is the only
-            mechanism for marking a test as todo'd, so if you take that away
-            you won't be able to use that.
-        */
-
-        // Get a named data value
-        function get_data(string n)
-        {
-            if (exists self.data[n])
-                return self.data[n];
-            return null;
-        }
-
-        // Set a named data value, to share between test methods
-        function set_data(string n, var value)
-        {
-            self.data[n] = value;
-        }
+        self.data = data;
     }
-}}
+
+    /* Test Helpers
+        These routines are provided by the default TestContext as an aide
+        for running tests. These are not required for normal running of
+        the Suite, and can be optionally disallowed or overridden in
+        custom Context objects.
+
+        Notice that if you don't provide some of these things, they won't
+        be available to running tests. For instance, this is the only
+        mechanism for marking a test as todo'd, so if you take that away
+        you won't be able to use that.
+    */
+
+    // Get a named data value
+    function get_data(string n)
+    {
+        if (exists self.data[n])
+            return self.data[n];
+        return null;
+    }
+
+    // Set a named data value, to share between test methods
+    function set_data(string n, var value)
+    {
+        self.data[n] = value;
+    }
+}

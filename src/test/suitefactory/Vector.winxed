@@ -1,82 +1,79 @@
-namespace Rosella { namespace Test { namespace SuiteFactory
+/* Vectorized SuiteFactory
+    This class is a SuiteFactory which creates a suite for a vectorized
+    test file. Vectorized tests are a test where a single function is
+    executed on each item in an array or hash of data. This SuiteFactory
+    creates a test method for each item in the data array.
+*/
+class Rosella.Test.SuiteFactory.Vector : Rosella.Test.SuiteFactory
 {
-    /* Vectorized SuiteFactory
-        This class is a SuiteFactory which creates a suite for a vectorized
-        test file. Vectorized tests are a test where a single function is
-        executed on each item in an array or hash of data. This SuiteFactory
-        creates a test method for each item in the data array.
+    var data;   // The data. Can be an array, a hash, or any other scalar
+    var func;   // The function to execute.
+
+    /* Public Methods
     */
-    class Vector : Rosella.Test.SuiteFactory
+
+    // Constructor
+    function Vector(var func, var data, var options)
     {
-        var data;   // The data. Can be an array, a hash, or any other scalar
-        var func;   // The function to execute.
-
-        /* Public Methods
-        */
-
-        // Constructor
-        function Vector(var func, var data, var options)
-        {
-            self.SuiteFactory(null, options);
-            self.data = data;
-            self.func = func;
-        }
-
-        // Get a hash of test methods, one for each item in the data aggregate
-        function get_test_methods()
-        {
-            int is_role = 0;
-            var data = self.data;
-            ${ does is_role, data, "array" };
-            if (is_role)
-                return self.__get_test_methods_from_array();
-            ${ does is_role, data, "hash" };
-            if (is_role)
-                return self.__get_test_methods_from_hash();
-            return self.__get_test_method_from_scalar();
-        }
-
-        /* Private Helper Methods
-        */
-
-        // Create a closure over the function and the particular datum
-        function __make_test_method(var n, var f, var d)
-        {
-            var func = f;
-            var data = d;
-            var name = n;
-            return function(var obj) {
-                obj.status.verify(name);
-                func(obj, data);
-            };
-        }
-
-        // The data is an array. Get test methods from that.
-        function __get_test_methods_from_array()
-        {
-            var test_methods = {};
-            for (int i = 0; i < elements(self.data); i++) {
-                string name = "test " + string(i + 1);
-                test_methods[name] = self.__make_test_method(name, self.func, self.data[i]);
-            }
-            return test_methods;
-        }
-
-        // The data is a hash
-        function __get_test_methods_from_hash()
-        {
-            var test_methods = {};
-            for (string key in self.data)
-                test_methods[key] = self.__make_test_method(key, self.func, self.data[key]);
-            return test_methods;
-        }
-
-        // The data is not an array or a hash, treat it as a single value
-        function __get_test_methods_from_scalar()
-        {
-            return {
-                "test" : self.__make_test_method("test", self.func, self.data)
-            };
-        }
+        self.SuiteFactory(null, options);
+        self.data = data;
+        self.func = func;
     }
-}}}
+
+    // Get a hash of test methods, one for each item in the data aggregate
+    function get_test_methods()
+    {
+        int is_role = 0;
+        var data = self.data;
+        ${ does is_role, data, "array" };
+        if (is_role)
+            return self.__get_test_methods_from_array();
+        ${ does is_role, data, "hash" };
+        if (is_role)
+            return self.__get_test_methods_from_hash();
+        return self.__get_test_method_from_scalar();
+    }
+
+    /* Private Helper Methods
+    */
+
+    // Create a closure over the function and the particular datum
+    function __make_test_method(var n, var f, var d)
+    {
+        var func = f;
+        var data = d;
+        var name = n;
+        return function(var obj) {
+            obj.status.verify(name);
+            func(obj, data);
+        };
+    }
+
+    // The data is an array. Get test methods from that.
+    function __get_test_methods_from_array()
+    {
+        var test_methods = {};
+        for (int i = 0; i < elements(self.data); i++) {
+            string name = "test " + string(i + 1);
+            test_methods[name] = self.__make_test_method(name, self.func, self.data[i]);
+        }
+        return test_methods;
+    }
+
+    // The data is a hash
+    function __get_test_methods_from_hash()
+    {
+        var test_methods = {};
+        for (string key in self.data)
+            test_methods[key] = self.__make_test_method(key, self.func, self.data[key]);
+        return test_methods;
+    }
+
+    // The data is not an array or a hash, treat it as a single value
+    function __get_test_methods_from_scalar()
+    {
+        return {
+            "test" : self.__make_test_method("test", self.func, self.data)
+        };
+    }
+}

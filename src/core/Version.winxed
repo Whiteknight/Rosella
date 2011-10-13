@@ -1,46 +1,43 @@
-namespace Rosella
+namespace Rosella.Version
 {
-    namespace Version
+    const string VERSION_HASH_NAME = "Rosella.version_hash";
+
+    // Private routine to provide a persistant global variable to store
+    // version numbers in
+    function get_version_hash()
     {
-        const string VERSION_HASH_NAME = "Rosella.version_hash";
-
-        // Private routine to provide a persistant global variable to store
-        // version numbers in
-        function get_version_hash()
-        {
-            var version_hash = Rosella.__PRIVATE_Version.__GET_VERSION_HASH();
-            Rosella.Globals.register_global(VERSION_HASH_NAME, version_hash);
-            while (1)
-                yield Rosella.Globals.get_global(VERSION_HASH_NAME);
-        }
-
-        // Get the version string for the specified library. Return null if the
-        // library is not found.
-        function get_version(string lib)
-        {
-            var version_hash = get_version_hash();
-            if (exists version_hash[lib])
-                return version_hash[lib];
-            return version_hash["UNKNOWN"];
-        }
+        var version_hash = Rosella.__PRIVATE_Version.__GET_VERSION_HASH();
+        Rosella.Globals.register_global(VERSION_HASH_NAME, version_hash);
+        while (1)
+            yield Rosella.Globals.get_global(VERSION_HASH_NAME);
     }
 
-    /* Version object. Stores information about a library version */
-    class Version
+    // Get the version string for the specified library. Return null if the
+    // library is not found.
+    function get_version(string lib)
     {
-        var name;
-        var version_number;
-        var state;
-
-        function Version(var lib, var n, var s)
-        {
-            self.name = lib;
-            self.version_number = n;
-            self.state = s;
-        }
-
-        function library_name() { return self.name; }
-        function library_version() { return self.version_number; }
-        function library_state() { return self.state; }
+        var version_hash = get_version_hash();
+        if (exists version_hash[lib])
+            return version_hash[lib];
+        return version_hash["UNKNOWN"];
     }
+}
+
+/* Version object. Stores information about a library version */
+class Rosella.Version
+{
+    var name;
+    var version_number;
+    var state;
+
+    function Version(var lib, var n, var s)
+    {
+        self.name = lib;
+        self.version_number = n;
+        self.state = s;
+    }
+
+    function library_name() { return self.name; }
+    function library_version() { return self.version_number; }
+    function library_state() { return self.state; }
 }

@@ -1,218 +1,215 @@
-namespace Rosella { namespace MockObject
+/* MockObject Expectations
+    An Expectation is an object to codify a single expected behavior. This
+    can be a number of different things with a number of different options
+    depending on subclass and delegate components.
+*/
+class Rosella.MockObject.Expectation
 {
-    /* MockObject Expectations
-        An Expectation is an object to codify a single expected behavior. This
-        can be a number of different things with a number of different options
-        depending on subclass and delegate components.
-    */
-    class Expectation
+    var quantity;          // The number of times we expect this behavior
+    var quantity_modifier; // "=", "<=", ">="
+    var name;              // The name of the method/attribute
+    var will;              // What the mock will do, once matched
+    var with;              // What values the mock is expecting to match
+
+    // Constructor. Take the name of the thing we are expecting.
+    function Expectation(string name)
     {
-        var quantity;          // The number of times we expect this behavior
-        var quantity_modifier; // "=", "<=", ">="
-        var name;              // The name of the method/attribute
-        var will;              // What the mock will do, once matched
-        var with;              // What values the mock is expecting to match
-
-        // Constructor. Take the name of the thing we are expecting.
-        function Expectation(string name)
-        {
-            self.quantity = 1;
-            self.quantity_modifier = "=";
-            self.name = name;
-            self.will = null;
-            self.with = null;
-        }
-
-        // Create a stringified version of the expectation, for display to the
-        // user
-        function to_string() {
-            if (self.name == null)
-                return "Null (unmatchable) expectation";
-            return sprintf("Expected '%s' (n %s %d times)",
-                [self.name, self.quantity_modifier, self.quantity]
-            );
-        }
-
-        /* Quantifiers
-            Tell how many times we expect this to happen
-        */
-
-        // Specify how many of the event we want.
-        function quantity(int num, string mod)
-        {
-            self.quantity = num;
-            self.quantity_modifier = mod;
-            return self;
-        }
-        function once()          { return self.quantity(1, "="); }
-        function none()          { return self.quantity(0, "="); } // This is really a no-op
-        function exactly(int n)  { return self.quantity(n, "="); }
-        function any()           { return self.quantity(0, ">="); }
-        function at_least(int n) { return self.quantity(n, ">="); }
-        function at_most(int n)  { return self.quantity(n, "<="); }
-
-        /* Behaviors
-            These are things the mock should do in response to the request.
-            Typically the options are to return a value or to throw an
-            exception.
-
-            Will behaviors can only be set once we know the type.
-        */
-
-        // The event will return a value to the calling code
-        function will_return(var value)
-        {
-            self.__can_set_will();
-            self.will = new Rosella.MockObject.Expectation.Will.Return(value);
-            return self;
-        }
-
-        // The event will throw an exception
-        function will_throw(var value)
-        {
-            self.__can_set_will();
-            self.will = new Rosella.MockObject.Expectation.Will.Throw(value);
-            return self;
-        }
-
-        // The event will have a side-effect
-        function will_do(var value)
-        {
-            self.__can_set_will();
-            self.will = new Rosella.MockObject.Expectation.Will.Do(value);
-            return self;
-        }
-
-        // Set a custom will behavior for the event
-        function will(var will)
-        {
-            self.__can_set_will();
-            self.will = will;
-            return self;
-        }
-
-        // helper method. Determine if we can set a will behavior
-        function __can_set_will()
-        {
-            if (self.will != null)
-                Rosella.Error.invalid(__FUNCTION__, "Cannot set Will behavior twice");
-        }
-
-        /* Arguments
-            methods, invokes, and set_attribute requests all take parameters.
-            These methods set up the expectation to match those.
-        */
-
-        // The event will have a predefined set of arguments
-        function with_args(var pos [slurpy], var named [named,slurpy])
-        {
-            self.__verify_can_set_args();
-            self.with = new Rosella.MockObject.Expectation.With.Args(pos, named);
-            return self;
-        }
-
-        // The event will have any arguments. In other words, we won't check.
-        function with_any_args()
-        {
-            self.__verify_can_set_args();
-            self.with = new Rosella.MockObject.Expectation.With.Any();
-            return self;
-        }
-
-        // The event will not have any arguments. Any arguments is an error.
-        function with_no_args()
-        {
-            self.__verify_can_set_args();
-            self.with = new Rosella.MockObject.Expectation.With.None();
-            return self;
-        }
-
-        // Set a custom with condition.
-        function with(var with)
-        {
-            self.__verify_can_set_args();
-            self.with = with;
-            return self;
-        }
-
-        // Basic sanity check that we can set arguments. Check that we are in
-        // a mode that accepts arguments
-        function __verify_can_set_args()
-        {
-            if (self.with != null)
-                Rosella.Error.invalid(__FUNCTION__, "You cannot specify arguments twice");
-        }
-
-        /* Internal Methods
-            These methods are used internally by the mock system and should
-            not be used by user code
-        */
-
-        // Match a given set of arguments against the expected list
-        function __match_args(var pos, var named)
-        {
-            if (self.with == null)
-                return 1;
-            int is_match = self.with.match(pos, named);
-            return is_match;
-        }
-
-        // True if this expectation can match the specified method call with
-        // args
-        function __can_match(string type, string name, var pos, var named)
-        {
-            if (self.name != name || !self.__available())
-                return 0;
-            return self.__can_match_internal(type, name, pos, named);
-        }
-
-        // helper method. This must be subclassed. Determines if we can set
-        // a match
-        function __can_match_internal(string type, string name, var pos, var named)
-        {
-            Rosella.Error.must_subclass(__CLASS__);
-        }
-
-        // mark this expectation matched, and reduce the quantity available.
-        function __match()
-        {
-            self.quantity--;
-        }
-
-        // true if this expectation is available to be matched. This depends
-        // on both the quantity and modifier
-        function __available()
-        {
-            if (string(self.quantity_modifier) == "=" && self.quantity > 0)
-                return 1;
-            if (string(self.quantity_modifier) == "<=" && self.quantity > 0)
-                return 1;
-            if (string(self.quantity_modifier) == ">=")
-                return 1;
-            return 0;
-        }
-
-        // true if this expectation has been satisfied. We are satisfied if
-        // our remaining quantity and our quantity modifier say we are
-        // satisfied
-        function __satisfied()
-        {
-            if (string(self.quantity_modifier) == "=" && int(self.quantity) == 0)
-                return 1;
-            if (string(self.quantity_modifier) == "<=" && int(self.quantity) >= 0)
-                return 1;
-            if (string(self.quantity_modifier) == ">=" && int(self.quantity) <= 0)
-                return 1;
-            return 0;
-        }
-
-        // execute the will behavior, returning any necessary values or
-        // throwing any necessary exceptions
-        function __run_will_behavior()
-        {
-            if (self.will == null)
-                return null;
-            return self.will.execute();
-        }
+        self.quantity = 1;
+        self.quantity_modifier = "=";
+        self.name = name;
+        self.will = null;
+        self.with = null;
     }
-}}
+
+    // Create a stringified version of the expectation, for display to the
+    // user
+    function to_string() {
+        if (self.name == null)
+            return "Null (unmatchable) expectation";
+        return sprintf("Expected '%s' (n %s %d times)",
+            [self.name, self.quantity_modifier, self.quantity]
+        );
+    }
+
+    /* Quantifiers
+        Tell how many times we expect this to happen
+    */
+
+    // Specify how many of the event we want.
+    function quantity(int num, string mod)
+    {
+        self.quantity = num;
+        self.quantity_modifier = mod;
+        return self;
+    }
+    function once()          { return self.quantity(1, "="); }
+    function none()          { return self.quantity(0, "="); } // This is really a no-op
+    function exactly(int n)  { return self.quantity(n, "="); }
+    function any()           { return self.quantity(0, ">="); }
+    function at_least(int n) { return self.quantity(n, ">="); }
+    function at_most(int n)  { return self.quantity(n, "<="); }
+
+    /* Behaviors
+        These are things the mock should do in response to the request.
+        Typically the options are to return a value or to throw an
+        exception.
+
+        Will behaviors can only be set once we know the type.
+    */
+
+    // The event will return a value to the calling code
+    function will_return(var value)
+    {
+        self.__can_set_will();
+        self.will = new Rosella.MockObject.Expectation.Will.Return(value);
+        return self;
+    }
+
+    // The event will throw an exception
+    function will_throw(var value)
+    {
+        self.__can_set_will();
+        self.will = new Rosella.MockObject.Expectation.Will.Throw(value);
+        return self;
+    }
+
+    // The event will have a side-effect
+    function will_do(var value)
+    {
+        self.__can_set_will();
+        self.will = new Rosella.MockObject.Expectation.Will.Do(value);
+        return self;
+    }
+
+    // Set a custom will behavior for the event
+    function will(var will)
+    {
+        self.__can_set_will();
+        self.will = will;
+        return self;
+    }
+
+    // helper method. Determine if we can set a will behavior
+    function __can_set_will()
+    {
+        if (self.will != null)
+            Rosella.Error.invalid(__FUNCTION__, "Cannot set Will behavior twice");
+    }
+
+    /* Arguments
+        methods, invokes, and set_attribute requests all take parameters.
+        These methods set up the expectation to match those.
+    */
+
+    // The event will have a predefined set of arguments
+    function with_args(var pos [slurpy], var named [named,slurpy])
+    {
+        self.__verify_can_set_args();
+        self.with = new Rosella.MockObject.Expectation.With.Args(pos, named);
+        return self;
+    }
+
+    // The event will have any arguments. In other words, we won't check.
+    function with_any_args()
+    {
+        self.__verify_can_set_args();
+        self.with = new Rosella.MockObject.Expectation.With.Any();
+        return self;
+    }
+
+    // The event will not have any arguments. Any arguments is an error.
+    function with_no_args()
+    {
+        self.__verify_can_set_args();
+        self.with = new Rosella.MockObject.Expectation.With.None();
+        return self;
+    }
+
+    // Set a custom with condition.
+    function with(var with)
+    {
+        self.__verify_can_set_args();
+        self.with = with;
+        return self;
+    }
+
+    // Basic sanity check that we can set arguments. Check that we are in
+    // a mode that accepts arguments
+    function __verify_can_set_args()
+    {
+        if (self.with != null)
+            Rosella.Error.invalid(__FUNCTION__, "You cannot specify arguments twice");
+    }
+
+    /* Internal Methods
+        These methods are used internally by the mock system and should
+        not be used by user code
+    */
+
+    // Match a given set of arguments against the expected list
+    function __match_args(var pos, var named)
+    {
+        if (self.with == null)
+            return 1;
+        int is_match = self.with.match(pos, named);
+        return is_match;
+    }
+
+    // True if this expectation can match the specified method call with
+    // args
+    function __can_match(string type, string name, var pos, var named)
+    {
+        if (self.name != name || !self.__available())
+            return 0;
+        return self.__can_match_internal(type, name, pos, named);
+    }
+
+    // helper method. This must be subclassed. Determines if we can set
+    // a match
+    function __can_match_internal(string type, string name, var pos, var named)
+    {
+        Rosella.Error.must_subclass(__CLASS__);
+    }
+
+    // mark this expectation matched, and reduce the quantity available.
+    function __match()
+    {
+        self.quantity--;
+    }
+
+    // true if this expectation is available to be matched. This depends
+    // on both the quantity and modifier
+    function __available()
+    {
+        if (string(self.quantity_modifier) == "=" && self.quantity > 0)
+            return 1;
+        if (string(self.quantity_modifier) == "<=" && self.quantity > 0)
+            return 1;
+        if (string(self.quantity_modifier) == ">=")
+            return 1;
+        return 0;
+    }
+
+    // true if this expectation has been satisfied. We are satisfied if
+    // our remaining quantity and our quantity modifier say we are
+    // satisfied
+    function __satisfied()
+    {
+        if (string(self.quantity_modifier) == "=" && int(self.quantity) == 0)
+            return 1;
+        if (string(self.quantity_modifier) == "<=" && int(self.quantity) >= 0)
+            return 1;
+        if (string(self.quantity_modifier) == ">=" && int(self.quantity) <= 0)
+            return 1;
+        return 0;
+    }
+
+    // execute the will behavior, returning any necessary values or
+    // throwing any necessary exceptions
+    function __run_will_behavior()
+    {
+        if (self.will == null)
+            return null;
+        return self.will.execute();
+    }
+}

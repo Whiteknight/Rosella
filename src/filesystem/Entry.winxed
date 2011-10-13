@@ -1,63 +1,65 @@
-namespace Rosella { namespace FileSystem
+/* File System Entry Class
+    Entry is the parent object of all items which may appear in a file
+    system. It is the parent object of both the File and Directory objects
+    and provides some common behavior for both.
+*/
+class Rosella.FileSystem.Entry
 {
-    class Entry
+    var path;
+
+    // Constructor. Set the path of this Entry. The path is relative to
+    // the current working directory of the program
+    function Entry(string path)
     {
-        var path;
-
-        // Constructor. Set the path of this Entry. The path is relative to
-        // the current working directory of the program
-        function Entry(string path)
-        {
-            self.path = path;
-        }
-
-        // Get the name of the entry
-        function get_string[vtable]()
-        {
-            return self.path;
-        }
-
-        // Delete the entry
-        function delete()
-        {
-            using Rosella.FileSystem.get_os_pmc;
-            var os = get_os_pmc();
-            if (!os.exists(self.path)) {
-                using Rosella.Error.invalid;
-                invalid(__FUNCTION__, "Cannot delete an Entry that does not exist");
-            }
-            os.rm(self.path);
-        }
-
-        // Determine if the file exists. Returns non-zero if it exists, 0
-        // otherwise. Does not verify that the given path points to a file
-        // (as opposed to a directory)
-        function exists()
-        {
-            using Rosella.FileSystem.get_os_pmc;
-            return get_os_pmc().exists(self.path);
-        }
-
-        // Rename the file. Update the path name stored in this object
-        function rename(string new_name)
-        {
-            using Rosella.FileSystem.get_os_pmc;
-            get_os_pmc().rename(self.path, new_name);
-            self.path = new_name;
-        }
-
-        // Get the short name of this Entry
-        function short_name()
-        {
-            using Rosella.FileSystem.path_separator;
-            string sep = path_separator();
-            var parts = split(sep, self.path);
-            for (int i = elements(parts) - 1; i >= 0; i--) {
-                string part = parts[i];
-                if (part != null && part != "")
-                    return part;
-            }
-            return null;
-        }
+        self.path = path;
     }
-}}
+
+    // Get the name of the entry
+    function get_string[vtable]()
+    {
+        return self.path;
+    }
+
+    // Delete the entry
+    function delete()
+    {
+        using Rosella.FileSystem.get_os_pmc;
+        var os = get_os_pmc();
+        if (!os.exists(self.path)) {
+            using Rosella.Error.invalid;
+            invalid(__FUNCTION__, "Cannot delete an Entry that does not exist");
+        }
+        os.rm(self.path);
+    }
+
+    // Determine if the file exists. Returns non-zero if it exists, 0
+    // otherwise. Does not verify that the given path points to a file
+    // (as opposed to a directory)
+    function exists()
+    {
+        using Rosella.FileSystem.get_os_pmc;
+        return get_os_pmc().exists(self.path);
+    }
+
+    // Rename the file. Update the path name stored in this object
+    function rename(string new_name)
+    {
+        using Rosella.FileSystem.get_os_pmc;
+        get_os_pmc().rename(self.path, new_name);
+        self.path = new_name;
+    }
+
+    // Get the short name of this Entry
+    function short_name()
+    {
+        using Rosella.FileSystem.path_separator;
+        string sep = path_separator();
+        var parts = split(sep, self.path);
+        for (int i = elements(parts) - 1; i >= 0; i--) {
+            string part = parts[i];
+            if (part != null && part != "")
+                return part;
+        }
+        return null;
+    }
+}

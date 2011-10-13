@@ -1,97 +1,94 @@
-namespace Rosella { namespace Proxy { namespace Builder
+class Rosella.Proxy.Builder.Array : Rosella.Proxy.Builder
 {
-    class Array : Rosella.Proxy.Builder
+    function setup_proxy_class(var target_class, var proxy_class)
     {
-        function setup_proxy_class(var target_class, var proxy_class)
-        {
-            using Rosella.Proxy.Builder.Array.get_pmc_keyed_int;
-            using Rosella.Proxy.Builder.Array.get_string_keyed_int;
-            using Rosella.Proxy.Builder.Array.get_integer_keyed_int;
-            using Rosella.Proxy.Builder.Array.set_pmc_keyed_int;
-            using Rosella.Proxy.Builder.Array.set_string_keyed_int;
-            using Rosella.Proxy.Builder.Array.set_integer_keyed_int;
-            using Rosella.Proxy.Builder.Array.defined_keyed_int;
-            using Rosella.Proxy.Builder.Array.exists_keyed_int;
-            using Rosella.Proxy.Builder.Array.delete_keyed_int;
+        using Rosella.Proxy.Builder.Array.get_pmc_keyed_int;
+        using Rosella.Proxy.Builder.Array.get_string_keyed_int;
+        using Rosella.Proxy.Builder.Array.get_integer_keyed_int;
+        using Rosella.Proxy.Builder.Array.set_pmc_keyed_int;
+        using Rosella.Proxy.Builder.Array.set_string_keyed_int;
+        using Rosella.Proxy.Builder.Array.set_integer_keyed_int;
+        using Rosella.Proxy.Builder.Array.defined_keyed_int;
+        using Rosella.Proxy.Builder.Array.exists_keyed_int;
+        using Rosella.Proxy.Builder.Array.delete_keyed_int;
 
-            proxy_class.add_vtable_override("get_pmc_keyed_int",     get_pmc_keyed_int);
-            proxy_class.add_vtable_override("get_string_keyed_int",  get_string_keyed_int);
-            proxy_class.add_vtable_override("get_integer_keyed_int", get_integer_keyed_int);
-            proxy_class.add_vtable_override("set_pmc_keyed_int",     set_pmc_keyed_int);
-            proxy_class.add_vtable_override("set_string_keyed_int",  set_string_keyed_int);
-            proxy_class.add_vtable_override("set_integer_keyed_int", set_integer_keyed_int);
-            proxy_class.add_vtable_override("defined_keyed_int",     defined_keyed_int);
-            proxy_class.add_vtable_override("exists_keyed_int",      exists_keyed_int);
-            proxy_class.add_vtable_override("delete_keyed_int",      delete_keyed_int);
-        }
-
-        function get_pmc_keyed_int[nsentry](var key)
-        {
-            var controller = Rosella.Proxy.get_proxy_private_attr(self, "proxy_controller");
-            if (controller != null)
-                return controller.get_keyed(self, "pmc", "integer", key);
-            return null;
-        }
-
-        function get_string_keyed_int[nsentry](var key)
-        {
-            var controller = Rosella.Proxy.get_proxy_private_attr(self, "proxy_controller");
-            if (controller != null)
-                return controller.get_keyed(self, "string", "integer", key);
-            return null;
-        }
-
-        function get_integer_keyed_int[nsentry](var key)
-        {
-            var controller = Rosella.Proxy.get_proxy_private_attr(self, "proxy_controller");
-            if (controller != null)
-                return controller.get_keyed(self, "integer", "integer", key);
-            return null;
-        }
-
-        function set_pmc_keyed_int[nsentry](var key, var value)
-        {
-            var controller = Rosella.Proxy.get_proxy_private_attr(self, "proxy_controller");
-            if (controller != null)
-                controller.set_keyed(self, "pmc", "integer", key, value);
-        }
-
-        function set_string_keyed_int[nsentry](var key, var value)
-        {
-            var controller = Rosella.Proxy.get_proxy_private_attr(self, "proxy_controller");
-            if (controller != null)
-                controller.set_keyed(self, "string", "integer", key, value);
-        }
-
-        function set_integer_keyed_int[nsentry](var key, var value)
-        {
-            var controller = Rosella.Proxy.get_proxy_private_attr(self, "proxy_controller");
-            if (controller != null)
-                controller.set_keyed(self, "integer", "integer", key, value);
-        }
-
-        function defined_keyed_int[nsentry](var key)
-        {
-            var controller = Rosella.Proxy.get_proxy_private_attr(self, "proxy_controller");
-            if (controller != null)
-                return controller.op_keyed(self, "defined", "integer", key);
-            return 0;
-        }
-
-        function exists_keyed_int[nsentry](var key)
-        {
-            var controller = Rosella.Proxy.get_proxy_private_attr(self, "proxy_controller");
-            if (controller != null)
-                return controller.op_keyed(self, "exists", "integer", key);
-            return 0;
-        }
-
-        function delete_keyed_int[nsentry](var key)
-        {
-            var controller = Rosella.Proxy.get_proxy_private_attr(self, "proxy_controller");
-            if (controller != null)
-                return controller.op_keyed(self, "delete", "integer", key);
-            return 0;
-        }
+        proxy_class.add_vtable_override("get_pmc_keyed_int",     get_pmc_keyed_int);
+        proxy_class.add_vtable_override("get_string_keyed_int",  get_string_keyed_int);
+        proxy_class.add_vtable_override("get_integer_keyed_int", get_integer_keyed_int);
+        proxy_class.add_vtable_override("set_pmc_keyed_int",     set_pmc_keyed_int);
+        proxy_class.add_vtable_override("set_string_keyed_int",  set_string_keyed_int);
+        proxy_class.add_vtable_override("set_integer_keyed_int", set_integer_keyed_int);
+        proxy_class.add_vtable_override("defined_keyed_int",     defined_keyed_int);
+        proxy_class.add_vtable_override("exists_keyed_int",      exists_keyed_int);
+        proxy_class.add_vtable_override("delete_keyed_int",      delete_keyed_int);
     }
-}}}
+
+    function get_pmc_keyed_int[nsentry](var key)
+    {
+        var controller = Rosella.Proxy.get_proxy_private_attr(self, "proxy_controller");
+        if (controller != null)
+            return controller.get_keyed(self, "pmc", "integer", key);
+        return null;
+    }
+
+    function get_string_keyed_int[nsentry](var key)
+    {
+        var controller = Rosella.Proxy.get_proxy_private_attr(self, "proxy_controller");
+        if (controller != null)
+            return controller.get_keyed(self, "string", "integer", key);
+        return null;
+    }
+
+    function get_integer_keyed_int[nsentry](var key)
+    {
+        var controller = Rosella.Proxy.get_proxy_private_attr(self, "proxy_controller");
+        if (controller != null)
+            return controller.get_keyed(self, "integer", "integer", key);
+        return null;
+    }
+
+    function set_pmc_keyed_int[nsentry](var key, var value)
+    {
+        var controller = Rosella.Proxy.get_proxy_private_attr(self, "proxy_controller");
+        if (controller != null)
+            controller.set_keyed(self, "pmc", "integer", key, value);
+    }
+
+    function set_string_keyed_int[nsentry](var key, var value)
+    {
+        var controller = Rosella.Proxy.get_proxy_private_attr(self, "proxy_controller");
+        if (controller != null)
+            controller.set_keyed(self, "string", "integer", key, value);
+    }
+
+    function set_integer_keyed_int[nsentry](var key, var value)
+    {
+        var controller = Rosella.Proxy.get_proxy_private_attr(self, "proxy_controller");
+        if (controller != null)
+            controller.set_keyed(self, "integer", "integer", key, value);
+    }
+
+    function defined_keyed_int[nsentry](var key)
+    {
+        var controller = Rosella.Proxy.get_proxy_private_attr(self, "proxy_controller");
+        if (controller != null)
+            return controller.op_keyed(self, "defined", "integer", key);
+        return 0;
+    }
+
+    function exists_keyed_int[nsentry](var key)
+    {
+        var controller = Rosella.Proxy.get_proxy_private_attr(self, "proxy_controller");
+        if (controller != null)
+            return controller.op_keyed(self, "exists", "integer", key);
+        return 0;
+    }
+
+    function delete_keyed_int[nsentry](var key)
+    {
+        var controller = Rosella.Proxy.get_proxy_private_attr(self, "proxy_controller");
+        if (controller != null)
+            return controller.op_keyed(self, "delete", "integer", key);
+        return 0;
+    }
+}

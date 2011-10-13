@@ -1,73 +1,70 @@
-namespace Rosella { namespace Test { namespace SuiteFactory
+class Rosella.Test.SuiteFactory.List : Rosella.Test.SuiteFactory
 {
-    class List : Rosella.Test.SuiteFactory
+    var funcs;   // The collection of functions to execute as tests
+
+    /* Public Methods
+    */
+
+    // Constructor
+    function List(var func_list, var options)
     {
-        var funcs;   // The collection of functions to execute as tests
-
-        /* Public Methods
-        */
-
-        // Constructor
-        function List(var func_list, var options)
-        {
-            self.SuiteFactory(null, options);
-            self.funcs = func_list;
-        }
-
-        // Get a hash of test methods, one for each item in the data aggregate
-        function get_test_methods()
-        {
-            int is_role = 0;
-            var data = self.funcs;
-            ${ does is_role, data, "array" };
-            if (is_role)
-                return self.__get_test_methods_from_array();
-            ${ does is_role, data, "hash" };
-            if (is_role)
-                return self.__get_test_methods_from_hash();
-            return self.__get_test_method_from_scalar();
-        }
-
-        /* Private Helper Methods
-        */
-
-        // Create a closure over the function and the particular datum
-        function __make_test_method(var n, var f)
-        {
-            var func = f;
-            var name = n;
-            return function(var obj) {
-                obj.status.verify(name);
-                func(obj);
-            };
-        }
-
-        // The data is an array. Get test methods from that.
-        function __get_test_methods_from_array()
-        {
-            var test_methods = {};
-            for (int i = 0; i < elements(self.funcs); i++) {
-                string name = "test " + string(i + 1);
-                test_methods[name] = self.__make_test_method(name, self.funcs[i]);
-            }
-            return test_methods;
-        }
-
-        // The data is a hash
-        function __get_test_methods_from_hash()
-        {
-            var test_methods = {};
-            for (string key in self.funcs)
-                test_methods[key] = self.__make_test_method(key, self.funcs[key]);
-            return test_methods;
-        }
-
-        // The data is not an array or a hash, treat it as a single value
-        function __get_test_methods_from_scalar()
-        {
-            return {
-                "test" : self.__make_test_method("test", self.funcs)
-            };
-        }
+        self.SuiteFactory(null, options);
+        self.funcs = func_list;
     }
-}}}
+
+    // Get a hash of test methods, one for each item in the data aggregate
+    function get_test_methods()
+    {
+        int is_role = 0;
+        var data = self.funcs;
+        ${ does is_role, data, "array" };
+        if (is_role)
+            return self.__get_test_methods_from_array();
+        ${ does is_role, data, "hash" };
+        if (is_role)
+            return self.__get_test_methods_from_hash();
+        return self.__get_test_method_from_scalar();
+    }
+
+    /* Private Helper Methods
+    */
+
+    // Create a closure over the function and the particular datum
+    function __make_test_method(var n, var f)
+    {
+        var func = f;
+        var name = n;
+        return function(var obj) {
+            obj.status.verify(name);
+            func(obj);
+        };
+    }
+
+    // The data is an array. Get test methods from that.
+    function __get_test_methods_from_array()
+    {
+        var test_methods = {};
+        for (int i = 0; i < elements(self.funcs); i++) {
+            string name = "test " + string(i + 1);
+            test_methods[name] = self.__make_test_method(name, self.funcs[i]);
+        }
+        return test_methods;
+    }
+
+    // The data is a hash
+    function __get_test_methods_from_hash()
+    {
+        var test_methods = {};
+        for (string key in self.funcs)
+            test_methods[key] = self.__make_test_method(key, self.funcs[key]);
+        return test_methods;
+    }
+
+    // The data is not an array or a hash, treat it as a single value
+    function __get_test_methods_from_scalar()
+    {
+        return {
+            "test" : self.__make_test_method("test", self.funcs)
+        };
+    }
+}

@@ -1,91 +1,88 @@
-namespace Rosella { namespace Test
+/* The test Suite object. The Suite takes a list of tests and runs it. As
+   tests are run, events are passed to the Result object.
+*/
+class Rosella.Test.Suite
 {
-    /* The test Suite object. The Suite takes a list of tests and runs it. As
-       tests are run, events are passed to the Result object.
+    var tests;      // Hash of tests to run
+    var context;    // The TestContext
+
+    /* Public Methods
     */
-    class Suite
+
+    // Set up the suite with the given name and list of tests
+    function Suite(var tests, var context)
     {
-        var tests;      // Hash of tests to run
-        var context;    // The TestContext
-
-        /* Public Methods
-        */
-
-        // Set up the suite with the given name and list of tests
-        function Suite(var tests, var context)
-        {
-            self.tests = tests;
-            self.context = context;
-        }
-
-        // Run the tests
-        function run(var result [named,optional], int has_result [opt_flag])
-        {
-            if (!has_result)
-                result = self.default_result();
-            result.plan_tests(int(self.tests));
-            for (var test_name in self.tests) {
-                var test = self.tests[test_name];
-                self.__run_test(test_name, test, result);
-            }
-            result.tests_complete();
-            return result;
-        }
-
-        /* Helper Methods
-            These methods are used internally by Suite and can be modified
-            in subclasses to change behavior. These methods are probably not
-            useful to be called directly from external places.
-        */
-
-        // Get the default Result object to use. In this case, it's a
-        // basic Rosella.Test.Result object with a Rosella.Test.Listener.TAP
-        // listener. To get something else, subclass.
-        function default_result()
-        {
-            var tap_listener = new Rosella.Test.Listener.TAP();
-            var result = new Rosella.Test.Result([tap_listener]);
-            return result;
-        }
-
-        // Execute the test on the test method.
-        function execute_test(var test, var method)
-        {
-            test.*method();
-        }
-
-        /* Private Helper Methods
-            These methods perform important interactions with other components
-            of the Test library, and should probably not be modified in
-            subclasses.
-        */
-
-        // Run a single test, catching errors and reporting results.
-        function __run_test(string test_name, var test, var result)
-        {
-            var exception = null;
-            result.start_test(test, self.context);
-            try {
-                self.execute_test(test, test.method);
-            } catch (e) {
-                exception = e;
-            }
-            var status = test.status;
-            int can_cleanup;
-            ${ can can_cleanup, status, "cleanup" };
-            if (can_cleanup)
-                status.cleanup();
-            self.__report_test_result(test, result, exception);
-        }
-
-        // Report information about the test to the results object
-        function __report_test_result(var test, var result, var exception)
-        {
-            if (exception == null)
-                result.end_test(test, test.status);
-            else
-                result.add_failure(test, test.status, exception);
-        }
+        self.tests = tests;
+        self.context = context;
     }
-}}
+
+    // Run the tests
+    function run(var result [named,optional], int has_result [opt_flag])
+    {
+        if (!has_result)
+            result = self.default_result();
+        result.plan_tests(int(self.tests));
+        for (var test_name in self.tests) {
+            var test = self.tests[test_name];
+            self.__run_test(test_name, test, result);
+        }
+        result.tests_complete();
+        return result;
+    }
+
+    /* Helper Methods
+        These methods are used internally by Suite and can be modified
+        in subclasses to change behavior. These methods are probably not
+        useful to be called directly from external places.
+    */
+
+    // Get the default Result object to use. In this case, it's a
+    // basic Rosella.Test.Result object with a Rosella.Test.Listener.TAP
+    // listener. To get something else, subclass.
+    function default_result()
+    {
+        var tap_listener = new Rosella.Test.Listener.TAP();
+        var result = new Rosella.Test.Result([tap_listener]);
+        return result;
+    }
+
+    // Execute the test on the test method.
+    function execute_test(var test, var method)
+    {
+        test.*method();
+    }
+
+    /* Private Helper Methods
+        These methods perform important interactions with other components
+        of the Test library, and should probably not be modified in
+        subclasses.
+    */
+
+    // Run a single test, catching errors and reporting results.
+    function __run_test(string test_name, var test, var result)
+    {
+        var exception = null;
+        result.start_test(test, self.context);
+        try {
+            self.execute_test(test, test.method);
+        } catch (e) {
+            exception = e;
+        }
+        var status = test.status;
+        int can_cleanup;
+        ${ can can_cleanup, status, "cleanup" };
+        if (can_cleanup)
+            status.cleanup();
+        self.__report_test_result(test, result, exception);
+    }
+
+    // Report information about the test to the results object
+    function __report_test_result(var test, var result, var exception)
+    {
+        if (exception == null)
+            result.end_test(test, test.status);
+        else
+            result.add_failure(test, test.status, exception);
+    }
+}
 
