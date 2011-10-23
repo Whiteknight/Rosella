@@ -82,7 +82,7 @@ class Rosella.FileSystem.Directory : Rosella.FileSystem.Entry
     function walk(var visitor [optional], int has_v [opt_flag])
     {
         if (!has_v)
-            visitor = new Rosella.FileSystem.Visitor.List(1, 1);
+            visitor = new Rosella.FileSystem.Visitor.List();
         visitor.begin_directory(self);
         var files = self.get_files();
         for (var file in files)
