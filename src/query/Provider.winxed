@@ -162,6 +162,13 @@ class Rosella.Query.Provider
         return new_data;
     }
 
+    function shuffle(var data)
+    {
+        var new_data = self.to_array(data);
+        Rosella.Query.knuth_fisher_yates_shuffle(new_data);
+        return new_data;
+    }
+
     // Return the list of keys of the aggregate
     function keys(var data)
     {

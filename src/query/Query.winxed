@@ -86,6 +86,19 @@ namespace Rosella.Query
         }
     }
 
+    function knuth_fisher_yates_shuffle(var d)
+    {
+        int i = elements(d);
+        var rand = new 'Integer';
+        for (int i = elements(d) - 1; i > 0; i--) {
+            rand.set_random(i + 1);
+            int n = rand;
+            var v = d[i];
+            d[i] = d[n];
+            d[n] = v;
+        }
+    }
+
     function install_to_type(var type)
     {
         var type_class = Rosella.get_type_class(type);

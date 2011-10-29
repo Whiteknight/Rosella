@@ -104,6 +104,12 @@ class Rosella.Query.Queryable
         return self.as_queryable(result);
     }
 
+    function shuffle()
+    {
+        var result = self.provider.shuffle(self.data);
+        return self.as_queryable(result);
+    }
+
     // Return a count of elements
     function count(var func [optional], int has_func [opt_flag])
     {
