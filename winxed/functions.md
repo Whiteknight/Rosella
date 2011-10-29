@@ -196,9 +196,40 @@ Here is a simple function to remove a single item from a hash by name:
 This isn't the most efficient way to do it, nor is it easily extendible, but
 this should demonstrate some of the uses of the functionality.
 
+### Multiple Dispatch
+
+Multiple Dispatch is supported in Winxed and support is growing. Basic dispatch
+can be done by matching primitive types:
+
+    function Foo(var a, var b) { ... }
+    function Foo(string a, int b) { ... }
+    function Foo(var a) { ... }
+
+If you have multiple functions with the same name in the same namespace, they
+will be automaticaly converted into multi functions or MultiSub PMCs. The number
+and types of arguments used to call the MultiSub will determine how the call
+is dispatched.
+
+If you need more control over the multiple dispatch, or if you need to be able
+to dispatch based on classes, you need to use the more verbose `[multi]`
+syntax.
+
+    function Foo [multi(int, string, class Bar.Baz)](int a, string b, var c) { ... }
+
+Parrot's multidispatch engine will look at the numbers, types, and classes
+for each to determine the correct candidate to dispatch to.
+
 ## Returns
 
 ### Basic Returns
+
+    function Foo() {
+        return 5;
+    }
+
+    function main[main]() {
+        var f = Foo();
+    }
 
 ### No Return Values
 
@@ -271,23 +302,23 @@ information from the function that created them. A closure "closes" over the
 current lexical scope where it is created, keeping references to the variables
 used in the parent function. Creating a closure forces the parent context to
 stay alive so that the variables in that context can be referenced by the
-closure. Only `var` variables can be lexically scoped and therefore made
-available in closures.
+closure.
 
     function foo(int a) {
-        var var_a = a;      // promote a to var, so we can close it
+        float b = 2.5;
+
         return function() {
-            return var_a;
+            return a + b;
         };
     }
 
     function main[main]() {
         var f5 = foo(5);
         var f7 = foo(7);
-        say(f5());      // "5"
-        say(f7());      // "7"
-        say(f5());      // "5"
-        say(f7());      // "7"
+        say(f5());      // "7.5"
+        say(f7());      // "9.5"
+        say(f5());      // "7.5"
+        say(f7());      // "9.5"
     }
 
 The `function` keyword is used to create normal subroutines (in namespaces),

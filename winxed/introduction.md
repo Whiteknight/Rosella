@@ -5,6 +5,9 @@ title: Introduction
 
 ## Get Winxed
 
+Winxed is snapshotted into the Parrot development repository and is included
+in all Parrot releases
+
 ### Plumage
 
 ### With Parrot

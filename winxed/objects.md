@@ -31,7 +31,7 @@ own types. For some of Parrot's lowest level built-in types this is the only
 way to initialize them, but you are writing code in Winxed and you have other
 options.
 
-As an aside, Parrot also provides an init vtable, which initializes a new PMC
+As an aside, Parrot also provides an `init` vtable, which initializes a new PMC
 without taking an argument. Parrot decides which to call depending on whether
 or not an argument was passed to the `new` opcode at the Parrot level.
 Following the example above, we can call the init VTABLE instead of init_pmc
@@ -52,30 +52,32 @@ if we allocate foo without parenthesis or an argument:
         return foo;
     }
 
-init VTABLE is called every time Parrot allocates an object. It is usually
-transparent and has no effect. The only time this information matters is if
-you want to instead use init_pmc, or if you want to add in some kind of
-initialization logic in init. If you provide a version of it in your code as
-a `[vtable]`, that will be called *before* a Constructor. Typically this is a
-low-level detail that you shouldn't be playing with for a variety of reasons.
-However, if you absolutely need to perform initialization before calling a
-constructor or perform initialization that might alter the dynamic dispatch
-of the constructor, init is a handy tool to use. Try to avoid it if you can,
-but be aware that it is available.
+Either `init` or `init_pmc` VTABLEs are called every time Parrot allocates an
+object. It is usually transparent and has no effect. The only time this
+information matters is if you want to instead use `init_pmc`, or if you want to
+add in some kind of initialization logic in `init`. If you provide a version of
+it  in your code as a `[vtable]`, that will be called *before* a Constructor.
+Typically this is a low-level detail that you shouldn't be playing with for a
+variety of reasons. However, if you absolutely need to perform initialization
+before calling a constructor or perform initialization that might alter the
+dynamic dispatch of the constructor, `init` is a handy tool to use. Try to avoid
+it if you can because it can produce results which are surprising from a higher
+level viewpoint, but be aware that it is available.
 
 ### Constructors
 
 Winxed defines a constructor as any method which has the same name as the
 short name of the Class. So if we define a `class Foo { }`, the function
-`function Foo() { }` is the constructor for it.
+`function Foo() { }` is the constructor for it. Likewise `class Foo.Bar.Baz { }`
+has a constructor named `function Baz() { }`.
 
 If we use the `new` keyword with the name of the class (without brackets) we
 can create a new object of that type:
 
     var foo = new Foo;
 
-Notice two things. First, this statement does not invoke the init_pmc vtable
-(but it does automatically invoke the init vtable). Second, we do *not* invoke
+Notice two things. First, this statement does not invoke the `init_pmc` vtable
+(but it does automatically invoke the `init` vtable). Second, we do *not* invoke
 the Foo class contructor. To invoke the constructor, you need to use
 parenthesis:
 
@@ -84,11 +86,9 @@ parenthesis:
 If your class is nested inside a namespace, you use the namespace to specify
 the full name of the Class. The constructor is still the Class shortname:
 
-    namespace Bar {
-        class Foo {
-            function Foo() {
-                ...     // Constructor
-            }
+    class Bar.Foo {
+        function Foo() {
+            ...     // Constructor
         }
     }
 
@@ -99,6 +99,21 @@ the full name of the Class. The constructor is still the Class shortname:
 In this example, the class is named Foo so the constructor is named Foo.
 However, Winxed needs to look up the class using the namespace path `Bar.Foo`.
 
+There is no easy syntax in Winxed for calling `init_pmc` VTABLE *and* the
+constructor. However, you don't mind getting into some of the dirty details, you
+can produce this behavior yourself:
+
+    var init_args = ...;
+    var foo_class = class Bar.Foo;
+    var obj;
+    ${ new obj, foo_class, init_args };
+    string foo_name = string(foo_class);
+    obj.*foo_name(constructor_args);
+
+This is ugly, but easy enough to hide in a wrapper function. Rosella does
+something similar to this in the `Rosella.build` and `Rosella.construct`
+routines.
+
 ### Creating Objects Review
 
 Here are some common scenarios for allocating a PMC, and what effect they
@@ -107,7 +122,7 @@ have:
     var f = new Foo.Bar.Baz;
 
 This creates a new object of type `Baz`, which Winxed will look up in the
-Foo.Bar namespace. This calls init VTABLE, but does not call a constructor.
+Foo.Bar namespace. This calls `init` VTABLE, but does not call a constructor.
 This form of the allocation will cause Winxed to display a warning if
 Foo.Bar.Baz cannot be located at compile time (if it is defined in a
 dynamically-loaded library, for instance).
@@ -116,13 +131,13 @@ dynamically-loaded library, for instance).
 
 This is the same as the example above but it also automatically invokes the
 constructor `Baz()` on the object as soon as it is allocated. This calls the
-init VTABLE first, before the constructor. Notice that this will throw a
+`init` VTABLE first, before the constructor. Notice that this will throw a
 method not found exception if the constructor does not exist.
 
     var f = new ["Foo", "Bar", "Baz"];
 
 This creates a new Foo.Bar.Baz object using the lower-level syntax. It invokes
-the init VTABLE but no constructor. This form does not cause Winxed to display
+the `init` VTABLE but no constructor. This form does not cause Winxed to display
 a warning if the type is not found at compile time.
 
 These two invocations are the same:
@@ -137,7 +152,7 @@ do not have Constructors in the way Winxed defines the term.
 
     var f = new ["Foo", "Bar", "Baz"](p);
 
-This creates a new Foo.Bar.Baz calling the init_pmc VTABLE with value `p`. It
+This creates a new Foo.Bar.Baz calling the `init_pmc` VTABLE with value `p`. It
 does not call the constructor and does not issue a warning at runtime. Notice
 that for both of the lower-level calls you can always call the constructor
 explicitly:
@@ -145,7 +160,7 @@ explicitly:
     var f = new ["Foo", "Bar", "Baz"](p);
     f.Baz(args);
 
-Notice also that we can use the more simple form with init_pmc:
+Notice also that we can use the more simple form with `init_pmc`:
 
     var f = new "Foo"(p)
 
@@ -158,10 +173,15 @@ builtin:
 
     var my_class = typeof(x);
 
+In string context, `typeof` returns the class shortname instead:
+
+    string class_name = typeof(x);
+
 ### instanceof
 
 The `instanceof` operator is used to check if an object is a member of a
-certain class.
+certain class. It returns a boolean value, and is typically used with `if`
+statements:
 
     if (x instanceof Foo.Bar.Baz) { ... }
     if (x instanceof ["Foo", "Bar", "Baz"]) { ... }

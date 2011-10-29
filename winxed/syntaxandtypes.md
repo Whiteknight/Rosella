@@ -245,37 +245,38 @@ individual ops in Parrot changes dramatically over time.
 Here are some of the most useful builtin functions which Winxed currently
 provides:
 
-* sprintf
-* say
-* cry
-* print
-* die
-* exit
-* time
-* floattime
-* spawnw
-* getstdin
-* getstdout
-* getstderr
-* open
+* `string s = sprintf(fmt, args)` Same as the Parrot opcode
+* `say(msg)` Same as the Parrot opcode
+* `cry(msg)` Print an error message to stderr
+* `print(msg)` Same as the Parrot opcode
+* `die(msg)` Same as the Parrot opcode
+* `exit(int_code)` Same as the Parrot opcode
+* `int t = time()` Get the current time as an int
+* `float f = floattime()` Get the current time as a float
+* `int c = spawnw(args)` Spawn a subprocess with the given commandline
+* `var s = getstdin()` Get the handle to stdin
+* `var s = getstdout()` Get the handle to stdout
+* `var s = getstderr()` Get the handle to stderr
+* `var f = open(path, mode)` Open the FileHandle to path with mode
 * Error
-* elements
-* length
-* bytelength
-* substr
+* `int e = elements(aggregate)` Get the number of elements in the hash or array
+* `int l = length(str)` Get the length of the string
+* `int b = bytelength(str)` Get the byte length of the string
+* `string s = substr(str, start, len)` Get the substring
 * replace
 * indexof
 * join
 * split
-* push
+* `push(array, obj)` Push the object to the array
 * get_class
-* typeof
-* getattribute
-* find_method
+* `var c = typeof(obj)` Get the Class or class short name for the object
+* `var a = getattribute(obj, name)` Get the attribute value on obj with the given name
+* `var f = find_method(obj, name)` Find the method on obj with the given name
 * clone
-* compreg
+* `var c = compreg(lang)` Get the compiler object for the given language
 * load_language
-* load_bytecode
+* `var b = load_bytecode(path)` Load the PackfileView, running :load routines (deprecated)
+* `var b = load_packfile(path)` Load the PackfileView, do not run :load
 
 ## Error Handling and Exceptions
 

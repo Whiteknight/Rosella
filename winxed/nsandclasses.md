@@ -16,14 +16,10 @@ Namespaces are defined with the `namespace` keyword:
     namespace Foo {
     }
 
-There is no easy syntax for creating nested namespaces. You need to define
-each explicitly:
+There is an easy syntax for nested namespaces:
 
-    namespace Foo {
-        namespace Bar {
-            namespace Baz {
-            }
-        }
+    namespace Foo.Bar.Baz {
+        ...
     }
 
 Functions can be defined in a namespace. Here is an example:
@@ -38,6 +34,18 @@ Functions can be defined in a namespace. Here is an example:
                 function Hello() { say("hello world from Baz!"); }
             }
         }
+    }
+
+Same as:
+
+    namespace Foo {
+        function Hello() { say("hello world from Foo!"); }
+    }
+    namespace Foo.Bar {
+        function Hello() { say("hello world from Bar!"); }
+    }
+    namespace Foo.Bar.Baz {
+        function Hello() { say("hello world from Baz!"); }
     }
 
 ## Using Functions From Namespaces
@@ -73,6 +81,10 @@ With `static` the Winxed compiler will throw an error if it cannot resolve the
 function at runtime. Also, the function will be made into a static constant
 reference, so it cannot be assigned to a variable.
 
+The `using` and `using static` directives perform a lookup at runtime and store
+a reference to the subroutine into a variable with the same name. This is useful
+if you need to pass a Sub reference as data to another function.
+
 ## Namespace Object References
 
 ## Creating Classes
@@ -89,6 +101,20 @@ Classes can be nested in Namespaces and even other Classes:
             class Baz {
             }
         }
+    }
+
+Which is the same as:
+
+    class Foo.Bar {
+        class Baz {
+        }
+    }
+
+Which is still the same as:
+
+    class Foo.Bar {
+    }
+    class Foo.Bar.Baz {
     }
 
 ## Attributes
@@ -113,7 +139,8 @@ In a Class method, attributes are accessed using the `self.` keyword object.
     }
 
 Due to limitations in Parrot, attributes are always `var` and cannot be one
-of the primitive types like `int`, `float`, or `string`.
+of the primitive types like `int`, `float`, or `string`. This limitation may be
+removed in the future.
 
 ## Inheritance
 
@@ -217,23 +244,20 @@ aren't passing an invocant. We can specify an invocant with the `.*` operator:
 We can use these two things together to allow us to call a shadowed method in
 a parent class, like in the example above:
 
-    namespace Parent {
-        class MyClass {
-            function MyClass[nsentry]() { ... }
-        }
+    class Parent.MyClass {
+        function MyClass[nsentry]() { ... }
     }
 
-    namespace Child {
-        class MyClass : Parent.MyClass {
-            function MyClass() {
-                using Parent.MyClass.MyClass;
-                var func = MyClass;
-                self.*func();
-            }
+    class Child.MyClass : Parent.MyClass {
+        function MyClass() {
+            using Parent.MyClass.MyClass;
+            var func = MyClass;
+            self.*func();
         }
     }
 
     function Do_Stuff() {
+        var myclass = new
         var b = new Child.MyClass();
     }
 
@@ -241,19 +265,15 @@ One other thing we can try to do is look up the method in the parent class
 object with the `class` keyword. Classes are objects, and they have methods
 that we can use for things like finding methods:
 
-    namespace Parent {
-        class MyClass {
-            function MyClass() { ... }
-        }
+    class Parent.MyClass {
+        function MyClass() { ... }
     }
 
-    namespace Child {
-        class MyClass : Parent.MyClass {
-            function MyClass() {
-                var parent_class = class Parent.MyClass;
-                var method = parent_class.find_method("MyClass");
-                self.*method();
-            }
+    class Child.MyClass : Parent.MyClass {
+        function MyClass() {
+            var parent_class = class Parent.MyClass;
+            var method = parent_class.find_method("MyClass");
+            self.*method();
         }
     }
 
