@@ -24,12 +24,14 @@ class Rosella.Event
     var current_pos_payload;
     var current_named_payload;
     var result;
+    var current_subscriber_name;
 
     // Constructor
     function Event()
     {
         self.subscribers = {};
         self.subscriber_factory = Rosella.Event.default_subscriber_factory();
+        self.current_subscriber_name = null;
     }
 
     function subscribe(string name, var action, string dispatch)
@@ -77,9 +79,14 @@ class Rosella.Event
     /* Event Raise Routines
     */
 
-    function add_result(string name, var value)
+    function set_result(var value)
     {
-        self.result[name] = value;
+        self.result[string(self.current_subscriber_name)] = value;
+    }
+
+    function current_subscriber()
+    {
+        return self.current_subscriber_name;
     }
 
     function prepare_to_publish(var p, var n)
@@ -94,9 +101,12 @@ class Rosella.Event
         self.prepare_to_publish(pos, named);
         for (string subscriber_name in self.subscribers) {
             var subscriber = self.subscribers[subscriber_name];
-            if (subscriber != null)
+            if (subscriber != null) {
+                self.current_subscriber_name = subscriber_name;
                 subscriber.execute(self);
+            }
         }
+        self.current_subscriber_name = null;
         return self.result;
     }
 }

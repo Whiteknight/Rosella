@@ -77,6 +77,27 @@ class Test_Rosella_Event
         self.assert.same(arg_0, result);
     }
 
+    function set_result()
+    {
+        self.status.verify("Test Rosella.Event.set_result()");
+        var obj = create_new();
+        obj.subscribe("foo", function(e) { e.set_result(5); }, "immediate");
+        obj.subscribe("bar", function(e) { e.set_result(6); }, "immediate");
+        var result = obj.publish();
+
+        self.assert.equal(result["foo"], 5);
+        self.assert.equal(result["bar"], 6);
+    }
+
+    function current_subscriber()
+    {
+        self.status.verify("Test Rosella.Event.current_subscriber()");
+        var obj = create_new();
+        self.status.unimplemented("TODO");
+
+        var result = obj.current_subscriber();
+    }
+
     function prepare_to_publish()
     {
         self.status.verify("Test Rosella.Event.prepare_to_publish()");
