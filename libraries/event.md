@@ -40,15 +40,16 @@ without needing to modify any existing code in the application.
 
 ## Namespaces
 
-None.
+### Rosella.Event
 
 ## Classes
 
 ### Event
 
-`Rosella.Event` is the underlying event object. It serves as little more than
-data storage, and is not useful by itself. Events are stored by name in a
-`Rosella.Event.Manager` object, and are raised through that interface.
+`Rosella.Event` is the primary eventing mechanism in the Event library. Events
+are self-contained objects which take subscribers and control flow of control
+during a publish sequence. Events can be used by themselves or they can be
+managed by a `Rosella.Event.Manager` object.
 
 When the Event is raised, status information and parameter values are updated
 in the Event, and it is passed to all available subscribers. The Manager
@@ -64,48 +65,78 @@ Event also contains some additional functionality. The method `Event.handled`
 can be used to mark the Event as being handled. Once the Event is marked as
 handled, the raise sequence ends and no additional subscribers are invoked.
 
+### Event.Dispatcher
+
+`Rosella.Event.Dispatcher` objects are used to dispatch event subscribers when
+the event is published. The subscriber determines when and how to be notified,
+including the ability to schedule notification on a separate thread or task.
+
+`Rosella.Event.Dispatcher` is an abstract parent type. Use a subclass instead,
+through `Rosella.Event.Dispatcher.Factory`
+
+### Event.Dispatcher.Factory
+
+`Rosella.Event.Dispatcher.Factory` is a factory type for obtaining reference to
+a suitable dispatcher object. Dispatchers are typically reusable, so the Factory
+may return an existing reference.
+
+By default, there are three types of dispatchers that can be obtained:
+"immediate", "task" and "thread". These three types correspond to the dispatcher
+types described below.
+
+### Event.Dispatcher.Immediate
+
+`Rosella.Event.Dispatcher.Immediate` dispatches the event immediately in the
+current task. Event publishing is paused while the subscriber is notified. Only
+short subscription routines should be used with the Immediate class, since it
+delays the current task and the current event publish operation.
+
+### Event.Dispatcher.Task
+
+`Rosella.Event.Dispatcher.Task` dispatches the event on a separate Task in the
+current Parrot thread. This is only available if Parrot is built with green
+threads support.
+
+### Event.Dispatcher.Thread
+
+`Rosella.Event.Dispatcher.Thread` dispatches the task to a new thread. This is
+only available if Parrot is built with threads support.
+
 ### Event.Manager
 
-`Rosella.Event.Manager` is used as a centralized mechanism for storing
-and managing Events and subscribers in Queues. The Manager provides an
-interface for working with events in a general way.
+`Rosella.Event.Manager` is an organizational mechanism for storing and accessing
+events. Events in the manager are organized by name, and can be accessed by
+name. To subscribe to an event or to modify the event, look it up in the manager
+first and then access the Event instance directly.
 
-Events in the Manager are organized by unique string name. Events can be
-added or removed by name, or new Actions can be subscribed to Events by name.
-The EventManager will automatically create a new Event if one does not already
-exist with the given name. No individual subscriber or publisher needs to be
-aware of the order in which subscriptions occur. A publisher does not need to
-be aware of whether the Event even exists yet or not. An Event not existing is
-treated exactly the same as an Event with zero subscribers.
+The manager has the nice feature of lazily creating events when accessed, so it
+doesn't matter who accesses the event in what order. If a publisher publishes an
+event before there are any subscribers, the publish silently does nothing. If
+subscribers attempt to subscribe to the event before it has been created
+elsewhere, the event will automatically be created.
 
-Subscribers are arranged into named Queues. Queues organize subscribers by the
-Event they subscribe to, and by subscriber name. Queues can selectively
-invoke subscribers depending on properties of the Event. The Manager provides
-a default queue, which can be addressed by passing `null` as the queue name.
-The default queue cannot be deleted or modified, but it can be disabled by
-calling `.toggle_queue(null, 0)`.
+Event Manager objects do not need to be used, but they add a nice layer of
+abstraction and decoupling logic between separate parts of a system relying on
+events.
 
-When raising an Event, if the method `.raise_event()` is used all Queues
-receive the Event. If `.raise_event_queue()` is used, only a particular named
-Queue receives the Event.
+### Event.Payload
 
-### Event.Queue
+When an Event is published and new instance of `Rosella.Event.Payload` is sent
+to each subscriber. The Payload is unique to that subscriber and can be read
+and modified without having to worry about data corruption. When the Event is
+published, a hash of all generated payloads is returned for possible examination
+by the publisher.
 
-`Rosella.Event.Queue` is used to organize subscribers, selectively invoke them
-when an Event is raised, and perform other behaviors as required. Queues break
-subscribers into two groups: event-specific subscribers which only trigger in
-response to specific named Events, and general subscribers which trigger in
-response to all Events passed to the Queue.
+### Event.Subscriber
 
-The default Queue class pushes Events directly to subcribers. Custom
-subclasses of Queue could store Events until polled by subscribers, or provide
-other behaviors.
+A `Rosella.Event.Subscriber` object is a pair of a callback and a dispatcher.
+It is used to manage subscriptions and control how the subscriber is notified
+when the event is published.
 
-The default Queue implementation does not do any delaying, persisting,
-passing Events to distributed program nodes, etc. These are all features that
-you would expect to find in a more heavy-duty pub/sub implementation.
-Custom subclasses of Queue may be used to provide those kinds of behaviors,
-however.
+### Event.Subscriber.Factory
+
+The `Rosella.Event.Subscriber.Factory` type is a factory for creating
+subscribers. It automatically assigns a Dispatcher object as necessary.
 
 ## Examples
 
@@ -114,10 +145,10 @@ however.
 ### NQP-rx
 
     my $manager := Rosella::construct(Rosella::Event::Manager);
-    $manager.register_event("Test");
-    $manager.add_subscriber_action("Foo", Rosella::construct(Rosella::Action::Sub,
-        sub($ev) { pir::say("Action Invoked!"); }
+    my $event := $manager.get_event("Test");
+    $event.subscribe("Foo",
+        sub($payload) { pir::say("Action Invoked!"); }
     ));
-    $manager.raise_event("Test");
+    my %payloads := $event.publish();
 
 ## Users
