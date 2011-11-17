@@ -36,7 +36,7 @@ namespace Rosella { namespace Template { namespace Node
         function compile_func(string code)
         {
             string code_s = Rosella.String.sprintf("function __%s__EVAL[anon](var engine, var output, var context) { %s; }", EVAL_BASE_NAME, code);
-            var winxed = compreg("winxed");
+            var winxed = Rosella.get_winxed_compiler();
             return winxed.compile(code_s);
         }
     }

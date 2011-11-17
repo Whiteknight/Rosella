@@ -1,5 +1,6 @@
 namespace Rosella {
     // src/core/Rosella.winxed
+    extern function get_winxed_compiler;
     extern function alloc;
     extern function build;
     extern function construct;

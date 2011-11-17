@@ -9,7 +9,7 @@ namespace Rosella { namespace Harness { namespace TestFile
 
         function compile_test()
         {
-            var winxed = compreg("winxed");
+            var winxed = Rosella.get_winxed_compiler();
             return winxed.compile_file(string(self));
         }
 
