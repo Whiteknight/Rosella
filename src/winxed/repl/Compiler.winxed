@@ -7,7 +7,7 @@ namespace Rosella { namespace Winxed { namespace Repl
 
         function Compiler()
         {
-            self.compiler = load_language("winxed");
+            self.compiler = Rosella.get_winxed_compiler();
             self.count = 0;
         }
 

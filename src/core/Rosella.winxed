@@ -10,6 +10,18 @@
 */
 namespace Rosella
 {
+    function get_winxed_compiler()
+    {
+        var c = compreg("winxed");
+        if (c != null)
+            return c;
+        load_language("winxed");
+        c = compreg("winxed");
+        if (c != null)
+            return c;
+        Rosella.Error.invalid(__FUNCTION__, "Cannot get Winxed compiler object");
+    }
+
     /* Allocation / Construction Functions
         These functions allocate a new object using some kind of proto-
         or meta-object. This meta-object can be a Class PMC, a PMC which can
