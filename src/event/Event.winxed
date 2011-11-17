@@ -1,3 +1,14 @@
+namespace Rosella.Event
+{
+    const string DEFAULT_SUBSCRIBER_FACTORY = "Rosella.Event.default_subscriber_factory";
+    function default_subscriber_factory()
+    {
+        var d = new Rosella.Event.Subscriber.Factory();
+        while(1)
+            yield(d);
+    }
+}
+
 /* Event Class.
     An Event is basically a data object that holds information from the
     publisher to transmit to various subscribers. When an event is raised,
@@ -8,15 +19,28 @@
 */
 class Rosella.Event
 {
-    var current_action_name;
+    var subscribers;
+    var subscriber_factory;
     var current_pos_payload;
     var current_named_payload;
-    var handled;
 
     // Constructor
     function Event()
     {
-        self.handled = 0;
+        self.subscribers = {};
+        self.subscriber_factory = Rosella.Event.default_subscriber_factory();
+    }
+
+    function subscribe(string name, var action, string dispatch)
+    {
+        var subscriber = self.subscriber_factory.create(action, dispatch);
+        self.subscribers[name] = subscriber;
+    }
+
+    function unsubscribe(event_name)
+    {
+        if (exists self.subscribers[event_name])
+            delete self.subscribers[event_name];
     }
 
     /* Payload Routines
@@ -52,31 +76,14 @@ class Rosella.Event
     /* Event Raise Routines
     */
 
-    // Get the name of the currently executing Action. This is only
-    // defined during Event raise
-    function action_name(string name [optional], int has_name [opt_flag])
+    function publish(var pos [slurpy], var named [slurpy,named])
     {
-        if (has_name)
-            self.current_action_name = name;
-        return self.current_action_name;
-    }
-
-    // Set to 0 at the beginning of the raise sequence. The Event
-    // continues to execute its member actions until handled is set to 1
-    // or until it runs out of actions
-    function handled(int handled [optional], int has_h [opt_flag])
-    {
-        if (has_h)
-            self.handled = handled;
-        return self.handled;
-    }
-
-    // Prepare to raise the event, by providing data to pass to the
-    // subscribers
-    function prepare_to_raise(var pos, var named)
-    {
-        self.handled = 0;
         self.current_pos_payload = pos;
         self.current_named_payload = named;
+        for (string subscriber_name in self.subscribers) {
+            var subscriber = self.subscribers[subscriber_name];
+            if (subscriber != null)
+                subscriber.execute(self);
+        }
     }
 }

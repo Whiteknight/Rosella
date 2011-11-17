@@ -1,0 +1,20 @@
+class Rosella.Event.Subscriber.Factory : Rosella.ObjectFactory
+{
+    var dispatcher_factory;
+
+    function Factory()
+    {
+        self.dispatcher_factory = new Rosella.Event.Dispatcher.Factory();
+    }
+
+    function create_typed(var p [slurpy], var n [slurpy,named])
+    {
+        Rosella.Error.invalid(__FUNCTION__, "Cannot create_typed with a Subscriber Factory");
+    }
+
+    function create(var action, string dispatch)
+    {
+        var dispatcher = self.dispatcher_factory.create(dispatch);
+        return new Rosella.Event.Subscriber(action, dispatcher);
+    }
+}

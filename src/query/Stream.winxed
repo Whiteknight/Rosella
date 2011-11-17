@@ -2,7 +2,7 @@
     A stream is a sequence of data items from an iterable source. Items
     are read lazily from the source.
 */
-class Rosella.Query.Stream : Rosella.Query
+class Rosella.Query.Stream
 {
     var data;
     var last_stage;

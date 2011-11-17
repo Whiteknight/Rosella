@@ -1,0 +1,16 @@
+class Rosella.Event.Subscriber
+{
+    var dispatcher;
+    var callback;
+
+    function Subscriber(var callback, var dispatcher)
+    {
+        self.callback = callback;
+        self.dispatcher = dispatcher;
+    }
+
+    function execute(var e)
+    {
+        self.dispatcher.dispatch(e, self.callback);
+    }
+}

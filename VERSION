@@ -6,7 +6,7 @@ container: 2 Stable
 core: 2 Stable
 decorate: 0 Beta
 dumper: 0 Beta
-event: 3 Stable
+event: 4 Alpha
 filesystem: 1 Stable
 harness: 3 Stable
 lazy: 0 Alpha

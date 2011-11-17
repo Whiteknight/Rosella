@@ -169,8 +169,11 @@ function setup_stable_libraries(var rosella)
     // Event library. Subscribe to, receive, and publish event notifications.
     setup_winxed_lib(rosella, "event", ["Core", "Action"],
         "event/Event",
+        "event/Dispatcher",
+        "event/dispatcher/Factory",
         "event/Manager",
-        "event/Queue"
+        "event/Subscriber",
+        "event/subscriber/Factory"
     );
 
     // Memoization library. Allows multiple types of transparent Sub
@@ -433,7 +436,7 @@ function do_test()
     string cmd = nqp + " t/harness";
     int result;
     ${ spawnw result, cmd };
-    ${ exit result };
+    return result;
 }
 
 function get_all_tests(var rosella, string path)
@@ -549,13 +552,16 @@ function main[main](var argv)
     int exit_code = 0;
     if (argv[1] == "test")
         do_test();
-    try {
-        setup_main(argv);
-    } catch (e) {
-        say(e["message"]);
-        for (string bt in e.backtrace_strings())
-            say(bt);
-        exit_code = 1;
+    else {
+        try {
+            setup_main(argv);
+        } catch (e) {
+            say(e["message"]);
+            for (string bt in e.backtrace_strings())
+                say(bt);
+            exit_code = 1;
+        }
     }
-    exit(exit_code);
+    if (exit_code != 0)
+        exit(exit_code);
 }

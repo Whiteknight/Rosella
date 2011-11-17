@@ -1,0 +1,25 @@
+class Rosella.Event.Dispatcher.Factory : Rosella.ObjectFactory
+{
+    var dispatchers;
+
+    function Factory()
+    {
+        self.dispatchers = {
+            "immediate" : new Rosella.Event.Dispatcher.Immediate(),
+            "task"      : new Rosella.Event.Dispatcher.Task(),
+            "thread"    : new Rosella.Event.Dispatcher.Thread()
+        };
+    }
+
+    function create_typed(var p [slurpy], var n [slurpy,named])
+    {
+        Rosella.Error.invalid(__FUNCTION__, "Cannot create_typed with a Dispatcher Factory");
+    }
+
+    function create(string dispatch)
+    {
+        if (exists self.dispatchers[dispatch])
+            return self.dispatchers[dispatch];
+        Rosella.Error.invalid(__FUNCTION__, "Unknown dispatcher %s", dispatch);
+    }
+}

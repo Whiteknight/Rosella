@@ -24,17 +24,12 @@
 */
 class Rosella.Event.Manager
 {
-    const string DEFAULT_QUEUE = "!!!default_queue!!!";
     var events;
-    var queues;
 
     // Constructor.
     function Manager()
     {
         self.events = {};
-        self.queues = {
-            DEFAULT_QUEUE : new Rosella.Event.Queue(0)
-        };
     }
 
     /* Event Management Routines
@@ -44,18 +39,10 @@ class Rosella.Event.Manager
     */
 
     // Register a new event by name. The object registered must be a valid
-    // Event. The third argument says whether we merge the action lists
-    // together if there is a preexisting event of the same name. In this
-    // case, the actions from the new event will be written into the old
-    // event, overwriting any existing actions with duplicate ids.
-    function register_event(string event_name, var event,
-            string queue_name [optional], int has_queue [opt_flag])
+    // Event.
+    function register_event(string event_name, var event)
     {
-        using Rosella.isa_type;
-        if (!has_queue)
-            queue_name = DEFAULT_QUEUE;
-
-        if (!isa_type(class Rosella.Event, event))
+        if (!Rosella.isa_type(class Rosella.Event, event))
             Rosella.Error.invalid(__FUNCTION__, "not a valid event");
         if (exists self.events[event_name])
             Rosella.Error.invalid(__FUNCTION__, "Cannot register a new method named " + event_name);
@@ -63,197 +50,55 @@ class Rosella.Event.Manager
             self.events[event_name] = event;
     }
 
-    // Remove an event by name if it exists. If the optional "deep"
-    // parameter is provided and is 1, we also remove all subscribers of
-    // that event from all queues
-    function remove_event(string event_name,
-            int deep [optional], int has_deep [opt_flag])
+    // Remove an event by name if it exists.
+    function remove_event(string event_name)
     {
-        if (!has_deep)
-            deep = 0;
         if (exists self.events[event_name])
             delete self.events[event_name];
-        if (deep) {
-            for (string queue_name in self.queues)
-                self.queue_name.remove_subscribers_for_event(event_name);
-        }
     }
 
-    // Get a count of the number of events in the manager.
-    function count_events() { return int(self.events); }
-
-    /* Subscriber Management Routines
-        Subscribe routines return a unique identifier which can be used
-        to identify this specific subscription. The identifier is needed
-        if you want to unsubscribe from the event later, or perform any
-        other access on the Event. If you don't need to unsubscribe from
-        or modify the event, you can safely discard this identifier.
-    */
-
-    // Subscribe to an event by name. If the Event does not already exist,
-    // it will be created automatically with the given name.
-    function subscribe_object(string event_name, var object, var meth,
-            string queue_name [optional], int has_queue [opt_flag])
-    {
-        if (!has_queue)
-            queue_name = DEFAULT_QUEUE;
-        var event = self.__get_event_autocreate(event_name);
-        var queue = self.__get_queue_autocreate(queue_name);
-        string n = null;
-        return queue.add_subscriber_object(event_name, n, object, meth);
-    }
-
-    // Subscribe to an event with a pre-made Action.
-    function subscribe_action(string event_name, var action,
-            string queue_name [optional], int has_queue [opt_flag])
-    {
-        using Rosella.isa_type;
-        if (!isa_type(class Rosella.Action, action))
-            Rosella.Error.invalid("not a valid action");
-        if (!has_queue)
-            queue_name = DEFAULT_QUEUE;
-        var event = self.__get_event_autocreate(event_name);
-        var queue = self.__get_queue_autocreate(queue_name);
-        string n = null;
-        return queue.add_subscriber_action(event_name, n, action);
-    }
-
-    // Unsubscribe from an event. Requires the event name and the action
-    // id returned from subscribe
-    function unsubscribe(string event_name, string id,
-            string queue_name [optional], int has_queue [opt_flag])
-    {
-        if (!has_queue)
-            queue_name = DEFAULT_QUEUE;
-        if (exists self.queues[queue_name])
-            self.queues[queue_name].remove_subscriber(event_name, id);
-    }
-
-    /* Queue Management Routines
-    */
-
-    // Add a new queue by name. If a queue is provided, use that.
-    // otherwise, create a new Rosella.Event.Queue. If the queue already
-    // exists, do nothing. The default queue (queue name == null) cannot
-    // be re-added. Calling add_queue(null) simply enables the default
-    // queue.
-    function add_queue(string queue_name,
-            var queue [optional], int has_queue [opt_flag])
-    {
-        if (queue_name == null || queue_name == DEFAULT_QUEUE) {
-            self.queues[DEFAULT_QUEUE].enable(1);
-            return;
-        }
-        if (exists self.queues[queue_name])
-            return;
-        if (!has_queue)
-            queue = new Rosella.Event.Queue(0);
-        self.queues[queue_name] = queue;
-    }
-
-    // Remove the queue by name. If the queue does not already exist, do
-    // nothing. If the default queue is specified with remove_queue(null),
-    // don't delete it. Instead, if it's the default queue, just disable
-    // it.
-    function remove_queue(string queue_name)
-    {
-        if (queue_name == null || queue_name == DEFAULT_QUEUE) {
-            self.queues[DEFAULT_QUEUE].enable(0);
-            return;
-        }
-        if (exists self.queues[queue_name])
-            delete self.queues[queue_name];
-    }
-
-    // Specify an accept predicate rule for the specified queue.
-    function queue_accept_rule(string queue_name, var accept_func)
-    {
-        if (queue_name == null)
-            queue_name = DEFAULT_QUEUE;
-        if (exists self.queues[queue_name])
-            self.queues[queue_name].set_accept_func(accept_func);
-    }
-
-    // Toggle the specified queue on or off. A queue_name of null is the
-    // default queue. If we are enabling the queue, we can autocreate it
-    // if it doesn't exist. If we are disabling it, we don't autocreate.
-    function toggle_queue(string queue_name,
-            int enabled [optional], int has_e [opt_flag])
-    {
-        if (queue_name == null)
-            queue_name = DEFAULT_QUEUE;
-        if (!has_e) {
-            if (exists self.queues[queue_name])
-                return self.queues[queue_name].enable();
-            return 0;
-        }
-        if (enabled) {
-            var queue = self.__get_queue_autocreate(queue_name);
-            queue.enable(1);
-            return 1;
-        }
-        else {
-            if (exists self.queues[queue_name])
-                self.queues[queue_name].enable(0);
-            return 0;
-        }
-    }
-
-    /* Raise Event Routines
-    */
-
-    // Raise an event by name, triggering all subscriber queues. If the
-    // event is not registered, do nothing.
-    function raise_event(string event_name,
-            var args [slurpy], var named [slurpy,named])
-    {
-        if (!(exists self.events[event_name]))
-            return;
-        for (string queue_name in self.queues) {
-            var queue = self.queues[queue_name];
-            var event = self.events[event_name];
-            if (queue.can_raise(event_name, event))
-                queue.raise_event(event_name, event, args, named);
-        }
-    }
-
-    // Raise an event by name, only triggering subscribers from a single
-    // Queue.
-    function raise_event_queue(string event_name, string queue_name,
-            var args [slurpy], var named [slurpy,named])
-    {
-        if (!(exists self.events[event_name]))
-            return;
-        if (queue_name == null)
-            queue_name = DEFAULT_QUEUE;
-        if (!(exists self.queues[queue_name]))
-            return;
-        var queue = self.queues[queue_name];
-        var event = self.events[event_name];
-        if (queue.can_raise(event_name, event))
-            queue.raise_event(event_name, event, args, named);
-    }
-
-    /* Internal Routines
-    */
-
-    // Get an event, creating it if necessary
-    function __get_event_autocreate(string event_name)
+    function get_event(string event_name)
     {
         if (exists self.events[event_name])
             return self.events[event_name];
-        var event = new Rosella.Event();
-        self.events[event_name] = event;
-        return event;
+        return self.create_event(event_name);
     }
 
-    // Get a queue, creating it if it doesn't already exist
-    function __get_queue_autocreate(string queue_name)
+    function create_event(string event_name)
     {
-        if (exists self.queues[queue_name])
-            return self.queues[queue_name];
-        var queue = new Rosella.Event.Queue(0);
-        self.queues[queue_name] = queue;
-        return queue;
+        var e = new Rosella.Event();
+        self.register_event(event_name, e);
+        return e;
+    }
+
+    // Get a count of the number of events in the manager.
+    function count_events() { return elements(self.events); }
+
+    function get_pmc_keyed[vtable](string event_name)
+    {
+        return self.get_event(event_name);
+    }
+
+    function set_pmc_keyed[vtable](string event_name, var e)
+    {
+        self.register_event(event_name, e);
+    }
+
+    function elements[vtable]()
+    {
+        return elements(self.events);
+    }
+
+    function delete_keyed(string event_name)
+    {
+        self.remove_event(event_name);
+    }
+
+    function exists_keyed(string event_name)
+    {
+        if (exists self.events[event_name])
+            return true;
+        return false;
     }
 }
+

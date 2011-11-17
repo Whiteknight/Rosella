@@ -1,0 +1,40 @@
+class Rosella.Event.Dispatcher
+{
+    function dispatch(var e, var cb)
+    {
+        Rosella.Error.must_subclass(__CLASS__);
+    }
+}
+
+class Rosella.Event.Dispatcher.Immediate : Rosella.Event.Dispatcher
+{
+    function Immediate() { }
+
+    function dispatch(var e, var cb)
+    {
+        cb(e);
+    }
+}
+
+class Rosella.Event.Dispatcher.Task : Rosella.Event.Dispatcher
+{
+    function Task() { }
+
+    function dispatch(var e, var cb)
+    {
+        var t = new 'Task';
+        t.code(cb);
+        t.data(e);
+        ${ schedule t };
+    }
+}
+
+class Rosella.Event.Dispatcher.Thread : Rosella.Event.Dispatcher
+{
+    function Thread() { }
+
+    function dispatch(var e, var cb)
+    {
+        Rosella.Error.not_implemented(__FUNCTION__);
+    }
+}
