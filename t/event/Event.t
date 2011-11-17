@@ -33,79 +33,13 @@ class Test_Rosella_Event
         var result = obj.unsubscribe(arg_0);
     }
 
-    function get_pmc_keyed()
+    function get_payload()
     {
-        self.status.verify("Test Rosella.Event.get_pmc_keyed()");
+        self.status.verify("Test Rosella.Event.get_payload()");
         var obj = create_new();
-        obj.prepare_to_publish([], {"a" : 1, "b" : 2});
-
-        string arg_0 = "b";
-        var result = obj[arg_0];
-        self.assert.equal(result, 2);
-    }
-
-    function get_pmc_keyed_int()
-    {
-        self.status.verify("Test Rosella.Event.get_pmc_keyed_int()");
-        var obj = create_new();
-        obj.prepare_to_publish(["a", "b", "c"], {});
-
-        int arg_0 = 0;
-        var result = obj[arg_0];
-        self.assert.equal(result, "a");
-    }
-
-    function positional_payload()
-    {
-        self.status.verify("Test Rosella.Event.positional_payload()");
-        var obj = create_new();
-
-        var arg_0 = [1, 2, 3];
-        obj.prepare_to_publish(arg_0, {});
-        var result = obj.positional_payload();
-        self.assert.same(arg_0, result);
-    }
-
-    function named_payload()
-    {
-        self.status.verify("Test Rosella.Event.named_payload()");
-        var obj = create_new();
-
-        var arg_0 = {"a" : 1, "b" : 2};
-        obj.prepare_to_publish([], arg_0);
-        var result = obj.named_payload();
-        self.assert.same(arg_0, result);
-    }
-
-    function set_result()
-    {
-        self.status.verify("Test Rosella.Event.set_result()");
-        var obj = create_new();
-        obj.subscribe("foo", function(e) { e.set_result(5); }, "immediate");
-        obj.subscribe("bar", function(e) { e.set_result(6); }, "immediate");
-        var result = obj.publish();
-
-        self.assert.equal(result["foo"], 5);
-        self.assert.equal(result["bar"], 6);
-    }
-
-    function current_subscriber()
-    {
-        self.status.verify("Test Rosella.Event.current_subscriber()");
-        var obj = create_new();
-        self.status.unimplemented("TODO");
-
-        var result = obj.current_subscriber();
-    }
-
-    function prepare_to_publish()
-    {
-        self.status.verify("Test Rosella.Event.prepare_to_publish()");
-        var obj = create_new();
-
-        var arg_0 = [];
-        var arg_1 = {};
-        obj.prepare_to_publish(arg_0, arg_1);
+        var result = obj.get_payload("", null, null);
+        self.assert.not_null(result);
+        self.assert.instance_of(result, class Rosella.Event.Payload);
     }
 
     function publish()

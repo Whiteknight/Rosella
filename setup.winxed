@@ -172,6 +172,7 @@ function setup_stable_libraries(var rosella)
         "event/Dispatcher",
         "event/dispatcher/Factory",
         "event/Manager",
+        "event/Payload",
         "event/Subscriber",
         "event/subscriber/Factory"
     );

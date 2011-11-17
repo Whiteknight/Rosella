@@ -1,0 +1,58 @@
+class Rosella.Event.Payload
+{
+    var event;
+    var pos_args;
+    var named_args;
+    var subscriber_name;
+    var result;
+
+    function Payload(var event, string subscriber_name, var pos, var named)
+    {
+        self.event = event;
+        self.subscriber_name = subscriber_name;
+        self.pos_args = pos;
+        self.named_args = named;
+    }
+
+    /* Payload Routines
+    */
+
+    // Get named data by name
+    function get_pmc_keyed[vtable](var key)
+    {
+        return self.named_args[key];
+    }
+
+    // Get position data by index
+    function get_pmc_keyed_int[vtable](int key)
+    {
+        return self.pos_args[key];
+    }
+
+    // Get the raw positionals array
+    function positional_payload()
+    {
+        return self.pos_args;
+    }
+
+    // Get the raw named hash
+    function named_payload()
+    {
+        return self.named_args;
+    }
+
+    function set_result(var value)
+    {
+        self.result = value;
+    }
+
+    function subscriber_name()
+    {
+        return self.subscriber_name;
+    }
+
+    function result()
+    {
+        return self.result;
+    }
+}
