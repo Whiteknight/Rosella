@@ -22,8 +22,7 @@ class Rosella.Event.Dispatcher.Task : Rosella.Event.Dispatcher
 
     function dispatch(var e, var cb)
     {
-        var t = new 'Task';
-        t.code(cb);
+        var t = new 'Task'(cb);
         t.data(e);
         ${ schedule t };
     }

@@ -1,66 +1,106 @@
-INIT {
-    my $rosella := pir::load_bytecode__PS("rosella/core.pbc");
-    Rosella::initialize_rosella("test", "event");
+function create_new()
+{
+    return new Rosella.Event();
 }
 
-sub hash(*%h) { %h }
-
-Rosella::Test::test(Test::Event);
-class Test::Event {
-    method test_BUILD() {
-        my $m := Rosella::construct(Rosella::Event);
-        $!assert.not_null($m);
-        $!assert.instance_of($m, Rosella::Event);
+class Test_Rosella_Event
+{
+    function test_new()
+    {
+        // Test simple constructor. For most individual method tests, use create_new() above
+        var obj = new Rosella.Event();
+        self.assert.not_null(obj);
+        self.assert.instance_of(obj, class Rosella.Event);
     }
 
-    method get_pmc_keyed() {
-        my $m := Rosella::construct(Rosella::Event);
-        my %a := hash(:a("a"), :b("b"), :c("c"));
-        $m.prepare_to_publish([], %a);
-        $!assert.equal($m{"a"}, "a");
-        $!assert.equal($m{"b"}, "b");
-        $!assert.equal($m{"c"}, "c");
+    function subscribe()
+    {
+        self.status.verify("Test Rosella.Event.subscribe()");
+        var obj = create_new();
+
+        string arg_0 = "test";
+        var arg_1 = null;
+        string arg_2 = "immediate";
+        var result = obj.subscribe(arg_0, arg_1, arg_2);
     }
 
-    method get_pmc_keyed_int() {
-        my $m := Rosella::construct(Rosella::Event);
-        $m.prepare_to_publish([1, 2, 3, 4], {});
-        $!assert.equal($m[0], 1);
-        $!assert.equal($m[1], 2);
-        $!assert.equal($m[2], 3);
-        $!assert.equal($m[3], 4);
+    function unsubscribe()
+    {
+        self.status.verify("Test Rosella.Event.unsubscribe()");
+        var obj = create_new();
+
+        var arg_0 = "test";
+        var result = obj.unsubscribe(arg_0);
     }
 
-    method positional_payload() {
-        my $m := Rosella::construct(Rosella::Event);
-        my $a := [1, 2, 3, 4];
-        $m.prepare_to_publish($a, {});
-        $!assert.same($m.positional_payload, $a);
+    function get_pmc_keyed()
+    {
+        self.status.verify("Test Rosella.Event.get_pmc_keyed()");
+        var obj = create_new();
+        obj.prepare_to_publish([], {"a" : 1, "b" : 2});
+
+        string arg_0 = "b";
+        var result = obj[arg_0];
+        self.assert.equal(result, 2);
     }
 
-    method named_payload() {
-        my $m := Rosella::construct(Rosella::Event);
-        my $a := {};
-        $m.prepare_to_publish([], $a);
-        $!assert.same($m.named_payload, $a);
+    function get_pmc_keyed_int()
+    {
+        self.status.verify("Test Rosella.Event.get_pmc_keyed_int()");
+        var obj = create_new();
+        obj.prepare_to_publish(["a", "b", "c"], {});
+
+        int arg_0 = 0;
+        var result = obj[arg_0];
+        self.assert.equal(result, "a");
     }
 
-    method prepare_to_publish() {
-        my $m := Rosella::construct(Rosella::Event);
-        $m.prepare_to_publish([], {});
+    function positional_payload()
+    {
+        self.status.verify("Test Rosella.Event.positional_payload()");
+        var obj = create_new();
+
+        var arg_0 = [1, 2, 3];
+        obj.prepare_to_publish(arg_0, {});
+        var result = obj.positional_payload();
+        self.assert.same(arg_0, result);
     }
 
-    method subscribe() {
-        $!status.unimplemented("Implement this");
+    function named_payload()
+    {
+        self.status.verify("Test Rosella.Event.named_payload()");
+        var obj = create_new();
+
+        var arg_0 = {"a" : 1, "b" : 2};
+        obj.prepare_to_publish([], arg_0);
+        var result = obj.named_payload();
+        self.assert.same(arg_0, result);
     }
 
-    method unsubscribe() {
-        $!status.unimplemented("Implement this");
+    function prepare_to_publish()
+    {
+        self.status.verify("Test Rosella.Event.prepare_to_publish()");
+        var obj = create_new();
+
+        var arg_0 = [];
+        var arg_1 = {};
+        obj.prepare_to_publish(arg_0, arg_1);
     }
 
-    method publish() {
-        $!status.unimplemented("Implement this");
-    }
+    function publish()
+    {
+        self.status.verify("Test Rosella.Event.publish()");
+        self.status.unimplemented("Need many tests for publish");
+        var obj = create_new();
 
+        obj.publish();
+    }
 }
 
+function main[main]()
+{
+    var core = load_packfile("rosella/core.pbc");
+    var(Rosella.initialize_rosella)("test");
+    var(Rosella.load_bytecode_file)("rosella/event.pbc", "load");
+    var(Rosella.Test.test)(class Test_Rosella_Event);
+}
