@@ -1,10 +1,11 @@
-/* A generic object factory type, that serves as the basis for other
+/* A generic object factory type which serves as the basis for other
    factory types. A factory must provide a "create" method, which returns
    an object of the type which the factory is responsible for. Also, the
    factory should provide a "create_typed" method, to attempt creating
-   an object of a different type (such as a subclass).
+   an object of a different, albeit related, type (such as a subclass).
 
-   This is the base class for other factory-like classes in Rosella.
+   This is the base class for other factory-like classes in Rosella. This class
+   can be used directly as a generic factory type or it can be subclassed.
 */
 class Rosella.ObjectFactory
 {
@@ -24,8 +25,7 @@ class Rosella.ObjectFactory
     {
         if (self.target_type != null)
             return self.create_typed(self.target_type, pos:[flat], named:[flat,named]);
-        using Rosella.Error.invalid;
-        invalid(__FUNCTION__,
+        Rosella.Error.invalid(__FUNCTION__,
             "Cannot create an object without at type.\n" +
             "You must provide a type to create_typed, pass one to the " +
             "constructor for ObjectFactory"
@@ -37,7 +37,6 @@ class Rosella.ObjectFactory
     // subclasses may do something different
     function create_typed(var type, var pos [slurpy], var named [slurpy,named])
     {
-        using Rosella.construct;
-        return construct(type, pos:[flat], named:[flat,named]);
+        return Rosella.construct(type, pos:[flat], named:[flat,named]);
     }
 }
