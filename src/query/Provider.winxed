@@ -5,28 +5,41 @@
 */
 namespace Rosella.Query.Provider
 {
+    const string DEFAULT_ARRAY_PROVIDER = "Rosella.Query.Provider.array_provider";
+    const string DEFAULT_HASH_PROVIDER = "Rosella.Query.Provider.hash_provider";
+    const string DEFAULT_SCALAR_PROVIDER = "Rosella.Query.Provider.scalar_provider";
+
     // Get the Array provider
     function get_array_provider()
     {
-        var provider = new Rosella.Query.Provider.Array();
-        while(1)
-            yield provider;
+        var provider = Rosella.Globals.get_global(DEFAULT_ARRAY_PROVIDER);
+        if (provider == null) {
+            provider = new Rosella.Query.Provider.Array();
+            Rosella.Globals.register_global(DEFAULT_ARRAY_PROVIDER, provider);
+        }
+        return provider;
     }
 
     // Get the Hash Provider
     function get_hash_provider()
     {
-        var provider = new Rosella.Query.Provider.Hash();
-        while(1)
-            yield provider;
+        var provider = Rosella.Globals.get_global(DEFAULT_HASH_PROVIDER);
+        if (provider == null) {
+            provider = new Rosella.Query.Provider.Hash();
+            Rosella.Globals.register_global(DEFAULT_HASH_PROVIDER, provider);
+        }
+        return provider;
     }
 
     // Get the Scalar Provider
     function get_scalar_provider()
     {
-        var provider = new Rosella.Query.Provider.Scalar();
-        while(1)
-            yield provider;
+        var provider = Rosella.Globals.get_global(DEFAULT_SCALAR_PROVIDER);
+        if (provider == null) {
+            provider = new Rosella.Query.Provider.Scalar();
+            Rosella.Globals.register_global(DEFAULT_SCALAR_PROVIDER, provider);
+        }
+        return provider;
     }
 }
 
