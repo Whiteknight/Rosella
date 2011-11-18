@@ -33,15 +33,6 @@ class Test_Rosella_Event
         var result = obj.unsubscribe(arg_0);
     }
 
-    function get_payload()
-    {
-        self.status.verify("Test Rosella.Event.get_payload()");
-        var obj = create_new();
-        var result = obj.get_payload("", null, null);
-        self.assert.not_null(result);
-        self.assert.instance_of(result, class Rosella.Event.Payload);
-    }
-
     function publish()
     {
         self.status.verify("Test Rosella.Event.publish()");

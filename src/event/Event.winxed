@@ -1,18 +1,26 @@
 namespace Rosella.Event
 {
     const string DEFAULT_SUBSCRIBER_FACTORY = "Rosella.Event.default_subscriber_factory";
+    const string DEFAULT_PAYLOAD_FACTORY = "Rosella.Event.payload_factory";
+
     function default_subscriber_factory()
     {
-        var d = new Rosella.Event.Subscriber.Factory();
-        while(1)
-            yield(d);
+        var temp = Rosella.Globals.get_global(DEFAULT_SUBSCRIBER_FACTORY);
+        if (temp == null) {
+            temp = new Rosella.Event.Subscriber.Factory();
+            Rosella.Globals.register_global(DEFAULT_SUBSCRIBER_FACTORY, temp);
+        }
+        return temp;
     }
 
     function payload_factory()
     {
-        var p = new Rosella.ObjectFactory(class Rosella.Event.Payload);
-        while(1)
-            yield(p);
+        var temp = Rosella.Globals.get_global(DEFAULT_PAYLOAD_FACTORY);
+        if (temp == null) {
+            temp = new Rosella.ObjectFactory(class Rosella.Event.Payload);
+            Rosella.Globals.register_global(DEFAULT_PAYLOAD_FACTORY, temp);
+        }
+        return temp;
     }
 }
 
@@ -52,18 +60,14 @@ class Rosella.Event
     /* Event Raise Routines
     */
 
-    function get_payload(string name, var p, var n)
-    {
-        return Rosella.Event.payload_factory().create(self, name, p, n);
-    }
-
     function publish(var pos [slurpy], var named [slurpy,named])
     {
         var payloads = {};
+        var payload_factory = Rosella.Event.payload_factory();
         for (string subscriber_name in self.subscribers) {
             var subscriber = self.subscribers[subscriber_name];
             if (subscriber != null) {
-                var payload = self.get_payload(subscriber_name, pos, named);
+                var payload = payload_factory.create(self, subscriber_name, pos, named);
                 payloads[subscriber_name] = payload;
                 subscriber.execute(payload);
             }
