@@ -27,6 +27,6 @@ function main[main]()
 {
     var core = load_packfile("rosella/core.pbc");
     var(Rosella.initialize_rosella)("test");
-    var(Rosella.load_bytecode_file)("<# ns.ownerlib #>");
+    var(Rosella.load_bytecode_file)("<# ns.ownerlib #>", "load");
     var(Rosella.Test.test)(class Test_<# ns.cleanname #>);
 }
