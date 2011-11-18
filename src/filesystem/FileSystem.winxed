@@ -17,10 +17,7 @@ namespace Rosella.FileSystem
             os = new OS;
             set_os_pmc(os);
         }
-        while (1) {
-            yield os;
-            os = Rosella.Globals.get_global(OS_PMC_GLOBAL);
-        }
+        return os;
     }
 
     // Set the OS PMC instance that should be used by low-level

@@ -127,10 +127,7 @@ namespace Rosella.Query
                 }, null);
             Rosella.Globals.register_global(DEFAULT_PROVIDER_FACTORY, temp);
         }
-        while(1) {
-            yield temp;
-            temp = Rosella.Globals.get_global(DEFAULT_PROVIDER_FACTORY);
-        }
+        return temp;
     }
 
     // Set a customer global provider factory

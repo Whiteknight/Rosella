@@ -16,10 +16,7 @@ namespace Rosella.FileSystem.File
             factory = new Rosella.ObjectFactory("FileHandle");
             set_filehandle_factory(factory);
         }
-        while(1) {
-            yield factory.create();
-            factory = Rosella.Globals.get_global(FILEHANDLE_FACTORY_GLOBAL);
-        }
+        return factory.create();
     }
 
     // Set the global FileHandle factory to use.
