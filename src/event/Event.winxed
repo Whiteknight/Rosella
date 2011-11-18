@@ -7,6 +7,13 @@ namespace Rosella.Event
         while(1)
             yield(d);
     }
+
+    function payload_factory()
+    {
+        var p = new Rosella.ObjectFactory(class Rosella.Event.Payload);
+        while(1)
+            yield(p);
+    }
 }
 
 /* Event Class.
@@ -47,7 +54,7 @@ class Rosella.Event
 
     function get_payload(string name, var p, var n)
     {
-        return new Rosella.Event.Payload(self, name, p, n);
+        return Rosella.Event.payload_factory().create(self, name, p, n);
     }
 
     function publish(var pos [slurpy], var named [slurpy,named])
