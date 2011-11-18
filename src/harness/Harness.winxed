@@ -16,10 +16,7 @@ namespace Rosella
                 temp = new Rosella.ObjectFactory(class Rosella.Harness.TestExecutor);
                 Rosella.Globals.register_global(DEFAULT_TESTEXECUTOR_FACTORY, temp);
             }
-            while(1) {
-                yield temp;
-                temp = Rosella.Globals.get_global(DEFAULT_TESTEXECUTOR_FACTORY);
-            }
+            return temp;
         }
 
         // Set the global default TestExecutor factory
@@ -36,10 +33,7 @@ namespace Rosella
                 temp = new Rosella.ObjectFactory(class Rosella.Harness.TapParser);
                 Rosella.Globals.register_global(DEFAULT_TAPPARSER_FACTORY, temp);
             }
-            while(1) {
-                yield temp;
-                temp = Rosella.Globals.get_global(DEFAULT_TAPPARSER_FACTORY);
-            }
+            return temp;
         }
 
         // Set the global default TapParser factory
@@ -56,10 +50,7 @@ namespace Rosella
                 temp = new Rosella.ObjectFactory(class Rosella.Harness.FileResult);
                 Rosella.Globals.register_global(DEFAULT_FILERESULT_FACTORY, temp);
             }
-            while(1) {
-                yield temp;
-                temp = Rosella.Globals.get_global(DEFAULT_FILERESULT_FACTORY);
-            }
+            return temp;
         }
 
         // Set the global default FileResult factory

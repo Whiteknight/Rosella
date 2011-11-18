@@ -6,10 +6,12 @@ namespace Rosella.Version
     // version numbers in
     function get_version_hash()
     {
-        var version_hash = Rosella.__PRIVATE_Version.__GET_VERSION_HASH();
-        Rosella.Globals.register_global(VERSION_HASH_NAME, version_hash);
-        while (1)
-            yield Rosella.Globals.get_global(VERSION_HASH_NAME);
+        var temp = Rosella.Globals.get_global(VERSION_HASH_NAME);
+        if (temp == null) {
+            temp = Rosella.__PRIVATE_Version.__GET_VERSION_HASH();
+            Rosella.Globals.register_global(VERSION_HASH_NAME, temp);
+        }
+        return temp;
     }
 
     // Get the version string for the specified library. Return null if the
