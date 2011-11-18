@@ -19,10 +19,7 @@ namespace Rosella.MockObject
             temp = new Rosella.MockObject.Factory();
             Rosella.Globals.register_global(DEFAULT_MOCK_FACTORY_KEY, temp);
         }
-        while(1) {
-            yield temp;
-            temp = Rosella.Globals.get_global(DEFAULT_MOCK_FACTORY_KEY);
-        }
+        return temp;
     }
 
     // Set a new MockObject instance in the global instance registry.

@@ -10,10 +10,11 @@ namespace Rosella.Container
     function default_container()
     {
         var temp = Rosella.Globals.get_global(DEFAULT_CONTAINER_GLOBAL);
-        if (temp == null)
-            Rosella.Globals.register_global(DEFAULT_CONTAINER_GLOBAL, new Rosella.Container());
-        while(1)
-            yield Rosella.Globals.get_global(DEFAULT_CONTAINER_GLOBAL);
+        if (temp == null) {
+            temp = new Rosella.Container();
+            Rosella.Globals.register_global(DEFAULT_CONTAINER_GLOBAL, temp);
+        }
+        return temp;
     }
 
     // Set the globally registered Container instance to something besides
