@@ -2,7 +2,7 @@ action: 2 Stable
 assert: 0 Alpha
 benchmark: 0 Alpha
 commandline: 0 Alpha
-container: 2 Stable
+container: 3 Alpha
 core: 2 Stable
 decorate: 0 Beta
 dumper: 0 Beta

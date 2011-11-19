@@ -30,221 +30,121 @@ namespace Rosella.Container
     resolution system. Types are registered with the container, and later
     instances of those types can be resolved according to a set of
     resolution rules.
-
-    If the container does not have a pre-registered set of rules for a
-    type, it falls back to using an ObjectFactory to build one. The
-    object factory to use can be specified when the container is
-    constructed.
-
-    Use the "register" set of functions to set up resolution rules for a
-    type. Use the "resolve" set of functions to get an instance of that
-    type according to the resolution rules.
-
-    "Resolution Rules" are lists of Action objects, which are executed
-    on the new instance as soon as it is fetched/allocated.
 */
 class Rosella.Container
 {
-    var library;
-    var default_factory;
-    var options;
+    var type_registry;
+    var aliases;
 
-    // Constructor. Set up the container. If we pass in an object factory
-    // the container will use that for fallback resolution behavior. If
-    // we set auto_register to 1 (true) we will automatically register
-    // automatically generated instances with the container.
-    function Container(var factory [named,optional], int have_fact [opt_flag],
-            var auto_register [named,optional], int have_auto_reg [opt_flag])
+    function Container()
     {
-        self.library = {};
-        self.options = {};
-        if (have_auto_reg)
-            self.options["auto_register"] = auto_register;
-        else
-            self.options["auto_register"] = 0;
-        if (have_fact)
-            self.default_factory = factory;
-        else
-            self.default_factory = new Rosella.ObjectFactory();
+        var reg = {};
+        reg.set_key_type(3);
+        self.type_registry = reg;
+        self.aliases = {};
     }
 
-    /* Registration Functions
-        Registrations happen with a type "key". The type can be any object
-        understood by Rosella.construct. The container can currently only
-        support a single registration per type key. Subsequent
-        registrations with the same key, or with a different type object
-        which stringifies to the same thing as an existing key, will
-        overwrite the old value.
-
-        Registration functions all take a "meth_inits" argument, which is
-        an array of Action objects to execute on the object after it is
-        fetched/allocated, but before it is returned to the user. This
-        parameter must be provided, but may be an empty array, Null, or
-        Undef.
-    */
-
-    // Register a type object. The type object is used as a meta-object
-    // to instantiate instances. init_pmc, if given, might be used if
-    // the type is (or refers to) a Parrot Class PMC. In that case, it
-    // will be passed as the second input argument to new_p_p_p.
-    function register_type(var type,
-            var init_pmc [named,optional], int have_init [opt_flag],
-            var meth_inits [named,optional], int have_inits [opt_flag])
+    function __sort_options(var type, var options)
     {
-        string name = Rosella.get_type_name(type);
-        if (!have_init)
-            init_pmc = new 'Undef';
-        if (!have_inits)
-            meth_inits = [];
-        var item = self.private_get_generator_item(type, init_pmc, meth_inits);
-        self.library[name] = item;
-    }
-
-    // Register a type prototype. The prototype is cloned to produce
-    // new instances.
-    function register_prototype(var type, var prototype,
-            var meth_inits [named,optional], int have_inits [opt_flag])
-    {
-        string name = Rosella.get_type_name(type);
-        if (!have_inits)
-            meth_inits = [];
-        var item = self.private_get_prototype_item(prototype, meth_inits);
-        self.library[name] = item;
-    }
-
-    // Register a type instance. The type always resolves to this single
-    // instance, and new objects are not created. The type to use is
-    // inferred from the instance object.
-    function register_instance(var instance,
-            var meth_inits [named,optional], int have_inits [opt_flag])
-    {
-        var type = self.get_instance_type(instance);
-        if (!have_inits)
-            meth_inits = [];
-        self.register_instance(type, instance, meth_inits:[named]);
-    }
-
-    // Register a type instance. The type key is provided explicitly
-    function register_instance_type(var type, var instance,
-            var meth_inits [named,optional], int have_inits [opt_flag])
-    {
-        string name = Rosella.get_type_name(type);
-        if (!have_inits)
-            meth_inits = [];
-        var item = self.private_get_instance_item(instance, meth_inits);
-        self.library[name] = item;
-    }
-
-    // Register a type with a factory method. The method is an invokable
-    // object (Sub, method, etc) which is expected to return an instance.
-    // In addition to the meth_inits argument, it also takes a list of
-    // arg_inits, Argument objects which are passed to the factory
-    // method as parameters.
-    function register_factory_method(var type, var factory,
-            var meth_inits [named,optional], int have_inits [opt_flag],
-            var arg_inits [named,optional], int have_args [opt_flag])
-    {
-        string name = Rosella.get_type_name(type);
-        if (!have_inits)
-            meth_inits = [];
-        if (!have_args)
-            arg_inits = [];
-        var item = self.private_get_factory_method_item(factory,
-            meth_inits, arg_inits
-        );
-        self.library[name] = item;
-    }
-
-    /* Resolution Functions
-        These functions resolve a type key into a usable instance.
-        Each of these functions takes a type key to use for looking up
-        the resolution rules and ultimately providing an instance.
-    */
-
-    // Resolve the type using full resolution. If the type is not
-    // registered, fall back to the default factory to allocate one.
-    // If auto_register is set, automatically register the output of
-    // the default factory as the instance for that type.
-    // Notice that when falling back to the default factory, no arguments
-    // can be provided.
-    function resolve(var type, var pos [slurpy], var named [slurpy,named])
-    {
-        string name = Rosella.get_type_name(type);
-        if (exists self.library[name])
-            return self.library[name].create(pos:[flat], named:[flat,named]);
-        var obj = self.resolve_create(type, pos:[flat], named:[flat,named]);
-        if (self.options["auto_register"])
-            self.register_instance_type(type, obj);
-        return obj;
-    }
-
-    // Create-only resolution. Do not attempt to resolve using normal
-    // rules, always use the default factory.
-    function resolve_create(var type, var pos [slurpy], var named [slurpy,named])
-    {
-        return self.default_factory.create_typed(type,
-            pos:[flat], named:[flat,named]
-        );
-    }
-
-    // Partial resolution. Resolve the instance only if the type has been
-    // previously registered. If there is no registration, die.
-    function resolve_nocreate(var type, var overrides [slurpy],
-            var named_opts[slurpy,named])
-    {
-        string name = Rosella.get_type_name(type);
-        if (exists self.library[name])
-            return self.library[name].create();
-
-        Rosella.Error.invalid(__FUNCTION__, "Type " + type + " not registered");
-    }
-
-    /* Instance Entry Functions
-        These functions are not part of the public interface for
-        Container.
-
-        These functions are used to create ItemFactory objects for each
-        registration. ItemFactory is the class that performs rule-based
-        resolutions
-    */
-
-    // Get an ItemFactory for handling instance registrations
-    function private_get_instance_item(var instance, var meth_inits)
-    {
-        return new Rosella.Container.ItemFactory.Instance(instance, meth_inits);
-    }
-
-    // Get an ItemFactory for handling prototype registrations
-    function private_get_prototype_item(var proto, var meth_inits)
-    {
-        return new Rosella.Container.ItemFactory.Prototype(proto, meth_inits);
-    }
-
-    // Get an ItemFactory for handling a Class or P6protoobject
-    // registration.
-    function private_get_generator_item(var type, var init_pmc, var meth_inits)
-    {
-        var item;
-        if (type instanceof "P6protoobject") {
-            item = new Rosella.Container.ItemFactory.P6protoobject(
-                    type, meth_inits);
-        } else if (type instanceof "Class") {
-            item = new Rosella.Container.ItemFactory.ParrotClass(
-                    type, init_pmc, meth_inits);
-        } else {
-            var type_obj = Rosella.get_type_class(type);
-            item = new Rosella.Container.ItemFactory.ParrotClass(
-                type_obj, init_pmc, meth_inits);
+        var resolver = null;
+        var build_options = [];
+        var misc_options = [];
+        for (var option in options) {
+            if (option instanceof Rosella.Container.Resolver) {
+                if (resolver != null)
+                    self.multiple_resolvers_error(type);
+                resolver = option;
+                continue;
+            }
+            if (!(option instanceof Rosella.Container.Option)) {
+                if (resolver != null)
+                    self.multiple_resolvers_error(type);
+                // it's an instance
+                resolver = new Rosella.Container.Resolver.Instance(option);
+                continue;
+            }
+            if (option instanceof Rosella.Container.Option.Build) {
+                push(build_options, option);
+                continue;
+            }
+            if (option instanceof Rosella.Container.Option) {
+                push(misc_options, option);
+                continue;
+            }
+            Rosella.Error.invalid(__FUNCTION__, "Invalid option: %s", typeof(option));
         }
-        return item;
+        return resolver, build_options, misc_options;
     }
 
-    // Get an ItemFactory for a factory method registration
-    function private_get_factory_method_item(var sub, var meth_inits,
-            var arg_inits)
+    function register(var type, var options [slurpy])
     {
-        return new Rosella.Container.ItemFactory.FactoryMethod(
-            sub, meth_inits, arg_inits
-        );
+        var type_class = Rosella.get_type_class(type);
+        if (type_class == null)
+            Rosella.Error.invalid(__FUNCTION__, "Attempt to register invalid or null type");
+        :(var resolver, var build_options, var misc_options) = self.__sort_options(type_class, options);
+        if (resolver == null)
+            resolver = new Rosella.Container.Resolver.Type(type);
+        resolver.set_options(build_options, misc_options);
+        if (exists self.type_registry[type_class])
+            resolver.previous(self.type_registry[type_class]);
+        self.type_registry[type_class] = resolver;
+        return self;
+    }
+
+    function unregister(var type)
+    {
+        var type_class = Rosella.get_type_class(type);
+        if (exists self.type_registry[type_class]) {
+            var old = self.type_registry[type_class].previous();
+            if (old == null)
+                delete self.type_registry[type_class];
+            else
+                self.type_registry[type_class] = old;
+        }
+        return self;
+    }
+
+    function multiple_resolvers_error(var type)
+    {
+        Rosella.Error.invalid(__FUNCTION__, "Multiple resolvers specified for type registration %", Rosella.get_type_name(type));
+    }
+
+    function alias(var type, string name)
+    {
+        var type_class = Rosella.get_type_class(type);
+        if (type_class == null)
+            Rosella.Error.invalid(__FUNCTION__, "Cannot setup alias '%s' for unknown class", name);
+        self.aliases[name] = type_class;
+    }
+
+    function resolve[multi("pmc")](var type, var options [slurpy])
+    {
+        var type_class = Rosella.get_type_class(type);
+        if (type_class == null)
+            Rosella.Error.invalid(__FUNCTION__, "Cannot resolve unknown class");
+        return self.__resolve_internal(type_class, options);
+    }
+
+    function resolve[multi(string)](string name, var options [slurpy])
+    {
+        if (exists self.aliases[name]) {
+            var type = self.aliases[name];
+            return self.__resolve_internal(type, options);
+        } else
+            Rosella.Error.invalid(__FUNCTION__, "Cannot resolve alias '%s'", name);
+    }
+
+    function __resolve_internal(var type, var options)
+    {
+        var type_class = Rosella.get_type_class(type);
+        :(var resolver, var build_options, var misc_options) = self.__sort_options(type_class, options);
+        if (resolver == null) {
+            if (exists self.type_registry[type_class])
+                resolver = self.type_registry[type_class];
+            else
+                Rosella.Error.invalid(__FUNCTION__, "No Resolver specified for type %s", type_class);
+        }
+        var instance = resolver.resolve(self, build_options, misc_options);
+        return instance;
     }
 }

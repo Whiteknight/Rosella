@@ -1,0 +1,37 @@
+class Rosella.Container.Argument
+{
+    function get_value(var container)
+    {
+        Rosella.Error.must_subclass(__CLASS__);
+    }
+}
+
+class Rosella.Container.Argument.Resolve : Rosella.Container.Argument
+{
+    var type;
+
+    function Resolve(var type)
+    {
+        self.type = type;
+    }
+
+    function get_value(var container)
+    {
+        return container.resolve(self.type);
+    }
+}
+
+class Rosella.Container.Argument.Instance : Rosella.Container.Argument
+{
+    var instance;
+
+    function Instance(var instance)
+    {
+        self.instance = instance;
+    }
+
+    function get_value(var container)
+    {
+        return self.instance;
+    }
+}

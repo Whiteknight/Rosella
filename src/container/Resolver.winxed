@@ -1,0 +1,166 @@
+class Rosella.Container.Resolver
+{
+    var previous;
+    var build_options;
+    var misc_options;
+    var data;
+    var positionals;
+    var named;
+
+    function previous(var prev [optional], int has_p [opt_flag])
+    {
+        if (has_p)
+            self.previous = prev;
+        return self.previous;
+    }
+
+    function set_options(var build, var misc)
+    {
+        self.build_options = build;
+        self.misc_options = misc;
+    }
+
+    function resolve(var container, var build, var misc)
+    {
+        if (elements(build) == 0)
+            build = self.build_options;
+        if (elements(misc) == 0)
+            misc = self.misc_options;
+        var obj = self.resolve_internal(container);
+        self.execute_options(container, obj, build, misc);
+        return obj;
+    }
+
+    function execute_options(var container, var obj, var build, var misc)
+    {
+        for (var build_opt in build)
+            build_opt.execute(container, obj);
+        for (var misc_opt in misc)
+            misc_opt.execute(container, obj);
+    }
+
+    function get_arguments(var container, var p, var n)
+    {
+        var po = [];
+        var no = {};
+        if (p != null) {
+            for (int i = 0; i < elements(p); i++) {
+                var positional = p[i];
+                if (positional instanceof Rosella.Container.Argument)
+                    po[i] = positional.get_value(container);
+                else
+                    po[i] = positional;
+            }
+        }
+        if (n != null) {
+            for (string s in n) {
+                var named = n[s];
+                if (named instanceof Rosella.Container.Argument)
+                    no[s] = named.get_value(container);
+                else
+                    no[s] = self.named[s].get_value(container);
+            }
+        }
+        return po, no;
+    }
+
+    function resolve_internal(var build, var misc)
+    {
+        Rosella.Error.must_subclass(__CLASS__);
+    }
+}
+
+class Rosella.Container.Resolver.Instance : Rosella.Container.Resolver
+{
+    function Instance(var obj)
+    {
+        self.data = obj;
+    }
+
+    function resolve_internal(var container)
+    {
+        return self.data;
+    }
+}
+
+class Rosella.Container.Resolver.Type : Rosella.Container.Resolver
+{
+    function Type(var type, var p [slurpy], var n [slurpy,named])
+    {
+        self.data = type;
+        self.positionals = p;
+        self.named = n;
+    }
+
+    function resolve_internal(var container)
+    {
+        :(var p, var n) = self.get_arguments(container, self.positionals, self.named);
+        return Rosella.construct(self.data, p:[flat], n:[flat,named]);
+    }
+}
+
+class Rosella.Container.Resolver.TypeConstructor : Rosella.Container.Resolver
+{
+    var constructor;
+
+    function TypeConstructor(var type, string constructor, var p [slurpy], var n [slurpy,named])
+    {
+        self.data = type;
+        self.positionals = p;
+        self.named = n;
+        self.constructor = constructor;
+    }
+
+    function resolve_internal(var container)
+    {
+        var obj = Rosella.alloc(self.data);
+        var constructor = Rosella.find_named_method(obj, string(self.constructor));
+        if (constructor == null)
+            Rosella.Error.invalid(__FUNCTION__, "Cannot find method '%s' in type %s", self.constructor, self.data);
+        :(var p, var n) = self.get_arguments(container, self.positionals, self.named);
+        obj.*constructor(p:[flat], n:[flat,named]);
+        return obj;
+    }
+}
+
+class Rosella.Container.Resolver.Factory : Rosella.Container.Resolver
+{
+    var method;
+
+    function Factory(var factory, string method, var p [slurpy], var n [slurpy,named])
+    {
+        self.data = factory;
+        self.method = method;
+        self.positionals = p;
+        self.named = n;
+    }
+
+    function resolve_internal(var container)
+    {
+        var factory = self.data;
+        var method = Rosella.find_named_method(factory, string(self.method));
+        if (method == null)
+            Rosella.Error.invalid(__FUNCTION__, "Cannot find method '%s' on factory type %s", self.method, typeof(self.data));
+        :(var p, var n) = self.get_arguments(container, self.positionals, self.named);
+        var obj = factory.*method(p:[flat], n:[flat,named]);
+        return obj;
+    }
+}
+
+class Rosella.Container.Resolver.FactoryMethod : Rosella.Container.Resolver
+{
+    function FactoryMethod(var factory_method, var p [slurpy], var n [slurpy,named])
+    {
+        self.data = factory_method;
+        self.positionals = p;
+        self.named = n;
+    }
+
+    function resolve_internal(var container)
+    {
+        var f = self.data;
+        :(var p, var n) = self.get_arguments(container, self.positionals, self.named);
+        var obj = f(p:[flat], n:[flat,named]);
+        return obj;
+    }
+}
