@@ -125,6 +125,7 @@ class Rosella.FileSystem.Directory : Rosella.FileSystem.Entry
             os.rm(name);
     }
 
+    // Get an iterator over all entries in this directory
     function get_iter[vtable]()
     {
         return new Rosella.FileSystem.DirectoryIterator(self);

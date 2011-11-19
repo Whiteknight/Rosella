@@ -1,3 +1,7 @@
+/* Iterator Base Class
+    This is a base for making iterator subclasses.
+    You cannot use this class directly. Use a subclass instead
+*/
 class Rosella.IteratorBase
 {
     var data;

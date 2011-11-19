@@ -1,10 +1,15 @@
+/* Directory Entry Iterator
+    Iterates over all entries in a directory
+*/
 class Rosella.FileSystem.DirectoryIterator : Rosella.IteratorBase
 {
+    // Constructor, take a Directory object
     function DirectoryIterator(var directory)
     {
         self.DirectoryIterator(string(directory));
     }
 
+    // Constructor, take a string path name
     function DirectoryIterator(string dirname)
     {
         var raw = Rosella.FileSystem.get_os_pmc().readdir(dirname);
@@ -12,17 +17,19 @@ class Rosella.FileSystem.DirectoryIterator : Rosella.IteratorBase
         for (string entry in raw) {
             if (entry == "." || entry == "..")
                 continue;
-            push(filtered, entry);
+            push(filtered, dirname + entry);
         }
         self.data = filtered;
     }
 
+    // Get the name of the next entry
     function shift_string[vtable]()
     {
         string entry_str = self.data.shift();
         return entry_str;
     }
 
+    // Get an Entry object for the next entry
     function shift_pmc[vtable]()
     {
         string entry_str = self.data.shift();

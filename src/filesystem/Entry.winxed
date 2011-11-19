@@ -1,5 +1,8 @@
 namespace Rosella.FileSystem.Entry
 {
+    // Get a new Entry object (either a File or Directory) for the given path.
+    // Throw an exception if it does not exist or is neither a File nor a
+    // Directory
     function get_entry(string name)
     {
         int exist = Rosella.FileSystem.get_os_pmc().exists(name);
