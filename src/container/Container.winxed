@@ -134,13 +134,12 @@ class Rosella.Container
 
     function __resolve_internal(var type, var options)
     {
-        var type_class = Rosella.get_type_class(type);
-        :(var resolver, var build_options, var misc_options) = self.__sort_options(type_class, options);
+        :(var resolver, var build_options, var misc_options) = self.__sort_options(type, options);
         if (resolver == null) {
-            if (exists self.type_registry[type_class])
-                resolver = self.type_registry[type_class];
+            if (exists self.type_registry[type])
+                resolver = self.type_registry[type];
             else
-                Rosella.Error.invalid(__FUNCTION__, "No Resolver specified for type %s", type_class);
+                Rosella.Error.invalid(__FUNCTION__, "No Resolver specified for type %s", type);
         }
         var instance = resolver.resolve(self, build_options, misc_options);
         return instance;

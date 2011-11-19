@@ -17,7 +17,8 @@ class Rosella.Container.Argument.Resolve : Rosella.Container.Argument
 
     function get_value(var container)
     {
-        return container.resolve(self.type);
+        var obj = container.resolve(self.type);
+        return obj;
     }
 }
 

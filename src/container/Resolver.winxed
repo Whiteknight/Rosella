@@ -46,8 +46,9 @@ class Rosella.Container.Resolver
         if (p != null) {
             for (int i = 0; i < elements(p); i++) {
                 var positional = p[i];
-                if (positional instanceof Rosella.Container.Argument)
+                if (positional instanceof Rosella.Container.Argument) {
                     po[i] = positional.get_value(container);
+                }
                 else
                     po[i] = positional;
             }
@@ -95,7 +96,8 @@ class Rosella.Container.Resolver.Type : Rosella.Container.Resolver
     function resolve_internal(var container)
     {
         :(var p, var n) = self.get_arguments(container, self.positionals, self.named);
-        return Rosella.construct(self.data, p:[flat], n:[flat,named]);
+        var obj = Rosella.construct(self.data, p:[flat], n:[flat,named]);
+        return obj;
     }
 }
 
