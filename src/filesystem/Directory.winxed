@@ -6,8 +6,7 @@ namespace Rosella.FileSystem.Directory
     // executing.
     function current_directory()
     {
-        using Rosella.FileSystem.get_os_pmc;
-        string cwd = get_os_pmc().cwd();
+        string cwd = Rosella.FileSystem.get_os_pmc().cwd();
         return new Rosella.FileSystem.Directory(cwd);
     }
 }
@@ -18,15 +17,12 @@ namespace Rosella.FileSystem.Directory
 class Rosella.FileSystem.Directory : Rosella.FileSystem.Entry
 {
     // Constructor. Build a directory with the given path name
-    function Directory(string path,
-            var parent_dir [optional], int has_parent [opt_flag])
+    function Directory(string path, var parent_dir [optional], int has_parent [opt_flag])
     {
-        if (path == null || path == "") {
-            using Rosella.Error.invalid;
-            invalid(__FUNCTION__, "Directory needs a valid path");
-        }
-        using Rosella.FileSystem.path_separator;
-        string path_sep = path_separator();
+        if (path == null || path == "")
+            Rosella.Error.invalid(__FUNCTION__, "Directory needs a valid path");
+
+        string path_sep = Rosella.FileSystem.path_separator();
         int len = length(path);
         string lastchar = substr(path, len - 1);
         if (lastchar != path_sep)
@@ -41,10 +37,8 @@ class Rosella.FileSystem.Directory : Rosella.FileSystem.Entry
     // contents. Otherwise, only an empty directory can be deleted.
     function delete_recursive()
     {
-        if (!self.exists()) {
-            using Rosella.Error.invalid;
-            invalid(__FUNCTION__, "Cannot delete a Directory that does not exist");
-        }
+        if (!self.exists())
+            Rosella.Error.invalid(__FUNCTION__, "Cannot delete a Directory that does not exist");
         var deleter = new Rosella.FileSystem.Visitor.Delete();
         return self.walk(deleter);
     }
@@ -52,8 +46,7 @@ class Rosella.FileSystem.Directory : Rosella.FileSystem.Entry
     // Create the directory, if it does not already exist.
     function create()
     {
-        using Rosella.FileSystem.get_os_pmc;
-        var os = get_os_pmc();
+        var os = Rosella.FileSystem.get_os_pmc();
         if (!os.exists(self.path))
             os.mkdir(self.path, 493);       // 493 = 0755 octal.
     }
@@ -83,6 +76,7 @@ class Rosella.FileSystem.Directory : Rosella.FileSystem.Entry
     {
         if (!has_v)
             visitor = new Rosella.FileSystem.Visitor.List();
+
         visitor.begin_directory(self);
         var files = self.get_files();
         for (var file in files)
@@ -116,8 +110,7 @@ class Rosella.FileSystem.Directory : Rosella.FileSystem.Entry
     {
         string path = string(self.path);
         string name = path + string(key);
-        using Rosella.FileSystem.get_os_pmc;
-        int exist = get_os_pmc().exists(name);
+        int exist = Rosella.FileSystem.get_os_pmc().exists(name);
         return exist;
     }
 
@@ -127,10 +120,8 @@ class Rosella.FileSystem.Directory : Rosella.FileSystem.Entry
     {
         string path = string(self.path);
         string name = path + string(key);
-        using Rosella.FileSystem.get_os_pmc;
-        var os = get_os_pmc();
-        int exist = os.exists(name);
-        if (exist)
+        var os = Rosella.FileSystem.get_os_pmc();
+        if (os.exists(name))
             os.rm(name);
     }
 
@@ -146,21 +137,17 @@ class Rosella.FileSystem.Directory : Rosella.FileSystem.Entry
     // or both.
     function __get_entries(int include_files, int include_dirs)
     {
-        using Rosella.FileSystem.get_os_pmc;
-        using Rosella.FileSystem.is_directory;
-        using Rosella.FileSystem.is_file;
-
         string path = string(self.path);
-        var names = get_os_pmc().readdir(path);
+        var names = Rosella.FileSystem.get_os_pmc().readdir(path);
         var entries = [];
 
         for (string name in names) {
             if (name == "." || name == "..")
                 continue;
             name = path + name;
-            if (include_dirs && is_directory(name))
+            if (include_dirs && Rosella.FileSystem.is_directory(name))
                 push(entries, new Rosella.FileSystem.Directory(name));
-            else if (include_files && is_file(name))
+            else if (include_files && Rosella.FileSystem.is_file(name))
                 push(entries, new Rosella.FileSystem.File(name));
         }
         return entries;

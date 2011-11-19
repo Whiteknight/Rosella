@@ -54,6 +54,9 @@ namespace Rosella {
     // src/core/ObjectFactory.winxed
     class ObjectFactory;
 
+    // src/core/IteratorBase.winxed
+    class IteratorBase;
+
     // src/core/Parrot.winxed
     namespace Parrot
     {
