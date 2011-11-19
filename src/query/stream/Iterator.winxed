@@ -1,20 +1,23 @@
-class Rosella.Query.Stream.Iterator
+/* Stream Iterator Class
+    A basic iterator type for reading data from a stream.
+*/
+class Rosella.Query.Stream.Iterator : Rosella.IteratorBase
 {
-    var stream;
+    // Constructor
     function Iterator(var stream)
     {
-        self.stream = stream;
+        self.data = stream;
     }
 
-    function set_integer_native[vtable](int ignore) { }
-
+    // Determine if the stream has more data
     function get_bool[vtable]()
     {
-        return self.stream.has_more();
+        return self.data.has_more();
     }
 
+    // Get the next data item from the stream
     function shift_pmc[vtable]()
     {
-        return self.stream.next();
+        return self.data.next();
     }
 }

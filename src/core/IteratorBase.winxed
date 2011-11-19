@@ -8,28 +8,22 @@ class Rosella.IteratorBase
 
     function get_bool[vtable]()
     {
-        return self.data != null && elements(self.data) > 0;
+        Rosella.Error.must_subclass(__CLASS__);
     }
 
     function shift_string[vtable]()
     {
-        if (self.data == null || elements(self.data) == 0)
-            Rosella.Error.invalid(__FUNCTION__, "Cannot shift from an empty data set");
-        return string(self.data.shift());
+        Rosella.Error.must_subclass(__CLASS__);
     }
 
     function shift_pmc[vtable]()
     {
-        if (self.data == null || elements(self.data) == 0)
-            Rosella.Error.invalid(__FUNCTION__, "Cannot shift from an empty data set");
-        return self.data.shift();
+        Rosella.Error.must_subclass(__CLASS__);
     }
 
     function shift_integer[vtable]()
     {
-        if (self.data == null || elements(self.data) == 0)
-            Rosella.Error.invalid(__FUNCTION__, "Cannot shift from an empty data set");
-        return int(self.data.shift());
+        Rosella.Error.must_subclass(__CLASS__);
     }
 
     function set_integer_native[vtable](int dummy) { }

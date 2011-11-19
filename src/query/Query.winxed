@@ -20,6 +20,7 @@ namespace Rosella.Query
             return new Rosella.Query.Queryable(data);
     }
 
+    // Return a Stream over the data
     function as_stream(var data)
     {
         return new Rosella.Query.Stream(data);
@@ -86,6 +87,7 @@ namespace Rosella.Query
         }
     }
 
+    // Perform a random sort of an array in-place
     function knuth_fisher_yates_shuffle(var d)
     {
         int i = elements(d);
@@ -99,6 +101,8 @@ namespace Rosella.Query
         }
     }
 
+    // Install some common Query methods to the given type. Useful for
+    // built-in array and hash types.
     function install_to_type(var type)
     {
         var type_class = Rosella.get_type_class(type);
@@ -135,5 +139,4 @@ namespace Rosella.Query
     {
         Rosella.Globals.register_global(DEFAULT_PROVIDER_FACTORY, factory);
     }
-
 }

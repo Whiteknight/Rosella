@@ -104,6 +104,9 @@ class Rosella.Query.Queryable
         return self.as_queryable(result);
     }
 
+    // Shuffle the data randomly. This probably is only meaningful for an
+    // ordered data source like an array. Scalars cannot be shuffled and hashes
+    // are not ordered
     function shuffle()
     {
         var result = self.provider.shuffle(self.data);
@@ -165,6 +168,7 @@ class Rosella.Query.Queryable
         return self.as_queryable(data);
     }
 
+    // Flatten nested aggregates into a single flat structure.
     function flatten()
     {
         var data = self.provider.flatten(self.data);
@@ -195,6 +199,7 @@ class Rosella.Query.Queryable
         return self.as_queryable(keys);
     }
 
+    // Append data from the source to the end of the data in the queryable
     function append(var s)
     {
         var target = self.provider.to_array(self.data);
@@ -203,6 +208,8 @@ class Rosella.Query.Queryable
         return self.as_queryable(result);
     }
 
+    // Group according to the given key function. Return an array of arrays or
+    // a hash of hashes, or whatever
     function group_by(var f)
     {
         var groups = self.provider.group_by(self.data, f);

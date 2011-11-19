@@ -4,11 +4,11 @@
 */
 class Rosella.Query.Stream
 {
-    var data;
-    var last_stage;
-    var source_stage;
-    var output_cache;
-    var input_cache;
+    var data;           // The data item that serves as the basis for the stream
+    var last_stage;     // The last, top-most stage
+    var source_stage;   // The first stage, which is the source of data
+    var output_cache;   // A cache of precomputed data item
+    var input_cache;    // A cache of input data
 
     // Constructor. Create a new stream for the given data
     function Stream(var data)
