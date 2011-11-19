@@ -117,21 +117,19 @@ class Rosella.Container
         self.aliases[name] = type_class;
     }
 
-    function resolve[multi("pmc")](var type, var options [slurpy])
+    function resolve(var type, var options [slurpy])
     {
-        var type_class = Rosella.get_type_class(type);
+        var type_class = null;
+        if (type instanceof "String") {
+            string type_s = string(type);
+            if (exists self.aliases[type_s])
+                type_class = self.aliases[type_s];
+        }
+        if (type_class == null)
+            type_class = Rosella.get_type_class(type);
         if (type_class == null)
             Rosella.Error.invalid(__FUNCTION__, "Cannot resolve unknown class");
         return self.__resolve_internal(type_class, options);
-    }
-
-    function resolve[multi(string)](string name, var options [slurpy])
-    {
-        if (exists self.aliases[name]) {
-            var type = self.aliases[name];
-            return self.__resolve_internal(type, options);
-        } else
-            Rosella.Error.invalid(__FUNCTION__, "Cannot resolve alias '%s'", name);
     }
 
     function __resolve_internal(var type, var options)
