@@ -1,3 +1,19 @@
+namespace Rosella.FileSystem.Entry
+{
+    function get_entry(string name)
+    {
+        int exist = Rosella.FileSystem.get_os_pmc().exists(name);
+        if (!exist)
+            Rosella.Error.invalid(__FUNCTION__, "Path '%s' does not exist", name);
+
+        if (Rosella.FileSystem.is_directory(name))
+            return new Rosella.FileSystem.Directory(name);
+        else if (Rosella.FileSystem.is_file(name))
+            return new Rosella.FileSystem.File(name);
+        Rosella.Error.invalid(__FUNCTION__, "Path '%s' is not a file or a directory", name);
+    }
+}
+
 /* File System Entry Class
     Entry is the parent object of all items which may appear in a file
     system. It is the parent object of both the File and Directory objects

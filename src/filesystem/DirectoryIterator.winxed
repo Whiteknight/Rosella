@@ -1,0 +1,31 @@
+class Rosella.FileSystem.DirectoryIterator : Rosella.IteratorBase
+{
+    function DirectoryIterator(var directory)
+    {
+        self.DirectoryIterator(string(directory));
+    }
+
+    function DirectoryIterator(string dirname)
+    {
+        var raw = Rosella.FileSystem.get_os_pmc().readdir(dirname);
+        var filtered = [];
+        for (string entry in raw) {
+            if (entry == "." || entry == "..")
+                continue;
+            push(filtered, entry);
+        }
+        self.data = filtered;
+    }
+
+    function shift_string[vtable]()
+    {
+        string entry_str = self.data.shift();
+        return entry_str;
+    }
+
+    function shift_pmc[vtable]()
+    {
+        string entry_str = self.data.shift();
+        return Rosella.FileSystem.Entry.get_entry(entry_str);
+    }
+}

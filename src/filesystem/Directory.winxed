@@ -108,19 +108,7 @@ class Rosella.FileSystem.Directory : Rosella.FileSystem.Entry
     {
         string path = string(self.path);
         string name = path + string(key);
-        using Rosella.FileSystem.get_os_pmc;
-        int exist = get_os_pmc().exists(name);
-        if (!exist)
-            return null;
-
-        using Rosella.FileSystem.is_file;
-        if (is_file(name))
-            return new Rosella.FileSystem.File(name);
-
-        using Rosella.FileSystem.is_directory;
-        if (is_directory(name))
-            return new Rosella.FileSystem.Directory(name);
-        return null;
+        return Rosella.FileSystem.Entry.get_entry(name);
     }
 
     // Determines if the directory Entry with that name exists
@@ -148,11 +136,7 @@ class Rosella.FileSystem.Directory : Rosella.FileSystem.Entry
 
     function get_iter[vtable]()
     {
-        // TODO: This is naive. We need an iterator which is more lazy
-        var entries = self.__get_entries(1, 1);
-        var e_iter;
-        ${ iter e_iter, entries };
-        return e_iter;
+        return new Rosella.FileSystem.DirectoryIterator(self);
     }
 
     /* Private Helper Methods

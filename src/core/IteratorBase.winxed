@@ -1,0 +1,32 @@
+class Rosella.IteratorBase
+{
+    var data;
+
+    function get_bool[vtable]()
+    {
+        return self.data != null && elements(self.data) > 0;
+    }
+
+    function shift_string[vtable]()
+    {
+        if (self.data == null || elements(self.data) == 0)
+            Rosella.Error.invalid(__FUNCTION__, "Cannot shift from an empty data set");
+        return string(self.data.shift());
+    }
+
+    function shift_pmc[vtable]()
+    {
+        if (self.data == null || elements(self.data) == 0)
+            Rosella.Error.invalid(__FUNCTION__, "Cannot shift from an empty data set");
+        return self.data.shift();
+    }
+
+    function shift_integer[vtable]()
+    {
+        if (self.data == null || elements(self.data) == 0)
+            Rosella.Error.invalid(__FUNCTION__, "Cannot shift from an empty data set");
+        return int(self.data.shift());
+    }
+
+    function set_integer_native[vtable](int dummy) { }
+}

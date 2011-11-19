@@ -2,7 +2,7 @@
     This class is an iterator type for a Handle object. It reads in
     data from a handle line at a time.
 */
-class Rosella.FileSystem.FileIterator
+class Rosella.FileSystem.FileIterator : Rosella.IteratorBase
 {
     var file;
     var handle;
@@ -72,11 +72,5 @@ class Rosella.FileSystem.FileIterator
         if (line == null)
             return "";
         return line;
-    }
-
-    // set_integer is used for certain iterator types to set the direction
-    // of the iteration. Ignored here, since we do not use that feature.
-    function set_integer_native[vtable]()
-    {
     }
 }
