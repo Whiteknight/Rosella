@@ -1,88 +1,85 @@
-namespace Rosella { namespace String { namespace Tokenizer
+/* DelimiterRegion Tokenizer
+    Break an input string into distinct regions by searching for region
+    delimiters.
+*/
+class Rosella.String.Tokenizer.DelimiterRegion : Rosella.String.Tokenizer
 {
-    /* DelimiterRegion Tokenizer
-        Break an input string into distinct regions by searching for region
-        delimiters.
-    */
-    class DelimiterRegion : Rosella.String.Tokenizer
+    const int START_IDX = 0;
+    const int END_IDX = 1;
+    const int KEY_IDX = 2;
+
+    var regions;        // A list of region delimiters to search for.
+    var default_key;    // The key to use for tokens which are not in a region
+
+    // Constructor
+    function DelimiterRegion(var default_key [optional], int has_key [opt_flag])
     {
-        const int START_IDX = 0;
-        const int END_IDX = 1;
-        const int KEY_IDX = 2;
-
-        var regions;        // A list of region delimiters to search for.
-        var default_key;    // The key to use for tokens which are not in a region
-
-        // Constructor
-        function DelimiterRegion(var default_key [optional], int has_key [opt_flag])
-        {
-            self.Tokenizer();
-            self.regions = [];
-            if (!has_key)
-                default_key = null;
-            self.default_key = default_key;
-        }
-
-        // Add a new region to the search list.
-        function add_region(string start, string end, var key)
-        {
-            push(self.regions, [start, end, key]);
-        }
-
-        // Get the next token. Search for the first delimiter from the list of
-        // registered delimiters, and return all text from that region.
-        function lex_next_token()
-        {
-            string data = self.data;
-
-            // First, loop over the array of all regions, looking for the one
-            // with the closest opening sequence. If we can't find any
-            // opening sequence at all, the whole rest of the string is a
-            // default region.
-            int min = length(data);
-            var min_region = null;
-            for (var region in self.regions) {
-                string start = region[START_IDX];
-                int idx = indexof(data, start);
-                if (idx != -1 && idx < min) {
-                    min = idx;
-                    min_region = region;
-                }
-            }
-            if (min_region == null) {
-                self.data = null;
-                return self.__new_token(data, self.default_key);
-            }
-
-            // Next, look for the closing sequence. If we cannot find it, the
-            // input is malformed.
-            var region = min_region;
-            string start = region[START_IDX];
-            string end = region[END_IDX];
-            int start_idx = min;
-            int end_idx = indexof(data, end);
-            if (end_idx == -1) {
-                using Rosella.Error.invalid;
-                invalid(__FUNCTION__, sprintf("Unclosed region '%s'. Expected '%s'", region));
-            }
-
-            // Extract substrings for the data leading up to the region, which
-            // will be default text, and the data inside the region itself.
-            // This could be one token (if there is no data leading up to the
-            // region) or two tokens. If two, create them both and unget the
-            // second to hold until later.
-            string before_text = substr(data, 0, start_idx);
-            start_idx += length(start);
-            string region_text = substr(data, start_idx, end_idx - start_idx);
-            end_idx += length(end);
-            self.data = substr(data, end_idx);
-            if (length(before_text) > 0) {
-                var token = self.__new_token(before_text, self.default_key);
-                var next_token = self.__new_token(region_text, region[KEY_IDX]);
-                self.unget_token(next_token);
-                return token;
-            } else
-                return self.__new_token(region_text, region[KEY_IDX]);
-        }
+        self.Tokenizer();
+        self.regions = [];
+        if (!has_key)
+            default_key = null;
+        self.default_key = default_key;
     }
-}}}
+
+    // Add a new region to the search list.
+    function add_region(string start, string end, var key)
+    {
+        push(self.regions, [start, end, key]);
+    }
+
+    // Get the next token. Search for the first delimiter from the list of
+    // registered delimiters, and return all text from that region.
+    function lex_next_token()
+    {
+        string data = self.data;
+
+        // First, loop over the array of all regions, looking for the one
+        // with the closest opening sequence. If we can't find any
+        // opening sequence at all, the whole rest of the string is a
+        // default region.
+        int min = length(data);
+        var min_region = null;
+        for (var region in self.regions) {
+            string start = region[START_IDX];
+            int idx = indexof(data, start);
+            if (idx != -1 && idx < min) {
+                min = idx;
+                min_region = region;
+            }
+        }
+        if (min_region == null) {
+            self.data = null;
+            return self.__new_token(data, self.default_key);
+        }
+
+        // Next, look for the closing sequence. If we cannot find it, the
+        // input is malformed.
+        var region = min_region;
+        string start = region[START_IDX];
+        string end = region[END_IDX];
+        int start_idx = min;
+        int end_idx = indexof(data, end);
+        if (end_idx == -1) {
+            using Rosella.Error.invalid;
+            invalid(__FUNCTION__, sprintf("Unclosed region '%s'. Expected '%s'", region));
+        }
+
+        // Extract substrings for the data leading up to the region, which
+        // will be default text, and the data inside the region itself.
+        // This could be one token (if there is no data leading up to the
+        // region) or two tokens. If two, create them both and unget the
+        // second to hold until later.
+        string before_text = substr(data, 0, start_idx);
+        start_idx += length(start);
+        string region_text = substr(data, start_idx, end_idx - start_idx);
+        end_idx += length(end);
+        self.data = substr(data, end_idx);
+        if (length(before_text) > 0) {
+            var token = self.__new_token(before_text, self.default_key);
+            var next_token = self.__new_token(region_text, region[KEY_IDX]);
+            self.unget_token(next_token);
+            return token;
+        } else
+            return self.__new_token(region_text, region[KEY_IDX]);
+    }
+}

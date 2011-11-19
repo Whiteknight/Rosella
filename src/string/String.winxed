@@ -1,226 +1,226 @@
-namespace Rosella
+/* String Namespace
+    This namespace contains a number of utility functions for working with
+    strings. Some of the utility functions are provided as built-ins by
+    various languages such as NQP. These are provided as a way to be
+    language-neutral and immune to possible future changes in language and
+    core VM behaviors.
+*/
+namespace Rosella.String
 {
-    /* String Namespace
-        This namespace contains a number of utility functions for working with
-        strings. Some of the utility functions are provided as built-ins by
-        various languages such as NQP. These are provided as a way to be
-        language-neutral and immune to possible future changes in language and
-        core VM behaviors.
-    */
-    namespace String
+    // Look up the character class ID number by name.
+    function get_character_class(string name)
     {
-        // Look up the character class ID number by name.
-        function get_character_class(string name)
-        {
-            switch (name) {
-                // TODO: Add other options
-                case "alphabetic": return CCLASS_ALPHABETIC;
-                case "word": return CCLASS_WORD;
-                case "numeric": return CCLASS_NUMERIC;
-                case "whitespace": return CCLASS_WHITESPACE;
-                case "punctuation": return CCLASS_PUNCTUATION;
-                case "graphical": return CCLASS_GRAPHICAL;
-                default:
-                    using Rosella.Error.invalid;
-                    invalid(__FUNCTION__, "Could not find character class '" + name + "'");
-            }
+        switch (name) {
+            // TODO: Add other options
+            case "alphabetic": return CCLASS_ALPHABETIC;
+            case "word": return CCLASS_WORD;
+            case "numeric": return CCLASS_NUMERIC;
+            case "whitespace": return CCLASS_WHITESPACE;
+            case "punctuation": return CCLASS_PUNCTUATION;
+            case "graphical": return CCLASS_GRAPHICAL;
+            default:
+                Rosella.Error.invalid(__FUNCTION__, "Could not find character class '" + name + "'");
         }
+    }
 
-        // Find the first instance of something not in the class. Return -1
-        // if all characters are in the class
-        function first_not_cclass(string str, int cclass)
-        {
-            int idx = 0;
-            int len = length(str);
-            ${ find_not_cclass idx, cclass, str, 0, len };
-            if (idx >= len)
-                return -1;
-            return idx;
-        }
+    // Find the first instance of something not in the class. Return -1
+    // if all characters are in the class
+    function first_not_cclass(string str, int cclass)
+    {
+        int idx = 0;
+        int len = length(str);
+        ${ find_not_cclass idx, cclass, str, 0, len };
+        if (idx >= len)
+            return -1;
+        return idx;
+    }
 
-        // Trim items off the start of the string that match the given cclass.
-        // defaults to CCLASS_WHITESPACE
-        function trim_start(string str, int cclass [optional], int has_cclass [opt_flag])
-        {
-            if (!has_cclass)
-                cclass = CCLASS_WHITESPACE;
+    // Trim items off the start of the string that match the given cclass.
+    // defaults to CCLASS_WHITESPACE
+    function trim_start(string str, int cclass [optional], int has_cclass [opt_flag])
+    {
+        if (!has_cclass)
+            cclass = CCLASS_WHITESPACE;
 
-            int idx = first_not_cclass(str, cclass);
-            if (idx == -1)
-                return "";
-            if (idx == 0)
-                return str;
-            return substr(str, idx);
-        }
-
-        // Find the last instance of a character not in the class. Return -1
-        // if all characters are in the class
-        function last_not_cclass(string str, int cclass)
-        {
-            int idx = -1;
-            int len = length(str);
-            for (int i = len - 1; i >= 0; i--) {
-                int char_is_cc = 0;
-                ${ is_cclass char_is_cc, cclass, str, i };
-                if (!char_is_cc) {
-                    idx = i + 1;
-                    break;
-                }
-            }
-            return idx;
-        }
-
-        // Trim items off the end of the string which match the given cclass.
-        // defaults to CCLASS_WHITESPACE
-        function trim_end(string str, int cclass [optional], int has_cclass [opt_flag])
-        {
-            if (!has_cclass)
-                cclass = CCLASS_WHITESPACE;
-
-            int len = length(str);
-            int idx = last_not_cclass(str, cclass);
-
-            // If we never found something that wasn't in the class, the
-            // whole string gets trimmed
-            if (idx == -1)
-                return "";
-
-            // If the last character is not in the cclass, the whole string is
-            // good.
-            if (idx == len - 1)
-                return str;
-
-            return substr(str, 0, idx);
-        }
-
-        // Trim characters from both the start and end of the string which
-        // match the given character class. Defaults to CCLASS_WHITESPACE
-        function trim(string str, int cclass [optional], int has_cclass [opt_flag])
-        {
-            if (!has_cclass)
-                cclass = CCLASS_WHITESPACE;
-            int start_idx = first_not_cclass(str, cclass);
-            if (start_idx == -1)
-                return "";
-            int end_idx = last_not_cclass(str, cclass);
-            if (end_idx == -1)
-                return "";
-            return substr(str, start_idx, end_idx - start_idx);
-        }
-
-        function is_all_cclass(string str, int cclass)
-        {
-            int idx = first_not_cclass(str, cclass);
-            return idx == -1;
-        }
-
-        function is_all_cclass(string str, string cclass_name)
-        {
-            int cclass = get_character_class(cclass_name);
-            int idx = first_not_cclass(str, cclass);
-            return idx == -1;
-        }
-
-
-        // sprintf wrapper function
-        function sprintf(string format, var args [slurpy])
-        {
-            return Winxed_Builtins.sprintf(format, args);
-        }
-
-        // Pad the start of the string with the given substring. Default
-        // pad is " "
-        function pad_start(string str, int total_width,
-                string char [optional], int has_char [opt_flag])
-        {
-            if (!has_char)
-                char = " ";
-            string pad = __create_pad(str, total_width, char);
-            return pad + str;
-        }
-
-        // Pad the end of the string with the given substring. Default
-        // pad is " "
-        function pad_end(string str, int total_width,
-                string char [optional], int has_char [opt_flag])
-        {
-            if (!has_char)
-                char = " ";
-            string pad = __create_pad(str, total_width, char);
-            return str + pad;
-        }
-
-        // Remove the given number of characters from the start of the string.
-        function remove_start(string str, int start)
-        {
-            return substr(str, start);
-        }
-
-        // Remove the given number of characters from the end of the string.
-        function remove_end(string str, int count)
-        {
-            return substr(str, 0, count);
-        }
-
-        // Remove a block of characters from the middle of the string
-        function remove_middle(string str, int start, int count)
-        {
-            // TODO: bounds check
-            string first_half = substr(str, 0, start);
-            string second_half = substr(str, start + count);
-            return first_half + second_half;
-        }
-
-        // Replace all instances of a substring with a given substring
-        function replace_all(string str, string target, string subst)
-        {
-            return join(subst, split(target, str));
-        }
-
-        function replace_first(string str, string target, string subst, int count)
-        {
-            using Rosella.Error.not_implemented;
-            not_implemented(__FUNCTION__);
-        }
-
-        function replace_skip(string str, string target, string subst, int skip)
-        {
-            using Rosella.Error.not_implemented;
-            not_implemented(__FUNCTION__);
-        }
-
-        function indexof_start(string str, string substring)
-        {
-            using Rosella.Error.not_implemented;
-            not_implemented(__FUNCTION__);
-        }
-
-        function indexof_end(string str, string substring)
-        {
-            using Rosella.Error.not_implemented;
-            not_implemented(__FUNCTION__);
-        }
-
-        /* Internal Helper Functions
-        */
-
-        // Create the padding strings necessary for pad_start and pad_end
-        function __create_pad(string str, int total_width, string char)
-        {
-            int len = length(str);
-
-            if (char == null || length(char) == 0)
-                char = " ";
-            else if (length(char) > 1)
-                char = substr(char, 0, 1);
-
-            if (len < total_width) {
-                int diff = total_width - len;
-                string pad = null;
-                ${ repeat pad, char, diff };
-                return pad;
-            }
+        int idx = first_not_cclass(str, cclass);
+        if (idx == -1)
             return "";
+        if (idx == 0)
+            return str;
+        return substr(str, idx);
+    }
+
+    // Find the last instance of a character not in the class. Return -1
+    // if all characters are in the class
+    function last_not_cclass(string str, int cclass)
+    {
+        int idx = -1;
+        int len = length(str);
+        for (int i = len - 1; i >= 0; i--) {
+            int char_is_cc = 0;
+            ${ is_cclass char_is_cc, cclass, str, i };
+            if (!char_is_cc) {
+                idx = i + 1;
+                break;
+            }
         }
+        return idx;
+    }
+
+    // Trim items off the end of the string which match the given cclass.
+    // defaults to CCLASS_WHITESPACE
+    function trim_end(string str, int cclass [optional], int has_cclass [opt_flag])
+    {
+        if (!has_cclass)
+            cclass = CCLASS_WHITESPACE;
+
+        int len = length(str);
+        int idx = last_not_cclass(str, cclass);
+
+        // If we never found something that wasn't in the class, the
+        // whole string gets trimmed
+        if (idx == -1)
+            return "";
+
+        // If the last character is not in the cclass, the whole string is
+        // good.
+        if (idx == len - 1)
+            return str;
+
+        return substr(str, 0, idx);
+    }
+
+    // Trim characters from both the start and end of the string which
+    // match the given character class. Defaults to CCLASS_WHITESPACE
+    function trim(string str, int cclass [optional], int has_cclass [opt_flag])
+    {
+        if (!has_cclass)
+            cclass = CCLASS_WHITESPACE;
+        int start_idx = first_not_cclass(str, cclass);
+        if (start_idx == -1)
+            return "";
+        int end_idx = last_not_cclass(str, cclass);
+        if (end_idx == -1)
+            return "";
+        return substr(str, start_idx, end_idx - start_idx);
+    }
+
+    // Determine if all characters in the string are members of the class
+    function is_all_cclass(string str, int cclass)
+    {
+        int idx = first_not_cclass(str, cclass);
+        return idx == -1;
+    }
+
+    // Determine if all characters in the string are members of the class
+    function is_all_cclass(string str, string cclass_name)
+    {
+        int cclass = get_character_class(cclass_name);
+        int idx = first_not_cclass(str, cclass);
+        return idx == -1;
+    }
+
+    // sprintf wrapper function
+    function sprintf(string format, var args [slurpy])
+    {
+        return Winxed_Builtins.sprintf(format, args);
+    }
+
+    // Pad the start of the string with the given substring. Default
+    // pad is " "
+    function pad_start(string str, int total_width,
+            string char [optional], int has_char [opt_flag])
+    {
+        if (!has_char)
+            char = " ";
+        string pad = __create_pad(str, total_width, char);
+        return pad + str;
+    }
+
+    // Pad the end of the string with the given substring. Default
+    // pad is " "
+    function pad_end(string str, int total_width,
+            string char [optional], int has_char [opt_flag])
+    {
+        if (!has_char)
+            char = " ";
+        string pad = __create_pad(str, total_width, char);
+        return str + pad;
+    }
+
+    // Remove the given number of characters from the start of the string.
+    function remove_start(string str, int start)
+    {
+        return substr(str, start);
+    }
+
+    // Remove the given number of characters from the end of the string.
+    function remove_end(string str, int count)
+    {
+        return substr(str, 0, count);
+    }
+
+    // Remove a block of characters from the middle of the string
+    function remove_middle(string str, int start, int count)
+    {
+        // TODO: bounds check
+        string first_half = substr(str, 0, start);
+        string second_half = substr(str, start + count);
+        return first_half + second_half;
+    }
+
+    // Replace all instances of a substring with a given substring
+    function replace_all(string str, string target, string subst)
+    {
+        return join(subst, split(target, str));
+    }
+
+
+    /*
+    function replace_first(string str, string target, string subst, int count)
+    {
+        using Rosella.Error.not_implemented;
+        not_implemented(__FUNCTION__);
+    }
+
+    function replace_skip(string str, string target, string subst, int skip)
+    {
+        using Rosella.Error.not_implemented;
+        not_implemented(__FUNCTION__);
+    }
+
+    function indexof_start(string str, string substring)
+    {
+        using Rosella.Error.not_implemented;
+        not_implemented(__FUNCTION__);
+    }
+
+    function indexof_end(string str, string substring)
+    {
+        using Rosella.Error.not_implemented;
+        not_implemented(__FUNCTION__);
+    }
+    */
+
+    /* Internal Helper Functions
+    */
+
+    // Create the padding strings necessary for pad_start and pad_end
+    function __create_pad(string str, int total_width, string char)
+    {
+        int len = length(str);
+
+        if (char == null || length(char) == 0)
+            char = " ";
+        else if (length(char) > 1)
+            char = substr(char, 0, 1);
+
+        if (len < total_width) {
+            int diff = total_width - len;
+            string pad = null;
+            ${ repeat pad, char, diff };
+            return pad;
+        }
+        return "";
     }
 }

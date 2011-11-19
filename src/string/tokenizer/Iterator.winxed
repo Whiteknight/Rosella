@@ -1,32 +1,28 @@
-namespace Rosella.String.Tokenizer
+/* Iterator class for Tokenizers
+*/
+class Rosella.String.Tokenizer.Iterator : Rosella.IteratorBase
 {
-    class Iterator
+    // Constructor
+    function Iterator(var tokenizer)
     {
-        var tokenizer;
+        self.data = tokenizer;
+    }
 
-        function Iterator(var tokenizer)
-        {
-            self.tokenizer = tokenizer;
-        }
+    // Determine if we have more tokens
+    function get_bool[vtable]()
+    {
+        return self.data != null && self.data.has_tokens();
+    }
 
-        function set_integer_native[vtable](int direction)
-        {
-            // ignored
-        }
+    // Get the next token
+    function shift_pmc[vtable]()
+    {
+        return self.data.get_token();
+    }
 
-        function get_bool[vtable]()
-        {
-            return self.tokenizer != null && self.tokenizer.has_tokens();
-        }
-
-        function shift_pmc[vtable]()
-        {
-            return self.tokenizer.get_token();
-        }
-
-        function shift_string[vtable]()
-        {
-            return self.tokenizer.get_token().data();
-        }
+    // Get the next string
+    function shift_string[vtable]()
+    {
+        return self.data.get_token().data();
     }
 }

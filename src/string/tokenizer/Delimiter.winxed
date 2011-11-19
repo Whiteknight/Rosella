@@ -1,34 +1,31 @@
-namespace Rosella { namespace String { namespace Tokenizer
+/* Delimiter Tokenizer
+    Break an input string up using a delimiter. Basically, a lazy form of
+    the "split" operation that returns Tokens.
+*/
+class Rosella.String.Tokenizer.Delimiter : Rosella.String.Tokenizer
 {
-    /* Delimiter Tokenizer
-        Break an input string up using a delimiter. Basically, a lazy form of
-        the "split" operation that returns Tokens.
-    */
-    class Delimiter : Rosella.String.Tokenizer
+    var delim; // The delimiter to search for
+
+    // Constructor
+    function Delimiter(string delim)
     {
-        var delim; // The delimiter to search for
-
-        // Constructor
-        function Delimiter(string delim)
-        {
-            self.Tokenizer();
-            self.delim = delim;
-        }
-
-        // Get the next token, everything between the start of the string and
-        // the first instance of the delimiter. Return the entire string if
-        // the delimiter is not found.
-        function lex_next_token()
-        {
-            string data = self.data;
-            string delim = self.delim;
-            int idx = indexof(data, delim);
-            if (idx == -1) {
-                self.data = null;
-                return self.__new_token(data, 0);
-            }
-            string chars = self.__get_chars(idx, length(delim));
-            return self.__new_token(chars, 0);
-        }
+        self.Tokenizer();
+        self.delim = delim;
     }
-}}}
+
+    // Get the next token, everything between the start of the string and
+    // the first instance of the delimiter. Return the entire string if
+    // the delimiter is not found.
+    function lex_next_token()
+    {
+        string data = self.data;
+        string delim = self.delim;
+        int idx = indexof(data, delim);
+        if (idx == -1) {
+            self.data = null;
+            return self.__new_token(data, 0);
+        }
+        string chars = self.__get_chars(idx, length(delim));
+        return self.__new_token(chars, 0);
+    }
+}
