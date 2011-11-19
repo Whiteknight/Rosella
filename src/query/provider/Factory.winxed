@@ -1,9 +1,14 @@
+/* Provider Factory Class
+    This type is a factory for Query Providers. It looks up appropriate
+    providers based on either role or type.
+*/
 class Rosella.Query.Provider.Factory : Rosella.ObjectFactory
 {
-    var role_map;
-    var type_map;
-    var default_provider;
+    var role_map;           // Mapping of roles to providers
+    var type_map;           // Mapping of specific types to providers
+    var default_provider;   // Default provider to use if all else fails
 
+    // Constructor. The mappings are provided.
     function Factory(var default_provider, var role_map, var type_map)
     {
         self.default_provider = default_provider;
@@ -11,6 +16,7 @@ class Rosella.Query.Provider.Factory : Rosella.ObjectFactory
         self.type_map = type_map;
     }
 
+    // Create the provider for the given data
     function create(var data, var p [slurpy], var n [slurpy,named])
     {
         for (string role in self.role_map) {
@@ -19,10 +25,16 @@ class Rosella.Query.Provider.Factory : Rosella.ObjectFactory
             if (flag)
                 return self.role_map[role];
         }
-        // TODO: Type-map
+        for (var type in self.type_map) {
+            int flag;
+            ${ isa flag, data, type };
+            if (flag)
+                return self.type_map[type];
+        }
         return self.default_provider;
     }
 
+    // Add an additional role mapping
     function set_role_mapping(string role, var provider)
     {
         self.role_map[role] = provider;
