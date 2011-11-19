@@ -1,13 +1,22 @@
+/* Iterable FileHandle Wrapper
+    This class is a thin wrapper around the Parrot built-in FileHandle type.
+    It performs no real behavior except to implement the get_iter VTABLE to
+    return a FileIterator.
+*/
 class Rosella.FileSystem.IterableHandle
 {
-    var handle;
+    var handle; // The FileHandle
+
+    // Constructor
     function IterableHandle(var handle)
     {
         self.handle = handle;
     }
 
+    // Get the internal handle object
     function handle() { return self.handle; }
 
+    // Get a FileIterator for the File contents
     function get_iter[vtable]()
     {
         return new Rosella.FileSystem.FileIterator(self.handle);

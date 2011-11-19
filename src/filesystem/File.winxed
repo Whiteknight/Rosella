@@ -33,8 +33,7 @@ namespace Rosella.FileSystem.File
 class Rosella.FileSystem.File : Rosella.FileSystem.Entry
 {
     // Constructor
-    function File(string filepath,
-            var parent_dir [optional], int has_dir [opt_flag])
+    function File(string filepath, var parent_dir [optional], int has_dir [opt_flag])
     {
         if (has_dir)
             filepath = string(parent_dir) + filepath;

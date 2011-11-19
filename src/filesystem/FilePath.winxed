@@ -10,8 +10,7 @@ class Rosella.FileSystem.FilePath
     function FilePath(string path)
     {
         self.details = {};
-        using Rosella.FileSystem.path_separator;
-        string pathsep = path_separator();
+        string pathsep = Rosella.FileSystem.path_separator();
         var pathparts = split(pathsep, path);
         string entryname = pathparts.pop();
         var entryparts = split(".", entryname);
@@ -38,8 +37,7 @@ class Rosella.FileSystem.FilePath
     // starting at the file system root.
     function full_base_path()
     {
-        using Rosella.FileSystem.Directory.current_directory;
-        var cwd = current_directory();
+        var cwd = Rosella.FileSystem.Directory.current_directory();
         return string(cwd) + string(self.details["basepath"]);
     }
 

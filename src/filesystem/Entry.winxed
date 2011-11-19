@@ -42,12 +42,9 @@ class Rosella.FileSystem.Entry
     // Delete the entry
     function delete()
     {
-        using Rosella.FileSystem.get_os_pmc;
-        var os = get_os_pmc();
-        if (!os.exists(self.path)) {
-            using Rosella.Error.invalid;
-            invalid(__FUNCTION__, "Cannot delete an Entry that does not exist");
-        }
+        var os = Rosella.FileSystem.get_os_pmc();
+        if (!os.exists(self.path))
+            Rosella.Error.invalid(__FUNCTION__, "Cannot delete an Entry that does not exist");
         os.rm(self.path);
     }
 
@@ -56,23 +53,20 @@ class Rosella.FileSystem.Entry
     // (as opposed to a directory)
     function exists()
     {
-        using Rosella.FileSystem.get_os_pmc;
-        return get_os_pmc().exists(self.path);
+        return Rosella.FileSystem.get_os_pmc().exists(self.path);
     }
 
     // Rename the file. Update the path name stored in this object
     function rename(string new_name)
     {
-        using Rosella.FileSystem.get_os_pmc;
-        get_os_pmc().rename(self.path, new_name);
+        Rosella.FileSystem.get_os_pmc().rename(self.path, new_name);
         self.path = new_name;
     }
 
     // Get the short name of this Entry
     function short_name()
     {
-        using Rosella.FileSystem.path_separator;
-        string sep = path_separator();
+        string sep = Rosella.FileSystem.path_separator();
         var parts = split(sep, self.path);
         for (int i = elements(parts) - 1; i >= 0; i--) {
             string part = parts[i];
