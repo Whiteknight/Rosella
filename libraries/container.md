@@ -42,139 +42,71 @@ style) constructor. Rules such as the Resolver to use and the specific
 initialization Options to use for the object can be set at registration time or
 overrides for these can be provided when Resolving.
 
-### Keys Best Practices
+### Aliases
 
-The Container can take any type as a key for registering and resolving
-objects. Internally, the key is stringified using `Rosella.get_type_name`, and
-the string name is used to store the registration rules in a hash. Because
-of this design aspect, any arbitrary string can be used to register rules in
-the container, not just strings representing valid type objects.
+The Container uses a hash internally which is keyed with Class objects. You must
+register a type initially using a valid type which can be used to obtain a valid
+Class PMC. Older versions of the Container library used string keys.
 
-There are two points to consider here. First, user code will ask the container
-to return objects of a particular type, and those objects may be used as if
-they are, or transparently appear to be, of that type. Second strings can be
-used which do not correspond to a type, and these arbitrary string keys should
-not conflict with a valid type that does or could exist in user code. If you
-are going to use an arbitrary string to register in the container, try to pick
-one which is not a stringification of a valid class. In most cases, you will
-want to use registration keys which are not valid class names in the current
-HLL, such as one that contains non-identifier characters.
+Once you have registered a type, you may create a string Alias for it, and use
+the alias to resolve types by string name instead of by type.
 
-It is considered very bad practice to register an object or object resolution
-rules for a type which will produce an object of a different type. If I ask
-for a "Foo", I expect to receive back something which is, or can transparently
-act like a Foo. If you return some other arbitrary object, you may break
-assumptions in other code, and cause lots of headaches. Rosella's Container
-library does not automatically perform any sanity checking to verify that
-the registered resolution rules for a particular key will actually produce an
-object of that type. Because of the dynamic nature of the system, there is no
-possible way to perform these kinds of automatic checks either. Users of the
-Container library should therefore take particular care to ensure that when
-the user asks for an object of a particular type, that an object of that type
-is actually returned.
+It is important to notice that alias lookups are performed first. If you are
+using the string name of a class as the type object for registration, and then
+you use that same string as an alias for a different type, you will not be able
+use the string type name to get an instance of the original type. This problem,
+while abstract, is not uncommon when working with Parrot built-in types from
+Winxed.
 
 ## Namespaces
 
 ### Container
 
-## Public Classes
+## Classes
 
 ### Container
 
 The `Rosella.Container` class implements the dependency-injection container.
-The Container class provides two basic sets of public methods: Register and
-Resolve.
+The Container class provides a relatively small public API. Most of the
+functionality of the Container is had by passing LifetimeManager, Resolver,
+and Option objects to the register and resolve methods.
 
-## Private Classes
+### Container.Argument
 
-### Container.ItemFactory
+### Container.Argument.Instance
 
-`Rosella.Container.ItemFactory` inherits from `Rosella.ObjectFactory`.
-ItemFactory object only implement `create`, and will throw an exception if you
-call `create_typed`. Unlike ObjectFactory, the ItemFactory constructor takes
-an array of Action objects which are used on the newly allocated object to
-initialize it.
+### Container.Argument.Resolver
 
-ItemFactory itself is an abstract parent type and should not be used directly.
-Use one of the provided subclasses, or create your own subclass as needed.
+### Container.LifetimeManager
 
-### Container.ItemFactory.FactoryMethod
+### Container.LifetimeManager.Permanent
 
-`Rosella.Container.ItemFactory.FactoryMethod` is an ItemFactory which takes
-an arbitrary invokable PMC. When we attempt to resolve the item, The
-invokable is executed and the return value is treated as the object.
+### Container.LifetimeManager.Thread
 
-### Container.ItemFactory.Instance
+### Container.LifetimeManager.Transient
 
-`Rosella.Container.ItemFactory.Instance` is an ItemFactory which returns a
-single pre-existing instance object, which must be provided during
-registration.
+### Container.Option
 
-### Container.ItemFactory.P6protoobject
+### Container.Option.Attribute
 
-`Rosella.Container.ItemFactory.P6protoobject` takes a P6protoobject, and
-uses that to instantiate a new object. This is typically used when using
-Rosella Container from a program written in NQP-rx.
+### Container.Option.Initializer
 
-### Container.ItemFactory.ParrotClass
+### Container.Option.Method
 
-`Rosella.Container.ItemFactory.ParrotClass` takes a Parrot Class PMC, and
-uses that to instantiate a new object.
+### Container.Option.Property
 
-### Container.ItemFactory.Prototype
+### Container.Resolver.Factory
 
-`Rosella.Container.ItemFactory.Prototype` takes a prototype object, and clones
-it to create new objects on command.
+### Container.Resolver.FactoryMethod
 
-### Action.Argument.ContainerResolver
+### Container.Resolver.Type
 
-The `Rosella.Action.Argument.ContainerResolver` type is a subclass of
-`Rosella.Action.Argument` from the argument library. This action type uses a
-Container object to resolve an argument.
+### Container.Resolver.TypeConstructor
 
 ## Examples
 
 ### Winxed
 
 ### NQP-rx
-
-Register the type "String" to return a string. This string will have an
-initial value, and will then be modified:
-
-    my $c := Rosella::build(Rosella::Container);
-    $c.register_type("String",
-        :meth_inits([
-            Rosella::build(Rosella::Action::Sub,
-                sub ($obj) {
-                    pir::set__vPS($obj, "FooBarBaz");
-                }, []
-            ),
-            Rosella::build(Rosella::Action::Method,
-                "replace", [
-                    Rosella::build(Rosella::Action::Argument::Instance, "B", :position(0)),
-                    Rosella::build(Rosella::Action::Argument::Instance, "C", :position(1))
-                ]
-            )
-        ]
-    ));
-    my $bar := $c.resolve("String");    # "FooCarCaz"
-
-Register an entry which returns a unique ID integer every time it is resolved:
-
-    my $c := Rosella::build(Rosella::Container);
-    my $seed := pir::box__PI(5);
-    $c.register_instance("UniqueID",
-        $seed
-        :meth_inits([
-            Rosella::build(Rosella::Action::Sub,
-                sub ($obj) {
-                    pir::inc__vP($obj);
-                }, []
-            ),
-        ]
-    ));
-    my $a := $c.resolve("UniqueID");    # 6
-    my $b := $c.resolve("UniqueID");    # 7
-    my $c := $c.resolve("UniqueID");    # 8
 
 ## Users
