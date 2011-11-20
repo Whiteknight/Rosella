@@ -1,0 +1,196 @@
+/* Instance Creation/Resolution Object
+    Resolver objects are used to create or find an object instance.
+
+    Do not use this type directly. Use a subclass instead
+*/
+class Rosella.Container.Resolver
+{
+    var previous;
+    var build_options;
+    var data;
+    var positionals;
+    var named;
+    var lifetime_manager;
+
+    // The previous resolver for the same type, if any.
+    function previous(var prev [optional], int has_p [opt_flag])
+    {
+        if (has_p)
+            self.previous = prev;
+        return self.previous;
+    }
+
+    // Set a list of initialization options
+    function set_options(var build)
+    {
+        self.build_options = build;
+    }
+
+    // Resolve an instance
+    function resolve(var container, var build)
+    {
+        if (elements(build) == 0) {
+            if (self.lifetime_manager != null && self.lifetime_manager.has_instance())
+                return self.lifetime_manager.get_instance();
+            build = self.build_options;
+        }
+        var obj = self.resolve_internal(container);
+        self.execute_options(container, obj, build);
+        if (self.lifetime_manager != null)
+            self.lifetime_manager.set_instance(obj);
+        return obj;
+    }
+
+    // Excute the various initializer options on the new instance
+    function execute_options(var container, var obj, var build)
+    {
+        for (var build_opt in build)
+            build_opt.execute(container, obj);
+    }
+
+    // Get a list of argument values from a list of Argument objects
+    function get_arguments(var container, var p, var n)
+    {
+        var po = [];
+        var no = {};
+        if (p != null) {
+            for (int i = 0; i < elements(p); i++) {
+                var positional = p[i];
+                if (positional instanceof Rosella.Container.Argument) {
+                    po[i] = positional.get_value(container);
+                }
+                else
+                    po[i] = positional;
+            }
+        }
+        if (n != null) {
+            for (string s in n) {
+                var named = n[s];
+                if (named instanceof Rosella.Container.Argument)
+                    no[s] = named.get_value(container);
+                else
+                    no[s] = self.named[s].get_value(container);
+            }
+        }
+        return po, no;
+    }
+
+    // Internal resolution routine. Must be subclassed
+    function resolve_internal(var build)
+    {
+        Rosella.Error.must_subclass(__CLASS__);
+    }
+}
+
+/* Instance Resolution
+    Return a preexisting instance
+*/
+class Rosella.Container.Resolver.Instance : Rosella.Container.Resolver
+{
+    function Instance(var obj)
+    {
+        self.data = obj;
+    }
+
+    function resolve_internal(var container)
+    {
+        return self.data;
+    }
+}
+
+/* Basic Type Resolution
+    Resolve the type, executing the standard (Winxed-style) constructor with the
+    given arguments
+*/
+class Rosella.Container.Resolver.Type : Rosella.Container.Resolver
+{
+    function Type(var type, var p [slurpy], var n [slurpy,named])
+    {
+        self.data = type;
+        self.positionals = p;
+        self.named = n;
+    }
+
+    function resolve_internal(var container)
+    {
+        :(var p, var n) = self.get_arguments(container, self.positionals, self.named);
+        var obj = Rosella.construct(self.data, p:[flat], n:[flat,named]);
+        return obj;
+    }
+}
+
+/* Basic Type Resolution with Constructor
+    Resolve the type, executing the specified constructor with the given
+    arguments
+*/
+class Rosella.Container.Resolver.TypeConstructor : Rosella.Container.Resolver
+{
+    var constructor;
+
+    function TypeConstructor(var type, string constructor, var p [slurpy], var n [slurpy,named])
+    {
+        self.data = type;
+        self.positionals = p;
+        self.named = n;
+        self.constructor = constructor;
+    }
+
+    function resolve_internal(var container)
+    {
+        var obj = Rosella.alloc(self.data);
+        var constructor = Rosella.find_named_method(obj, string(self.constructor));
+        if (constructor == null)
+            Rosella.Error.invalid(__FUNCTION__, "Cannot find method '%s' in type %s", self.constructor, self.data);
+        :(var p, var n) = self.get_arguments(container, self.positionals, self.named);
+        obj.*constructor(p:[flat], n:[flat,named]);
+        return obj;
+    }
+}
+
+/* Factory Resolution
+    Use a Factory object to get a new instance.
+*/
+class Rosella.Container.Resolver.Factory : Rosella.Container.Resolver
+{
+    var method;
+
+    function Factory(var factory, string method, var p [slurpy], var n [slurpy,named])
+    {
+        self.data = factory;
+        self.method = method;
+        self.positionals = p;
+        self.named = n;
+    }
+
+    function resolve_internal(var container)
+    {
+        var factory = self.data;
+        var method = Rosella.find_named_method(factory, string(self.method));
+        if (method == null)
+            Rosella.Error.invalid(__FUNCTION__, "Cannot find method '%s' on factory type %s", self.method, typeof(self.data));
+        :(var p, var n) = self.get_arguments(container, self.positionals, self.named);
+        var obj = factory.*method(p:[flat], n:[flat,named]);
+        return obj;
+    }
+}
+
+/* Factory Method Resolution
+    Execute a Factory Method to get a new instance
+*/
+class Rosella.Container.Resolver.FactoryMethod : Rosella.Container.Resolver
+{
+    function FactoryMethod(var factory_method, var p [slurpy], var n [slurpy,named])
+    {
+        self.data = factory_method;
+        self.positionals = p;
+        self.named = n;
+    }
+
+    function resolve_internal(var container)
+    {
+        var f = self.data;
+        :(var p, var n) = self.get_arguments(container, self.positionals, self.named);
+        var obj = f(p:[flat], n:[flat,named]);
+        return obj;
+    }
+}

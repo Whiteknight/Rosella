@@ -1,0 +1,96 @@
+/* Lifetime Manager Objects
+    A Lifetime Manager allows us to reuse an instance across multiple
+    resolutions, depending on type and options.
+*/
+class Rosella.Container.LifetimeManager
+{
+    // Determine if we have an instance available to reuse
+    function has_instance()
+    {
+        Rosella.Error.must_subclass(__CLASS__);
+    }
+
+    // Set the most recently created instance
+    function set_instance(var obj)
+    {
+        Rosella.Error.must_subclass(__CLASS__);
+    }
+
+    // Get the most recent instance
+    function get_instance()
+    {
+        Rosella.Error.must_subclass(__CLASS__);
+    }
+}
+
+/* A Transient Lifetime Manager
+    Instances managed with this lifetime manager are never reused and are
+    created fresh at each resolution.
+*/
+class Rosella.Container.LifetimeManager.Transient
+{
+    function Transient() { }
+
+    function has_instance() { return false; }
+
+    function set_instance(var obj) { }
+
+    function get_instance() { return null; }
+}
+
+/* Permanent Lifetime Manager
+    A single instance is kept permanently, after it is resolved the first time.
+*/
+class Rosella.Container.LifetimeManager.Permanent
+{
+    var data;
+
+    function Permanent() { }
+
+    function has_instance()
+    {
+        return self.data != null;
+    }
+
+    function set_instance(var obj)
+    {
+        self.data = obj;
+    }
+
+    function get_instance()
+    {
+        return self.data;
+    }
+}
+
+/* Thread-Local Lifetime Manager
+    The same as the Permanent lifetime manager, except one instance is provided
+    per thread. Each thread gets a unique, permanent instance, created lazily.
+*/
+// TODO: Implement this, once Parrot has threading
+class Rosella.Container.LifetimeManager.Thread
+{
+    var lookup;     // Lookup hash thread->instance
+
+    function Thread() { }
+
+    function Thread()
+    {
+        self.lookup = Rosella.get_pmc_keyed_hash();
+    }
+
+    function has_instance()
+    {
+        Rosella.Error.not_implemented(__FUNCTION__);
+    }
+
+    function set_instance()
+    {
+        Rosella.Error.not_implemented(__FUNCTION__);
+    }
+
+    function get_instance()
+    {
+        Rosella.Error.not_implemented(__FUNCTION__);
+    }
+}

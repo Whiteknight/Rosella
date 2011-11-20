@@ -87,15 +87,12 @@ function setup_stable_libraries(var rosella)
     );
 
     // Dependency Injection / Inversion of Control container library
-    setup_winxed_lib(rosella, "container", ["Core", "Action"],
+    setup_winxed_lib(rosella, "container", ["Core"],
         "container/Container",
-        "container/ItemFactory",
-        "container/itemfactory/ParrotClass",
-        "container/itemfactory/P6protoobject",
-        "container/itemfactory/Prototype",
-        "container/itemfactory/FactoryMethod",
-        "container/itemfactory/Instance",
-        "container/action_argument/ContainerResolver"
+        "container/Argument",
+        "container/LifetimeManager",
+        "container/Option",
+        "container/Resolver"
     );
 
     // A proxying library for building and managing proxies
