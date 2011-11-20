@@ -3,59 +3,71 @@ INIT {
     Rosella::initialize_rosella("harness");
 }
 
+sub core_tests() {
+    my %h := {};
+    %h{"core"} := "NQP";
+    %h{"winxed_test"} := "Winxed";
+    %h;
+}
+
+sub library_tests() {
+    my %h := {};
+    %h{"test"} := "NQP";
+    %h{"tap_harness"} := "Winxed";
+    %h{"action"} := "NQP";
+    %h{"container"} := "NQP";
+    %h{"query"} := "NQP";
+    %h{"proxy"} := "NQP";
+    %h{"mockobject"} := "NQP";
+    %h{"memoize"} := "NQP";
+    %h{"filesystem"} := "NQP";
+    %h{"path"} := "NQP";
+    %h{"string"} := "NQP";
+    %h{"template"} := "Winxed";
+    %h;
+}
+
+sub unstable_tests() {
+    my %h := {};
+    %h{"prototype"} := "NQP";
+    %h{"commandline"} := "Winxed";
+    %h{"event"} := "Winxed";
+    %h;
+}
+
+sub all_tests() {
+    my %a := core_tests();
+    my %b := library_tests();
+    my %c := unstable_tests();
+    for %b { %a{$_} := %b{$_}; }
+    for %c { %a{$_} := %c{$_}; }
+    %a;
+}
+
 my @argv := pir::getinterp__P()[2];
 my $dummy := pir::shift__PP(@argv);
 my $harness := Rosella::construct(Rosella::Harness);
 
 if (pir::elements(@argv)) {
+    my %all_tests := all_tests();
     for @argv -> $dir {
-        my $type := "NQP";
-        if ($dir eq "template" || $dir eq "tap_harness" || $dir eq "commandline" || $dir eq "event") {
-            $type := "Winxed";
-        }
-        $harness.add_test_dirs($type, "t/$dir", :recurse(1)).setup_test_run(:sort(1));
+        $harness.add_test_dirs(%all_tests{$dir}, "t/$dir", :recurse(1)).setup_test_run(:sort(1));
     }
 } else {
     # Core tests (If these fail, we don't attempt anything else)
-    $harness.add_test_dirs("NQP",
-        "t/core",
-    ).setup_test_run(:sort(1));
+    my %core_dirs := core_tests();
+    for %core_dirs { $harness.add_test_dirs(%core_dirs{$_}, "t/$_", :recurse(1)); }
+    $harness.setup_test_run(:sort(1));
 
-    # Winxed tests
-    # These are some basic sanity tests to prove we can also write tests in
-    # winxed.
-    $harness.add_test_dirs("Winxed",
-        "t/winxed_test",
-        "t/tap_harness", # "harness", can't shadow t/harness program
-        "t/event",
-        "t/template"
-    ).setup_test_run(:sort(1));
+    # Stable Library Tests
+    my %lib_dirs := library_tests();
+    for %lib_dirs { $harness.add_test_dirs(%lib_dirs{$_}, "t/$_", :recurse(1)); }
+    $harness.setup_test_run(:sort(1));
 
-    # Stable library tests
-    $harness.add_test_dirs("NQP",
-        "t/test",
-        "t/action",
-        "t/container",
-        "t/query",
-        "t/proxy",
-        "t/mockobject",
-        "t/memoize",
-        "t/filesystem",
-        "t/path",
-        "t/string",
-        :recurse(1),
-    ).setup_test_run(:sort(1));
-
-    # Unstable library tests
-    $harness.add_test_dirs("NQP",
-        "t/prototype",
-        :recurse(1)
-    ).setup_test_run();
-
-    $harness.add_test_dirs("Winxed",
-        "t/commandline",
-        :recurse(1)
-    ).setup_test_run();
+    # Unstable Library Tests
+    my %unstable_dirs := unstable_tests();
+    for %unstable_dirs { $harness.add_test_dirs(%unstable_dirs{$_}, "t/$_", :recurse(1)); }
+    $harness.setup_test_run(:sort(1));
 }
 
 my $result := $harness.run();
