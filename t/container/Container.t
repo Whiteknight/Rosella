@@ -7,6 +7,8 @@ class MyTestClass
     function b() { return self.b; }
 }
 
+class MySimpleTestClass { }
+
 function create_new(var p_args [slurpy], var n_args [slurpy,named])
 {
     return new Rosella.Container(p_args:[flat], n_args:[flat,named]);
@@ -27,8 +29,10 @@ class Test_Rosella_Container
         self.status.verify("Test Rosella.Container.register()");
         var obj = create_new();
 
-        var arg_0 = null;
-        var result = obj.register(arg_0);
+        var arg_0 = class MyTestClass;
+        obj.register(arg_0);
+        int result = obj.is_registered(arg_0);
+        self.assert.is_true(result);
     }
 
     function unregister()
@@ -36,8 +40,31 @@ class Test_Rosella_Container
         self.status.verify("Test Rosella.Container.unregister()");
         var obj = create_new();
 
-        var arg_0 = null;
-        var result = obj.unregister(arg_0);
+        var arg_0 = class MyTestClass;
+        obj.register(arg_0);
+        int result = obj.is_registered(arg_0);
+        self.assert.is_true(result);
+        obj.unregister(arg_0);
+        result = obj.is_registered(arg_0);
+        self.assert.is_false(result);
+    }
+
+    function unregister_with_multiple_registrations()
+    {
+        self.status.verify(".unregister() with multiple registrations");
+        var obj = create_new();
+
+        var arg_0 = class MyTestClass;
+        obj.register(arg_0);
+        obj.register(arg_0);
+        int result = obj.is_registered(arg_0);
+        self.assert.is_true(result);
+        obj.unregister(arg_0);
+        result = obj.is_registered(arg_0);
+        self.assert.is_true(result);
+        obj.unregister(arg_0);
+        result = obj.is_registered(arg_0);
+        self.assert.is_false(result);
     }
 
     function unregister_all()
@@ -45,8 +72,14 @@ class Test_Rosella_Container
         self.status.verify("Test Rosella.Container.unregister_all()");
         var obj = create_new();
 
-        var arg_0 = null;
-        var result = obj.unregister_all(arg_0);
+        var arg_0 = class MyTestClass;
+        obj.register(arg_0);
+        obj.register(arg_0);
+        int result = obj.is_registered(arg_0);
+        self.assert.is_true(result);
+        obj.unregister_all(arg_0);
+        result = obj.is_registered(arg_0);
+        self.assert.is_false(result);
     }
 
     function alias()
@@ -54,9 +87,12 @@ class Test_Rosella_Container
         self.status.verify("Test Rosella.Container.alias()");
         var obj = create_new();
 
-        var arg_0 = null;
-        var arg_1 = null;
-        var result = obj.alias(arg_0, arg_1);
+        var arg_0 = class MyTestClass;
+        var arg_1 = "test class";
+        obj.register(arg_0);
+        obj.alias(arg_0, arg_1);
+        int result = obj.is_registered(arg_1);
+        self.assert.is_true(result);
     }
 
     function resolve()
@@ -64,37 +100,23 @@ class Test_Rosella_Container
         self.status.verify("Test Rosella.Container.resolve()");
         var obj = create_new();
 
+        // This test will cover basic error handling. We'll be exercising
+        // .resolve() enough in other tests
+
         var arg_0 = null;
+        self.assert.throws(function() {
+            var result = obj.resolve(arg_0);
+        });
+    }
+
+    function resolve_unregistered()
+    {
+        self.status.verify(".resolve() with previously unregistered type");
+        var obj = create_new();
+
+        string arg_0 = "String";
         var result = obj.resolve(arg_0);
-    }
-
-    function __sort_options()
-    {
-        self.status.verify("Test Rosella.Container.__sort_options()");
-        var obj = create_new();
-
-        var arg_0 = null;
-        var arg_1 = null;
-        var result = obj.__sort_options(arg_0, arg_1);
-    }
-
-    function __resolve_internal()
-    {
-        self.status.verify("Test Rosella.Container.__resolve_internal()");
-        var obj = create_new();
-
-        var arg_0 = null;
-        var arg_1 = null;
-        var result = obj.__resolve_internal(arg_0, arg_1);
-    }
-
-    function __multiple_resolvers_error()
-    {
-        self.status.verify("Test Rosella.Container.__multiple_resolvers_error()");
-        var obj = create_new();
-
-        var arg_0 = null;
-        var result = obj.__multiple_resolvers_error(arg_0);
+        self.assert.instance_of(result, "String");
     }
 }
 
@@ -106,59 +128,3 @@ function main[main]()
     var(Rosella.Test.test)(class Test_Rosella_Container);
 }
 
-
-
-class ContainerTest {
-    method test_resolve_default_factory() {
-        my $c := Rosella::construct(Rosella::Container);
-        # No previous registration, falls back to the default object factory
-        my $item := $c.resolve("String");
-        $!assert.instance_of($item, "String");
-    }
-
-    method test_resolve_default_factory_with_args() {
-        my $c := Rosella::construct(Rosella::Container);
-        # No previous registration, falls back to the default object factory
-        # Pass arguments to the constructor
-        my $item := $c.resolve(MyTestClass, 1, 2);
-        $!assert.instance_of($item, MyTestClass);
-        $!assert.equal($item.a, 1);
-        $!assert.equal($item.b, 2);
-    }
-
-    method test_resolve_create() {
-        my $c := Rosella::construct(Rosella::Container);
-        my $item := $c.resolve_create("String");
-        $!assert.instance_of($item, "String");
-    }
-
-    method test_register_factory_method() {
-        my $c := Rosella::construct(Rosella::Container);
-        $c.register_factory_method("Foobar", sub () {
-            return pir::box__PI(7);
-        });
-        my $i := $c.resolve("Foobar");
-        $!assert.equal($i, 7, "not equal");
-    }
-
-    method test_register_type_withactions() {
-        my $c := Rosella::construct(Rosella::Container);
-        $c.register_type("String",
-            :meth_inits([
-                Rosella::construct(Rosella::Action::Sub,
-                    sub ($obj) {
-                        pir::set__vPS($obj, "FooBarBaz");
-                    }, []
-                ),
-                Rosella::construct(Rosella::Action::Method,
-                    "replace", [
-                        Rosella::construct(Rosella::Action::Argument::Instance, "B", :position(0)),
-                        Rosella::construct(Rosella::Action::Argument::Instance, "C", :position(1))
-                    ]
-                )
-            ]
-        ));
-        my $bar := $c.resolve("String");
-        $!assert.equal($bar, "FooCarCaz", "not equal");
-    }
-}

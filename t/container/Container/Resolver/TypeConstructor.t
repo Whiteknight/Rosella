@@ -1,42 +1,30 @@
-// Automatically generated test for Class Rosella.Container.Resolver.TypeConstructor
-function create_new(var p_args [slurpy], var n_args [slurpy,named])
+class MyTestClass
 {
-    return new Rosella.Container.Resolver.TypeConstructor(p_args:[flat], n_args:[flat,named]);
+    var a;
+    var b;
+
+    function MyTestClass(var a, var b)
+    {
+        self.a = a;
+        self.b = b;
+    }
 }
 
 class Test_Rosella_Container_Resolver_TypeConstructor
 {
-    function test_sanity()
-    {
-        self.assert.is_true(1);
-    }
-
-    function test_new()
-    {
-        // Test simple constructor. For most individual method tests, use create_new() above
-        var obj = new Rosella.Container.Resolver.TypeConstructor();
-        self.assert.not_null(obj);
-        self.assert.instance_of(obj, class Rosella.Container.Resolver.TypeConstructor);
-    }
-
-
-    function TypeConstructor()
-    {
-        self.status.verify("Test Rosella.Container.Resolver.TypeConstructor.TypeConstructor()");
-        var obj = create_new();
-
-        var arg_0 = null;
-        var arg_1 = null;
-        var result = obj.TypeConstructor(arg_0, arg_1);
-    }
-
     function resolve_internal()
     {
         self.status.verify("Test Rosella.Container.Resolver.TypeConstructor.resolve_internal()");
-        var obj = create_new();
-
-        var arg_0 = null;
-        var result = obj.resolve_internal(arg_0);
+        var c = new Rosella.Container();
+        c.register(class MyTestClass,
+            new Rosella.Container.Resolver.TypeConstructor(class MyTestClass, "MyTestClass",
+                new Rosella.Container.Argument.Instance(4),
+                new Rosella.Container.Argument.Instance(5)
+            )
+        );
+        var obj = c.resolve(class MyTestClass);
+        self.assert.equal(obj.*"a", 4);
+        self.assert.equal(obj.*"b", 5);
     }
 }
 

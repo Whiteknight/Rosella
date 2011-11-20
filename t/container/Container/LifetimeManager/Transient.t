@@ -6,26 +6,13 @@ function create_new(var p_args [slurpy], var n_args [slurpy,named])
 
 class Test_Rosella_Container_LifetimeManager_Transient
 {
-    function test_sanity()
-    {
-        self.assert.is_true(1);
-    }
-
-    function test_new()
-    {
-        // Test simple constructor. For most individual method tests, use create_new() above
-        var obj = new Rosella.Container.LifetimeManager.Transient();
-        self.assert.not_null(obj);
-        self.assert.instance_of(obj, class Rosella.Container.LifetimeManager.Transient);
-    }
-
-
     function has_instance()
     {
         self.status.verify("Test Rosella.Container.LifetimeManager.Transient.has_instance()");
         var obj = create_new();
 
         var result = obj.has_instance();
+        self.assert.is_false(result);
     }
 
     function set_instance()
@@ -43,6 +30,7 @@ class Test_Rosella_Container_LifetimeManager_Transient
         var obj = create_new();
 
         var result = obj.get_instance();
+        self.assert.is_null(result);
     }
 }
 

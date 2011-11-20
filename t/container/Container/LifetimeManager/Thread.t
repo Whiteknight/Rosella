@@ -6,31 +6,10 @@ function create_new(var p_args [slurpy], var n_args [slurpy,named])
 
 class Test_Rosella_Container_LifetimeManager_Thread
 {
-    function test_sanity()
-    {
-        self.assert.is_true(1);
-    }
-
-    function test_new()
-    {
-        // Test simple constructor. For most individual method tests, use create_new() above
-        var obj = new Rosella.Container.LifetimeManager.Thread();
-        self.assert.not_null(obj);
-        self.assert.instance_of(obj, class Rosella.Container.LifetimeManager.Thread);
-    }
-
-
-    function Thread()
-    {
-        self.status.verify("Test Rosella.Container.LifetimeManager.Thread.Thread()");
-        var obj = create_new();
-
-        var result = obj.Thread();
-    }
-
     function has_instance()
     {
         self.status.verify("Test Rosella.Container.LifetimeManager.Thread.has_instance()");
+        self.status.unimplemented("Add tests when Parrot has threading support");
         var obj = create_new();
 
         var result = obj.has_instance();
@@ -39,6 +18,7 @@ class Test_Rosella_Container_LifetimeManager_Thread
     function set_instance()
     {
         self.status.verify("Test Rosella.Container.LifetimeManager.Thread.set_instance()");
+        self.status.unimplemented("Add tests when Parrot has threading support");
         var obj = create_new();
 
         var result = obj.set_instance();
@@ -47,6 +27,7 @@ class Test_Rosella_Container_LifetimeManager_Thread
     function get_instance()
     {
         self.status.verify("Test Rosella.Container.LifetimeManager.Thread.get_instance()");
+        self.status.unimplemented("Add tests when Parrot has threading support");
         var obj = create_new();
 
         var result = obj.get_instance();

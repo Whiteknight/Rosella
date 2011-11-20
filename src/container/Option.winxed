@@ -50,6 +50,7 @@ class Rosella.Container.Option.Method : Rosella.Container.Option
             else
                 n[s] = self.named[s].get_value(container);
         }
+        instance.*method(p:[flat], n:[flat,named]);
     }
 }
 

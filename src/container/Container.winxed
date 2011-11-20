@@ -54,7 +54,7 @@ class Rosella.Container
     // registration, the old version is kept in a stack.
     function register(var type, var options [slurpy])
     {
-        var type_class = Rosella.get_type_class(type);
+        var type_class = self.__get_type_class(type);
         if (type_class == null)
             Rosella.Error.invalid(__FUNCTION__, "Attempt to register invalid or null type");
         :(var resolver, var build_options) = self.__sort_options(type_class, options);
@@ -72,7 +72,9 @@ class Rosella.Container
     // registration for the type
     function unregister(var type)
     {
-        var type_class = Rosella.get_type_class(type);
+        var type_class = self.__get_type_class(type);
+        if (type_class == null)
+            Rosella.Error.invalid("Cannot unregister unknown class");
         if (exists self.type_registry[type_class]) {
             var old = self.type_registry[type_class].previous();
             if (old == null)
@@ -86,15 +88,28 @@ class Rosella.Container
     // Completely unregister the given type including all previous registrations.
     function unregister_all(var type)
     {
-        var type_class = Rosella.get_type_class(type);
+        var type_class = self.__get_type_class(type);
+        if (type_class == null)
+            Rosella.Error.invalid("Cannot unregister unknown class");
         if (exists self.type_registry[type_class])
             delete self.type_registry[type_class];
+    }
+
+    // Determine if the type is registered
+    function is_registered(var type)
+    {
+        var type_class = self.__get_type_class(type);
+        if (type_class == null)
+            Rosella.Error.invalid(__FUNCTION__, "Cannot check registration status of unknown type");
+        if (exists self.type_registry[type_class])
+            return true;
+        return false;
     }
 
     // Add a string name alias for the given type.
     function alias(var type, string name)
     {
-        var type_class = Rosella.get_type_class(type);
+        var type_class = self.__get_type_class(type);
         if (type_class == null)
             Rosella.Error.invalid(__FUNCTION__, "Cannot setup alias '%s' for unknown class", name);
         self.aliases[name] = type_class;
@@ -106,6 +121,17 @@ class Rosella.Container
     // here override those provided during registration.
     function resolve(var type, var options [slurpy])
     {
+        var type_class = self.__get_type_class(type);
+        if (type_class == null)
+            Rosella.Error.invalid(__FUNCTION__, "Cannot resolve unknown class");
+        return self.__resolve_internal(type_class, options);
+    }
+
+    /* Private Helper Methods
+    */
+
+    function __get_type_class(var type)
+    {
         var type_class = null;
         if (type instanceof "String") {
             string type_s = string(type);
@@ -114,13 +140,8 @@ class Rosella.Container
         }
         if (type_class == null)
             type_class = Rosella.get_type_class(type);
-        if (type_class == null)
-            Rosella.Error.invalid(__FUNCTION__, "Cannot resolve unknown class");
-        return self.__resolve_internal(type_class, options);
+        return type_class;
     }
-
-    /* Private Helper Methods
-    */
 
     // Sort out a list of options
     function __sort_options(var type, var options)
@@ -158,7 +179,7 @@ class Rosella.Container
                 resolver = self.type_registry[type];
             if (resolver == null) {
                 resolver = new Rosella.Container.Resolver.Type(type);
-                resolver.set_options([], []);
+                resolver.set_options([]);
                 // TODO: Should we auto-register this in the type library, or
                 // create a new resolver each time?
             }

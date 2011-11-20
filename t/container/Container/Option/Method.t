@@ -1,42 +1,30 @@
-// Automatically generated test for Class Rosella.Container.Option.Method
-function create_new(var p_args [slurpy], var n_args [slurpy,named])
+class MyTestClass
 {
-    return new Rosella.Container.Option.Method(p_args:[flat], n_args:[flat,named]);
+    var a;
+    function test_method_a() { self.a = 1; }
+    function test_method_b(var value) { self.a = value; }
 }
 
 class Test_Rosella_Container_Option_Method
 {
-    function test_sanity()
+    function test_no_args()
     {
-        self.assert.is_true(1);
+        var c = new Rosella.Container();
+        c.register(class MyTestClass, new Rosella.Container.Option.Method("test_method_a"));
+        var obj = c.resolve(class MyTestClass);
+        self.assert.equal(obj.*"a", 1);
     }
 
-    function test_new()
+    function test_with_args()
     {
-        // Test simple constructor. For most individual method tests, use create_new() above
-        var obj = new Rosella.Container.Option.Method();
-        self.assert.not_null(obj);
-        self.assert.instance_of(obj, class Rosella.Container.Option.Method);
-    }
-
-
-    function Method()
-    {
-        self.status.verify("Test Rosella.Container.Option.Method.Method()");
-        var obj = create_new();
-
-        var arg_0 = null;
-        var result = obj.Method(arg_0);
-    }
-
-    function execute()
-    {
-        self.status.verify("Test Rosella.Container.Option.Method.execute()");
-        var obj = create_new();
-
-        var arg_0 = null;
-        var arg_1 = null;
-        var result = obj.execute(arg_0, arg_1);
+        var c = new Rosella.Container();
+        c.register(class MyTestClass,
+            new Rosella.Container.Option.Method("test_method_b",
+                new Rosella.Container.Argument.Instance(4)
+            )
+        );
+        var obj = c.resolve(class MyTestClass);
+        self.assert.equal(obj.*"a", 4);
     }
 }
 

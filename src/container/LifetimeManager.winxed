@@ -29,6 +29,8 @@ class Rosella.Container.LifetimeManager
 */
 class Rosella.Container.LifetimeManager.Transient
 {
+    function Transient() { }
+
     function has_instance() { return false; }
 
     function set_instance(var obj) { }
@@ -42,6 +44,8 @@ class Rosella.Container.LifetimeManager.Transient
 class Rosella.Container.LifetimeManager.Permanent
 {
     var data;
+
+    function Permanent() { }
 
     function has_instance()
     {
@@ -67,6 +71,8 @@ class Rosella.Container.LifetimeManager.Permanent
 class Rosella.Container.LifetimeManager.Thread
 {
     var lookup;     // Lookup hash thread->instance
+
+    function Thread() { }
 
     function Thread()
     {
