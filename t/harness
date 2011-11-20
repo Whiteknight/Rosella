@@ -12,26 +12,26 @@ sub core_tests() {
 
 sub library_tests() {
     my %h := {};
-    %h{"test"} := "NQP";
-    %h{"tap_harness"} := "Winxed";
     %h{"action"} := "NQP";
     %h{"container"} := "NQP";
-    %h{"query"} := "NQP";
-    %h{"proxy"} := "NQP";
-    %h{"mockobject"} := "NQP";
-    %h{"memoize"} := "NQP";
     %h{"filesystem"} := "NQP";
+    %h{"memoize"} := "NQP";
+    %h{"mockobject"} := "NQP";
     %h{"path"} := "NQP";
+    %h{"proxy"} := "NQP";
+    %h{"query"} := "NQP";
     %h{"string"} := "NQP";
+    %h{"tap_harness"} := "Winxed";
     %h{"template"} := "Winxed";
+    %h{"test"} := "NQP";
     %h;
 }
 
 sub unstable_tests() {
     my %h := {};
-    %h{"prototype"} := "NQP";
     %h{"commandline"} := "Winxed";
     %h{"event"} := "Winxed";
+    %h{"prototype"} := "NQP";
     %h;
 }
 

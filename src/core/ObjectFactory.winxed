@@ -26,8 +26,8 @@ class Rosella.ObjectFactory
         if (self.target_type != null)
             return self.create_typed(self.target_type, pos:[flat], named:[flat,named]);
         Rosella.Error.invalid(__FUNCTION__,
-            "Cannot create an object without at type.\n" +
-            "You must provide a type to create_typed, pass one to the " +
+            "Cannot create an object without a type.\n" +
+            "You must provide a type to create_typed or pass one to the " +
             "constructor for ObjectFactory"
         );
     }
