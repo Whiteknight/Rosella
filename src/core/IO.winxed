@@ -86,6 +86,20 @@ namespace Rosella.IO
         return exit_status;
     }
 
+    function spawn(var cmd)
+    {
+        int retval;
+        ${ spawnw retval, cmd };
+        return (retval >> 8) & 0xFF;
+    }
+
+    function spawn(string cmd)
+    {
+        int retval;
+        ${ spawnw retval, cmd };
+        return (retval >> 8) & 0xFF;
+    }
+
     /* Convenience routines for performing formatted output
     */
 
