@@ -1,0 +1,36 @@
+namespace Rosella.Template
+{
+    class Engine;
+    class Context;
+    class Handler;
+    class Node;
+    extern function get_standard_template_file;
+    extern function get_standard_template_text;
+}
+
+namespace Rosella.Template.Handler
+{
+    class Children;
+    class Factory;
+    class For;
+    class Repeat;
+    class If;
+    class Unless;
+    class Include;
+    class Set;
+}
+
+namespace Rosella.Template.Node
+{
+    class Factory;
+    class Master;
+    class Logic;
+    class Data;
+    class Eval;
+    class Literal;
+}
+
+function __load_template[anon, load, init]()
+{
+    Rosella.load_bytecode_file("rosella/template.pbc", "load");
+}

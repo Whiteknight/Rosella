@@ -1,0 +1,39 @@
+namespace Rosella.Harness
+{
+    class FileResult;
+    class TapParser;
+    class TestExecutor;
+    class TestFile;
+    class TestRun;
+    class View;
+    extern function default_testexecutor_factory;
+    extern function set_testexecutor_factory;
+    extern function default_tapparser_factory;
+    extern function set_tapparser_factory;
+    extern function default_fileresult_factory;
+    extern function set_fileresult_factory;
+}
+
+namespace Rosella
+{
+    class Harness;
+}
+
+namespace Rosella.Harness.TestFile
+{
+    class Automatic;
+    class Factory;
+    class NQP;
+    class PIR;
+    class Winxed;
+}
+
+namespace Rosella.Harness.TestRun
+{
+    class Factory;
+}
+
+function __load_harness[anon, load, init]()
+{
+    Rosella.load_bytecode_file("rosella/harness.pbc", "load");
+}

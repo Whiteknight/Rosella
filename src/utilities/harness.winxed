@@ -1,10 +1,5 @@
 // TAP Test Harness
 
-// Forward declaration of classes.
-namespace Rosella {
-    class Harness;
-}
-
 // Harness Main. Execute tests in directories and display results.
 function harness_main(var args)
 {
@@ -43,8 +38,6 @@ directories: (t/).
 // Main function. Load in the libraries and run the test, catching errors.
 function main[main](var args)
 {
-    var rosella = load_packfile("rosella/core.pbc");
-    var(Rosella.initialize_rosella)("harness");
     var(Rosella.Parrot.try_report)(function() {
         string program_name = args.shift();
         if (elements(args) == 1 && args[0] == "--help")

@@ -1,20 +1,8 @@
 const string TEMPLATE_FILE_FMT = "%s.%s.template";
 
-namespace Rosella {
-    namespace CommandLine { class Program; }
-    namespace Template { class Engine; }
-    namespace FileSystem {
-        class File;
-        class FilePath;
-    }
-}
-
 // Entry point. Parse args and dispatch
 function main[main](var args)
 {
-    var rosella = load_packfile("rosella/core.pbc");
-    var(Rosella.initialize_rosella)("commandline", "filesystem", "template");
-
     var program = new Rosella.CommandLine.Program(args.shift());
     program.add_mode("help").set_flag("--help").set_function(show_help);
     program.add_mode("version").set_flag("--version").set_function(show_version);

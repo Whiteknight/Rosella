@@ -1,0 +1,11 @@
+namespace Rosella.CommandLine
+{
+    class Arguments;
+    class Program;
+    class ProgramMode;
+}
+
+function __load_commandline[anon, load, init]()
+{
+    Rosella.load_bytecode_file("rosella/commandline.pbc", "load");
+}

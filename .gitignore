@@ -10,3 +10,4 @@ src/utilities/installable_*
 rosella/*.winxed
 rosella/*.pir
 rosella/*.pbc
+rosella/installable_*

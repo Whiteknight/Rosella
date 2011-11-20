@@ -325,22 +325,31 @@ function setup_experimental_libraries(var rosella)
 function setup_utilities(var rosella)
 {
     var utilities = {
-        "winxed_repl" : "winxed_repl",
-        "test_all_lib" : "rosella_test_all_lib",
-        "test_template" : "rosella_test_template",
-        "mk_winxed_header" : "winxed_mk_header",
-        "harness" : "rosella_harness"
+        "winxed_repl" : ["winxed_repl", ["Core"]],
+        "test_all_lib" : ["rosella_test_all_lib", ["Core", "FileSystem", "Template", "CommandLine"]],
+        "test_template" : ["rosella_test_template", ["Core", "FileSystem", "Template", "CommandLine"]],
+        "mk_winxed_header" : ["winxed_mk_header", ["Core", "FileSystem", "CommandLine"]],
+        "harness" : ["rosella_harness", ["Core", "Harness"]]
     };
-    string prefix = "src/utilities/";
+    string src_prefix = "src/utilities/";
+    string dest_prefix = "rosella/";
     for (string util_source in utilities) {
-        string winxed_file = prefix + util_source + ".winxed";
-        string pir_file = prefix + util_source + ".pir";
-        string pbc_file = prefix + util_source + ".pbc";
-        string util = string(utilities[util_source]);
+        string src_file = src_prefix + util_source + ".winxed";
+        string dest_file_base = string(utilities[util_source][0]);
+        string winxed_file = dest_prefix + dest_file_base + ".winxed";
+        string pir_file = dest_prefix + dest_file_base + ".pir";
+        string pbc_file = dest_prefix + dest_file_base + ".pbc";
 
+        var files = [];
+        var includes = utilities[util_source][1];
+        for (string include in includes)
+            push(files, "src/include/" + include + ".winxed");
+        push(files, src_file);
+
+        rosella["winxed_winxed"][winxed_file] = files;
         rosella["pir_winxed"][pir_file] = winxed_file;
         rosella["pbc_pir"][pbc_file] = pir_file;
-        rosella["installable_pbc"][util] = pbc_file;
+        rosella["installable_pbc"][dest_file_base] = pbc_file;
     }
 }
 

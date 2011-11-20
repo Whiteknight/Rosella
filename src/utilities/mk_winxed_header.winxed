@@ -1,13 +1,3 @@
-// Forward declarations.
-namespace Rosella {
-    namespace IO {
-        extern function sayf;
-        extern function printf;
-    }
-    namespace CommandLine { class Program; }
-    namespace FileSystem { class FilePath; }
-}
-
 // Entry object to collect information from the packfile
 class NamespaceEntry {
     var classes;
@@ -39,9 +29,6 @@ const int PF_FLAG_LOAD = 0x20;
 // Main entry point. Parse the arguments and call the main function
 function main[main](var args)
 {
-    var rosella = load_packfile("rosella/core.pbc");
-    var(Rosella.initialize_rosella)("commandline", "filesystem");
-
     var p = new Rosella.CommandLine.Program(args.shift());
     p.default_mode().set_function(mk_header_main)
         .require_positional("libpath", 0);
