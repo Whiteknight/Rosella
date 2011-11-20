@@ -2,7 +2,6 @@ class Rosella.Container.Resolver
 {
     var previous;
     var build_options;
-    var misc_options;
     var data;
     var positionals;
     var named;
@@ -14,29 +13,24 @@ class Rosella.Container.Resolver
         return self.previous;
     }
 
-    function set_options(var build, var misc)
+    function set_options(var build)
     {
         self.build_options = build;
-        self.misc_options = misc;
     }
 
-    function resolve(var container, var build, var misc)
+    function resolve(var container, var build)
     {
         if (elements(build) == 0)
             build = self.build_options;
-        if (elements(misc) == 0)
-            misc = self.misc_options;
         var obj = self.resolve_internal(container);
-        self.execute_options(container, obj, build, misc);
+        self.execute_options(container, obj, build);
         return obj;
     }
 
-    function execute_options(var container, var obj, var build, var misc)
+    function execute_options(var container, var obj, var build)
     {
         for (var build_opt in build)
             build_opt.execute(container, obj);
-        for (var misc_opt in misc)
-            misc_opt.execute(container, obj);
     }
 
     function get_arguments(var container, var p, var n)
@@ -65,7 +59,7 @@ class Rosella.Container.Resolver
         return po, no;
     }
 
-    function resolve_internal(var build, var misc)
+    function resolve_internal(var build)
     {
         Rosella.Error.must_subclass(__CLASS__);
     }

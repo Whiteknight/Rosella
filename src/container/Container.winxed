@@ -48,32 +48,25 @@ class Rosella.Container
     {
         var resolver = null;
         var build_options = [];
-        var misc_options = [];
         for (var option in options) {
             if (option instanceof Rosella.Container.Resolver) {
                 if (resolver != null)
                     self.multiple_resolvers_error(type);
                 resolver = option;
                 continue;
-            }
-            if (!(option instanceof Rosella.Container.Option)) {
+            } else if (option instanceof Rosella.Container.Option) {
+                push(build_options, option);
+                continue;
+            } else {
                 if (resolver != null)
                     self.multiple_resolvers_error(type);
                 // it's an instance
                 resolver = new Rosella.Container.Resolver.Instance(option);
                 continue;
             }
-            if (option instanceof Rosella.Container.Option.Build) {
-                push(build_options, option);
-                continue;
-            }
-            if (option instanceof Rosella.Container.Option) {
-                push(misc_options, option);
-                continue;
-            }
             Rosella.Error.invalid(__FUNCTION__, "Invalid option: %s", typeof(option));
         }
-        return resolver, build_options, misc_options;
+        return resolver, build_options;
     }
 
     function register(var type, var options [slurpy])
@@ -81,10 +74,10 @@ class Rosella.Container
         var type_class = Rosella.get_type_class(type);
         if (type_class == null)
             Rosella.Error.invalid(__FUNCTION__, "Attempt to register invalid or null type");
-        :(var resolver, var build_options, var misc_options) = self.__sort_options(type_class, options);
+        :(var resolver, var build_options) = self.__sort_options(type_class, options);
         if (resolver == null)
             resolver = new Rosella.Container.Resolver.Type(type);
-        resolver.set_options(build_options, misc_options);
+        resolver.set_options(build_options);
         if (exists self.type_registry[type_class])
             resolver.previous(self.type_registry[type_class]);
         self.type_registry[type_class] = resolver;
@@ -134,14 +127,18 @@ class Rosella.Container
 
     function __resolve_internal(var type, var options)
     {
-        :(var resolver, var build_options, var misc_options) = self.__sort_options(type, options);
+        :(var resolver, var build_options) = self.__sort_options(type, options);
         if (resolver == null) {
             if (exists self.type_registry[type])
                 resolver = self.type_registry[type];
-            else
-                Rosella.Error.invalid(__FUNCTION__, "No Resolver specified for type %s", type);
+            if (resolver == null) {
+                resolver = new Rosella.Container.Resolver.Type(type);
+                resolver.set_options([], []);
+                // TODO: Should we auto-register this in the type library, or
+                // create a new resolver each time?
+            }
         }
-        var instance = resolver.resolve(self, build_options, misc_options);
+        var instance = resolver.resolve(self, build_options);
         return instance;
     }
 }

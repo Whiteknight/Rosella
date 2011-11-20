@@ -1,3 +1,105 @@
 class Rosella.Container.Option
 {
+    function execute(var container, var instance)
+    {
+        Rosella.Error.must_subclass(__CLASS__);
+    }
+}
+
+// Call a method during build
+class Rosella.Container.Option.Method : Rosella.Container.Option
+{
+    var method;
+    var positional;
+    var named;
+
+    function Method(string method, var p [slurpy], var n [slurpy,named])
+    {
+        self.method = method;
+        self.positional = p;
+        self.named = n;
+    }
+
+    function execute(var container, var instance)
+    {
+        var p = [];
+        var n = {};
+        var method = Rosella.find_named_method(instance, string(self.method));
+        if (method == null)
+            Rosella.Error.invalid(__FUNCTION__, "Cannot find method %s", self.method);
+        for (int i = 0; i < elements(self.positional); i++) {
+            var positional = self.positional[i];
+            if (positional instanceof Rosella.Container.Argument)
+                p[i] = positional.get_value(container);
+            else
+                p[i] = positional;
+        }
+        for (string s in self.named) {
+            var named = self.named[s];
+            if (named instanceof Rosella.Container.Argument)
+                n[s] = named.get_value(container);
+            else
+                n[s] = self.named[s].get_value(container);
+        }
+    }
+}
+
+// Set an attribute value during build
+class Rosella.Container.Option.Attribute : Rosella.Container.Option
+{
+    var attribute;
+    var value;
+
+    function Attribute(string attribute, var value)
+    {
+        self.attribute = attribute;
+        self.value = value;
+    }
+
+    function execute(var container, var instance)
+    {
+        string attr = string(self.attribute);
+        var value = self.value;
+        if (value instanceof Rosella.Container.Argument)
+            value = value.get_value(container);
+        instance.*attr = value;
+    }
+}
+
+// Set a property value during build
+class Rosella.Container.Option.Property : Rosella.Container.Option
+{
+    var property;
+    var value;
+
+    function Property(string property, var value)
+    {
+        self.property = property;
+        self.value = value;
+    }
+
+    function execute(var container, var instance)
+    {
+        string prop = string(self.property);
+        var value = self.value;
+        if (value instanceof Rosella.Container.Argument)
+            value = value.get_value(container);
+        ${ setprop instance, prop, value };
+    }
+}
+
+class Rosella.Container.Option.Initializer : Rosella.Container.Option
+{
+    var initializer;
+
+    function Initializer(var initializer)
+    {
+        self.initializer = initializer;
+    }
+
+    function execute(var container, var instance)
+    {
+        var f = self.initializer;
+        f(instance);
+    }
 }
