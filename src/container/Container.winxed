@@ -36,38 +36,22 @@ class Rosella.Container
     var type_registry;
     var aliases;
 
+    // Constructor
     function Container()
     {
         self.type_registry = Rosella.get_pmc_keyed_hash();
         self.aliases = {};
     }
 
-    function __sort_options(var type, var options)
-    {
-        var resolver = null;
-        var lifetime_manager = null;
-        var build_options = [];
-        for (var option in options) {
-            if (option instanceof Rosella.Container.Resolver) {
-                if (resolver != null)
-                    self.multiple_resolvers_error(type);
-                resolver = option;
-                continue;
-            } else if (option instanceof Rosella.Container.Option) {
-                push(build_options, option);
-                continue;
-            } else {
-                if (resolver != null)
-                    self.multiple_resolvers_error(type);
-                // it's an instance
-                resolver = new Rosella.Container.Resolver.Instance(option);
-                continue;
-            }
-            Rosella.Error.invalid(__FUNCTION__, "Invalid option: %s", typeof(option));
-        }
-        return resolver, build_options;
-    }
+    /* Public Container API
+        These routines form the core of the public API for the Container library.
+        With these routines you can register and resolve objects.
+    */
 
+    // Register an object type. A sequence of modifiers such as
+    // Rosella.Container.Resolver or Rosella.Container.Option objects can be
+    // passed to modify resolution behavior. If we overwrite an existing
+    // registration, the old version is kept in a stack.
     function register(var type, var options [slurpy])
     {
         var type_class = Rosella.get_type_class(type);
@@ -83,6 +67,9 @@ class Rosella.Container
         return self;
     }
 
+    // Remove registration for the given type. Remove the current registration.
+    // If a previous registation for the type exists, that becomes the current
+    // registration for the type
     function unregister(var type)
     {
         var type_class = Rosella.get_type_class(type);
@@ -96,19 +83,27 @@ class Rosella.Container
         return self;
     }
 
-    function multiple_resolvers_error(var type)
+    // Completely unregister the given type including all previous registrations.
+    function unregister_all(var type)
     {
-        Rosella.Error.invalid(__FUNCTION__, "Multiple resolvers specified for type registration %", Rosella.get_type_name(type));
+        var type_class = Rosella.get_type_class(type);
+        if (exists self.type_registry[type_class])
+            delete self.type_registry[type_class];
     }
 
+    // Add a string name alias for the given type.
     function alias(var type, string name)
     {
         var type_class = Rosella.get_type_class(type);
         if (type_class == null)
             Rosella.Error.invalid(__FUNCTION__, "Cannot setup alias '%s' for unknown class", name);
         self.aliases[name] = type_class;
+        return self;
     }
 
+    // Resolve an object of the given type, or the given alias. Options such as
+    // Rosella.Container.Resolver or Rosella.Container.Option objects passed
+    // here override those provided during registration.
     function resolve(var type, var options [slurpy])
     {
         var type_class = null;
@@ -124,6 +119,37 @@ class Rosella.Container
         return self.__resolve_internal(type_class, options);
     }
 
+    /* Private Helper Methods
+    */
+
+    // Sort out a list of options
+    function __sort_options(var type, var options)
+    {
+        var resolver = null;
+        var lifetime_manager = null;
+        var build_options = [];
+        for (var option in options) {
+            if (option instanceof Rosella.Container.Resolver) {
+                if (resolver != null)
+                    self.__multiple_resolvers_error(type);
+                resolver = option;
+                continue;
+            } else if (option instanceof Rosella.Container.Option) {
+                push(build_options, option);
+                continue;
+            } else {
+                if (resolver != null)
+                    self.__multiple_resolvers_error(type);
+                // it's an instance
+                resolver = new Rosella.Container.Resolver.Instance(option);
+                continue;
+            }
+            Rosella.Error.invalid(__FUNCTION__, "Invalid option: %s", typeof(option));
+        }
+        return resolver, build_options;
+    }
+
+    // Perform the actual type resolution.
     function __resolve_internal(var type, var options)
     {
         :(var resolver, var build_options) = self.__sort_options(type, options);
@@ -139,5 +165,12 @@ class Rosella.Container
         }
         var instance = resolver.resolve(self, build_options);
         return instance;
+    }
+
+    // Throw an error if multiple Resolver objects are specified for a single
+    // type
+    function __multiple_resolvers_error(var type)
+    {
+        Rosella.Error.invalid(__FUNCTION__, "Multiple resolvers specified for type registration %", Rosella.get_type_name(type));
     }
 }

@@ -1,11 +1,21 @@
+/* Dependency Injection Arguments
+    These types are used to control how each dependency is injected during a
+    constructor or managed method call.
+
+    This is an abstract parent type, use a subclass instead.
+*/
 class Rosella.Container.Argument
 {
+    // Get the value
     function get_value(var container)
     {
         Rosella.Error.must_subclass(__CLASS__);
     }
 }
 
+/* Container Resolution Injector
+    This type uses the container to resolve a suitable injection instance
+*/
 class Rosella.Container.Argument.Resolve : Rosella.Container.Argument
 {
     var type;
@@ -22,6 +32,9 @@ class Rosella.Container.Argument.Resolve : Rosella.Container.Argument
     }
 }
 
+/* Instance Injector
+    This type uses an existing instance for injection
+*/
 class Rosella.Container.Argument.Instance : Rosella.Container.Argument
 {
     var instance;

@@ -1,3 +1,8 @@
+/* Instance Creation/Resolution Object
+    Resolver objects are used to create or find an object instance.
+
+    Do not use this type directly. Use a subclass instead
+*/
 class Rosella.Container.Resolver
 {
     var previous;
@@ -7,6 +12,7 @@ class Rosella.Container.Resolver
     var named;
     var lifetime_manager;
 
+    // The previous resolver for the same type, if any.
     function previous(var prev [optional], int has_p [opt_flag])
     {
         if (has_p)
@@ -14,11 +20,13 @@ class Rosella.Container.Resolver
         return self.previous;
     }
 
+    // Set a list of initialization options
     function set_options(var build)
     {
         self.build_options = build;
     }
 
+    // Resolve an instance
     function resolve(var container, var build)
     {
         if (elements(build) == 0) {
@@ -33,12 +41,14 @@ class Rosella.Container.Resolver
         return obj;
     }
 
+    // Excute the various initializer options on the new instance
     function execute_options(var container, var obj, var build)
     {
         for (var build_opt in build)
             build_opt.execute(container, obj);
     }
 
+    // Get a list of argument values from a list of Argument objects
     function get_arguments(var container, var p, var n)
     {
         var po = [];
@@ -65,12 +75,16 @@ class Rosella.Container.Resolver
         return po, no;
     }
 
+    // Internal resolution routine. Must be subclassed
     function resolve_internal(var build)
     {
         Rosella.Error.must_subclass(__CLASS__);
     }
 }
 
+/* Instance Resolution
+    Return a preexisting instance
+*/
 class Rosella.Container.Resolver.Instance : Rosella.Container.Resolver
 {
     function Instance(var obj)
@@ -84,6 +98,10 @@ class Rosella.Container.Resolver.Instance : Rosella.Container.Resolver
     }
 }
 
+/* Basic Type Resolution
+    Resolve the type, executing the standard (Winxed-style) constructor with the
+    given arguments
+*/
 class Rosella.Container.Resolver.Type : Rosella.Container.Resolver
 {
     function Type(var type, var p [slurpy], var n [slurpy,named])
@@ -101,6 +119,10 @@ class Rosella.Container.Resolver.Type : Rosella.Container.Resolver
     }
 }
 
+/* Basic Type Resolution with Constructor
+    Resolve the type, executing the specified constructor with the given
+    arguments
+*/
 class Rosella.Container.Resolver.TypeConstructor : Rosella.Container.Resolver
 {
     var constructor;
@@ -125,6 +147,9 @@ class Rosella.Container.Resolver.TypeConstructor : Rosella.Container.Resolver
     }
 }
 
+/* Factory Resolution
+    Use a Factory object to get a new instance.
+*/
 class Rosella.Container.Resolver.Factory : Rosella.Container.Resolver
 {
     var method;
@@ -149,6 +174,9 @@ class Rosella.Container.Resolver.Factory : Rosella.Container.Resolver
     }
 }
 
+/* Factory Method Resolution
+    Execute a Factory Method to get a new instance
+*/
 class Rosella.Container.Resolver.FactoryMethod : Rosella.Container.Resolver
 {
     function FactoryMethod(var factory_method, var p [slurpy], var n [slurpy,named])
