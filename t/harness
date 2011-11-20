@@ -15,7 +15,6 @@ sub library_tests() {
     %h{"test"} := "NQP";
     %h{"tap_harness"} := "Winxed";
     %h{"action"} := "NQP";
-    %h{"container"} := "NQP";
     %h{"query"} := "NQP";
     %h{"proxy"} := "NQP";
     %h{"mockobject"} := "NQP";
@@ -32,6 +31,7 @@ sub unstable_tests() {
     %h{"prototype"} := "NQP";
     %h{"commandline"} := "Winxed";
     %h{"event"} := "Winxed";
+    %h{"container"} := "Winxed";
     %h;
 }
 
