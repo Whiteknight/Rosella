@@ -5,6 +5,7 @@ class Rosella.Container.Resolver
     var data;
     var positionals;
     var named;
+    var lifetime_manager;
 
     function previous(var prev [optional], int has_p [opt_flag])
     {
@@ -20,10 +21,15 @@ class Rosella.Container.Resolver
 
     function resolve(var container, var build)
     {
-        if (elements(build) == 0)
+        if (elements(build) == 0) {
+            if (self.lifetime_manager != null && self.lifetime_manager.has_instance())
+                return self.lifetime_manager.get_instance();
             build = self.build_options;
+        }
         var obj = self.resolve_internal(container);
         self.execute_options(container, obj, build);
+        if (self.lifetime_manager != null)
+            self.lifetime_manager.set_instance(obj);
         return obj;
     }
 

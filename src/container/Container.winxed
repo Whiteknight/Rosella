@@ -38,15 +38,14 @@ class Rosella.Container
 
     function Container()
     {
-        var reg = {};
-        reg.set_key_type(3);
-        self.type_registry = reg;
+        self.type_registry = Rosella.get_pmc_keyed_hash();
         self.aliases = {};
     }
 
     function __sort_options(var type, var options)
     {
         var resolver = null;
+        var lifetime_manager = null;
         var build_options = [];
         for (var option in options) {
             if (option instanceof Rosella.Container.Resolver) {

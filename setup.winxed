@@ -90,6 +90,7 @@ function setup_stable_libraries(var rosella)
     setup_winxed_lib(rosella, "container", ["Core"],
         "container/Container",
         "container/Argument",
+        "container/LifetimeManager",
         "container/Option",
         "container/Resolver"
     );
