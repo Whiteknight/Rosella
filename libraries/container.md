@@ -14,31 +14,33 @@ Dependency-Injection container type.
 
 The container allows two basic operations: Registration and Resolution.
 
-In Registration, the user provides a key and a series of resolution rules. The
-key can be any Rosella Type object, or it can be any arbitrary string.
+In Registration, the user provides a type and a series of resolution rules. The
+key can be any Rosella Type object.
 
-In resolution, the user asks the container for an object with the same key.
+In resolution, the user asks the container for an object with the same type.
 The container will "resolve" an object following the registered rules for that
 key. In this context, the verb "resolve" can mean that the container returns
 an existing object which matches the rules, or it can allocate and possibly
-initialize a fresh new object.
+initialize a fresh new object. What you get back is what the container has been
+configured to give you.
 
 ### Registration Rules
 
-Registration Rules have two parts: A mechanism for fetching or allocating an
-object of a given type (a `Rosella.Container.ItemFactory`) and a series of
-actions to initialize the new object (`Rosella.Action`).
+Registration consists of multiple parts. At the very least, a type must be
+provided which tells the container which type of object you want. After you
+specify a type, you may specify a Resolver, a Lifetime Manager, and any number
+of initializer Options.
 
-When an key is resolved, the associated ItemFactory creates or fetches the
-object, and then the array of Action objects are executed on the new object to
-initialize it.
+When a type is resolved by the container the Resolver object may create an
+instance or the Lifetime Manager may return an existing instance. Once the
+instance is obtained, all the initializer Options are executed on it to
+set up the object for use.
 
-If the container is asked for a key which has not been previously registered,
-the container by default will fall back to asking it a default object factory
-(`Rosella.ObjectFactory`) to create that object. The default ObjectFactory
-cannot handle creating from an arbitrary string that does not correspond to
-an existing Parrot Class PMC. You can provide your own custom factory instead
-to handle these kinds of cases.
+If the container is asked to resolve a type which has not been previously
+registered, it will fall back to basic type resolution with a default (winxed
+style) constructor. Rules such as the Resolver to use and the specific
+initialization Options to use for the object can be set at registration time or
+overrides for these can be provided when Resolving.
 
 ### Keys Best Practices
 
