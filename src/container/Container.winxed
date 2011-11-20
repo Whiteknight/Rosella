@@ -25,6 +25,8 @@ namespace Rosella.Container
     }
 }
 
+// TODO: Add some additional APIs for simple string-keyed service location stuff
+
 /* Dependency Injection / Inversion of Control Container
     The Container class implements a dependency injection and type
     resolution system. Types are registered with the container, and later
@@ -142,6 +144,11 @@ class Rosella.Container
             type_class = Rosella.get_type_class(type);
         return type_class;
     }
+
+    // TODO: Add a near-copy of this function for handling override options passed
+    // to the .resolve() method. During resolution we do not want the ability to
+    // override the LifetimeManager. We should also find a way (named arg?)
+    // to specify whether option lists should be replaced or merged.
 
     // Sort out a list of options
     function __sort_options(var type, var options)
