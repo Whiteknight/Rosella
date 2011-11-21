@@ -25,8 +25,6 @@ namespace Rosella.Container
     }
 }
 
-// TODO: Add some additional APIs for simple string-keyed service location stuff
-
 /* Dependency Injection / Inversion of Control Container
     The Container class implements a dependency injection and type
     resolution system. Types are registered with the container, and later
@@ -59,7 +57,7 @@ class Rosella.Container
         var type_class = self.__get_type_class(type);
         if (type_class == null)
             Rosella.Error.invalid(__FUNCTION__, "Attempt to register invalid or null type");
-        :(var resolver, var build_options) = self.__sort_options(type_class, options);
+        :(var resolver, var build_options) = self.__sort_options_register(type_class, options);
         if (resolver == null)
             resolver = new Rosella.Container.Resolver.Type(type);
         resolver.set_options(build_options);
@@ -145,13 +143,8 @@ class Rosella.Container
         return type_class;
     }
 
-    // TODO: Add a near-copy of this function for handling override options passed
-    // to the .resolve() method. During resolution we do not want the ability to
-    // override the LifetimeManager. We should also find a way (named arg?)
-    // to specify whether option lists should be replaced or merged.
-
-    // Sort out a list of options
-    function __sort_options(var type, var options)
+    // Sort out a list of options for registration
+    function __sort_options_register(var type, var options)
     {
         var resolver = null;
         var lifetime_manager = null;
@@ -165,6 +158,9 @@ class Rosella.Container
             } else if (option instanceof Rosella.Container.Option) {
                 push(build_options, option);
                 continue;
+            } else if (option instanceof Rosella.Container.LifetimeManager) {
+                lifetime_manager = option;
+                continue;
             } else {
                 if (resolver != null)
                     self.__multiple_resolvers_error(type);
@@ -172,7 +168,30 @@ class Rosella.Container
                 resolver = new Rosella.Container.Resolver.Instance(option);
                 continue;
             }
-            Rosella.Error.invalid(__FUNCTION__, "Invalid option: %s", typeof(option));
+            Rosella.Error.invalid(__FUNCTION__, "Invalid option at registration: %s", typeof(option));
+        }
+        return resolver, build_options;
+    }
+
+    // TODO: Add some sort of flag to say whether option lists should be replaced or merged
+    // TODO: Add in a way that we can over-ride arguments on the resolver here.
+
+    // Sort out a list of options for registration
+    function __sort_options_resolve(var type, var options)
+    {
+        var resolver = null;
+        var build_options = [];
+        for (var option in options) {
+            if (option instanceof Rosella.Container.Resolver) {
+                if (resolver != null)
+                    self.__multiple_resolvers_error(type);
+                resolver = option;
+                continue;
+            } else if (option instanceof Rosella.Container.Option) {
+                push(build_options, option);
+                continue;
+            }
+            Rosella.Error.invalid(__FUNCTION__, "Invalid option at type resolution: %s", typeof(option));
         }
         return resolver, build_options;
     }
@@ -180,7 +199,7 @@ class Rosella.Container
     // Perform the actual type resolution.
     function __resolve_internal(var type, var options)
     {
-        :(var resolver, var build_options) = self.__sort_options(type, options);
+        :(var resolver, var build_options) = self.__sort_options_resolve(type, options);
         if (resolver == null) {
             if (exists self.type_registry[type])
                 resolver = self.type_registry[type];
