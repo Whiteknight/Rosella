@@ -92,7 +92,8 @@ function setup_stable_libraries(var rosella)
         "container/Argument",
         "container/LifetimeManager",
         "container/Option",
-        "container/Resolver"
+        "container/Resolver",
+        "container/ServiceLocator"
     );
 
     // A proxying library for building and managing proxies

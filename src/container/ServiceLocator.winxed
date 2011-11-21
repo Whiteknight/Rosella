@@ -1,0 +1,21 @@
+class Rosella.Container.ServiceLocator
+{
+    var registry;
+
+    function ServiceLocator()
+    {
+        self.registry = Rosella.get_pmc_keyed_hash();
+    }
+
+    function register(var type, var instance)
+    {
+        self.registry[type] = instance;
+    }
+
+    function locate(var type)
+    {
+        if (exists self.registry[type])
+            return self.registry[type];
+        Rosella.Error.invald(__FUNCTION__, "Cannot locate service of type %s", type);
+    }
+}
