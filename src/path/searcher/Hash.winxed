@@ -1,27 +1,24 @@
-namespace Rosella { namespace Path { namespace Searcher
+/* Hash Searcher
+    Search any hash-like object using the keyed_str interface.
+*/
+class Rosella.Path.Searcher.Hash
 {
-    /* Hash Searcher
-        Search any hash-like object using the keyed_str interface.
-    */
-    class Hash
+    function Hash() { }
+
+    // We can search any hash-like object. Right now, those are denoted
+    // by the "does 'hash'" role.
+    function can_search(var obj)
     {
-        function Hash() { }
-
-        // We can search any hash-like object. Right now, those are denoted
-        // by the "does 'hash'" role.
-        function can_search(var obj)
-        {
-            int is_hash = 0;
-            ${ does is_hash, obj, "hash" };
-            return is_hash;
-        }
-
-        // Search the hash for the given item
-        function search(var obj, string name)
-        {
-            if (exists obj[name])
-                return 1, obj[name];
-            return 0, null;
-        }
+        int is_hash = 0;
+        ${ does is_hash, obj, "hash" };
+        return is_hash;
     }
-}}}
+
+    // Search the hash for the given item
+    function search(var obj, string name)
+    {
+        if (exists obj[name])
+            return 1, obj[name];
+        return 0, null;
+    }
+}

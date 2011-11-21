@@ -1,29 +1,28 @@
-namespace Rosella { namespace Path { namespace Searcher
+/* Attribute Searcher
+    The Attribute Searcher can search an object for a named attribute.
+*/
+class Rosella.Path.Searcher.Attribute
 {
-    /* Attribute Searcher
-        The Attribute Searcher can search an object for a named attribute.
-    */
-    class Attribute
+    function Attribute() { }
+
+    // We can search any object which has attributes
+    function can_search(var obj)
     {
-        function Attribute() { }
-
-        // We can search any object which has attributes
-        function can_search(var obj)
-        {
-            // TODO: Is there a way to check if we have *any* attributes?
+        var obj_class = typeof(obj);
+        if (elements(obj_class.attributes()) > 0)
             return 1;
-        }
-
-        // Perform the search, looking for the attribute with the given name
-        function search(var obj, string name)
-        {
-            var result = null;
-            int success = 0;
-            try {
-                ${ getattribute result, obj, name };
-                success = 1;
-            } catch() { }
-            return success, result;
-        }
+        return 0;
     }
-}}}
+
+    // Perform the search, looking for the attribute with the given name
+    function search(var obj, string name)
+    {
+        var result = null;
+        int success = 0;
+        try {
+            result = obj.*name;
+            success = 1;
+        } catch() { }
+        return success, result;
+    }
+}

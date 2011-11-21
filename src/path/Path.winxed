@@ -1,130 +1,128 @@
-namespace Rosella
+/* Path Class
+    Path is a utility to search for values in nested aggregates by path
+    string. A path string is a string of identifiers separated by a
+    separator.
+
+    Path implements a search loop over an array of searchers. Each
+    searcher type is able to search different types of objects in
+    different ways.
+
+    Path performs a longest-token search, avoiding the semi-predicate
+    problem by allowing a separator to appear in search strings. If we
+    have the search string "a.b.c.d" with a separator of ".", we will
+    search for, in order:
+
+        "a.b.c.d"
+        "a.b.c"
+        "a.b"
+        "a"
+
+    Once a match is found on a substring, the remainder of the string
+    is used to continue recursive searching through the next object. The
+    search continues until we have no more string left to search.
+*/
+class Rosella.Path
 {
-    /* Path Class
-        Path is a utility to search for values in nested aggregates by path
-        string. A path string is a string of identifiers separated by a
-        separator.
+    var separator;
+    var searchers;
 
-        Path implements a search loop over an array of searchers. Each
-        searcher type is able to search different types of objects in
-        different ways.
-
-        Path performs a longest-token search, avoiding the semi-predicate
-        problem by allowing a separator to appear in search strings. If we
-        have the search string "a.b.c.d" with a separator of ".", we will
-        search for, in order:
-
-            "a.b.c.d"
-            "a.b.c"
-            "a.b"
-            "a"
-
-        Once a match is found on a substring, the remainder of the string
-        is used to continue recursive searching through the next object. The
-        search continues until we have no more string left to search.
-    */
-    class Path
+    // Constructor. Take a list of searchers, if any, and maybe a
+    // custom separator string. The default separator is "."
+    function Path(var searchers [slurpy],
+            string separator [optional,named], int has_sep [opt_flag])
     {
-        var separator;
-        var searchers;
-
-        // Constructor. Take a list of searchers, if any, and maybe a
-        // custom separator string. The default separator is "."
-        function Path(var searchers [slurpy],
-                string separator [optional,named], int has_sep [opt_flag])
-        {
-            if (has_sep)
-                self.separator = separator;
-            else
-                self.separator = ".";
-            if (elements(searchers) == 0) {
-                self.searchers = [];
-                self.searchers[0] = new Rosella.Path.Searcher.Hash();
-                self.searchers[1] = new Rosella.Path.Searcher.Attribute();
-            }
-            else
-                self.searchers = searchers;
+        if (has_sep)
+            self.separator = separator;
+        else
+            self.separator = ".";
+        if (elements(searchers) == 0) {
+            self.searchers = [];
+            self.searchers[0] = new Rosella.Path.Searcher.Hash();
+            self.searchers[1] = new Rosella.Path.Searcher.Attribute();
         }
+        else
+            self.searchers = searchers;
+    }
 
-        // Take an object and a path. Use the path to search for a value
-        // inside the object
-        function get(var obj, string path)
-        {
-            int success;
-            var result;
-            :(success, result) = self.get_recursive(obj, path);
+    // Take an object and a path. Use the path to search for a value
+    // inside the object
+    function get(var obj, string path)
+    {
+        int success;
+        var result;
+        :(success, result) = self.get_recursive(obj, path);
 
-            if (success)
-                return result;
-            return null;
-        }
+        if (success)
+            return result;
+        return null;
+    }
 
-        // Internal routine to perform a recursive search through the object
-        // to look for a value.
-        function get_recursive(var obj, string path)
-        {
-            if (path == null || path == "")
-                return 1, obj;
+    // Internal routine to perform a recursive search through the object
+    // to look for a value.
+    function get_recursive(var obj, string path)
+    {
+        if (path == null || path == "")
+            return 1, obj;
 
-            string full_path = path;
-            string search_text = path;
-            string remainder = "";
-            int idx = length(path) - 1;
-            var result;
-            var found_result;
+        string full_path = path;
+        string search_text = path;
+        string remainder = "";
+        int idx = length(path) - 1;
+        var result;
+        var found_result;
 
-            // idx is the current location in the search string we are looking.
-            // Keep looping while we have string left to search.
-            while (idx >= 0) {
-                int success = 0;
+        // idx is the current location in the search string we are looking.
+        // Keep looping while we have string left to search.
+        while (idx >= 0) {
+            int success = 0;
 
-                // Loop over all searchers, in order.
-                for (var searcher in self.searchers) {
-                    if (!searcher.can_search(obj))
-                        continue;
-                    var result;
+            // Loop over all searchers, in order.
+            for (var searcher in self.searchers) {
+                if (!searcher.can_search(obj))
+                    continue;
+                var result;
 
-                    :(success, result) = searcher.search(obj, search_text);
-                    if (success) {
-                        // I don't know why this is necessary, but sometimes
-                        // the result variable becomes null once we break out
-                        // of the loop
-                        found_result = result;
-                        break;
-                    }
-                }
-
-                // If a searcher found a hit, lock in the partial answer.
-                // If it is the end of the search string, return the value.
-                // If not, try a recursive search on the partial result.
+                :(success, result) = searcher.search(obj, search_text);
                 if (success) {
-                    if (remainder == null || remainder == "")
-                        return 1, found_result;
-                    :(success, result) = self.get_recursive(found_result, remainder);
-                    if (success)
-                        return 1, result;
+                    // I don't know why this is necessary, but sometimes
+                    // the result variable becomes null once we break out
+                    // of the loop
+                    found_result = result;
+                    break;
                 }
-
-                // Get the next set of parameters and continue;
-                :(idx, remainder, search_text) = self.get_next_search_string(full_path, search_text);
             }
 
-            return 0, null;
+            // If a searcher found a hit, lock in the partial answer.
+            // If it is the end of the search string, return the value.
+            // If not, try a recursive search on the partial result.
+            if (success) {
+                if (remainder == null || remainder == "")
+                    return 1, found_result;
+                :(success, result) = self.get_recursive(found_result, remainder);
+                if (success)
+                    return 1, result;
+            }
+
+            // Get the next set of parameters and continue;
+            :(idx, remainder, search_text) = self.get_next_search_string(full_path, search_text);
         }
 
-        // Ratchet back to the previous instance of the separator, and
-        // repartition the input into a current search string and the
-        // remainder
-        function get_next_search_string(string full_path, string search_text)
-        {
-            string separator = self.separator;
-            int idx = search_text.reverse_index(separator, 0);
-            if (idx == -1)
-                return -1, "", search_text;
-            int next_idx = idx + length(separator);
-            string remainder = substr(full_path, next_idx);
-            search_text = substr(search_text, 0, idx);
-            return idx, remainder, search_text;
-        }
+        return 0, null;
+    }
+
+    // Ratchet back to the previous instance of the separator, and
+    // repartition the input into a current search string and the
+    // remainder
+    function get_next_search_string(string full_path, string search_text)
+    {
+        string separator = self.separator;
+        int idx = search_text.reverse_index(separator, 0);
+        if (idx == -1)
+            return -1, "", search_text;
+        int next_idx = idx + length(separator);
+        string remainder = substr(full_path, next_idx);
+        search_text = substr(search_text, 0, idx);
+        return idx, remainder, search_text;
     }
 }
+
