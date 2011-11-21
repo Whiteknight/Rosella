@@ -62,6 +62,11 @@ Winxed.
 
 ### Container
 
+The `Rosella.Container` namespace includes a `default_container` function for
+getting an instance to a pre-configured global container instance. You can use
+the function `set_default_container` to set a new container instance as the
+global default container.
+
 ## Classes
 
 ### Container
@@ -73,35 +78,128 @@ and Option objects to the register and resolve methods.
 
 ### Container.Argument
 
+`Rosella.Container.Argument` is a type that is used to fetch an argument value
+when calling a function, constructor, or method. This is an abstract parent type
+and should not be used directly. Use a subclass instead.
+
 ### Container.Argument.Instance
+
+`Rosella.Container.Argument.Instance` is an Argument type that provides a
+literal instance value to be used as an argument.
 
 ### Container.Argument.Resolver
 
+`Rosella.Container.Argument.Resolver` is an Argument type that takes a type key
+or alias name to lookup in the current container.
+
 ### Container.LifetimeManager
+
+`Rosella.Container.LifetimeManager` objects are used to control and manage the
+lifetime of objects resolved through the container. For instance, calling the
+resolve method on the container more than once with the same type name may
+return new instances or pre-existing instances, depending on the specifics of
+the lifetime manager object associated with that type.
+
+This is an abstract parent type. Use a subclass instead.
 
 ### Container.LifetimeManager.Permanent
 
+The `Rosella.Container.LifetimeManager.Permanent` type keeps a permanent
+reference to a single instance once it has been resolved the first time. All
+subsequent requests to resolve that type will use the same instance.
+
 ### Container.LifetimeManager.Thread
+
+The `Rosella.Container.LifetimeManager.Thread` is similar to the Permanent
+lifetime manager except it creates unique instances for each Parrot Thread.
+This type is currently unimplemented until Parrot adds threading support.
 
 ### Container.LifetimeManager.Transient
 
+The `Rosella.Container.LifettimeManager.Transient` type is the default
+registration behavior. No references are stored, and a new instance is created
+fresh and returned every time the container is asked to resolve one.
+
 ### Container.Option
+
+`Rosella.Container.Option` objects implement various initialization behaviors
+and other behaviors. Any number of options can be specified for a given type,
+and those behaviors are all executed during resolution by the Resolver unless
+the LifetimeManager provides a pre-existing and pre-configured instance to
+use instead.
+
+This type is an abstract parent class. Use a subclass instead.
 
 ### Container.Option.Attribute
 
+`Rosella.Container.Option.Attribute` initializers are used to set an attribute
+value on the new instance.
+
 ### Container.Option.Initializer
+
+`Rosella.Container.Option.Initializer` objects are used to execute an
+initialization callback function on the new instance to perform arbitrary work.
 
 ### Container.Option.Method
 
+`Rosella.Container.Option.Method` initializers are used to call a method on
+the new instance.
+
 ### Container.Option.Property
+
+`Rosella.Container.Option.Property` initializers are used to set a property
+value on the new instance.
+
+### Container.Resolver
+
+`Rosella.Container.Resolver` objects are used to create a new, unconfigured
+instance of the requested type. Resolvers can create new instances using a
+variety of techniques.
+
+During type resolution, the Resolver asks the associated Lifetime Manager if
+there are any existing instances which can be reused. If so, the Lifetime
+Manager returns an existing instance. Otherwise, the Resolver creates one and
+executes its list of initializer Options on the new instance.
+
+This is an abstract parent type. Use a subclass instead.
 
 ### Container.Resolver.Factory
 
+`Rosella.Container.Resolver.Factory` uses an existing factory object to create
+an instance of the requested type. The factory object, the name of the method
+to call to obtain a new instance, and an optional list of Argument objects to
+pass to that method must be provided.
+
 ### Container.Resolver.FactoryMethod
+
+`Rosella.Container.Resolver.FactoryMethod` uses a factory method callback to
+create an instance of the requested type. The factory method is a 0-arity Sub
+which will be given no arguments and must return exactly one object: the
+requested instance.
+
+### Container.Resolver.Instance
+
+The `Rosella.Container.Resolver.Instance` resolver type takes a pre-existing
+instance and returns that same exact instance every time an object of that
+type is requested.
+
+Notice that the Instance resolver and the Permanent lifetime manager do almost
+exactly the same thing. The key difference is that the Instance Resolver takes
+an instance up front that must be created *before* the registration. The
+Permanent lifetime manager will allow the resolver to lazily create an instance
+the first time it is requested and will cache that instance there after.
 
 ### Container.Resolver.Type
 
+The `Rosella.Container.Resolver.Type` resolver uses a Type object and normal
+Rosella (winxed-style) constructor behavior to create a new object. Arguments
+may be provided which will be passed to the default constructor.
+
 ### Container.Resolver.TypeConstructor
+
+The `Rosella.Container.Resolver.TypeConstructor` is similar to the Type resolver
+except it gives you the ability to specify a constructor by name and pass in a
+list of Argument objects to it.
 
 ## Examples
 
