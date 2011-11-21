@@ -67,6 +67,8 @@ getting an instance to a pre-configured global container instance. You can use
 the function `set_default_container` to set a new container instance as the
 global default container.
 
+    var c = Rosella.Container.default_container();
+
 ## Classes
 
 ### Container
@@ -75,6 +77,8 @@ The `Rosella.Container` class implements the dependency-injection container.
 The Container class provides a relatively small public API. Most of the
 functionality of the Container is had by passing LifetimeManager, Resolver,
 and Option objects to the register and resolve methods.
+
+    var c = new Rosella.Container();
 
 ### Container.Argument
 
@@ -87,10 +91,32 @@ and should not be used directly. Use a subclass instead.
 `Rosella.Container.Argument.Instance` is an Argument type that provides a
 literal instance value to be used as an argument.
 
+    c.register(class MyType,
+        new Rosella.Container.Option.Method("my_method",
+            new Rosella.Container.Argument.Instance("foo"),
+            new Rosella.Container.Argument.Instance("bar"):[named("baz")]
+        )
+    );
+
+This example registers the type `MyType` with the container. When it is
+resolved, the method `.my_method()` will be called with two arguments: A
+positional argument which will be the literal string `"foo"` and the literal
+string `"bar"` which will be passed as a named argument with the name `"baz"`.
+
 ### Container.Argument.Resolver
 
 `Rosella.Container.Argument.Resolver` is an Argument type that takes a type key
 or alias name to lookup in the current container.
+
+    c.register(class MyType,
+        new Rosella.Container.Option.Method("my_method",
+            new Rosella.Container.Argument.Resolver(class MyOtherType),
+            new Rosella.Container.Argument.Resolver(class MyDataType):[named("baz")]
+        )
+    );
+
+This example is very similar to the one for the Instance Argument type, but uses
+the container to resolve objects of the `MyOtherType` and `MyDataType` classes.
 
 ### Container.LifetimeManager
 
@@ -108,17 +134,41 @@ The `Rosella.Container.LifetimeManager.Permanent` type keeps a permanent
 reference to a single instance once it has been resolved the first time. All
 subsequent requests to resolve that type will use the same instance.
 
+    c.register(class MyType,
+        new Rosella.Container.LifetimeManager.Permanent()
+    );
+
+This example registers the `MyType` type with a Permanent lifetime manager. The
+first time this type is resolved a new instance will be created and cached.
+All subsequent requests for the type will return the same instance.
+
 ### Container.LifetimeManager.Thread
 
 The `Rosella.Container.LifetimeManager.Thread` is similar to the Permanent
 lifetime manager except it creates unique instances for each Parrot Thread.
 This type is currently unimplemented until Parrot adds threading support.
 
+    c.register(class MyType,
+        new Rosella.Container.LifetimeManager.Thread()
+    );
+
+This example registers a type `MyType` with a Thread lifetime manager.
+
 ### Container.LifetimeManager.Transient
 
 The `Rosella.Container.LifettimeManager.Transient` type is the default
 registration behavior. No references are stored, and a new instance is created
 fresh and returned every time the container is asked to resolve one.
+
+    c.register(class MyType,
+        new Rosella.Container.LifetimeManager.Transient()
+    );
+
+This example registers a type `MyType` with a Transient lifetime manager. Notice
+that the Transient manager is the default and will be used if no other manager
+is provided. The following example is exactly the same:
+
+    c.register(class MyType);
 
 ### Container.Option
 
@@ -135,20 +185,60 @@ This type is an abstract parent class. Use a subclass instead.
 `Rosella.Container.Option.Attribute` initializers are used to set an attribute
 value on the new instance.
 
+    c.register(class MyType,
+        new Rosella.Container.Option.Attribute("my_attr", "value")
+    );
+
+This example sets the value of the attribute `"my_attr"` on the new instance to
+the string literal `"value"`. This is the same, but more verbose:
+
+    c.register(class MyType,
+        new Rosella.Container.Option.Attribute("my_attr",
+            new Rosella.Container.Argument.Instance("value")
+        )
+    );
+
+Notice that you can also use a Resolver Argument as well.
+
 ### Container.Option.Initializer
 
 `Rosella.Container.Option.Initializer` objects are used to execute an
 initialization callback function on the new instance to perform arbitrary work.
+
+    c.register(class MyType,
+        new Rosella.Container.Option.Initializer(
+            function(o) {
+                o.foo();
+                o.bar = "value";
+                my_program.alert_created(o);
+            }
+        )
+    );
+
+This example calls a callback initializer function on the new object when it
+has been created. This performs some work on the new object and even calls
+another method somewhere else to alert that the object has been created.
 
 ### Container.Option.Method
 
 `Rosella.Container.Option.Method` initializers are used to call a method on
 the new instance.
 
+    c.register(class MyType,
+        new Rosella.Container.Option.Method("my_method",
+            new Rosella.Container.Argument.Instance("foo"),
+            new Rosella.Container.Argument.Resolver(class MyValueClass)
+        )
+    );
+
 ### Container.Option.Property
 
 `Rosella.Container.Option.Property` initializers are used to set a property
 value on the new instance.
+
+    c.register(class MyType,
+        new Rosella.Container.Option.Propery("my_prop", "value")
+    );
 
 ### Container.Resolver
 
@@ -170,12 +260,35 @@ an instance of the requested type. The factory object, the name of the method
 to call to obtain a new instance, and an optional list of Argument objects to
 pass to that method must be provided.
 
+Here is an example which utilizes a Rosella.ObjectFactory for the factory to
+use:
+
+    var f = new Rosella.ObjectFactory(class MyType);
+    c.register(class MyType,
+        new Rosella.Container.Resolver.Factory(f, "create");
+    );
+
+And here is a similar example, with arguments to pass to the `create` method:
+
+    var f = new Rosella.ObjectFactory(class MyType);
+    c.register(class MyType,
+        new Rosella.Container.Resolver.Factory(f, "create",
+            new Rosella.Container.Argument.Instance("value 1")
+            new Rosella.Container.Argument.Resolver(class MyOtherType)
+    );
+
 ### Container.Resolver.FactoryMethod
 
 `Rosella.Container.Resolver.FactoryMethod` uses a factory method callback to
 create an instance of the requested type. The factory method is a 0-arity Sub
 which will be given no arguments and must return exactly one object: the
 requested instance.
+
+    c.register(class MyType,
+        new Rosella.Container.Resolver.FactoryMethod(
+            function() { return new MyType(); }
+        );
+    );
 
 ### Container.Resolver.Instance
 
@@ -189,17 +302,40 @@ an instance up front that must be created *before* the registration. The
 Permanent lifetime manager will allow the resolver to lazily create an instance
 the first time it is requested and will cache that instance there after.
 
+    var instance = new MyType();
+    c.register(class MyType,
+        new Rosella.Container.Resolver.Instance(instance)
+    );
+
 ### Container.Resolver.Type
 
 The `Rosella.Container.Resolver.Type` resolver uses a Type object and normal
 Rosella (winxed-style) constructor behavior to create a new object. Arguments
 may be provided which will be passed to the default constructor.
 
+    c.register(class MyType,
+        new Rosella.Container.Resolver.Type(class MyType)
+    );
+
+This is the default behavior. This example has exactly the same result:
+
+    c.register(class MyType);
+
+This Resolver is useful for substituting a Subclass for the existing class:
+
+    c.register(class MyType,
+        new Rosella.Container.Resolver.Type(class SubclassOfMyType)
+    );
+
 ### Container.Resolver.TypeConstructor
 
 The `Rosella.Container.Resolver.TypeConstructor` is similar to the Type resolver
 except it gives you the ability to specify a constructor by name and pass in a
 list of Argument objects to it.
+
+    c.register(class MyType,
+        new Rosella.Container.Resolver.TypeConstructor(class MyType, "BUILD")
+    );
 
 ## Examples
 
