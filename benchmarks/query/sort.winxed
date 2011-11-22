@@ -1,5 +1,5 @@
 $loadlib "math_ops";
-const int N = 10;
+const int N = 100000;
 const int SORT_TRANSITION = 6;
 
 function main[main]()
@@ -41,6 +41,11 @@ function main[main]()
     result.set_base_time(base.time());
     display_result("qsort+insertion sort (reversed)", result);
 
+    reverse_sorted_N_list(d);
+    result = benchmark(function() { using static compare; var t = new Timsort(compare); t.sort(d); });
+    result.set_base_time(base.time());
+    display_result("timsort (reversed)", result);
+
     random_N_list(d);
     base = benchmark(function() {
         using Rosella.Query.as_queryable;
@@ -56,10 +61,9 @@ function main[main]()
     display_result("qsort+insertion sort (random)", result);
 
     random_N_list(d);
-    using static compare;
-    timsort_binarySort(d, 0, elements(d), 0, compare);
-    for(int i = 0; i < N; i++)
-    say (d[i]);
+    result = benchmark(function() { using static compare; var t = new Timsort(compare); t.sort(d); });
+    result.set_base_time(base.time());
+    display_result("timsort (random)", result);
 
     //var d_ria = new 'ResizableIntegerArray';
     //reverse_sorted_N_list(d_ria);
@@ -212,26 +216,29 @@ class Timsort
         do
         {
             // Identify next run.
-            int runLen = countRunAndMakeAscending(lo, hi);
+            int runLen = self._countRunAndMakeAscending(lo, hi);
 
             // If run is short, extend.
             if (runLen < minRun)
             {
                 int force = nRemaining <= minRun ? nRemaining : minRun;
-                binarySort(lo, lo + force, lo + runLen);
+                self._binarySort(lo, lo + force, lo + runLen);
                 runLen = force;
             }
 
             // Push run onto stack, maybe merge.
             self.runBase[self.stackSize] = lo;
-            self.runLen[self.stackSize++] = runLen;
+            self.runLen[self.stackSize] = runLen;
+            self.stackSize++;
 
             self._mergeCollapse();
 
             // Advance to find next run.
             lo += runLen;
             nRemaining -= runLen;
-        } while (nRemaining != 0);
+
+
+        } while (nRemaining > 0);
 
         // Merge all remaining runs.
         self._mergeForceCollapse();
@@ -244,6 +251,8 @@ class Timsort
 
         if (start == lo)
             start++;
+
+        var cmp = self.cmp;
 
         for (; start < hi; start++)
         {
@@ -260,17 +269,14 @@ class Timsort
             while (left < right)
             {
                 int mid = (left + right) / 2;
+
                 if (cmp(pivot, self.d[mid]) < 0)
                     right = mid;
                 else
                     left = mid + 1;
             }
 
-            int move = start - left;
-            for (int n = move; n >= 0; n--)
-            {
-                self.d[left + n] = self.d[left + n - 1];
-            }
+            self._arraycopy(self.d, left, self.d, left + 1, start - left);
             self.d[left] = pivot;
         }
     }
@@ -284,12 +290,15 @@ class Timsort
         if (runHi == hi)
             return 1;
 
+        var cmp = self.cmp;
+
         // Find end of run, and reverse the range if the run is descending.
+
         if (cmp(self.d[runHi++], self.d[lo]) < 0) // Descending
         {
             while (runHi < hi && cmp(self.d[runHi], self.d[runHi - 1]) < 0)
                 runHi++;
-            self._reverseRange(lo, hi);
+            self._reverseRange(lo, runHi);
         }
         else // Ascending
         {
@@ -327,7 +336,7 @@ class Timsort
         while (n >= self.MIN_MERGE)
         {
             r = r | (n & 1);
-            n = n >> 1;
+            n = n / 2;
         }
         return n + r;
     }
@@ -339,11 +348,11 @@ class Timsort
             int n = self.stackSize - 2;
             if (n > 0 && self.runLen[n - 1] <= self.runLen[n] + self.runLen[n + 1])
             {
-                if (self.runLen[n - 1] < self.runLen[n + 1])
+               if (self.runLen[n - 1] < self.runLen[n + 1])
                     n--;
-                mergeAt(n);
+                self._mergeAt(n);
             } else if (self.runLen[n] <= self.runLen[n + 1]) {
-                mergeAt(n);
+                self._mergeAt(n);
             } else {
                 break;
             }
@@ -357,7 +366,7 @@ class Timsort
             int n = self.stackSize - 2;
             if (n > 0 && self.runLen[n - 1] < self.runLen[n + 1])
                 n--;
-            mergeAt(n);
+            self._mergeAt(n);
         }
     }
 
@@ -380,40 +389,42 @@ class Timsort
         self.stackSize--;
 
         // Find where the first element of run2 goes in run1.
-        int k = gallopRight(self.d[base2], base1, len1, 0);
+        int k = self._gallopRight(self.d[base2], self.d, base1, len1, 0);
         base1 += k;
         len1 -= k;
         if (len1 == 0)
             return;
 
         // Find where the last element of run1 goes in run2.
-        len2 = gallopLeft(self.d[base1 + len1 - 1], base2, len2, len2 - 1);
+        len2 = self._gallopLeft(self.d[base1 + len1 - 1], self.d, base2, len2, len2 - 1);
         if (len2 == 0)
             return;
 
         // Merge remaining runs.
         if (len1 <= len2)
-            mergeLo(base1, len1, base2, len2);
+            self._mergeLo(base1, len1, base2, len2);
         else
-            mergeHi(base1, len1, base2, len2);
+            self._mergeHi(base1, len1, base2, len2);
     }
 
     function _gallopLeft(var key, var d, int base, int len, int hint)
     {
         int lastOfs = 0;
         int ofs = 1;
-        if(self.cmp(key, d[base + hint]) > 0) // Gallop right until d[base+hint+lastOfs < key <= d[base+hint+ofs]
+        var cmp = self.cmp;
+
+        if(cmp(key, d[base + hint]) > 0) // Gallop right until d[base+hint+lastOfs < key <= d[base+hint+ofs]
         {
             int maxOfs = len - hint;
-            while (ofs < maxOfs && self.cmp(key, d[base + hint + ofs]) > 0)
+            while (ofs < maxOfs && cmp(key, d[base + hint + ofs]) > 0)
             {
                 lastOfs = ofs;
-                ofs = (ofs << 1) + 1;
+                ofs = (ofs * 2) + 1;
                 if (ofs <= 0) // int overflow
                     ofs = maxOfs;
             }
             if (ofs > maxOfs)
-                ofs = MaxOfs;
+                ofs = maxOfs;
 
             // Make offsets relative to base.
             lastOfs += hint;
@@ -422,15 +433,15 @@ class Timsort
         else // Gallop left until d[base + hint-ofs < key <= d[base+hint-lastOfs]
         {
             int maxOfs = hint + 1;
-            while (ofs < maxOfs && self.cmp(key, d[base + hint - ofs]) <= 0)
+            while (ofs < maxOfs && cmp(key, d[base + hint - ofs]) <= 0)
             {
                 lastOfs = ofs;
-                ofs = (ofs << 1) + 1;
+                ofs = (ofs * 2) + 1;
                 if (ofs <= 0) // int overflow
                     ofs = maxOfs;
             }
             if (ofs > maxOfs)
-                ofs = MaxOfs;
+                ofs = maxOfs;
 
             // Make offsets relative to base.
             int tmp = lastOfs;
@@ -443,7 +454,7 @@ class Timsort
         {
             int m = lastOfs + ((ofs - lastOfs) / 2);
 
-            if (self.cmp(key, d[base + m]) > 0)
+            if (cmp(key, d[base + m]) > 0)
                 lastOfs = m + 1;
             else
                 ofs = m;
@@ -456,18 +467,20 @@ class Timsort
     {
         int ofs = 1;
         int lastOfs = 0;
-        if (self.cmp(key, d[base + hint]) < 0) // gallop left
+        var cmp = self.cmp;
+
+        if (cmp(key, d[base + hint]) < 0) // gallop left
         {
             int maxOfs = hint + 1;
-            while (ofs < maxOfs && self.cmp(key, d[base + hint - ofs]) < 0)
+            while (ofs < maxOfs && cmp(key, d[base + hint - ofs]) < 0)
             {
                 lastOfs = ofs;
-                ofs = (ofs << 1) + 1;
+                ofs = (ofs * 2) + 1;
                 if (ofs <= 0) // int overflow
                     ofs = maxOfs;
             }
             if (ofs > maxOfs)
-                ofs = MaxOfs;
+                ofs = maxOfs;
 
             // Make offsets relative to b
             int tmp = lastOfs;
@@ -477,15 +490,15 @@ class Timsort
         else // Gallop right
         {
             int maxOfs = len - hint;
-            while (ofs < maxOfs && self.cmp(key, d[base + hint + ofs]) >= 0)
+            while (ofs < maxOfs && cmp(key, d[base + hint + ofs]) >= 0)
             {
                 lastOfs = ofs;
-                ofs = (ofs << 1) + 1;
+                ofs = (ofs * 2) + 1;
                 if (ofs <= 0) // int overflow
                     ofs = maxOfs;
             }
             if (ofs > maxOfs)
-                ofs = MaxOfs;
+                ofs = maxOfs;
 
             // Make offsets relative to b
             lastOfs += hint;
@@ -497,7 +510,7 @@ class Timsort
         {
             int m = lastOfs + ((ofs - lastOfs) / 2);
 
-            if (self.cmp(key, d[base + m]) < 0)
+            if (cmp(key, d[base + m]) < 0)
                 ofs = m;
             else
                 lastOfs = m + 1;
@@ -506,7 +519,7 @@ class Timsort
         return ofs;
     }
 
-    function mergeLo(int base1, int len1, int base2, int len2)
+    function _mergeLo(int base1, int len1, int base2, int len2)
     {
         // Copy into temp array.
         for(int i = 0; i < len1; i++)
@@ -522,22 +535,26 @@ class Timsort
         if (--len2 == 0)
         {
             self._arraycopy(self.mergeTemp, cursor1, self.d, dest, len1);
+            return;
         }
         if (len1 == 1)
         {
             self._arraycopy(self.d, cursor2, self.d, dest, len2);
+            self.d[dest + len2] = self.mergeTemp[cursor1];
+            return;
         }
 
         int minGallop = self.MIN_GALLOP;
         int doOuter = 1;
-        while(doOuter == 1)
+        var cmp = self.cmp;
+        while (doOuter == 1)
         {
             int count1 = 0;
             int count2 = 0;
 
             do
             {
-                if(self.cmp(self.d[cursor2], self.mergeTemp[cursor1]) < 0)
+                if(cmp(self.d[cursor2], self.mergeTemp[cursor1]) < 0)
                 {
                     self.d[dest++] = self.d[cursor2++];
                     count2++;
@@ -567,7 +584,7 @@ class Timsort
             // Galloping may be a plus now. Do that until it's not.
             do
             {
-                count1 = gallopRight(self.d[cursor2], self.mergeTemp, cursor1, len1, 0);
+                count1 = self._gallopRight(self.d[cursor2], self.mergeTemp, cursor1, len1, 0);
                 if (count1 != 0)
                 {
                     self._arraycopy(self.mergeTemp, cursor1, self.d, dest, count1);
@@ -588,7 +605,7 @@ class Timsort
                     break;
                 }
 
-                count2 = gallopLeft(self.mergeTemp[cursor1], self.d, cursor2, len2, 0);
+                count2 = self._gallopLeft(self.mergeTemp[cursor1], self.d, cursor2, len2, 0);
                 if (count1 != 0)
                 {
                     self._arraycopy(self.d, cursor2, self.d, dest, count2);
@@ -608,7 +625,7 @@ class Timsort
                     break;
                 }
                 minGallop--;
-            } while (count1 >= self.MIN_GALLOP | count2 >= MIN_GALLOP);
+            } while (count1 >= self.MIN_GALLOP | count2 >= self.MIN_GALLOP);
 
             if(doOuter == 0)
                 break;
@@ -631,7 +648,7 @@ class Timsort
         }
     }
 
-    function mergeHi(int base1, int len1, int base2, int len2)
+    function _mergeHi(int base1, int len1, int base2, int len2)
     {
         // Copy into temp array.
         for(int i = 0; i < len2; i++)
@@ -647,6 +664,7 @@ class Timsort
         if (--len1 == 0)
         {
             self._arraycopy(self.mergeTemp, 0, self.d, dest - (len2 - 1), len2);
+            return;
         }
         if (len2 == 1)
         {
@@ -659,14 +677,15 @@ class Timsort
 
         int minGallop = self.MIN_GALLOP;
         int doOuter = 1;
-        while(doOuter == 1)
+        var cmp = self.cmp;
+        while (doOuter == 1)
         {
             int count1 = 0;
             int count2 = 0;
 
             do
             {
-                if(self.cmp(self.mergeTemp[cursor2], self.d[cursor1]) < 0)
+                if(cmp(self.mergeTemp[cursor2], self.d[cursor1]) < 0)
                 {
                     self.d[dest--] = self.d[cursor1--];
                     count1++;
@@ -696,7 +715,7 @@ class Timsort
             // Galloping may be a plus now. Do that until it's not.
             do
             {
-                count1 = len1 - gallopRight(self.mergeTemp[cursor2], self.d, base1, len1, len1 - 1);
+                count1 = len1 - self._gallopRight(self.mergeTemp[cursor2], self.d, base1, len1, len1 - 1);
                 if (count1 != 0)
                 {
                     dest -= count1;
@@ -717,7 +736,7 @@ class Timsort
                     break;
                 }
 
-                count2 = len2 - gallopLeft(self.d[cursor1], self.mergeTemp, 0, len2, len2 - 1);
+                count2 = len2 - self._gallopLeft(self.d[cursor1], self.mergeTemp, 0, len2, len2 - 1);
                 if (count1 != 0)
                 {
                     dest -= count2;
@@ -737,7 +756,7 @@ class Timsort
                     break;
                 }
                 minGallop--;
-            } while (count1 >= self.MIN_GALLOP | count2 >= MIN_GALLOP);
+            } while (count1 >= self.MIN_GALLOP || count2 >= self.MIN_GALLOP);
 
             if(doOuter == 0)
                 break;
@@ -763,9 +782,15 @@ class Timsort
 
     function _arraycopy(var src, int offset, var dest, int offsetD, int count)
     {
+        var temp = [];
         for(int i = 0; i < count; i++)
         {
-            dest[i + offsetD] = src[i + offset];
+            temp[i] = src[i + offset];
+        }
+
+        for(int i = 0; i < count; i++)
+        {
+            dest[i + offsetD] = temp[i];
         }
     }
 }
