@@ -1,5 +1,5 @@
 $loadlib "math_ops";
-const int N = 100000;
+const int N = 10;
 const int SORT_TRANSITION = 6;
 
 function main[main]()
@@ -54,6 +54,12 @@ function main[main]()
     result = benchmark(function() { using static compare; qsort_with_insertion(d, 0, elements(d), compare); });
     result.set_base_time(base.time());
     display_result("qsort+insertion sort (random)", result);
+
+    random_N_list(d);
+    using static compare;
+    timsort_binarySort(d, 0, elements(d), 0, compare);
+    for(int i = 0; i < N; i++)
+    say (d[i]);
 
     //var d_ria = new 'ResizableIntegerArray';
     //reverse_sorted_N_list(d_ria);
@@ -150,3 +156,617 @@ function insertion_sort(var d, int s, int n, var cmp)
         d[j + 1] = val;
     }
 }
+
+class Timsort
+{
+    // When we get into galloping mode, we stay there until both runs win less
+    // often than MIN_GALLOP consecutive times.
+    var MIN_GALLOP;
+
+    // Minimum sized sequence that will be merged.
+    var MIN_MERGE;
+
+    var mergeTemp;
+    var runBase;
+    var runLen;
+    var stackSize;
+
+    var d;
+    var cmp;
+
+    function Timsort(var cmp)
+    {
+        self.MIN_GALLOP = 7;
+        self.MIN_MERGE = 32;
+
+        self.mergeTemp = [];
+        self.runBase = [];
+        self.runLen = [];
+        self.stackSize = 0;
+
+        self.cmp = cmp;
+    }
+
+    function sort(var d)
+    {
+        self.sort(d, 0, elements(d));
+    }
+
+    function sort(var d, int lo, int hi)
+    {
+        self.d = d;
+
+        int nRemaining = hi - lo;
+        if (nRemaining < 2)
+            return;
+
+        // If array is small, do "mini-timsort" w/ no merges.
+        if (nRemaining < self.MIN_MERGE)
+        {
+            int initRunLen = self._countRunAndMakeAscending(lo, hi);
+            self._binarySort(lo, hi, lo + initRunLen);
+            return;
+        }
+
+        int minRun = self._minRunLength(nRemaining);
+        do
+        {
+            // Identify next run.
+            int runLen = countRunAndMakeAscending(lo, hi);
+
+            // If run is short, extend.
+            if (runLen < minRun)
+            {
+                int force = nRemaining <= minRun ? nRemaining : minRun;
+                binarySort(lo, lo + force, lo + runLen);
+                runLen = force;
+            }
+
+            // Push run onto stack, maybe merge.
+            self.runBase[self.stackSize] = lo;
+            self.runLen[self.stackSize++] = runLen;
+
+            self._mergeCollapse();
+
+            // Advance to find next run.
+            lo += runLen;
+            nRemaining -= runLen;
+        } while (nRemaining != 0);
+
+        // Merge all remaining runs.
+        self._mergeForceCollapse();
+    }
+
+    function _binarySort(int lo, int hi, int start)
+    {
+        if (lo > start || start > hi)
+            return;
+
+        if (start == lo)
+            start++;
+
+        for (; start < hi; start++)
+        {
+            var pivot = self.d[start];
+
+            int left = lo;
+            int right = start;
+            if (left > right)
+                return;
+
+            // Invariants:
+            //   pivot >= all in [lo, left)
+            //   pivot < all in [right, start)
+            while (left < right)
+            {
+                int mid = (left + right) / 2;
+                if (cmp(pivot, self.d[mid]) < 0)
+                    right = mid;
+                else
+                    left = mid + 1;
+            }
+
+            int move = start - left;
+            for (int n = move; n >= 0; n--)
+            {
+                self.d[left + n] = self.d[left + n - 1];
+            }
+            self.d[left] = pivot;
+        }
+    }
+
+    function _countRunAndMakeAscending(int lo, int hi)
+    {
+        if (lo >= hi)
+            return;
+
+        int runHi = lo + 1;
+        if (runHi == hi)
+            return 1;
+
+        // Find end of run, and reverse the range if the run is descending.
+        if (cmp(self.d[runHi++], self.d[lo]) < 0) // Descending
+        {
+            while (runHi < hi && cmp(self.d[runHi], self.d[runHi - 1]) < 0)
+                runHi++;
+            self._reverseRange(lo, hi);
+        }
+        else // Ascending
+        {
+            while (runHi < hi && cmp(self.d[runHi], self.d[runHi - 1]) >= 0)
+                runHi++;
+        }
+
+        return runHi - lo;
+    }
+
+    function _reverseRange(int lo, int hi)
+    {
+        hi--;
+        while (lo < hi)
+        {
+            var element = self.d[lo];
+            self.d[lo++] = self.d[hi];
+            self.d[hi--] = element;
+        }
+    }
+
+    // Optimization in place from the OpenJDK7 implementation of timsort.
+    //
+    // Returns the minimum acceptable run length for an array of the specified
+    // length. Natural runs shorter than this will be extended with binarySort.
+    //
+    // The general computation is:
+    //    If n < MIN_MERGE, return n (it's too small to bother with fancy stuff.)
+    //    Else if n is an exacy power of 2, return MIN_MERGE / 2.
+    //    Else return an int k, MIN_MERGE / 2 <= k <= MIN_MERGE, such that n/k is
+    //      close to, but strictly less than, and exact power of 2.
+    function _minRunLength(int n)
+    {
+        int r = 0;
+        while (n >= self.MIN_MERGE)
+        {
+            r = r | (n & 1);
+            n = n >> 1;
+        }
+        return n + r;
+    }
+
+    function _mergeCollapse()
+    {
+        while (self.stackSize > 1)
+        {
+            int n = self.stackSize - 2;
+            if (n > 0 && self.runLen[n - 1] <= self.runLen[n] + self.runLen[n + 1])
+            {
+                if (self.runLen[n - 1] < self.runLen[n + 1])
+                    n--;
+                mergeAt(n);
+            } else if (self.runLen[n] <= self.runLen[n + 1]) {
+                mergeAt(n);
+            } else {
+                break;
+            }
+        }
+    }
+
+    function _mergeForceCollapse()
+    {
+        while (self.stackSize > 1)
+        {
+            int n = self.stackSize - 2;
+            if (n > 0 && self.runLen[n - 1] < self.runLen[n + 1])
+                n--;
+            mergeAt(n);
+        }
+    }
+
+    function _mergeAt(int i)
+    {
+        int base1 = self.runBase[i];
+        int len1 = self.runLen[i];
+        int base2 = self.runBase[i + 1];
+        int len2 = self.runLen[i + 1];
+
+        // Record the length of the combined runs; if i is the 3rd to last
+        // run, slide over the last run (which isn't involved in this merge.
+
+        self.runLen[i] = len1 + len2;
+        if (i == self.stackSize - 3)
+        {
+            self.runBase[i + 1] = self.runBase[i + 2];
+            self.runLen[i + 1] = self.runLen[i + 2];
+        }
+        self.stackSize--;
+
+        // Find where the first element of run2 goes in run1.
+        int k = gallopRight(self.d[base2], base1, len1, 0);
+        base1 += k;
+        len1 -= k;
+        if (len1 == 0)
+            return;
+
+        // Find where the last element of run1 goes in run2.
+        len2 = gallopLeft(self.d[base1 + len1 - 1], base2, len2, len2 - 1);
+        if (len2 == 0)
+            return;
+
+        // Merge remaining runs.
+        if (len1 <= len2)
+            mergeLo(base1, len1, base2, len2);
+        else
+            mergeHi(base1, len1, base2, len2);
+    }
+
+    function _gallopLeft(var key, var d, int base, int len, int hint)
+    {
+        int lastOfs = 0;
+        int ofs = 1;
+        if(self.cmp(key, d[base + hint]) > 0) // Gallop right until d[base+hint+lastOfs < key <= d[base+hint+ofs]
+        {
+            int maxOfs = len - hint;
+            while (ofs < maxOfs && self.cmp(key, d[base + hint + ofs]) > 0)
+            {
+                lastOfs = ofs;
+                ofs = (ofs << 1) + 1;
+                if (ofs <= 0) // int overflow
+                    ofs = maxOfs;
+            }
+            if (ofs > maxOfs)
+                ofs = MaxOfs;
+
+            // Make offsets relative to base.
+            lastOfs += hint;
+            ofs += hint;
+        }
+        else // Gallop left until d[base + hint-ofs < key <= d[base+hint-lastOfs]
+        {
+            int maxOfs = hint + 1;
+            while (ofs < maxOfs && self.cmp(key, d[base + hint - ofs]) <= 0)
+            {
+                lastOfs = ofs;
+                ofs = (ofs << 1) + 1;
+                if (ofs <= 0) // int overflow
+                    ofs = maxOfs;
+            }
+            if (ofs > maxOfs)
+                ofs = MaxOfs;
+
+            // Make offsets relative to base.
+            int tmp = lastOfs;
+            lastOfs = hint - ofs;
+            ofs = hint - tmp;
+        }
+
+        lastOfs++;
+        while (lastOfs < ofs)
+        {
+            int m = lastOfs + ((ofs - lastOfs) / 2);
+
+            if (self.cmp(key, d[base + m]) > 0)
+                lastOfs = m + 1;
+            else
+                ofs = m;
+        }
+
+        return ofs;
+    }
+
+    function _gallopRight(var key, var d, int base, int len, int hint)
+    {
+        int ofs = 1;
+        int lastOfs = 0;
+        if (self.cmp(key, d[base + hint]) < 0) // gallop left
+        {
+            int maxOfs = hint + 1;
+            while (ofs < maxOfs && self.cmp(key, d[base + hint - ofs]) < 0)
+            {
+                lastOfs = ofs;
+                ofs = (ofs << 1) + 1;
+                if (ofs <= 0) // int overflow
+                    ofs = maxOfs;
+            }
+            if (ofs > maxOfs)
+                ofs = MaxOfs;
+
+            // Make offsets relative to b
+            int tmp = lastOfs;
+            lastOfs = hint - ofs;
+            ofs = hint - tmp;
+        }
+        else // Gallop right
+        {
+            int maxOfs = len - hint;
+            while (ofs < maxOfs && self.cmp(key, d[base + hint + ofs]) >= 0)
+            {
+                lastOfs = ofs;
+                ofs = (ofs << 1) + 1;
+                if (ofs <= 0) // int overflow
+                    ofs = maxOfs;
+            }
+            if (ofs > maxOfs)
+                ofs = MaxOfs;
+
+            // Make offsets relative to b
+            lastOfs += hint;
+            ofs += hint;
+        }
+
+        lastOfs++;
+        while (lastOfs < ofs)
+        {
+            int m = lastOfs + ((ofs - lastOfs) / 2);
+
+            if (self.cmp(key, d[base + m]) < 0)
+                ofs = m;
+            else
+                lastOfs = m + 1;
+        }
+
+        return ofs;
+    }
+
+    function mergeLo(int base1, int len1, int base2, int len2)
+    {
+        // Copy into temp array.
+        for(int i = 0; i < len1; i++)
+        {
+            self.mergeTemp[i] = self.d[i + base1];
+        }
+
+        int cursor1 = 0;     // idx into tmp array
+        int cursor2 = base2; // idx into a
+        int dest = base1;    // idx into a
+
+        self.d[dest++] = self.d[cursor2++];
+        if (--len2 == 0)
+        {
+            self._arraycopy(self.mergeTemp, cursor1, self.d, dest, len1);
+        }
+        if (len1 == 1)
+        {
+            self._arraycopy(self.d, cursor2, self.d, dest, len2);
+        }
+
+        int minGallop = self.MIN_GALLOP;
+        int doOuter = 1;
+        while(doOuter == 1)
+        {
+            int count1 = 0;
+            int count2 = 0;
+
+            do
+            {
+                if(self.cmp(self.d[cursor2], self.mergeTemp[cursor1]) < 0)
+                {
+                    self.d[dest++] = self.d[cursor2++];
+                    count2++;
+                    count1 = 0;
+                    if (--len2 == 0)
+                    {
+                        doOuter = 0;
+                        break;
+                    }
+                }
+                else
+                {
+                    self.d[dest++] = self.mergeTemp[cursor1++];
+                    count1++;
+                    count2 = 0;
+                    if (--len1 == 1)
+                    {
+                        doOuter = 0;
+                        break;
+                    }
+                }
+            } while ((count1 | count2) < minGallop);
+
+            if(doOuter == 0)
+                break;
+
+            // Galloping may be a plus now. Do that until it's not.
+            do
+            {
+                count1 = gallopRight(self.d[cursor2], self.mergeTemp, cursor1, len1, 0);
+                if (count1 != 0)
+                {
+                    self._arraycopy(self.mergeTemp, cursor1, self.d, dest, count1);
+                    dest += count1;
+                    cursor1 += count1;
+                    len1 -= count1;
+
+                    if (len1 <= 1)
+                    {
+                        doOuter = 0;
+                        break;
+                    }
+                }
+                self.d[dest++] = self.d[cursor2++];
+                if (--len2 == 0)
+                {
+                    doOuter = 0;
+                    break;
+                }
+
+                count2 = gallopLeft(self.mergeTemp[cursor1], self.d, cursor2, len2, 0);
+                if (count1 != 0)
+                {
+                    self._arraycopy(self.d, cursor2, self.d, dest, count2);
+                    dest += count2;
+                    cursor2 += count2;
+                    len2 -= count2;
+                    if (len2 == 0)
+                    {
+                        doOuter = 0;
+                        break;
+                    }
+                }
+                self.d[dest++] = self.mergeTemp[cursor1++];
+                if (--len1 == 1)
+                {
+                    doOuter = 0;
+                    break;
+                }
+                minGallop--;
+            } while (count1 >= self.MIN_GALLOP | count2 >= MIN_GALLOP);
+
+            if(doOuter == 0)
+                break;
+
+            if (minGallop < 0)
+                minGallop = 0;
+            minGallop += 2;
+        }
+
+        self.MIN_GALLOP = minGallop < 1 ? 1 : minGallop;
+
+        if (len1 == 1)
+        {
+            self._arraycopy(self.d, cursor2, self.d, dest, len2);
+            self.d[dest + len2] = self.mergeTemp[cursor1];
+        }
+        else
+        {
+            self._arraycopy(self.mergeTemp, cursor1, self.d, dest, len1);
+        }
+    }
+
+    function mergeHi(int base1, int len1, int base2, int len2)
+    {
+        // Copy into temp array.
+        for(int i = 0; i < len2; i++)
+        {
+            self.mergeTemp[i] = self.d[i + base2];
+        }
+
+        int cursor1 = base1 + len1 - 1; // idx into a
+        int cursor2 = len2 - 1;         // idx into temp array
+        int dest = base2 + len2 - 1;    // idx into a
+
+        self.d[dest--] = self.d[cursor1--];
+        if (--len1 == 0)
+        {
+            self._arraycopy(self.mergeTemp, 0, self.d, dest - (len2 - 1), len2);
+        }
+        if (len2 == 1)
+        {
+            dest -= len1;
+            cursor1 -= len1;
+            self._arraycopy(self.d, cursor1 + 1, self.d, dest + 1, len1);
+            self.d[dest] = self.mergeTemp[cursor2];
+            return;
+        }
+
+        int minGallop = self.MIN_GALLOP;
+        int doOuter = 1;
+        while(doOuter == 1)
+        {
+            int count1 = 0;
+            int count2 = 0;
+
+            do
+            {
+                if(self.cmp(self.mergeTemp[cursor2], self.d[cursor1]) < 0)
+                {
+                    self.d[dest--] = self.d[cursor1--];
+                    count1++;
+                    count2 = 0;
+                    if (--len1 == 0)
+                    {
+                        doOuter = 0;
+                        break;
+                    }
+                }
+                else
+                {
+                    self.d[dest--] = self.mergeTemp[cursor2--];
+                    count2++;
+                    count1 = 0;
+                    if (--len2 == 1)
+                    {
+                        doOuter = 0;
+                        break;
+                    }
+                }
+            } while ((count1 | count2) < minGallop);
+
+            if(doOuter == 0)
+                break;
+
+            // Galloping may be a plus now. Do that until it's not.
+            do
+            {
+                count1 = len1 - gallopRight(self.mergeTemp[cursor2], self.d, base1, len1, len1 - 1);
+                if (count1 != 0)
+                {
+                    dest -= count1;
+                    cursor1 -= count1;
+                    len1 -= count1;
+                    self._arraycopy(self.d, cursor1 + 1, self.d, dest + 1, count1);
+
+                    if (len1 == 1)
+                    {
+                        doOuter = 0;
+                        break;
+                    }
+                }
+                self.d[dest--] = self.mergeTemp[cursor2--];
+                if (--len2 == 1)
+                {
+                    doOuter = 0;
+                    break;
+                }
+
+                count2 = len2 - gallopLeft(self.d[cursor1], self.mergeTemp, 0, len2, len2 - 1);
+                if (count1 != 0)
+                {
+                    dest -= count2;
+                    cursor2 -= count2;
+                    len2 -= count2;
+                    self._arraycopy(self.mergeTemp, cursor2 + 1, self.d, dest + 1, count2);
+                    if (len2 <= 1)
+                    {
+                        doOuter = 0;
+                        break;
+                    }
+                }
+                self.d[dest--] = self.d[cursor1--];
+                if (--len1 == 0)
+                {
+                    doOuter = 0;
+                    break;
+                }
+                minGallop--;
+            } while (count1 >= self.MIN_GALLOP | count2 >= MIN_GALLOP);
+
+            if(doOuter == 0)
+                break;
+
+            if (minGallop < 0)
+                minGallop = 0;
+            minGallop += 2;
+        }
+
+        self.MIN_GALLOP = minGallop < 1 ? 1 : minGallop;
+
+        if (len2 == 1)
+        {
+            dest -= len1;
+            cursor1 -= len1;
+            self._arraycopy(self.d, cursor1 + 1, self.d, dest + 1, len1);
+        }
+        else
+        {
+            self._arraycopy(self.mergeTemp, 0, self.d, dest - (len2 - 1), len2);
+        }
+    }
+
+    function _arraycopy(var src, int offset, var dest, int offsetD, int count)
+    {
+        for(int i = 0; i < count; i++)
+        {
+            dest[i + offsetD] = src[i + offset];
+        }
+    }
+}
+
