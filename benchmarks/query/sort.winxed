@@ -65,6 +65,18 @@ function main[main]()
     result.set_base_time(base.time());
     display_result("timsort (random)", result);
 
+    int good = 1;
+    for (int i = 0; i < N - 1; i++) {
+        //say(d[i]);
+        if(d[i] > d[i + 1]) {
+            //say(sprintf("%d > %d!?", [d[i], d[i + 1]]));
+            good = 0;
+            }
+     }
+
+    print("timsort basic diagnostic check - ");
+    say(good == 1 ? "PASS" : "FAIL");
+
     //var d_ria = new 'ResizableIntegerArray';
     //reverse_sorted_N_list(d_ria);
     //var ria = benchmark(function() {
@@ -175,6 +187,8 @@ class Timsort
     var runLen;
     var stackSize;
 
+    var minGallop;
+
     var d;
     var cmp;
 
@@ -187,6 +201,8 @@ class Timsort
         self.runBase = [];
         self.runLen = [];
         self.stackSize = 0;
+
+        self.minGallop = self.MIN_GALLOP;
 
         self.cmp = cmp;
     }
@@ -227,27 +243,23 @@ class Timsort
             }
 
             // Push run onto stack, maybe merge.
-            self.runBase[self.stackSize] = lo;
-            self.runLen[self.stackSize] = runLen;
-            self.stackSize++;
-
+            self._pushRun(lo, runLen);
             self._mergeCollapse();
 
             // Advance to find next run.
             lo += runLen;
             nRemaining -= runLen;
-
-
         } while (nRemaining > 0);
 
         // Merge all remaining runs.
+        __ASSERT__(lo == hi);
         self._mergeForceCollapse();
+        __ASSERT__(self.stackSize == 1);
     }
 
     function _binarySort(int lo, int hi, int start)
     {
-        if (lo > start || start > hi)
-            return;
+        __ASSERT__(lo <= start && start <= hi);
 
         if (start == lo)
             start++;
@@ -260,8 +272,7 @@ class Timsort
 
             int left = lo;
             int right = start;
-            if (left > right)
-                return;
+            __ASSERT__(left <= right);
 
             // Invariants:
             //   pivot >= all in [lo, left)
@@ -275,6 +286,7 @@ class Timsort
                 else
                     left = mid + 1;
             }
+            __ASSERT__(left == right);
 
             self._arraycopy(self.d, left, self.d, left + 1, start - left);
             self.d[left] = pivot;
@@ -283,8 +295,7 @@ class Timsort
 
     function _countRunAndMakeAscending(int lo, int hi)
     {
-        if (lo >= hi)
-            return;
+        __ASSERT__(lo < hi);
 
         int runHi = lo + 1;
         if (runHi == hi)
@@ -332,6 +343,8 @@ class Timsort
     //      close to, but strictly less than, and exact power of 2.
     function _minRunLength(int n)
     {
+        __ASSERT__(n > 0);
+
         int r = 0;
         while (n >= self.MIN_MERGE)
         {
@@ -341,14 +354,21 @@ class Timsort
         return n + r;
     }
 
+    function _pushRun(int runBase, int runLen)
+    {
+        self.runBase[self.stackSize] = runBase;
+        self.runLen[self.stackSize] = runLen;
+        self.stackSize++;
+    }
+
     function _mergeCollapse()
     {
         while (self.stackSize > 1)
         {
             int n = self.stackSize - 2;
-            if (n > 0 && self.runLen[n - 1] <= self.runLen[n] + self.runLen[n + 1])
+            if (n > 0 && self.runLen[n - 1] <= (self.runLen[n] + self.runLen[n + 1]))
             {
-               if (self.runLen[n - 1] < self.runLen[n + 1])
+                if (self.runLen[n - 1] < self.runLen[n + 1])
                     n--;
                 self._mergeAt(n);
             } else if (self.runLen[n] <= self.runLen[n + 1]) {
@@ -372,10 +392,16 @@ class Timsort
 
     function _mergeAt(int i)
     {
+        __ASSERT__(self.stackSize >= 2);
+        __ASSERT__(i >= 0);
+        __ASSERT__(i == self.stackSize - 2 || i == self.stackSize - 3);
+
         int base1 = self.runBase[i];
         int len1 = self.runLen[i];
         int base2 = self.runBase[i + 1];
         int len2 = self.runLen[i + 1];
+        __ASSERT__(len1 > 0 && len2 > 0);
+        __ASSERT__(base1 + len1 == base2);
 
         // Record the length of the combined runs; if i is the 3rd to last
         // run, slide over the last run (which isn't involved in this merge.
@@ -390,6 +416,7 @@ class Timsort
 
         // Find where the first element of run2 goes in run1.
         int k = self._gallopRight(self.d[base2], self.d, base1, len1, 0);
+        __ASSERT__(k >= 0);
         base1 += k;
         len1 -= k;
         if (len1 == 0)
@@ -397,6 +424,7 @@ class Timsort
 
         // Find where the last element of run1 goes in run2.
         len2 = self._gallopLeft(self.d[base1 + len1 - 1], self.d, base2, len2, len2 - 1);
+        __ASSERT__(len2 >= 0);
         if (len2 == 0)
             return;
 
@@ -409,6 +437,7 @@ class Timsort
 
     function _gallopLeft(var key, var d, int base, int len, int hint)
     {
+        __ASSERT__(len > 0 && hint >= 0 && hint < len);
         int lastOfs = 0;
         int ofs = 1;
         var cmp = self.cmp;
@@ -448,6 +477,7 @@ class Timsort
             lastOfs = hint - ofs;
             ofs = hint - tmp;
         }
+        __ASSERT__(-1 <= lastOfs && lastOfs < ofs && ofs <= len);
 
         lastOfs++;
         while (lastOfs < ofs)
@@ -459,12 +489,14 @@ class Timsort
             else
                 ofs = m;
         }
+        __ASSERT__(lastOfs == ofs);
 
         return ofs;
     }
 
     function _gallopRight(var key, var d, int base, int len, int hint)
     {
+        __ASSERT__(len > 0 && hint >= 0 && hint < len);
         int ofs = 1;
         int lastOfs = 0;
         var cmp = self.cmp;
@@ -504,6 +536,7 @@ class Timsort
             lastOfs += hint;
             ofs += hint;
         }
+        __ASSERT__(-1 <= lastOfs && lastOfs < ofs && ofs <= len);
 
         lastOfs++;
         while (lastOfs < ofs)
@@ -515,12 +548,15 @@ class Timsort
             else
                 lastOfs = m + 1;
         }
+        __ASSERT__(lastOfs == ofs);
 
         return ofs;
     }
 
     function _mergeLo(int base1, int len1, int base2, int len2)
     {
+        __ASSERT__(len1 > 0 && len2 > 0 && base1 + len1 == base2);
+
         // Copy into temp array.
         for(int i = 0; i < len1; i++)
         {
@@ -544,7 +580,7 @@ class Timsort
             return;
         }
 
-        int minGallop = self.MIN_GALLOP;
+        int minGallop = self.minGallop;
         int doOuter = 1;
         var cmp = self.cmp;
         while (doOuter == 1)
@@ -554,6 +590,7 @@ class Timsort
 
             do
             {
+                __ASSERT__(len1 > 1 && len2 > 0);
                 if(cmp(self.d[cursor2], self.mergeTemp[cursor1]) < 0)
                 {
                     self.d[dest++] = self.d[cursor2++];
@@ -584,6 +621,7 @@ class Timsort
             // Galloping may be a plus now. Do that until it's not.
             do
             {
+                __ASSERT__(len1 > 1 && len2 > 0);
                 count1 = self._gallopRight(self.d[cursor2], self.mergeTemp, cursor1, len1, 0);
                 if (count1 != 0)
                 {
@@ -606,7 +644,7 @@ class Timsort
                 }
 
                 count2 = self._gallopLeft(self.mergeTemp[cursor1], self.d, cursor2, len2, 0);
-                if (count1 != 0)
+                if (count2 != 0)
                 {
                     self._arraycopy(self.d, cursor2, self.d, dest, count2);
                     dest += count2;
@@ -625,7 +663,7 @@ class Timsort
                     break;
                 }
                 minGallop--;
-            } while (count1 >= self.MIN_GALLOP | count2 >= self.MIN_GALLOP);
+            } while (count1 >= self.MIN_GALLOP || count2 >= self.MIN_GALLOP);
 
             if(doOuter == 0)
                 break;
@@ -635,21 +673,25 @@ class Timsort
             minGallop += 2;
         }
 
-        self.MIN_GALLOP = minGallop < 1 ? 1 : minGallop;
+        self.minGallop = minGallop < 1 ? 1 : minGallop;
 
         if (len1 == 1)
         {
+            __ASSERT__(len2 > 0);
             self._arraycopy(self.d, cursor2, self.d, dest, len2);
             self.d[dest + len2] = self.mergeTemp[cursor1];
         }
         else
         {
+            __ASSERT__(len2 == 0);
+            __ASSERT__(len1 > 1);
             self._arraycopy(self.mergeTemp, cursor1, self.d, dest, len1);
         }
     }
 
     function _mergeHi(int base1, int len1, int base2, int len2)
     {
+        __ASSERT__(len1 > 0 && len2 > 0 && base1 + len1 == base2);
         // Copy into temp array.
         for(int i = 0; i < len2; i++)
         {
@@ -675,7 +717,7 @@ class Timsort
             return;
         }
 
-        int minGallop = self.MIN_GALLOP;
+        int minGallop = self.minGallop;
         int doOuter = 1;
         var cmp = self.cmp;
         while (doOuter == 1)
@@ -685,6 +727,7 @@ class Timsort
 
             do
             {
+                __ASSERT__(len1 > 0 && len2 > 1);
                 if(cmp(self.mergeTemp[cursor2], self.d[cursor1]) < 0)
                 {
                     self.d[dest--] = self.d[cursor1--];
@@ -715,6 +758,7 @@ class Timsort
             // Galloping may be a plus now. Do that until it's not.
             do
             {
+                __ASSERT__(len1 > 0 && len2 > 1);
                 count1 = len1 - self._gallopRight(self.mergeTemp[cursor2], self.d, base1, len1, len1 - 1);
                 if (count1 != 0)
                 {
@@ -723,7 +767,7 @@ class Timsort
                     len1 -= count1;
                     self._arraycopy(self.d, cursor1 + 1, self.d, dest + 1, count1);
 
-                    if (len1 == 1)
+                    if (len1 == 0)
                     {
                         doOuter = 0;
                         break;
@@ -737,7 +781,7 @@ class Timsort
                 }
 
                 count2 = len2 - self._gallopLeft(self.d[cursor1], self.mergeTemp, 0, len2, len2 - 1);
-                if (count1 != 0)
+                if (count2 != 0)
                 {
                     dest -= count2;
                     cursor2 -= count2;
@@ -766,16 +810,20 @@ class Timsort
             minGallop += 2;
         }
 
-        self.MIN_GALLOP = minGallop < 1 ? 1 : minGallop;
+        self.minGallop = minGallop < 1 ? 1 : minGallop;
 
         if (len2 == 1)
         {
+            __ASSERT__(len1 > 0);
             dest -= len1;
             cursor1 -= len1;
             self._arraycopy(self.d, cursor1 + 1, self.d, dest + 1, len1);
+            self.d[dest] = self.mergeTemp[cursor2];
         }
         else
         {
+            __ASSERT__(len1 == 0);
+            __ASSERT__(len2 > 0);
             self._arraycopy(self.mergeTemp, 0, self.d, dest - (len2 - 1), len2);
         }
     }
