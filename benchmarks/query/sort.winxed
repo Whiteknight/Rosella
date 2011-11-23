@@ -4,9 +4,8 @@ const int SORT_TRANSITION = 6;
 
 function main[main]()
 {
-    load_bytecode("rosella/benchmark.pbc");
-    using Rosella.Benchmark.benchmark;
-    load_bytecode("rosella/query.pbc");
+    var rosella = load_packfile("rosella/core.pbc");
+    var(Rosella.initialize_rosella)("benchmark", "query");
     say(sprintf("N = %d", [N]));
     say(sprintf("SORT_TRANSITION = %d", [SORT_TRANSITION]));
     var d = [];
@@ -14,68 +13,63 @@ function main[main]()
     var base;
 
     //sorted_N_list(d);
-    //var base = benchmark(function() { using static compare; d.sort(compare); });
+    //base = benchmark(function() { using static compare; d.sort(compare); });
     //display_result("sort with .sort BUILTIN (presorted)", base);
 
-    //reverse_sorted_N_list(d);
-    //var result = benchmark(function() { using static compare; d.sort(compare); });
-    //result.set_base_time(base.time());
-    //display_result("sort with .sort BUILTIN (reversed)", result);
-
-    //random_N_list(d);
-    //result = benchmark(function() { using static compare; d.sort(compare); });
-    //result.set_base_time(base.time());
-    //display_result("sort with .sort BUILTIN (random)", result);
+    say("\nREVERSE-SORTED BENCHMARKS\n");
 
     reverse_sorted_N_list(d);
-    base = benchmark(function() {
-        using Rosella.Query.as_queryable;
-        using static compare;
-        as_queryable(d).sort(compare);
-    });
+    base = Rosella.Benchmark.benchmark(function() { using static compare; d.sort(compare); });
     //result.set_base_time(base.time());
-    display_result("sort with Rosella Query (reversed)", base);
+    display_result("sort with .sort BUILTIN (reversed)", base);
+    verify_is_sorted(d);
 
     reverse_sorted_N_list(d);
-    result = benchmark(function() { using static compare; qsort_with_insertion(d, 0, elements(d), compare); });
+    result = Rosella.Benchmark.benchmark(function() { using static compare; Rosella.Query.as_queryable(d).sort(compare); });
+    result.set_base_time(base.time());
+    display_result("sort with Rosella Query (reversed)", result);
+    // We can't do this, Rosella.Query sort() doesn't sort in-place, it makes a copy.
+    //verify_is_sorted(d);
+
+    reverse_sorted_N_list(d);
+    result = Rosella.Benchmark.benchmark(function() { using static compare; qsort_with_insertion(d, 0, elements(d), compare); });
     result.set_base_time(base.time());
     display_result("qsort+insertion sort (reversed)", result);
+    verify_is_sorted(d);
 
     reverse_sorted_N_list(d);
-    result = benchmark(function() { using static compare; var t = new Timsort(compare); t.sort(d); });
+    result = Rosella.Benchmark.benchmark(function() { using static compare; var t = new Timsort(compare); t.sort(d); });
     result.set_base_time(base.time());
     display_result("timsort (reversed)", result);
+    verify_is_sorted(d);
+
+    say("\nRANDOM BENCHMARKS\n");
 
     random_N_list(d);
-    base = benchmark(function() {
-        using Rosella.Query.as_queryable;
-        using static compare;
-        as_queryable(d).sort(compare);
-    });
-    //result.set_base_time(base.time());
-    display_result("sort with Rosella Query (random)", base);
+    base = Rosella.Benchmark.benchmark(function() { using static compare; d.sort(compare); });
+    result.set_base_time(base.time());
+    display_result("sort with .sort BUILTIN (random)", base);
+    verify_is_sorted(d);
 
     random_N_list(d);
-    result = benchmark(function() { using static compare; qsort_with_insertion(d, 0, elements(d), compare); });
+    result = Rosella.Benchmark.benchmark(function() { using static compare; Rosella.Query.as_queryable(d).sort(compare); });
+    result.set_base_time(base.time());
+    display_result("sort with Rosella Query (random)", result);
+    // We can't do this, Rosella.Query sort() doesn't sort in-place, it makes a copy.
+    //verify_is_sorted(d);
+
+    random_N_list(d);
+    result = Rosella.Benchmark.benchmark(function() { using static compare; qsort_with_insertion(d, 0, elements(d), compare); });
     result.set_base_time(base.time());
     display_result("qsort+insertion sort (random)", result);
+    verify_is_sorted(d);
 
     random_N_list(d);
-    result = benchmark(function() { using static compare; var t = new Timsort(compare); t.sort(d); });
+    result = Rosella.Benchmark.benchmark(function() { using static compare; var t = new Timsort(compare); t.sort(d); });
     result.set_base_time(base.time());
     display_result("timsort (random)", result);
+    verify_is_sorted(d);
 
-    int good = 1;
-    for (int i = 0; i < N - 1; i++) {
-        //say(d[i]);
-        if(d[i] > d[i + 1]) {
-            //say(sprintf("%d > %d!?", [d[i], d[i + 1]]));
-            good = 0;
-            }
-     }
-
-    print("timsort basic diagnostic check - ");
-    say(good == 1 ? "PASS" : "FAIL");
 
     //var d_ria = new 'ResizableIntegerArray';
     //reverse_sorted_N_list(d_ria);
@@ -86,6 +80,18 @@ function main[main]()
     //});
     //query.set_base_time(builtin.time());
     //display_result("sort RIA with Rosella Query", ria);
+}
+
+function verify_is_sorted(var d)
+{
+    print("\tNumber of items out of order: ");
+    int count = 0;
+    for (int i = 0; i < elements(d) - 1; i++) {
+        if(d[i] > d[i + 1])
+            //say(sprintf("%d > %d!?", [d[i], d[i + 1]]));
+            count++;
+    }
+    say(count);
 }
 
 function sorted_N_list(var d)
@@ -117,8 +123,8 @@ function compare(var a, var b) {
 
 function display_result(string name, var result)
 {
-    print(name);
-    print(" - ");
+    say(name);
+    print("\t");
     say(result);
 }
 
