@@ -167,12 +167,18 @@ class Rosella.Query.Provider
     }
 
     // Convert the aggregate to an array and sort it, according to the
-    // comparison function given.
+    // comparison function given. This will create a sorted copy of the data,
+    // leaving the original copy in the original order.
     function sort(var data, var func)
     {
         var new_data = self.to_array(data);
         Rosella.Query.qsort(new_data, 0, elements(new_data), func);
         return new_data;
+    }
+
+    function sort_self(var data, var func)
+    {
+        Rosella.Error.invalid(__FUNCTION__, "Provider %s does not support .sort_self()", self.name());
     }
 
     function shuffle(var data)

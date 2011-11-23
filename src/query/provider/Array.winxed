@@ -162,4 +162,9 @@ class Rosella.Query.Provider.Array : Rosella.Query.Provider
         }
         return result;
     }
+
+    function sort_self(var data, var func)
+    {
+        Rosella.Query.qsort(data, 0, elements(data), func);
+    }
 }

@@ -97,11 +97,20 @@ class Rosella.Query.Queryable
         return self.as_queryable(value);
     }
 
-    // Sort the data using a given comparison routine
+    // Sort the data using a given comparison routine. The data is not sorted
+    // in place, but instead a new array is created for the data and the new
+    // array is sorted (the old one is left as it was)
     function sort(var func)
     {
         var result = self.provider.sort(self.data, func);
         return self.as_queryable(result);
+    }
+
+    // Sort the data in place. Do not create a copy.
+    function sort_self(var func)
+    {
+        self.provider.sort_self(self.data, func);
+        return self;
     }
 
     // Shuffle the data randomly. This probably is only meaningful for an

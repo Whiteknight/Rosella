@@ -25,11 +25,10 @@ function main[main]()
     verify_is_sorted(d);
 
     reverse_sorted_N_list(d);
-    result = Rosella.Benchmark.benchmark(function() { using static compare; Rosella.Query.as_queryable(d).sort(compare); });
+    result = Rosella.Benchmark.benchmark(function() { using static compare; Rosella.Query.as_queryable(d).sort_self(compare); });
     result.set_base_time(base.time());
     display_result("sort with Rosella Query (reversed)", result);
-    // We can't do this, Rosella.Query sort() doesn't sort in-place, it makes a copy.
-    //verify_is_sorted(d);
+    verify_is_sorted(d);
 
     reverse_sorted_N_list(d);
     result = Rosella.Benchmark.benchmark(function() { using static compare; qsort_with_insertion(d, 0, elements(d), compare); });
@@ -52,11 +51,10 @@ function main[main]()
     verify_is_sorted(d);
 
     random_N_list(d);
-    result = Rosella.Benchmark.benchmark(function() { using static compare; Rosella.Query.as_queryable(d).sort(compare); });
+    result = Rosella.Benchmark.benchmark(function() { using static compare; Rosella.Query.as_queryable(d).sort_self(compare); });
     result.set_base_time(base.time());
     display_result("sort with Rosella Query (random)", result);
-    // We can't do this, Rosella.Query sort() doesn't sort in-place, it makes a copy.
-    //verify_is_sorted(d);
+    verify_is_sorted(d);
 
     random_N_list(d);
     result = Rosella.Benchmark.benchmark(function() { using static compare; qsort_with_insertion(d, 0, elements(d), compare); });
