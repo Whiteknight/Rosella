@@ -1,4 +1,6 @@
 class Rosella.FileSystem.Directory;
+namespace Rosella.Query { extern function as_stream; }
+namespace Rosella.String {extern function pad_end; }
 
 function show_help(var args)
 {
@@ -21,8 +23,14 @@ function ls_main(var args)
         Rosella.IO.sayf("ls: cannot access %s: No such file or directory", dirname);
         exit(-1);
     }
-    for(var file in dir)
-        Rosella.IO.printf("%s\t", file.short_name());
+
+    Rosella.Query.as_stream(dir)
+        .map(function(e) { return e.short_name(); })
+        .sort()
+        .map(function(e) { return Rosella.String.pad_end(e, 20); })
+        .foreach(function(string e) { Rosella.IO.printf("%s\t", e); })
+        .tap(3, function() { say(""); })
+        .execute();
 
     say("");
 }
@@ -30,6 +38,6 @@ function ls_main(var args)
 function main[main](var args)
 {
     var rosella = load_packfile("rosella/core.pbc");
-    var(Rosella.initialize_rosella)("filesystem");
+    var(Rosella.initialize_rosella)("filesystem", "query", "string");
     ls_main(args);
 }
