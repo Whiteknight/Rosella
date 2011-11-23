@@ -9,8 +9,14 @@ using Rosella:
 ### ls Clone
 
 The Unix `ls` utility is used to show the contents of a directory. This example
-uses the Rosella FileSystem library  and the Directory class to get the
-directory contents:
+uses several pieces of Rosella. The FileSystem's Directory type is used to read
+the directory contents. The Stream class from the Query library is used to
+iterate over all the directory contents and perform a variety of operations on
+each to produce the final formatted output.
+
+This example currently acts like the command "`ls -a`" by showing all items
+including hidden files and folders. It does not support other common arguments
+such as "`-l`".
 
 {% highlight javascript linenos %}
 {% include ls.winxed %}
