@@ -8,7 +8,7 @@ class Rosella.IteratorBase
 
     function get_bool[vtable]()
     {
-        Rosella.Error.must_subclass(__CLASS__);
+        return self.data != null && elements(self.data) > 0;
     }
 
     function shift_string[vtable]()
