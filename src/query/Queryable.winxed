@@ -100,8 +100,12 @@ class Rosella.Query.Queryable
     // Sort the data using a given comparison routine. The data is not sorted
     // in place, but instead a new array is created for the data and the new
     // array is sorted (the old one is left as it was)
-    function sort(var func)
+    function sort(var func [optional], int has_func [opt_flag])
     {
+        if (!has_func) {
+            using Rosella.Query.default_comparer;
+            func = default_comparer;
+        }
         var result = self.provider.sort(self.data, func);
         return self.as_queryable(result);
     }

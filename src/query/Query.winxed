@@ -70,7 +70,7 @@ namespace Rosella.Query
             d[last] = piv;
 
             for(int ix = s; ix < last; ix++) {
-                if (cmp(d[ix], piv) < 0) {
+                if (cmp(d[ix], piv) > 0) {
                     tmp = d[store];
                     d[store] = d[ix];
                     d[ix] = tmp;
@@ -138,5 +138,14 @@ namespace Rosella.Query
     function set_provider_factory(var factory)
     {
         Rosella.Globals.register_global(DEFAULT_PROVIDER_FACTORY, factory);
+    }
+
+    function default_comparer(var a, var b)
+    {
+        if (a == b)
+            return 0;
+        if (a < b)
+            return -1;
+        return 1;
     }
 }
