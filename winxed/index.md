@@ -11,4 +11,5 @@ title: Winxed Documentation
 4. [Namespaces and Classes](/Rosella/winxed/nsandclasses.html)
 5. [Objects](/Rosella/winxed/objects.html)
 6. [Integrating with Parrot](/Rosella/winxed/parrot.html)
+7. [Code Examples](/Rosella/winxed/examples.html)
 

@@ -8,10 +8,14 @@ using Rosella:
 
 ### ls Clone
 
+{% highlight javascript linenos %}
 {% include ls.winxed %}
+{% endhighlight %}
 
 ### nl Clone
 
+{% highlight javascript linenos %}
 {% include nl.winxed %}
+{% endhighlight %}
 
 
