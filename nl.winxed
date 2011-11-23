@@ -1,3 +1,5 @@
+class Rosella.FileSystem.File;
+
 function out(var output, var all) {
   var i = 0;
   for(string s in output) {
@@ -25,9 +27,9 @@ function main[main](var args) {
   var all;
   for(var i = 1; i < args; i++) {
     var arg = args[i];
-    if(arg == "-t")  
+    if(arg == "-t")
       all = false;
-    else if(arg == "-a")  
+    else if(arg == "-a")
       all = true;
     else if(arg == "-h" || arg == "--help")
       show_help(args);

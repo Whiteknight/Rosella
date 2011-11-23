@@ -1,3 +1,5 @@
+class Rosella.FileSystem.Directory;
+
 function show_help(var args) {
   print("Usage: ");
   print(args[0]);
