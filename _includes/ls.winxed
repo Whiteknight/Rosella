@@ -1,39 +1,35 @@
 class Rosella.FileSystem.Directory;
 
-function show_help(var args) {
-  print("Usage: ");
-  print(args[0]);
-  say(" [directory]");
-  exit(0);
+function show_help(var args)
+{
+    Rosella.IO.sayf("Usage: %s [directory]", args[0]);
+    exit(0);
 }
 
-function main[main](var args) {
-  var rosella = load_packfile("rosella/core.pbc");
-  var(Rosella.initialize_rosella)("filesystem");
-  var dirname = ".";
-  for(var i = 1; i < args; i++) {
-    var arg = args[i];
-    if(arg == "-h" || arg == "--help")
-      show_help(args);
-    else
-      dirname = arg;
-  }
-  var dir = new Rosella.FileSystem.Directory(dirname);
-  if(!(dir.exists())) {
-    print("ls: cannot access ");
-    print(dirname);
-    say(": No such file or directory");
-    exit(-1);
-  }
-  var files = dir.get_files();
-  for(var file in files) {
-    print(file.short_name());
-    print("  ");
-  }
-  var dirs = dir.get_subdirectories();
-  for(var curdir in dirs) {
-    print(curdir.short_name());
-    print("  ");
-  }
-  say("");
+function ls_main(var args)
+{
+    var dirname = ".";
+    for(var i = 1; i < args; i++) {
+        var arg = args[i];
+        if(arg == "-h" || arg == "--help")
+            show_help(args);
+        else
+            dirname = arg;
+    }
+    var dir = new Rosella.FileSystem.Directory(dirname);
+    if(!(dir.exists())) {
+        Rosella.IO.sayf("ls: cannot access %s: No such file or directory", dirname);
+        exit(-1);
+    }
+    for(var file in dir)
+        Rosella.IO.printf("%s\t", file.short_name());
+
+    say("");
+}
+
+function main[main](var args)
+{
+    var rosella = load_packfile("rosella/core.pbc");
+    var(Rosella.initialize_rosella)("filesystem");
+    var(Rosella.Parrot.try_report)(function() { ls_main(args); });
 }
