@@ -1,0 +1,51 @@
+function out(var output, var all) {
+  var i = 0;
+  for(string s in output) {
+    if(s != "" || all)
+      print(i++);
+    print("  ");
+    say(s);
+  }
+}
+
+function show_help(var args) {
+  print("Usage: ");
+  print(args[0]);
+  say(" [args] [file]");
+  say("    -a    number all lines");
+  say("    -t    number only nonempty lines");
+  say("    -h    display this help message");
+  exit(0);
+}
+
+function main[main](var args) {
+  var rosella = load_packfile("rosella/core.pbc");
+  var(Rosella.initialize_rosella)("filesystem");
+  var filename = "";
+  var all;
+  for(var i = 1; i < args; i++) {
+    var arg = args[i];
+    if(arg == "-t")  
+      all = false;
+    else if(arg == "-a")  
+      all = true;
+    else if(arg == "-h" || arg == "--help")
+      show_help(args);
+    else
+      filename = arg;
+  }
+  if(filename == "") {
+    say("Please give a filename");
+    exit(0);
+  }
+  var file = new Rosella.FileSystem.File(filename);
+  if(!(file.exists())) {
+    print("nl: ");
+    print(filename);
+    say(": No such file or directory");
+    exit(-1);
+  }
+  string txt = file.read_all_text();
+  var output = split("\n", txt);
+  out(output, all);
+}
