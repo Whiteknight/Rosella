@@ -136,17 +136,19 @@ class Rosella.Query.Stream
 
     // Perform some action for every element in the aggregate. Return the
     // items without modification.
-    function foreach(var func)
+    function foreach(var func, int count [optional], int has_count [opt_flag])
     {
-        var last_stage = new Rosella.Query.Stage.ForEach(self.last_stage, func);
+        if (!has_count)
+            count = 0;
+        var last_stage = new Rosella.Query.Stage.ForEach(self.last_stage, func, count);
         return new Rosella.Query.Stream(self, last_stage);
     }
 
     // Perform a callback at this stage in the Stream. It performs no
     // action at all on the data.
-    function tap(var func)
+    function tap(int count, var func)
     {
-        var last_stage = new Rosella.Query.Stage.Tap(self.last_stage, func);
+        var last_stage = new Rosella.Query.Stage.Tap(self.last_stage, func, count);
         return new Rosella.Query.Stream(self, last_stage);
     }
 

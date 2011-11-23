@@ -71,29 +71,50 @@ namespace Rosella.Query.Stage
     */
     class ForEach : Rosella.Query.Stage
     {
-        function ForEach(var p, var f) { self.Stage(p, f); }
+        var count;
+        var running_count;
+
+        function ForEach(var p, var f, int c)
+        {
+            self.Stage(p, f);
+            self.count = c;
+            self.running_count = 0;
+        }
 
         function next()
         {
             :(var is_valid, var value) = self.previous.next();
             if (!is_valid)
                 return false, null;
-            var f = self.func;
-            f(value);
-            return true, value;
+            self.running_count++;
+            if (is_valid && self.func != null && (self.count <= 0 || int(self.running_count) % int(self.count) == 0)) {
+                var f = self.func;
+                f(value);
+            }
+            return is_valid, value;
         }
     }
 
     class Tap : Rosella.Query.Stage
     {
-        var cache;
-        function Tap(var p, var f) { self.Stage(p, f); }
+        var count;
+        var running_count;
+
+        function Tap(var p, var f, int c)
+        {
+            self.Stage(p, f);
+            self.count = c;
+            self.running_count = 0;
+        }
 
         function next()
         {
             :(int is_valid, var value) = self.previous.next();
-            if (is_valid && self.func != null) {
-                var f = var(self.func);
+            if (!is_valid)
+                return false, null;
+            self.running_count++;
+            if (is_valid && self.func != null && (self.count <= 0 || int(self.running_count) % int(self.count) == 0)) {
+                var f = self.func;
                 f();
             }
             return is_valid, value;
