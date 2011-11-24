@@ -1,15 +1,15 @@
 class Rosella.Random.MersenneTwister : Rosella.Random.RandomNumber
 {
     // Period parameters
-    var N;
-    var M;
-    var MATRIX_A;
-    var UPPER_MASK;
-    var LOWER_MASK;
+    const int N = 624;
+    const int M = 397;
+    const int MATRIX_A = 0x9908b0df;
+    const int UPPER_MASK = 0x80000000; // most significant bit
+    const int LOWER_MASK = 0x7FFFFFFF; // the rest
 
     // Tempering paramters
-    var TEMPERING_MASK_B;
-    var TEMPERING_MASK_C;
+    const int TEMPERING_MASK_B = 0x9D2C5680;
+    const int TEMPERING_MASK_C = 0xEFC60000;
 
     var mt; // state vector
     var mti; // mti == N + 1 means mt[N] is not initialized
@@ -17,15 +17,6 @@ class Rosella.Random.MersenneTwister : Rosella.Random.RandomNumber
 
     function MersenneTwister()
     {
-        self.N = 624;
-        self.M = 397;
-        self.MATRIX_A = 0x9908b0df;
-        self.UPPER_MASK = 0x80000000; // most significant bit
-        self.LOWER_MASK = 0x7FFFFFFF; // the rest
-
-        self.TEMPERING_MASK_B = 0x9D2C5680;
-        self.TEMPERING_MASK_C = 0xEFC60000;
-
         self.mt = [];
         self.mag01 = [];
 
@@ -37,10 +28,10 @@ class Rosella.Random.MersenneTwister : Rosella.Random.RandomNumber
     function initialize(int seed)
     {
         self.mag01[0] = 0;
-        self.mag01[1] = self.MATRIX_A;
+        self.mag01[1] = MATRIX_A;
 
         self.mt[0] = seed & 0xFFFFFFFF;
-        for (self.mti = 1; self.mti < self.N; self.mti++)
+        for (self.mti = 1; self.mti < N; self.mti++)
         {
             int y = self.mt[self.mti - 1];
             int z;
@@ -56,28 +47,28 @@ class Rosella.Random.MersenneTwister : Rosella.Random.RandomNumber
         int y;
         int z;
 
-        if (self.mti >= self.N)
+        if (self.mti >= N)
         {
             int kk;
             var mt = self.mt;
             var mag01 = self.mag01;
 
-            for (kk = 0; kk < self.N - self.M; kk++)
+            for (kk = 0; kk < N - M; kk++)
             {
-                y = (mt[kk] & self.UPPER_MASK) | (mt[kk + 1] & self.LOWER_MASK);
+                y = (mt[kk] & UPPER_MASK) | (mt[kk + 1] & LOWER_MASK);
                 ${ lsr z, y, 1 };
-                mt[kk] = mt[kk + self.M] ^ z ^ mag01[y & 1];
+                mt[kk] = mt[kk + M] ^ z ^ mag01[y & 1];
             }
-            for (; kk < self.N - 1; kk++)
+            for (; kk < N - 1; kk++)
             {
-                y = (mt[kk] & self.UPPER_MASK) | (mt[kk + 1] & self.LOWER_MASK);
+                y = (mt[kk] & UPPER_MASK) | (mt[kk + 1] & LOWER_MASK);
                 ${ lsr z, y, 1 };
-                mt[kk] = mt[kk + (self.M - self.N)] ^ z ^ mag01[y & 1];
+                mt[kk] = mt[kk + (M - N)] ^ z ^ mag01[y & 1];
             }
 
-            y = (mt[self.N - 1] & self.UPPER_MASK) | (mt[0] & self.LOWER_MASK);
+            y = (mt[N - 1] & UPPER_MASK) | (mt[0] & LOWER_MASK);
             ${ lsr z, y, 1 };
-            mt[self.N - 1] = mt[self.M - 1] ^ z ^ mag01[y & 1];
+            mt[N - 1] = mt[M - 1] ^ z ^ mag01[y & 1];
 
             self.mti = 0;
         }
@@ -87,8 +78,8 @@ class Rosella.Random.MersenneTwister : Rosella.Random.RandomNumber
 
         ${ lsr z, y, 11 };
         y = y ^ z;                                  // TEMPERING_SHIFT_U(y)
-        y = y ^ (y << 7) & self.TEMPERING_MASK_B;   // TEMPERING_SHIFT_S(y)
-        y = y ^ (y << 15) & self.TEMPERING_MASK_C;  // TEMPERING_SHIFT_L(y)
+        y = y ^ (y << 7) & TEMPERING_MASK_B;        // TEMPERING_SHIFT_S(y)
+        y = y ^ (y << 15) & TEMPERING_MASK_C;       // TEMPERING_SHIFT_L(y)
         ${ lsr z, y, 18 };
         y = y ^ z;                                  // TEMPERING_SHIFT_T(y)
 
