@@ -1,3 +1,4 @@
+class Rosella.Random.MersenneTwister;
 // Mersenne Twister example.
 
 function main[main]()
