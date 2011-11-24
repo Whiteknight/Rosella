@@ -1,4 +1,4 @@
-using extern "io_ops";
+$loadlib "io_ops";
 class OS;
 
 function setup_main(var argv)

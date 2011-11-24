@@ -911,7 +911,7 @@ class Smoothsort {
         self.MultiplyDeBruijnBitPosition = db;
     }
 
-    /* Solution for determining number of trailing zeroes ofa number's binary representation */
+    /* Solution for determining number of trailing zeroes of a number's binary representation */
     function trailingzeroes(int num) {
         int db = self.MultiplyDeBruijnBitPosition[((((num & -num) * 0x077CB531) >> 27) & 31)];
         return db;
