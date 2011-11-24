@@ -1,0 +1,7 @@
+namespace Rosella.Random
+{
+    function default_random_generator()
+    {
+        return new Rosella.Random.MersenneTwister();
+    }
+}

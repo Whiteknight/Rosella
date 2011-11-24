@@ -323,6 +323,7 @@ function setup_experimental_libraries(var rosella)
     );
 
     setup_unstable_lib(rosella, "random", [],
+        "random/Random",
         "random/RandomNumber",
         "random/MersenneTwister"
     );
