@@ -1,5 +1,5 @@
 $loadlib "math_ops";
-const int N = 100000;
+const int N = 10000;
 const int SORT_TRANSITION = 6;
 
 function main[main]()
@@ -42,6 +42,12 @@ function main[main]()
     display_result("timsort (reversed)", result);
     verify_is_sorted(d);
 
+    reverse_sorted_N_list(d);
+    result = Rosella.Benchmark.benchmark(function() { using static compare; var t = new Smoothsort(); t.smoothsort(d); });
+    result.set_base_time(base.time());
+    display_result("Smoothsort (reversed)", result);
+    verify_is_sorted(d);
+
     say("\nRANDOM BENCHMARKS\n");
 
     random_N_list(d);
@@ -65,7 +71,13 @@ function main[main]()
     random_N_list(d);
     result = Rosella.Benchmark.benchmark(function() { using static compare; var t = new Timsort(compare); t.sort(d); });
     result.set_base_time(base.time());
-    display_result("timsort (random)", result);
+    display_result("Timsort (random)", result);
+    verify_is_sorted(d);
+
+    random_N_list(d);
+    result = Rosella.Benchmark.benchmark(function() { using static compare; var t = new Smoothsort(); t.smoothsort(d); });
+    result.set_base_time(base.time());
+    display_result("Smoothsort (random)", result);
     verify_is_sorted(d);
 
 
@@ -847,3 +859,141 @@ class Timsort
     }
 }
 
+class Smoothsort {
+  //var LP;
+
+  /* Solution for determining number of trailing zeroes ofa number's binary representation */
+  //var MultiplyDeBruijnBitPosition;
+
+  function Smoothsort() {
+  /*  self.LP = [ 1, 1, 3, 5, 9, 15, 25, 41, 67, 109, 177, 287, 465, 753, 1219, 1973,
+                3193, 5167, 8361, 13529, 21891, 35421, 57313, 92735, 150049, 242785,
+                392835, 635621, 1028457, 1664079, 2692537, 4356617, 7049155,
+                11405773, 18454929, 29860703, 48315633, 78176337, 126491971,
+                204668309, 331160281, 535828591, 866988873 ]; */
+  /*  self.MultiplyDeBruijnBitPosition = [ 0,  1, 28,  2, 29, 14, 24, 3,
+                                         30, 22, 20, 15, 25, 17,  4, 8,
+                                         31, 27, 13, 23, 21, 19, 16, 7,
+                                         26, 12, 18,  6, 11,  5, 10, 9]; */
+  }
+
+  /* Solution for determining number of trailing zeroes ofa number's binary representation */
+  function trailingzeroes(int num) {
+    var MultiplyDeBruijnBitPosition = [ 0,  1, 28,  2, 29, 14, 24, 3,
+                                         30, 22, 20, 15, 25, 17,  4, 8,
+                                         31, 27, 13, 23, 21, 19, 16, 7,
+                                         26, 12, 18,  6, 11,  5, 10, 9];
+
+    return MultiplyDeBruijnBitPosition[((((num & -num) * 0x077CB531) >> 27) & 31)];
+  }
+
+  function sift(var lst, int pshift, int head) {
+    var LP = [ 1, 1, 3, 5, 9, 15, 25, 41, 67, 109, 177, 287, 465, 753, 1219, 1973,
+               3193, 5167, 8361, 13529, 21891, 35421, 57313, 92735, 150049, 242785,
+               392835, 635621, 1028457, 1664079, 2692537, 4356617, 7049155,
+               11405773, 18454929, 29860703, 48315633, 78176337, 126491971,
+               204668309, 331160281, 535828591, 866988873 ];
+    while(pshift > 1) {
+      int rt = head - 1;
+      int lf = head - 1 - LP[pshift - 2];
+      if(lst[head] >= lst[lf] && lst[head] >= lst[rt])
+        break;
+      if(lst[lf] >= lst[rt]) {
+        var tmp = lst[head];
+        lst[head] = lst[lf];
+        lst[lf] = tmp;
+        head = lf;
+        pshift -= 1;
+      }
+      else {
+        var tmp = lst[head];
+        lst[head] = lst[rt];
+        lst[rt] = tmp;
+        head = rt;
+        pshift -= 2;
+      }
+    }
+  }
+
+  function trinkle(var lst, int p, int pshift, int head, var trusty) {
+    var LP = [ 1, 1, 3, 5, 9, 15, 25, 41, 67, 109, 177, 287, 465, 753, 1219, 1973,
+               3193, 5167, 8361, 13529, 21891, 35421, 57313, 92735, 150049, 242785,
+               392835, 635621, 1028457, 1664079, 2692537, 4356617, 7049155,
+               11405773, 18454929, 29860703, 48315633, 78176337, 126491971,
+               204668309, 331160281, 535828591, 866988873 ];
+    while(p != 1) {
+      int stepson = head - LP[pshift];
+      if(lst[stepson] <= lst[head])
+        break;
+      if(!trusty && pshift > 1) {
+        int rt = head - 1;
+        int lf = head - 1 - LP[pshift - 2];
+        if(lst[rt] >= lst[stepson] || lst[lf] >= lst[stepson])
+          break;
+      }
+      var tmp = lst[head];
+      lst[head] = lst[stepson];
+      lst[stepson] = tmp;
+      head = stepson;
+      int trail = self.trailingzeroes(p & ~1);
+      p = p >> trail;
+      pshift += trail;
+      trusty = false;
+    }
+    if(!trusty)
+      self.sift(lst, pshift, head);
+  }
+
+  function smoothsort(var lst) {
+    var LP = [ 1, 1, 3, 5, 9, 15, 25, 41, 67, 109, 177, 287, 465, 753, 1219, 1973,
+               3193, 5167, 8361, 13529, 21891, 35421, 57313, 92735, 150049, 242785,
+               392835, 635621, 1028457, 1664079, 2692537, 4356617, 7049155,
+               11405773, 18454929, 29860703, 48315633, 78176337, 126491971,
+               204668309, 331160281, 535828591, 866988873 ];
+    int p = 1;
+    int pshift = 1;
+    int head = 0;
+    while(head < (elements(lst) - 1)) {
+      if((p & 3) == 3) {
+        self.sift(lst, pshift, head);
+        p = p >> 2;
+        pshift += 2;
+      }
+      else {
+        if(LP[pshift - 1] >= (elements(lst) - 1 - head))
+          self.trinkle(lst, p, pshift, head, false);
+        else
+          self.sift(lst, pshift, head);
+
+        if(pshift == 1) {
+          p = p << 1;
+          pshift -= 1;
+        }
+        else {
+          p = p << (pshift - 1);
+          pshift = 1;
+        }
+      }
+      p = p | 1;
+      head += 1;
+    }
+    self.trinkle(lst, p, pshift, head, false);
+    while(pshift != 1 || p != 1) {
+      if(pshift <= 1) {
+        int trail = self.trailingzeroes(p & ~1);
+        p = p >> trail;
+        pshift += trail;
+      }
+      else {
+        p = p << 2;
+        p = p ^ 7;
+        pshift -= 2;
+
+        self.trinkle(lst, (p >> 1), (pshift + 1), (head - LP[pshift] - 1), true);
+        self.trinkle(lst, p, pshift, (head - 1), true);
+      }
+      head -= 1;
+    }
+  }
+
+}
