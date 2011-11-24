@@ -1,0 +1,20 @@
+class Rosella.Random.RandomNumber
+{
+    // Seed the random number generator with the given seed.
+    function initialize(int seed) { }
+
+    // Gets a random signed integer from [INT_MIN, INT_MAX].
+    function get() { }
+
+    // Gets a random floating-point number from [0, 1).
+    function get_float() { }
+
+    // Gets a random signed integer from [low, high).
+    function get_range(int low, int high)
+    {
+        float f = self.get_float();
+        int i = f * (high - low) + low;
+        
+        return i;
+    }
+}
