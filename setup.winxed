@@ -321,6 +321,11 @@ function setup_experimental_libraries(var rosella)
         "commandline/Program",
         "commandline/ProgramMode"
     );
+
+    setup_unstable_lib(rosella, "random", [],
+        "random/RandomNumber",
+        "random/MersenneTwister"
+    );
 }
 
 function setup_utilities(var rosella)
