@@ -23,4 +23,17 @@ namespace Rosella.Random
     {
         return new Rosella.Random.BoxMullerNormal(center, stddev);
     }
+
+    // Perform a random sort of an array in-place
+    function knuth_fisher_yates_shuffle(var d)
+    {
+        int i = elements(d);
+        var rand = default_uniform_random();
+        for (int i = elements(d) - 1; i > 0; i--) {
+            int n = rand.get_range(0, i + 1);
+            var v = d[i];
+            d[i] = d[n];
+            d[n] = v;
+        }
+    }
 }

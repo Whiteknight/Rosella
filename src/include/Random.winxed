@@ -6,6 +6,7 @@ namespace Rosella.Random {
     extern function __ln;
     extern function default_uniform_random;
     extern function default_normal_random;
+    extern function knuth_fisher_yates_shuffle;
 }
 
 function __load_random[anon, load, init]()

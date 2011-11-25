@@ -184,7 +184,7 @@ class Rosella.Query.Provider
     function shuffle(var data)
     {
         var new_data = self.to_array(data);
-        Rosella.Query.knuth_fisher_yates_shuffle(new_data);
+        Rosella.Random.knuth_fisher_yates_shuffle(new_data);
         return new_data;
     }
 

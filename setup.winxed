@@ -188,7 +188,7 @@ function setup_stable_libraries(var rosella)
     );
 
     // A library for working with aggregates
-    setup_winxed_lib(rosella, "query", ["Core"],
+    setup_winxed_lib(rosella, "query", ["Core", "Random"],
         "query/Provider",
         "query/provider/Array",
         "query/provider/Hash",
