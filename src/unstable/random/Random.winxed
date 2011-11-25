@@ -19,8 +19,8 @@ namespace Rosella.Random
         return new Rosella.Random.MersenneTwister();
     }
 
-    function default_normal_random()
+    function default_normal_random(float center, float stddev)
     {
-        return new Rosella.Random.BoxMullerNormal();
+        return new Rosella.Random.BoxMullerNormal(center, stddev);
     }
 }

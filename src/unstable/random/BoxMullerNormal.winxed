@@ -2,10 +2,14 @@ class Rosella.Random.BoxMullerNormal : Rosella.Random.RandomNumber
 {
     var uniform_generator;
     var spare;
+    var center;
+    var stddev;
 
-    function BoxMullerNormal()
+    function BoxMullerNormal(float center, float stddev)
     {
         self.uniform_generator = Rosella.Random.default_uniform_random();
+        self.center = center;
+        self.stddev = stddev;
     }
 
     function initialize(int seed)
@@ -16,22 +20,11 @@ class Rosella.Random.BoxMullerNormal : Rosella.Random.RandomNumber
     // Gets a random signed integer from [INT_MIN, INT_MAX].
     function get_int()
     {
-        Rosella.Error.invalid(__FUNCTION__, "Must provide center point and standard deviation");
-    }
-
-    function get_int(int center, int stddev)
-    {
-
     }
 
     function get_float()
     {
-        Rosella.Error.invalid(__FUNCTION__, "Must provide center point and standard deviation");
-    }
-
-    function get_float(float center, float stddev)
-    {
-        return self.__get_next(center, stddev);
+        return self.__get_next(float(self.center), float(self.stddev));
     }
 
     function __get_next(float center, float stddev)

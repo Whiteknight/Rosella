@@ -51,18 +51,19 @@ function main[main]()
         say("");
     }
 
-    rnd = Rosella.Random.default_normal_random();
+    rnd = Rosella.Random.default_normal_random(0.00, 0.25);
     print("\n20 random normal-distributed floats: ");
     for (int i = 0; i < 20; i++) {
-        print(rnd.get_float(0.00, 0.25));
+        print(rnd.get_float());
         print(" ");
     }
     say("");
 
+    rnd = Rosella.Random.default_normal_random(10.00, 3.00);
     print("\nHistogram of 500 normal-distributed floats: ");
     int buckets[] = [0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0];
     for (int i = 0; i < 500; i++) {
-        float value = rnd.get_float(10.0, 3.0) + 0.5;
+        float value = rnd.get_float() + 0.5;
         ${ floor value, value };
         int idx = int(value);
         if (idx >= 0 && idx < elements(buckets))
