@@ -33,7 +33,7 @@ class Rosella.Random.BoxMullerNormal : Rosella.Random.RandomNumber
         {
             float spare = float(self.spare);
             self.spare = null;
-            return spare * stddev + center;
+            return spare;
         }
 
         float x, y, r;
@@ -43,7 +43,7 @@ class Rosella.Random.BoxMullerNormal : Rosella.Random.RandomNumber
             r = x * x + y * y;
         } while(r == 0.0 || r > 1.0);
         float z = Rosella.Random.__sqrt(-2.0 * Rosella.Random.__ln(r) / r);
-        self.spare =             y * z;
+        self.spare = center + stddev * y * z;
         return center + stddev * x * z;
     }
 }
