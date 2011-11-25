@@ -17,9 +17,9 @@ class Rosella.Random.BoxMullerNormal : Rosella.Random.RandomNumber
         self.uniform_generator.initialize(seed);
     }
 
-    // Gets a random signed integer from [INT_MIN, INT_MAX].
     function get_int()
     {
+        return int(self.__next(float(self.center), float(self.stddev)));
     }
 
     function get_float()
