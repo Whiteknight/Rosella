@@ -140,12 +140,15 @@ namespace Rosella.Query
         Rosella.Globals.register_global(DEFAULT_PROVIDER_FACTORY, factory);
     }
 
-    function default_comparer(var a, var b)
+    function get_default_comparer()
     {
-        if (a == b)
-            return 0;
-        if (a < b)
-            return -1;
-        return 1;
+        return function (var a, var b)
+        {
+            if (a == b)
+                return 0;
+            if (a < b)
+                return -1;
+            return 1;
+        };
     }
 }

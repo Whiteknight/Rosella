@@ -12,7 +12,8 @@ class Rosella.Query.Provider.Array : Rosella.Query.Provider
     // Execute a callback for each item in the array
     function foreach(var data, var func)
     {
-        for (int i = elements(data) - 1; i >= 0; i--)
+        int elems = elements(data);
+        for (int i = 0; i < elems; i++)
             func(data[i]);
     }
 
@@ -21,7 +22,8 @@ class Rosella.Query.Provider.Array : Rosella.Query.Provider
     function map(var data, var mapper)
     {
         var new_data = [];
-        for (int i = elements(data) - 1; i >= 0; i--)
+        int elems = elements(data);
+        for (int i = 0; i < elems; i++)
             new_data[i] = mapper(data[i]);
         return new_data;
     }

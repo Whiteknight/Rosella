@@ -102,17 +102,17 @@ class Rosella.Query.Queryable
     // array is sorted (the old one is left as it was)
     function sort(var func [optional], int has_func [opt_flag])
     {
-        if (!has_func) {
-            using Rosella.Query.default_comparer;
-            func = default_comparer;
-        }
+        if (!has_func)
+            func = Rosella.Query.get_default_comparer();
         var result = self.provider.sort(self.data, func);
         return self.as_queryable(result);
     }
 
     // Sort the data in place. Do not create a copy.
-    function sort_self(var func)
+    function sort_self(var func [optional], int has_func [opt_flag])
     {
+        if (!has_func)
+            func = Rosella.Query.get_default_comparer();
         self.provider.sort_self(self.data, func);
         return self;
     }

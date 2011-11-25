@@ -182,10 +182,8 @@ class Rosella.Query.Stream
     // Sort the data using a given comparison routine
     function sort(var func [optional], int has_func [opt_flag])
     {
-        if (!has_func) {
-            using Rosella.Query.default_comparer;
-            func = default_comparer;
-        }
+        if (!has_func)
+            func = Rosella.Query.get_default_comparer();
         var last_stage = new Rosella.Query.Stage.Sort(self.last_stage, func);
         return new Rosella.Query.Stream(self, last_stage);
     }
