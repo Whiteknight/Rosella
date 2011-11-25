@@ -1,7 +1,26 @@
 namespace Rosella.Random
 {
-    function default_random_generator()
+    function __sqrt(float val)
+    {
+        float result;
+        ${ sqrt result, val };
+        return result;
+    }
+
+    function __ln(float val)
+    {
+        float result;
+        ${ ln result, val };
+        return result;
+    }
+
+    function default_uniform_random()
     {
         return new Rosella.Random.MersenneTwister();
+    }
+
+    function default_normal_random()
+    {
+        return new Rosella.Random.BoxMullerNormal();
     }
 }

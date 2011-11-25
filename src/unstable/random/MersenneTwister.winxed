@@ -42,7 +42,7 @@ class Rosella.Random.MersenneTwister : Rosella.Random.RandomNumber
         }
     }
 
-    function get()
+    function get_int()
     {
         int y;
         int z;
@@ -89,7 +89,7 @@ class Rosella.Random.MersenneTwister : Rosella.Random.RandomNumber
     function get_float()
     {
         float n = (1 << 24);
-        int y = self.get();
+        int y = self.get_int();
         ${ lsr y, y, 8 };
 
         return y / n;

@@ -1,0 +1,56 @@
+class Rosella.Random.BoxMullerNormal : Rosella.Random.RandomNumber
+{
+    var uniform_generator;
+    var spare;
+
+    function BoxMullerNormal()
+    {
+        self.uniform_generator = Rosella.Random.default_uniform_random();
+    }
+
+    function initialize(int seed)
+    {
+        self.uniform_generator.initialize(seed);
+    }
+
+    // Gets a random signed integer from [INT_MIN, INT_MAX].
+    function get_int()
+    {
+        Rosella.Error.invalid(__FUNCTION__, "Must provide center point and standard deviation");
+    }
+
+    function get_int(int center, int stddev)
+    {
+
+    }
+
+    function get_float()
+    {
+        Rosella.Error.invalid(__FUNCTION__, "Must provide center point and standard deviation");
+    }
+
+    function get_float(float center, float stddev)
+    {
+        return self.__get_next(center, stddev);
+    }
+
+    function __get_next(float center, float stddev)
+    {
+        if (self.spare != null)
+        {
+            float spare = float(self.spare);
+            self.spare = null;
+            return spare * stddev + center;
+        }
+
+        float x, y, r;
+        do {
+            x = self.uniform_generator.get_float() * 2.0 - 1;
+            y = self.uniform_generator.get_float() * 2.0 - 1;
+            r = x * x + y * y;
+        } while(r == 0.0 || r > 1.0);
+        float z = Rosella.Random.__sqrt(-2.0 * Rosella.Random.__ln(r) / r);
+        self.spare =             y * z;
+        return center + stddev * x * z;
+    }
+}

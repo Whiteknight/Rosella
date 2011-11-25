@@ -1,4 +1,9 @@
-class Rosella.Random.MersenneTwister;
+namespace Rosella.Random
+{
+    extern function default_uniform_random;
+    extern function default_normal_random;
+}
+
 // Mersenne Twister example.
 
 function main[main]()
@@ -6,17 +11,17 @@ function main[main]()
     var rosella = load_packfile("rosella/core.pbc");
     var(Rosella.initialize_rosella)("random");
 
-    var rnd = new Rosella.Random.MersenneTwister();
+    var rnd = Rosella.Random.default_uniform_random();
 
-    print("20 random integers: ");
+    print("\n20 random uniformly-distributed integers: ");
     for(int i = 0; i < 20; i++)
     {
-        print(rnd.get());
+        print(rnd.get_int());
         print(" ");
     }
     say("");
 
-    print("20 random floats: ");
+    print("\n20 random uniformly-distributed floats: ");
     for(int i = 0; i < 20; i++)
     {
         print(rnd.get_float());
@@ -24,11 +29,49 @@ function main[main]()
     }
     say("");
 
-    print("20 random ints in [0, 10): ");
+    print("\n20 random uniformly-distributed ints in [0, 10): ");
     for(int i = 0; i < 20; i++)
     {
         print(rnd.get_range(0, 10));
         print(" ");
     }
     say("");
+
+    print("\nHistogram of 500 uniformly-distributed floats: ");
+    int buckets_a[] = [0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0];
+    for (int i = 0; i < 500; i++) {
+        int idx = rnd.get_range(0, 21);
+        if (idx >= 0 && idx < elements(buckets_a))
+            buckets_a[idx] = buckets_a[idx] + 1;
+    }
+    for (int i = 0; i < elements(buckets_a); i++) {
+        print(i, ": ");
+        for (int j = 0; j < int(buckets_a[i]); j++)
+            print("#");
+        say("");
+    }
+
+    rnd = Rosella.Random.default_normal_random();
+    print("\n20 random normal-distributed floats: ");
+    for (int i = 0; i < 20; i++) {
+        print(rnd.get_float(0.00, 0.25));
+        print(" ");
+    }
+    say("");
+
+    print("\nHistogram of 500 normal-distributed floats: ");
+    int buckets[] = [0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0];
+    for (int i = 0; i < 500; i++) {
+        float value = rnd.get_float(10.0, 3.0) + 0.5;
+        ${ floor value, value };
+        int idx = int(value);
+        if (idx >= 0 && idx < elements(buckets))
+            buckets[idx] = buckets[idx] + 1;
+    }
+    for (int i = 0; i < elements(buckets); i++) {
+        print(i, ": ");
+        for (int j = 0; j < int(buckets[i]); j++)
+            print("#");
+        say("");
+    }
 }

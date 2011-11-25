@@ -7,7 +7,7 @@ class Rosella.Random.RandomNumber
     }
 
     // Gets a random signed integer from [INT_MIN, INT_MAX].
-    function get()
+    function get_int()
     {
         Rosella.Error.must_subclass(__CLASS__);
     }
