@@ -1,0 +1,14 @@
+namespace Rosella.Random {
+    class RandomNumber;
+    class BoxMullerNormal;
+    class MersenneTwister;
+    extern function __sqrt;
+    extern function __ln;
+    extern function default_uniform_random;
+    extern function default_normal_random;
+}
+
+function __load_random[anon, load, init]()
+{
+    Rosella.load_bytecode_file("rosella/random.pbc", "load");
+}
