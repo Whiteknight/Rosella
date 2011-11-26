@@ -1,58 +1,49 @@
-namespace Rosella { namespace Decorate
+class Rosella.Decorate.Builder : Rosella.Proxy.Builder
 {
-    class Builder : Rosella.Proxy.Builder
+    function setup_proxy_class(var target_class, var proxy_class)
     {
-        function setup_proxy_class(var target_class, var proxy_class)
-        {
-            using Rosella.Proxy.add_proxy_class_private_attr;
+        Rosella.Proxy.add_proxy_class_private_attr(proxy_class, "decorator_methods");
+        Rosella.Proxy.add_proxy_class_private_attr(proxy_class, "decorator_attributes");
 
-            add_proxy_class_private_attr(proxy_class, "decorator_methods");
-            add_proxy_class_private_attr(proxy_class, "decorator_attributes");
+        using Rosella.Decorator.Builder.intercept_find_method;
+        proxy_class.add_vtable_override("find_method", intercept_find_method);
 
-            using Rosella.Decorator.Builder.intercept_find_method;
-            proxy_class.add_vtable_override("find_method", intercept_find_method);
+        using Rosella.Decorator.Builder.intercept_get_attr_str;
+        proxy_class.add_vtable_override("get_attr_str", intercept_get_attr_str);
 
-            using Rosella.Decorator.Builder.intercept_get_attr_str;
-            proxy_class.add_vtable_override("get_attr_str", intercept_get_attr_str);
+        using Rosella.Decorator.Builder.intercept_set_attr_str;
+        proxy_class.add_vtable_override("set_attr_str", intercept_set_attr_str);
+    }
 
-            using Rosella.Decorator.Builder.intercept_set_attr_str;
-            proxy_class.add_vtable_override("set_attr_str", intercept_set_attr_str);
-        }
+    function intercept_find_method[nsentry](string name)
+    {
+        var methods = Rosella.Proxy.get_proxy_private_attr(self, "decorator_methods");
+        if (exists methods[name])
+            return methods[name];
+        var target_class = Rosella.Proxy.get_proxy_private_attr(self, "target_class");
+        return target_class.find_method(name);
+    }
 
-        function intercept_find_method[nsentry](string name)
-        {
-            using Rosella.Proxy.get_proxy_private_attr;
-            var methods = get_proxy_private_attr(self, "decorator_methods");
-            if (exists methods[name])
-                return methods[name];
-            var target_class = get_proxy_private_attr(self, "target_class");
-            return target_class.find_method(name);
-        }
+    function intercept_get_attr_str[nsentry](string name)
+    {
+        if (name == "proxy")
+            return Rosella.Proxy.get_proxy_private_attr(self, "target_object");
+        var attrs = Rosella.Proxy.get_proxy_private_attr(self, "decorator_attributes");
+        if (exists attrs[name])
+            return attrs[name];
+        var target = Rosella.Proxy.get_proxy_private_attr(self, "target_object");
+        var value = target.*name;
+        return value;
+    }
 
-        function intercept_get_attr_str[nsentry](string name)
-        {
-            using Rosella.Proxy.get_proxy_private_attr;
-            if (name == "proxy")
-                return get_proxy_private_attr(self, "target_object");
-            var attrs = get_proxy_private_attr(self, "decorator_attributes");
-            if (exists attrs[name])
-                return attrs[name];
-            var target = get_proxy_private_attr(self, "target_object");
-            var value = null;
-            ${ getattribute value, target, name };
-            return value;
-        }
-
-        function intercept_set_attr_str[nsentry](string name, var value)
-        {
-            using Rosella.Proxy.get_proxy_private_attr;
-            var attrs = get_proxy_private_attr(self, "decorator_attributes");
-            if (exists attrs[name])
-                attrs[name] = value;
-            else {
-                var target = get_proxy_private_attr(self, "target_object");
-                ${ setattribute target, name, value };
-            }
+    function intercept_set_attr_str[nsentry](string name, var value)
+    {
+        var attrs = Rosella.Proxy.get_proxy_private_attr(self, "decorator_attributes");
+        if (exists attrs[name])
+            attrs[name] = value;
+        else {
+            var target = Rosella.Proxy.get_proxy_private_attr(self, "target_object");
+            target.*name = value;
         }
     }
-}}
+}

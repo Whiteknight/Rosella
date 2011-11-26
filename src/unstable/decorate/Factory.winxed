@@ -1,37 +1,30 @@
-namespace Rosella { namespace Decorate
+class Rosella.Decorate.Factory : Rosella.ObjectFactory
 {
-    class Factory : Rosella.ObjectFactory
+    var proxy_factory;
+    var methods;
+    var attributes;
+
+    function Factory(var target_type, var methods, var attrs)
     {
-        var proxy_factory;
-        var methods;
-        var attributes;
-
-        function Factory(var target_type, var methods, var attrs)
-        {
-            using Rosella.build;
-            self.methods = methods;
-            self.attributes = attrs;
-            var builders = [
-                new Rosella.Proxy.Builder.Passthrough,
-                new Rosella.Decorate.Builder
-            ];
-            self.proxy_factory = new Rosella.Proxy.Factory(target_type, builders);
-        }
-
-        function create(var target, var p [slurpy], var n [slurpy,named])
-        {
-            using Rosella.Proxy.set_proxy_private_attr;
-
-            var proxy = self.proxy_factory.create(null, target);
-            set_proxy_private_attr(proxy, "decorator_methods", self.methods);
-            set_proxy_private_attr(proxy, "decorator_attributes", self.attributes);
-            return proxy;
-        }
-
-        function create_typed(var type, var p [slurpy], var n [slurpy,named])
-        {
-            using Rosella.Error.invalid;
-            invalid("Rosella.Decorate.Factory", "Cannot create_typed with a Decorator.Factory. Create a new factory");
-        }
+        self.methods = methods;
+        self.attributes = attrs;
+        var builders = [
+            new Rosella.Proxy.Builder.Passthrough,
+            new Rosella.Decorate.Builder
+        ];
+        self.proxy_factory = new Rosella.Proxy.Factory(target_type, builders);
     }
-}}
+
+    function create(var target, var p [slurpy], var n [slurpy,named])
+    {
+        var proxy = self.proxy_factory.create(null, target);
+        Rosella.Proxy.set_proxy_private_attr(proxy, "decorator_methods", self.methods);
+        Rosella.Proxy.set_proxy_private_attr(proxy, "decorator_attributes", self.attributes);
+        return proxy;
+    }
+
+    function create_typed(var type, var p [slurpy], var n [slurpy,named])
+    {
+        Rosella.Error.invalid(__FUNCTION__, "Cannot create_typed with a Decorator.Factory. Create a new factory");
+    }
+}

@@ -32,6 +32,7 @@ sub unstable_tests() {
     %h{"container"} := "Winxed";
     %h{"event"} := "Winxed";
     %h{"prototype"} := "NQP";
+    %h{"decorate"} := "Winxed";
     %h;
 }
 
