@@ -50,8 +50,8 @@ class Rosella.Random.RandomNumber.MersenneTwister : Rosella.Random.RandomNumber
         for (mti = 1; mti < N; mti++)
         {
             int y = self.mt[mti - 1];
-            int z;
-            ${ lsr z, y, 30 };
+            int z = logical_shift_right(y, 30);
+            //${ lsr z, y, 30 };
 
             self.mt[mti] = 1812433253 * (self.mt[mti - 1] ^ z) + mti;
             self.mt[mti] = self.mt[mti] & 0xFFFFFFFF;
