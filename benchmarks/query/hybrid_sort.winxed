@@ -1,0 +1,220 @@
+$loadlib "math_ops";
+const int N = 100000;
+
+function sorted_N_list(var d)
+{
+    for (int i = N - 1; i >= 0; i--)
+        d[i] = i;
+}
+
+function reverse_sorted_N_list(var d)
+{
+    for (int i = N - 1; i >= 0; i--)
+        d[i] = N - i;
+}
+
+function random_N_list(var d)
+{
+    for (int i = N - 1; i >= 0; i--) {
+        int x;
+        ${ rand x };
+        d[i] = x;
+    }
+}
+
+function display_result(string name, var result)
+{
+    say(name);
+    print("\t");
+    say(result);
+}
+
+function qsort_with_insertion(int SORT_TRANSITION, var d, int s, int n, var cmp)
+{
+    int last = n-1;
+    while (last > s) {
+        if ((last - s) < SORT_TRANSITION) {
+            insertion_sort(d, s, n, cmp);
+            return;
+        }
+        int pivot = s + int((n - s) / 2);
+        int store = s;
+        var tmp;
+
+        var piv = d[pivot];
+        d[pivot] = d[last];
+        d[last] = piv;
+
+        for(int ix = s; ix < last; ix++) {
+            if (cmp(d[ix], piv) < 0) {
+                tmp = d[store];
+                d[store] = d[ix];
+                d[ix] = tmp;
+                store++;
+            }
+        }
+
+        tmp = d[last];
+        d[last] = d[store];
+        d[store] = tmp;
+        pivot = store;
+        qsort_with_insertion(SORT_TRANSITION, d, s, pivot, cmp);
+        s = pivot + 1;
+    }
+}
+
+function insertion_sort(var d, int s, int n, var cmp)
+{
+    for (int x = s + 1; x < n; x++)
+    {
+        var val = d[x];
+        int j = x - 1;
+        while (j >= 0 && cmp(val, d[j]) < 0)
+        {
+            d[j + 1] = d[j];
+            j--;
+        }
+        d[j + 1] = val;
+    }
+}
+
+function main[main]()
+{
+    var rosella = load_packfile("rosella/core.pbc");
+    var(Rosella.initialize_rosella)("benchmark", "query");
+    say(sprintf("N = %d", [N]));
+    var d = [];
+    var result;
+    var base;
+
+    say("\nFORWARD-SORTED (PRESORTED) BENCHMARKS\n");
+
+    sorted_N_list(d);
+    base = Rosella.Benchmark.benchmark(function() { using static compare; Rosella.Query.as_queryable(d).sort_self(compare); });
+    display_result("sort with Rosella Query", base);
+
+    sorted_N_list(d);
+    result = Rosella.Benchmark.benchmark(function() { using static compare; qsort_with_insertion(4, d, 0, elements(d), compare); });
+    result.set_base_time(base.time());
+    display_result("qsort+insertion sort N = 4", result);
+
+    sorted_N_list(d);
+    result = Rosella.Benchmark.benchmark(function() { using static compare; qsort_with_insertion(5, d, 0, elements(d), compare); });
+    result.set_base_time(base.time());
+    display_result("qsort+insertion sort N = 5", result);
+
+    sorted_N_list(d);
+    result = Rosella.Benchmark.benchmark(function() { using static compare; qsort_with_insertion(6, d, 0, elements(d), compare); });
+    result.set_base_time(base.time());
+    display_result("qsort+insertion sort N = 6", result);
+
+    sorted_N_list(d);
+    result = Rosella.Benchmark.benchmark(function() { using static compare; qsort_with_insertion(7, d, 0, elements(d), compare); });
+    result.set_base_time(base.time());
+    display_result("qsort+insertion sort N = 7", result);
+
+    sorted_N_list(d);
+    result = Rosella.Benchmark.benchmark(function() { using static compare; qsort_with_insertion(8, d, 0, elements(d), compare); });
+    result.set_base_time(base.time());
+    display_result("qsort+insertion sort N = 8", result);
+
+    sorted_N_list(d);
+    result = Rosella.Benchmark.benchmark(function() { using static compare; qsort_with_insertion(9, d, 0, elements(d), compare); });
+    result.set_base_time(base.time());
+    display_result("qsort+insertion sort N = 9", result);
+
+    sorted_N_list(d);
+    result = Rosella.Benchmark.benchmark(function() { using static compare; qsort_with_insertion(10, d, 0, elements(d), compare); });
+    result.set_base_time(base.time());
+    display_result("qsort+insertion sort N = 10", result);
+
+    say("\nREVERSE-SORTED BENCHMARKS\n");
+
+    reverse_sorted_N_list(d);
+    base = Rosella.Benchmark.benchmark(function() { using static compare; Rosella.Query.as_queryable(d).sort_self(compare); });
+    display_result("sort with Rosella Query", base);
+
+    reverse_sorted_N_list(d);
+    result = Rosella.Benchmark.benchmark(function() { using static compare; qsort_with_insertion(4, d, 0, elements(d), compare); });
+    result.set_base_time(base.time());
+    display_result("qsort+insertion sort N = 4", result);
+
+    reverse_sorted_N_list(d);
+    result = Rosella.Benchmark.benchmark(function() { using static compare; qsort_with_insertion(5, d, 0, elements(d), compare); });
+    result.set_base_time(base.time());
+    display_result("qsort+insertion sort N = 5", result);
+
+    reverse_sorted_N_list(d);
+    result = Rosella.Benchmark.benchmark(function() { using static compare; qsort_with_insertion(6, d, 0, elements(d), compare); });
+    result.set_base_time(base.time());
+    display_result("qsort+insertion sort N = 6", result);
+
+    reverse_sorted_N_list(d);
+    result = Rosella.Benchmark.benchmark(function() { using static compare; qsort_with_insertion(7, d, 0, elements(d), compare); });
+    result.set_base_time(base.time());
+    display_result("qsort+insertion sort N = 7", result);
+
+    reverse_sorted_N_list(d);
+    result = Rosella.Benchmark.benchmark(function() { using static compare; qsort_with_insertion(8, d, 0, elements(d), compare); });
+    result.set_base_time(base.time());
+    display_result("qsort+insertion sort N = 8", result);
+
+    reverse_sorted_N_list(d);
+    result = Rosella.Benchmark.benchmark(function() { using static compare; qsort_with_insertion(9, d, 0, elements(d), compare); });
+    result.set_base_time(base.time());
+    display_result("qsort+insertion sort N = 9", result);
+
+    reverse_sorted_N_list(d);
+    result = Rosella.Benchmark.benchmark(function() { using static compare; qsort_with_insertion(10, d, 0, elements(d), compare); });
+    result.set_base_time(base.time());
+    display_result("qsort+insertion sort N = 10", result);
+
+    say("\nRANDOM DATA BENCHMARKS\n");
+
+    random_N_list(d);
+    base = Rosella.Benchmark.benchmark(function() { using static compare; Rosella.Query.as_queryable(d).sort_self(compare); });
+    display_result("sort with Rosella Query", base);
+
+    random_N_list(d);
+    result = Rosella.Benchmark.benchmark(function() { using static compare; qsort_with_insertion(4, d, 0, elements(d), compare); });
+    result.set_base_time(base.time());
+    display_result("qsort+insertion sort N = 4", result);
+
+    random_N_list(d);
+    result = Rosella.Benchmark.benchmark(function() { using static compare; qsort_with_insertion(5, d, 0, elements(d), compare); });
+    result.set_base_time(base.time());
+    display_result("qsort+insertion sort N = 5", result);
+
+    random_N_list(d);
+    result = Rosella.Benchmark.benchmark(function() { using static compare; qsort_with_insertion(6, d, 0, elements(d), compare); });
+    result.set_base_time(base.time());
+    display_result("qsort+insertion sort N = 6", result);
+
+    random_N_list(d);
+    result = Rosella.Benchmark.benchmark(function() { using static compare; qsort_with_insertion(7, d, 0, elements(d), compare); });
+    result.set_base_time(base.time());
+    display_result("qsort+insertion sort N = 7", result);
+
+    random_N_list(d);
+    result = Rosella.Benchmark.benchmark(function() { using static compare; qsort_with_insertion(8, d, 0, elements(d), compare); });
+    result.set_base_time(base.time());
+    display_result("qsort+insertion sort N = 8", result);
+
+    random_N_list(d);
+    result = Rosella.Benchmark.benchmark(function() { using static compare; qsort_with_insertion(9, d, 0, elements(d), compare); });
+    result.set_base_time(base.time());
+    display_result("qsort+insertion sort N = 9", result);
+
+    random_N_list(d);
+    result = Rosella.Benchmark.benchmark(function() { using static compare; qsort_with_insertion(10, d, 0, elements(d), compare); });
+    result.set_base_time(base.time());
+    display_result("qsort+insertion sort N = 10", result);
+}
+
+
+function compare(var a, var b)
+{
+    if (a > b) return 1;
+    if (a == b) return 0;
+    return -1;
+}

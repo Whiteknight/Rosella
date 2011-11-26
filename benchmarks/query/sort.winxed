@@ -157,7 +157,8 @@ function random_N_list(var d)
     }
 }
 
-function compare(var a, var b) {
+function compare(var a, var b)
+{
     if (a > b) return 1;
     if (a == b) return 0;
     return -1;
@@ -169,8 +170,6 @@ function display_result(string name, var result)
     print("\t");
     say(result);
 }
-
-
 
 function qsort_with_insertion(var d, int s, int n, var cmp)
 {
