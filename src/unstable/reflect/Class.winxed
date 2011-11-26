@@ -35,7 +35,7 @@ class Rosella.Reflect.Class
     {
         if (self.constructor != null) {
             string constructor_name = self.constructor;
-            var class_obj = self.class_obj
+            var class_obj = self.class_obj;
             var obj = Rosella.alloc(class_obj);
             var constructor = Rosella.find_named_method(obj, self.class_obj.name());
             if (constructor != null)

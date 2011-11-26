@@ -75,18 +75,21 @@ class Rosella.Random.RandomNumber.MersenneTwister : Rosella.Random.RandomNumber
             for (kk = 0; kk < N - M; kk++)
             {
                 y = (mt[kk] & UPPER_MASK) | (mt[kk + 1] & LOWER_MASK);
-                ${ lsr z, y, 1 };
+                z = logical_shift_right(y, 1);
+                //${ lsr z, y, 1 };
                 mt[kk] = mt[kk + M] ^ z ^ mag01[y & 1];
             }
             for (; kk < N - 1; kk++)
             {
                 y = (mt[kk] & UPPER_MASK) | (mt[kk + 1] & LOWER_MASK);
-                ${ lsr z, y, 1 };
+                z = logical_shift_right(y, 1);
+                //${ lsr z, y, 1 };
                 mt[kk] = mt[kk + (M - N)] ^ z ^ mag01[y & 1];
             }
 
             y = (mt[N - 1] & UPPER_MASK) | (mt[0] & LOWER_MASK);
-            ${ lsr z, y, 1 };
+            z = logical_shift_right(y, 1);
+            //${ lsr z, y, 1 };
             mt[N - 1] = mt[M - 1] ^ z ^ mag01[y & 1];
 
             mti = 0;
@@ -96,11 +99,13 @@ class Rosella.Random.RandomNumber.MersenneTwister : Rosella.Random.RandomNumber
         mti++;
         self.mti = mti;
 
-        ${ lsr z, y, 11 };
+        z = logical_shift_right(y, 11);
+        //${ lsr z, y, 11 };
         y = y ^ z;                                  // TEMPERING_SHIFT_U(y)
         y = y ^ (y << 7) & TEMPERING_MASK_B;        // TEMPERING_SHIFT_S(y)
         y = y ^ (y << 15) & TEMPERING_MASK_C;       // TEMPERING_SHIFT_L(y)
-        ${ lsr z, y, 18 };
+        z = logical_shift_right(y, 18);
+        //${ lsr z, y, 18 };
         y = y ^ z;                                  // TEMPERING_SHIFT_T(y)
 
         return y;
@@ -111,7 +116,8 @@ class Rosella.Random.RandomNumber.MersenneTwister : Rosella.Random.RandomNumber
     {
         float n = (1 << 24);
         int y = self.get_int();
-        ${ lsr y, y, 8 };
+        y = logical_shift_right(y, 18);
+        //${ lsr y, y, 8 };
 
         return y / n;
     }
