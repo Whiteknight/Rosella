@@ -1,5 +1,12 @@
+/* Rosella Random Library
+    This library provides some utilitites and routines for working with random
+    numbers. It provides some pseudo-random number generators, and some other
+    related tools.
+*/
 namespace Rosella.Random
 {
+    // Square-root helper function.
+    // TODO: This should be inlined (when winxed supports that)
     function __sqrt(float val)
     {
         float result;
@@ -7,6 +14,8 @@ namespace Rosella.Random
         return result;
     }
 
+    // Natural logarithm
+    // TODO: This should be inlined (when winxed supports that)
     function __ln(float val)
     {
         float result;
@@ -14,17 +23,22 @@ namespace Rosella.Random
         return result;
     }
 
+    // Get a default PRNG for a uniform number distribution
     function default_uniform_random()
     {
         return new Rosella.Random.RandomNumber.MersenneTwister();
     }
 
+    // Get a default PRNG for a normal number distribution
     function default_normal_random(float center, float stddev)
     {
         return new Rosella.Random.RandomNumber.BoxMullerNormal(center, stddev);
     }
 
-    // Perform a random sort of an array in-place
+    // Perform a random sort of an array in-place using the knuth-fisher-yates
+    // algorithm.
+    // TODO: Do we want to move this out into a Shuffler class? Will we have
+    // multiple options that need to be interchanged?
     function __knuth_fisher_yates_shuffle(var d)
     {
         int i = elements(d);
@@ -37,6 +51,7 @@ namespace Rosella.Random
         }
     }
 
+    // Shuffle the array randomly, using a default algorithm
     function shuffle_array(var d)
     {
         __knuth_fisher_yates_shuffle(d);
