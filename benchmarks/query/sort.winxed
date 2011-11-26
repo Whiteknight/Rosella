@@ -43,7 +43,7 @@ function main[main]()
     verify_is_sorted(d);
 
     sorted_N_list(d);
-    result = Rosella.Benchmark.benchmark(function() { using static compare; var t = new Smoothsort(); t.smoothsort(d); });
+    result = Rosella.Benchmark.benchmark(function() { using static compare; var t = new Smoothsort(compare); t.smoothsort(d); });
     result.set_base_time(base.time());
     display_result("Smoothsort (reversed)", result);
     verify_is_sorted(d);
@@ -75,7 +75,7 @@ function main[main]()
     verify_is_sorted(d);
 
     reverse_sorted_N_list(d);
-    result = Rosella.Benchmark.benchmark(function() { using static compare; var t = new Smoothsort(); t.smoothsort(d); });
+    result = Rosella.Benchmark.benchmark(function() { using static compare; var t = new Smoothsort(compare); t.smoothsort(d); });
     result.set_base_time(base.time());
     display_result("Smoothsort (reversed)", result);
     verify_is_sorted(d);
@@ -107,7 +107,7 @@ function main[main]()
     verify_is_sorted(d);
 
     random_N_list(d);
-    result = Rosella.Benchmark.benchmark(function() { using static compare; var t = new Smoothsort(); t.smoothsort(d); });
+    result = Rosella.Benchmark.benchmark(function() { using static compare; var t = new Smoothsort(compare); t.smoothsort(d); });
     result.set_base_time(base.time());
     display_result("Smoothsort (random)", result);
     verify_is_sorted(d);
@@ -891,13 +891,16 @@ class Timsort
     }
 }
 
-class Smoothsort {
+class Smoothsort
+{
     var LP;
+    var cmp;
 
     /* Solution for determining number of trailing zeroes ofa number's binary representation */
     var MultiplyDeBruijnBitPosition;
 
-    function Smoothsort() {
+    function Smoothsort(var cmp)
+    {
         int lp[] = [ 1, 1, 3, 5, 9, 15, 25, 41, 67, 109, 177, 287, 465, 753, 1219, 1973,
                      3193, 5167, 8361, 13529, 21891, 35421, 57313, 92735, 150049, 242785,
                      392835, 635621, 1028457, 1664079, 2692537, 4356617, 7049155,
@@ -909,23 +912,27 @@ class Smoothsort {
                      31, 27, 13, 23, 21, 19, 16, 7,
                      26, 12, 18,  6, 11,  5, 10, 9];
         self.MultiplyDeBruijnBitPosition = db;
+        self.cmp = cmp;
     }
 
     /* Solution for determining number of trailing zeroes of a number's binary representation */
-    function trailingzeroes(int num) {
+    function trailingzeroes(int num)
+    {
         int db = self.MultiplyDeBruijnBitPosition[((((num & -num) * 0x077CB531) >> 27) & 31)];
         return db;
     }
 
-    function sift(var lst, int pshift, int head) {
+    function sift(var lst, int pshift, int head)
+    {
         var LP = self.LP;
+        var cmp = self.cmp;
         while(pshift > 1) {
             int rt = head - 1;
             int temp_lp = LP[pshift - 2];
             int lf = rt - temp_lp;
-            if(lst[head] >= lst[lf] && lst[head] >= lst[rt])
+            if(cmp(lst[head], lst[lf]) != -1 && cmp(lst[head], lst[rt]) != -1)
                 break;
-            if(lst[lf] >= lst[rt]) {
+            if(cmp(lst[lf], lst[rt]) != -1) {
                 var tmp = lst[head];
                 lst[head] = lst[lf];
                 lst[lf] = tmp;
@@ -942,17 +949,19 @@ class Smoothsort {
         }
     }
 
-    function trinkle(var lst, int p, int pshift, int head, var trusty) {
+    function trinkle(var lst, int p, int pshift, int head, var trusty)
+    {
         var LP = self.LP;
+        var cmp = self.cmp;
         while(p != 1) {
             int stepson = head - LP[pshift];
-            if(lst[stepson] <= lst[head])
+            if(cmp(lst[stepson], lst[head]) != 1)
                 break;
             if(!trusty && pshift > 1) {
                 int rt = head - 1;
                 int temp_lp = LP[pshift - 2];
                 int lf = rt - temp_lp;
-                if(lst[rt] >= lst[stepson] || lst[lf] >= lst[stepson])
+                if(cmp(lst[rt], lst[stepson]) != -1 || cmp(lst[lf], lst[stepson]) != -1)
                     break;
             }
             var tmp = lst[head];
@@ -968,7 +977,8 @@ class Smoothsort {
             self.sift(lst, pshift, head);
     }
 
-    function smoothsort(var lst) {
+    function smoothsort(var lst)
+    {
         var LP = self.LP;
         int p = 1;
         int pshift = 1;
