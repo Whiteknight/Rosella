@@ -326,8 +326,8 @@ function setup_experimental_libraries(var rosella)
         "random/Includes",
         "random/Random",
         "random/RandomNumber",
-        "random/BoxMullerNormal",
-        "random/MersenneTwister"
+        "random/randomnumber/BoxMullerNormal",
+        "random/randomnumber/MersenneTwister"
     );
 }
 

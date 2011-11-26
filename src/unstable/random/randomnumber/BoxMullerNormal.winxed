@@ -1,4 +1,4 @@
-class Rosella.Random.BoxMullerNormal : Rosella.Random.RandomNumber
+class Rosella.Random.RandomNumber.BoxMullerNormal : Rosella.Random.RandomNumber
 {
     var uniform_generator;
     var spare;
@@ -10,6 +10,11 @@ class Rosella.Random.BoxMullerNormal : Rosella.Random.RandomNumber
         self.uniform_generator = Rosella.Random.default_uniform_random();
         self.center = center;
         self.stddev = stddev;
+    }
+
+    function distribution()
+    {
+        return "normal";
     }
 
     function initialize(int seed)

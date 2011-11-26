@@ -16,16 +16,16 @@ namespace Rosella.Random
 
     function default_uniform_random()
     {
-        return new Rosella.Random.MersenneTwister();
+        return new Rosella.Random.RandomNumber.MersenneTwister();
     }
 
     function default_normal_random(float center, float stddev)
     {
-        return new Rosella.Random.BoxMullerNormal(center, stddev);
+        return new Rosella.Random.RandomNumber.BoxMullerNormal(center, stddev);
     }
 
     // Perform a random sort of an array in-place
-    function knuth_fisher_yates_shuffle(var d)
+    function __knuth_fisher_yates_shuffle(var d)
     {
         int i = elements(d);
         var rand = default_uniform_random();
@@ -35,5 +35,10 @@ namespace Rosella.Random
             d[i] = d[n];
             d[n] = v;
         }
+    }
+
+    function shuffle_array(var d)
+    {
+        __knuth_fisher_yates_shuffle(d);
     }
 }

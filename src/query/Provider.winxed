@@ -149,6 +149,7 @@ class Rosella.Query.Provider
         Rosella.Error.must_subclass(__CLASS__);
     }
 
+    // Unwrap the first data item from the aggregate
     function unwrap_first(var data)
     {
         Rosella.Error.must_subclass(__CLASS__);
@@ -176,16 +177,24 @@ class Rosella.Query.Provider
         return new_data;
     }
 
+    // Sort the data in-place without creating a copy
     function sort_self(var data, var func)
     {
         Rosella.Error.invalid(__FUNCTION__, "Provider %s does not support .sort_self()", self.name());
     }
 
+    // Shuffle the data, return the shuffled copy
     function shuffle(var data)
     {
         var new_data = self.to_array(data);
-        Rosella.Random.knuth_fisher_yates_shuffle(new_data);
+        Rosella.Random.shuffle_array(new_data);
         return new_data;
+    }
+
+    // Shuffle the data in place.
+    function shuffle_self(var data)
+    {
+        Rosella.Error.invalid(__FUNCTION__, "Provider %s does not support .shuffle_self()", self.name());
     }
 
     // Return the list of keys of the aggregate
@@ -202,6 +211,7 @@ class Rosella.Query.Provider
         return results;
     }
 
+    // Internal helper routine to flatten nested aggregates
     function __flatten_internal(var results, var data)
     {
         Rosella.Query.array_or_hash(data,
@@ -226,6 +236,7 @@ class Rosella.Query.Provider
         return target;
     }
 
+    // Group the data according to similar keys.
     function group_by(var target, var f)
     {
         Rosella.Error.invalid(__FUNCTION__, "Provider %s does not support .group_by()", self.name());

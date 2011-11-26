@@ -1,5 +1,10 @@
 class Rosella.Random.RandomNumber
 {
+    function distribution()
+    {
+        Rosella.Error.must_subclass(__CLASS__);
+    }
+
     // Seed the random number generator with the given seed.
     function initialize(int seed)
     {

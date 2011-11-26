@@ -148,6 +148,8 @@ class Rosella.Query.Provider.Array : Rosella.Query.Provider
         return false;
     }
 
+    // Group data items according to a key. The given function gives us the key
+    // for each. This method returns an array of arrays.
     function group_by(var data, var func)
     {
         var keys = {};
@@ -165,8 +167,15 @@ class Rosella.Query.Provider.Array : Rosella.Query.Provider
         return result;
     }
 
+    // Sort the data in-place, without creating a copy.
     function sort_self(var data, var func)
     {
         Rosella.Query.qsort(data, 0, elements(data), func);
+    }
+
+    // Shuffle the data in-place.
+    function shuffle_self(var data)
+    {
+        Rosella.Random.shuffle_array(data);
     }
 }

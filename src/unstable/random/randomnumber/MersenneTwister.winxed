@@ -1,4 +1,4 @@
-class Rosella.Random.MersenneTwister : Rosella.Random.RandomNumber
+class Rosella.Random.RandomNumber.MersenneTwister : Rosella.Random.RandomNumber
 {
     // Period parameters
     const int N = 624;
@@ -23,6 +23,11 @@ class Rosella.Random.MersenneTwister : Rosella.Random.RandomNumber
         int t;
         ${ time t };
         self.initialize(t);
+    }
+
+    function distribution()
+    {
+        return "uniform";
     }
 
     function initialize(int seed)
