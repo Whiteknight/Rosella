@@ -25,9 +25,8 @@ namespace Rosella.Error
     // Error when we are using an invalid type in an operation
     function invalid_type(string caller, var wanted_type, var type)
     {
-        using Rosella.get_type_name;
         throw_error("Invalid Type in %s: Expected %s, have %s",
-            caller, get_type_name(wanted_type), get_type_name(type)
+            caller, Rosella.get_type_name(wanted_type), Rosella.get_type_name(type)
         );
     }
 

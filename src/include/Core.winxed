@@ -1,3 +1,5 @@
+/* Forward declarations
+*/
 namespace Rosella {
     // src/core/Rosella.winxed
     extern function get_winxed_compiler;
@@ -76,6 +78,47 @@ namespace Rosella {
     }
     class Version;
 }
+
+/* Inline helpers
+*/
+
+inline can(var obj, string method) return int
+{
+    int can_do;
+    ${ can can_do, obj, method };
+    return can_do;
+}
+
+inline isa(var obj, var class_obj) return int
+{
+    int isa_class;
+    ${ isa isa_class, obj, class_obj };
+    return isa_class;
+}
+
+inline get_class(var class_obj) return var
+{
+    var type;
+    ${ get_class class_obj, type };
+    return type;
+}
+
+inline does(var obj, string role) return int
+{
+    int does_role;
+    ${ does does_role, obj, role };
+    return does_role;
+}
+
+inline new(var class_obj) return var
+{
+    var obj;
+    ${ new obj, class_obj };
+    return obj;
+}
+
+/* Load the Library
+*/
 
 function __load_core[anon, load, init]()
 {

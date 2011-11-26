@@ -40,7 +40,7 @@ namespace Rosella
             object = proto.new();
         else {
             var obj_class = get_type_class(proto);
-            ${ new object, obj_class };
+            object = new(obj_class);
         }
         return object;
     }
@@ -93,9 +93,8 @@ namespace Rosella
 
         if (type instanceof "NameSpace")
             return join(";", type.get_name());
-        int is_array = 0;
-        ${ does is_array, type, "array" };
-        if (is_array)
+
+        if (does(type, "array"))
             return join(";", type);
         return string(type);
     }
@@ -115,9 +114,7 @@ namespace Rosella
 
         if (type instanceof "String")
             type = split(";", type);
-        var class_obj;
-        ${ get_class class_obj, type };
-        return class_obj;
+        return get_class(type);
     }
 
     // Determine if the given object is an instance of the given type.
@@ -126,10 +123,8 @@ namespace Rosella
         if (type == null)
             Rosella.Error.invalid(__FUNCTION__, "type may not be null");
 
-        int is_type = 0;
         var class_test = get_type_class(type);
-        ${ isa is_type, object, class_test };
-        return is_type;
+        return isa(object, class_test);
     }
 
     /* Bytecode Management Functions
@@ -194,9 +189,7 @@ namespace Rosella
         if (object == null || meth_name == null)
             Rosella.Error.invalid(__FUNCTION__, "object and meth_name may not be null");
 
-        int can_do = 0;
-        ${ can can_do, object, meth_name };
-        if (!can_do)
+        if (!can(object, meth_name))
             return null;
         return find_method(object, meth_name);
     }
