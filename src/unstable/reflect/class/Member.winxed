@@ -1,24 +1,21 @@
-namespace Rosella { namespace Reflect { namespace Class
+class Rosella.Reflect.Class.Member
 {
-    class Member
+    var class_obj;
+    var name;
+
+    function Member(var class_obj, string name)
     {
-        var class_obj;
-        var name;
-
-        function Member(var class_obj, string name)
-        {
-            self.class_obj = class_obj;
-            self.name = name;
-        }
-
-        function class_obj()
-        {
-            return self.class_obj;
-        }
-
-        function name()
-        {
-            return self.name;
-        }
+        self.class_obj = class_obj;
+        self.name = name;
     }
-}}}
+
+    function class_obj()
+    {
+        return self.class_obj;
+    }
+
+    function name()
+    {
+        return self.name;
+    }
+}

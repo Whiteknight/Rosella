@@ -1,26 +1,23 @@
-namespace Rosella { namespace Reflect { namespace Class
+class Rosella.Reflect.Class.Attribute : Rosella.Reflect.Class.Member
 {
-    class Attribute : Rosella.Reflect.Class.Member
+    function Attribute(var class_obj, string name)
     {
-        function Attribute(var class_obj, string name)
-        {
-            self.Member(class_obj, name);
-        }
-
-        function get_value(var obj)
-        {
-            if (!self.class_obj.isa(obj))
-                Rosella.Error.invalid(__FUNCTION__, "Object is not instance of class %s", self.class_obj.name());
-            string attr = string(self.name);
-            return obj.*attr;
-        }
-
-        function set_value(var obj, var value)
-        {
-            if (!self.class_obj.isa(obj))
-                Rosella.Error.invalid(__FUNCTION__, "Object is not instance of class %s", self.class_obj.name());
-            string attr = string(self.name);
-            obj.*attr = value;
-        }
+        self.Member(class_obj, name);
     }
-}}}
+
+    function get_value(var obj)
+    {
+        if (!self.class_obj.isa(obj))
+            Rosella.Error.invalid(__FUNCTION__, "Object is not instance of class %s", self.class_obj.name());
+        string attr = string(self.name);
+        return obj.*attr;
+    }
+
+    function set_value(var obj, var value)
+    {
+        if (!self.class_obj.isa(obj))
+            Rosella.Error.invalid(__FUNCTION__, "Object is not instance of class %s", self.class_obj.name());
+        string attr = string(self.name);
+        obj.*attr = value;
+    }
+}
