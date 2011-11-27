@@ -329,6 +329,10 @@ function setup_experimental_libraries(var rosella)
         "random/randomnumber/BoxMullerNormal",
         "random/randomnumber/MersenneTwister"
     );
+
+    setup_unstable_lib(rosella, "date", [],
+        "date/Doomsday"
+    );
 }
 
 function setup_utilities(var rosella)
