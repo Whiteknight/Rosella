@@ -1,0 +1,19 @@
+class Rosella.Date.Doomsday;
+// Doomsday Algorithm example.
+
+function main[main]()
+{
+    var rosella = load_packfile("rosella/core.pbc");
+    var(Rosella.initialize_rosella)("date");
+
+    var d = new Rosella.Date.Doomsday();
+
+    print("Doomsday for 2011: ");
+    say(d.get_day_of_week(d.__get_dday(2011)));
+
+    print("11/26/2011 was a... ");
+    say(d.get_day_of_week(d.get_day(2011, 11, 26)));
+
+    print("9/11/2001 was a... ");
+    say(d.get_day_of_week(d.get_day(2001, 9, 11)));
+}
