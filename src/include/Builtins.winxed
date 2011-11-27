@@ -1,4 +1,4 @@
-/* Inline helpers
+/* PMC and Capability-based ops
 */
 
 inline can(var obj, string method) return int
@@ -36,12 +36,22 @@ inline new_pmc(var class_obj) return var
     return obj;
 }
 
-inline iter(var obj) return var
+inline newclass(string name) return var
 {
-    var i;
-    ${ iter i, obj };
-    return i;
+    var c;
+    ${ newclass c, name };
+    return c;
 }
+
+inline defined(var obj) return int
+{
+    int value;
+    ${ defined value, obj };
+    return value;
+}
+
+/* Time and Scheduling
+*/
 
 inline schedule(var task)
 {
@@ -55,6 +65,9 @@ inline time_i(int dummy) return int
     return t;
 }
 
+/* Attributes, Properties and Objects
+*/
+
 inline getattribute_private(var obj, var target_class, string attr) return var
 {
     var value;
@@ -65,20 +78,6 @@ inline getattribute_private(var obj, var target_class, string attr) return var
 inline setattribute_private(var obj, var target_class, string attr, var value)
 {
     ${ setattribute obj, target_class, attr, value };
-}
-
-inline shift_p(var obj) return var
-{
-    var value;
-    ${ shift value, obj };
-    return value;
-}
-
-inline pop_p(var obj) return var
-{
-    var value;
-    ${ pop value, obj };
-    return value;
 }
 
 inline inspect(var obj) return var
@@ -95,12 +94,44 @@ inline inspect_s(var obj, string property) return var
     return value;
 }
 
-inline newclass(string name) return var
+inline getprop(var obj, string name) return var
 {
-    var c;
-    ${ newclass c, name };
-    return c;
+    var value;
+    ${ getprop value, name, obj };
+    return value;
 }
+
+inline setprop(var obj, string name, var value)
+{
+    ${ setprop obj, name, value };
+}
+
+/* Aggregates and Arrays
+*/
+
+inline shift_p(var obj) return var
+{
+    var value;
+    ${ shift value, obj };
+    return value;
+}
+
+inline pop_p(var obj) return var
+{
+    var value;
+    ${ pop value, obj };
+    return value;
+}
+
+inline iter(var obj) return var
+{
+    var i;
+    ${ iter i, obj };
+    return i;
+}
+
+/* String Operations
+*/
 
 inline is_cclass(int cclass, string str, int start) return int
 {
@@ -130,6 +161,16 @@ inline repeat(string s, int c) return string
     return value;
 }
 
+inline index(string s, string n) return int
+{
+    int value;
+    ${ index value, s, n };
+    return value;
+}
+
+/* Namespaces
+*/
+
 inline get_namespace(var key) return var
 {
     var value;
@@ -141,31 +182,5 @@ inline get_hll_namespace(var key) return var
 {
     var value;
     ${ get_hll_namespace value, key };
-    return value;
-}
-
-inline getprop(var obj, string name) return var
-{
-    var value;
-    ${ getprop value, name, obj };
-    return value;
-}
-
-inline setprop(var obj, string name, var value)
-{
-    ${ setprop obj, name, value };
-}
-
-inline defined(var obj) return int
-{
-    int value;
-    ${ defined value, obj };
-    return value;
-}
-
-inline index(string s, string n) return int
-{
-    int value;
-    ${ index value, s, n };
     return value;
 }
