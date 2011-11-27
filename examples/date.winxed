@@ -1,3 +1,4 @@
+class Rosella.Date.Doomsday;
 // Doomsday Algorithm example.
 
 function main[main]()
