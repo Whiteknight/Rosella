@@ -189,12 +189,13 @@ function setup_stable_libraries(var rosella)
 
     // A library for working with aggregates
     setup_winxed_lib(rosella, "query", ["Core", "Random"],
+        "query/Includes",
+        "query/Query",
         "query/Provider",
         "query/provider/Array",
         "query/provider/Hash",
         "query/provider/Scalar",
         "query/provider/Factory",
-        "query/Query",
         "query/Queryable",
         "query/queryable/InPlace",
         "query/Stage",

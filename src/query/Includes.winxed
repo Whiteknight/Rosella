@@ -1,0 +1,7 @@
+inline array_swap(var a, int x, int y) return var
+{
+    var temp = a[x];
+    a[x] = a[y];
+    a[y] = temp;
+    return temp;
+}

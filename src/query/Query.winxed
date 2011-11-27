@@ -29,29 +29,22 @@ namespace Rosella.Query
     // Helper function. Determine if the aggregate is an array
     function is_array(var data)
     {
-        int flag;
-        ${ does flag, data, "array" };
-        return flag;
+        return does(data, "array");
     }
 
     // Helper function. Determine if the aggregate is a hash
     function is_hash(var data)
     {
-        int flag;
-        ${ does flag, data, "hash" };
-        return flag;
+        return does(data, "hash");
     }
 
     // Helper function. Excute one callback depending on whether the given
     // data is an array, a hash, or anything else.
     function array_or_hash(var data, var array_func, var hash_func, var scalar_func)
     {
-        int flag;
-        ${ does flag, data, "array" };
-        if (flag)
+        if (does(data, "array"))
             return array_func(data);
-        ${ does flag, data, "hash" };
-        if (flag)
+        if (does(data, "hash"))
             return hash_func(data);
         return scalar_func(data);
     }
@@ -63,24 +56,17 @@ namespace Rosella.Query
         while (last > s) {
             int pivot = s + int((n - s) / 2);
             int store = s;
-            var tmp;
 
-            var piv = d[pivot];
-            d[pivot] = d[last];
-            d[last] = piv;
+            var piv = array_swap(d, pivot, last);
 
             for(int ix = s; ix < last; ix++) {
                 if (cmp(d[ix], piv) < 0) {
-                    tmp = d[store];
-                    d[store] = d[ix];
-                    d[ix] = tmp;
+                    array_swap(d, store, ix);
                     store++;
                 }
             }
 
-            tmp = d[last];
-            d[last] = d[store];
-            d[store] = tmp;
+            array_swap(d, last, store);
             pivot = store;
             qsort(d, s, pivot, cmp);
             s = pivot + 1;
