@@ -58,7 +58,7 @@ inline schedule(var task)
     ${ schedule task };
 }
 
-inline time_i(int dummy) return int
+inline time_i() return int
 {
     int t;
     ${ time t };
