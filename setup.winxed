@@ -393,7 +393,7 @@ function setup_lib_internal(var rosella, string name, string prefix,
     setup_lib_constants(rosella, name, prefix, named);
 
     // Get a list of all files
-    var files = [];
+    var files = ["src/include/Builtins.winxed"];
     for (string include in includes)
         push(files, "src/include/" + include + ".winxed");
     for (string file in files_raw)
