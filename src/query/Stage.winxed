@@ -211,7 +211,7 @@ namespace Rosella.Query.Stage
 
             if (elements(self.cache) == 0)
                 return false, null;
-            return true, self.cache.pop();
+            return true, self.cache.shift();
         }
     }
 
