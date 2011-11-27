@@ -1,0 +1,60 @@
+/* Doomsday Algorithm
+    This class implements the Doomsday Algorithm, a fast, computationally-simple method
+    to determine the day of week of any day.
+*/
+class Rosella.Date.Doomsday
+{
+    var doomsdays;
+    var days;
+
+    function Doomsday()
+    {
+        self.doomsdays = [ 3, 28, 7, 4, 9, 6, 11, 8, 5, 10, 7, 12 ]; // doomsdays[N] is the day of month N that falls
+                                                                     // on a doomsday.
+        self.days = [ "Sunday", "Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday" ];
+    }
+
+    function get_day(int year, int month, int day)
+    {
+        if (year < 1)
+            Rosella.Error.invalid(__FUNCTION__, "Bad year");
+        if (month < 1 || month > 12)
+            Rosella.Error.invalid(__FUNCTION__, "Bad month");
+        if (day < 1 || day > 31)
+            Rosella.Error.invalid(__FUNCTION__, "Bad day");
+
+        // Determine the doomsday for this year.
+        int dday = self.__get_dday(year);
+
+        int leap = (year % 4) == 0;
+        int anchor = self.doomsdays[month - 1];
+        if (leap && month <= 2)
+            anchor += 1; // the anchor date for jan/feb is +1 for leap years.
+
+        while (day < anchor)
+            day += 7; // skip forward weeks if necessary.
+        while (day >= (anchor + 7))
+            day -= 7; // skip backward weeks if necessary.
+
+        // At this point day is during the week of anchor.
+        __ASSERT__(anchor <= day < anchor + 7);
+
+        int dayoffset = day - anchor;
+        day = (dday + dayoffset) % 7;
+
+        return day;
+    }
+
+    function get_day_of_week(int day)
+    {
+        if (day < 0 || day > 6)
+            Rosella.Error.invalid(__FUNCTION__, "Bad day");
+
+        return self.days[day];
+    }
+
+    function __get_dday(int year)
+    {
+        return (2 + year + (year / 4) - (year / 100) + (year / 400)) % 7;
+    }
+}
