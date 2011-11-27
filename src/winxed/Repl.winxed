@@ -1,52 +1,49 @@
-namespace Rosella { namespace Winxed
+class Rosella.Winxed.Repl
 {
-    class Repl
+    var compiler;
+    var commands;
+    var state;
+    var view;
+
+    function Repl(
+        var commands [named,optional], int has_cmds [opt_flag],
+        var compiler [named,optional], int has_comp [opt_flag],
+        var state [named,optional], int has_state [opt_flag],
+        var view [named,optional], int has_view [opt_flag])
     {
-        var compiler;
-        var commands;
-        var state;
-        var view;
+        if (!has_cmds)
+            commands = new Rosella.Winxed.Repl.CommandEngine();
+        self.commands = commands;
 
-        function Repl(
-            var commands [named,optional], int has_cmds [opt_flag],
-            var compiler [named,optional], int has_comp [opt_flag],
-            var state [named,optional], int has_state [opt_flag],
-            var view [named,optional], int has_view [opt_flag])
+        if (!has_comp)
+            compiler = new Rosella.Winxed.Repl.Compiler();
+        self.compiler = compiler;
+
+        if (!has_view)
+            view = new Rosella.Winxed.Repl.View();
+        self.view = view;
+
+        if (!has_state)
+            state = new Rosella.Winxed.Repl.State();
+        self.state = state;
+        self.state.set_view(self.view);
+    }
+
+    function run_loop()
+    {
+        while (self.state.keep_running)
         {
-            if (!has_cmds)
-                commands = new Rosella.Winxed.Repl.CommandEngine();
-            self.commands = commands;
-
-            if (!has_comp)
-                compiler = new Rosella.Winxed.Repl.Compiler();
-            self.compiler = compiler;
-
-            if (!has_view)
-                view = new Rosella.Winxed.Repl.View();
-            self.view = view;
-
-            if (!has_state)
-                state = new Rosella.Winxed.Repl.State();
-            self.state = state;
-            self.state.set_view(self.view);
-        }
-
-        function run_loop()
-        {
-            while (self.state.keep_running)
-            {
-                try {
-                    var input = self.view.get_input();
-                    if (input == null)
-                        break;
-                    if (!self.commands.try_run_command(input, self.state)) {
-                        var result = self.compiler.eval(input, self.state, self.view);
-                        self.view.print_result(result, self.state);
-                    }
-                } catch (e) {
-                    self.view.display_error(e);
+            try {
+                var input = self.view.get_input();
+                if (input == null)
+                    break;
+                if (!self.commands.try_run_command(input, self.state)) {
+                    var result = self.compiler.eval(input, self.state, self.view);
+                    self.view.print_result(result, self.state);
                 }
+            } catch (e) {
+                self.view.display_error(e);
             }
         }
     }
-}}
+}

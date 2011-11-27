@@ -1,39 +1,36 @@
-namespace Rosella { namespace Winxed { namespace Repl
+class Rosella.Winxedl.Repl.State
 {
-    class State
+    var keep_running;
+    var data;
+    var show_code;
+    var preamble;
+    var view;
+
+    function State()
     {
-        var keep_running;
-        var data;
-        var show_code;
-        var preamble;
-        var view;
-
-        function State()
-        {
-            self.keep_running = 1;
-            self.data = {};
-            self.show_code = 0;
-            self.preamble = [];
-        }
-
-        function set_view(var view)
-        {
-            self.view = view;
-        }
-
-        function stop()
-        {
-            self.keep_running = 0;
-        }
-
-        function set_pmc_keyed[vtable](var key, var value)
-        {
-            self.data[key] = value;
-        }
-
-        function get_pmc_keyed[vtable](var key)
-        {
-            return self.data[key];
-        }
+        self.keep_running = 1;
+        self.data = {};
+        self.show_code = 0;
+        self.preamble = [];
     }
-}}}
+
+    function set_view(var view)
+    {
+        self.view = view;
+    }
+
+    function stop()
+    {
+        self.keep_running = 0;
+    }
+
+    function set_pmc_keyed[vtable](var key, var value)
+    {
+        self.data[key] = value;
+    }
+
+    function get_pmc_keyed[vtable](var key)
+    {
+        return self.data[key];
+    }
+}

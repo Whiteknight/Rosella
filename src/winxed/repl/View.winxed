@@ -1,86 +1,83 @@
-namespace Rosella { namespace Winxed { namespace Repl
+class Rosella.Winxed.Repl.View
 {
-    class View
+    const int MAX_BACKTRACE_LINES = 5;
+    const string PROMPT = "\nWinxed-Rosella> ";
+
+    var stdin;
+    var stdout;
+
+    function View()
     {
-        const int MAX_BACKTRACE_LINES = 5;
-        const string PROMPT = "\nWinxed-Rosella> ";
-
-        var stdin;
-        var stdout;
-
-        function View()
-        {
-            // TODO: Take these in the constructor
-            self.stdin = getstdin();
-            self.stdout = getstdout();
-        }
-
-        function __printf(string fmt, var args [slurpy])
-        {
-            self.stdout.print(sprintf(fmt, args));
-        }
-
-        function get_input()
-        {
-            return self.stdin.readline_interactive(PROMPT);
-        }
-
-        function display_error(var e)
-        {
-            self.__printf("\t>>> Error: '%s'\n", e["message"]);
-            using Rosella.Parrot.get_backtrace_ex_strings;
-
-            var bt = get_backtrace_ex_strings(e);
-            for (int i = 0; i < MAX_BACKTRACE_LINES && i < elements(bt); i++)
-                self.__printf("\t>>> %s\n", bt[i]);
-            if (MAX_BACKTRACE_LINES < elements(bt))
-                self.__printf("\t>>> ...\n");
-        }
-
-        function show_code(string func_c)
-        {
-            var lines = split("\n", func_c);
-            for(string line in lines)
-                self.__printf("\t>>> %s\n", line);
-        }
-
-        function print_result(var result, var state)
-        {
-            if (result == null)
-                return;
-
-            int does_array = does(result, "array");
-            if (does_array)
-                self.print_array_result(result, state);
-
-            int does_hash = does(result, "hash");
-            if (does_hash)
-                self.print_hash_result(result, state);
-
-            if (!does_array && !does_hash)
-                self.print_scalar_result(result, state);
-        }
-
-        function print_array_result(var result, var state)
-        {
-            say("\t>>> Result = [");
-            for (int i = 0; i < elements(result); i++)
-                self.__printf("\t>>>\t%d => '%s' (%s)\n", i, result[i], string(typeof(result[i])));
-            say("\t>>> ]");
-        }
-
-        function print_hash_result(var result, var state)
-        {
-            say("\t>>> Result = {");
-            for (string key in result)
-                self.__printf("\t>>>\t'%s' => '%s' (%s)\n", key, result[key], string(typeof(result[key])));
-            say("\t>>> }");
-        }
-
-        function print_scalar_result(var result, var state)
-        {
-            self.__printf("\t>>> Result = '%s'\n", result);
-        }
-
+        // TODO: Take these in the constructor
+        self.stdin = getstdin();
+        self.stdout = getstdout();
     }
-}}}
+
+    function __printf(string fmt, var args [slurpy])
+    {
+        self.stdout.print(sprintf(fmt, args));
+    }
+
+    function get_input()
+    {
+        return self.stdin.readline_interactive(PROMPT);
+    }
+
+    function display_error(var e)
+    {
+        self.__printf("\t>>> Error: '%s'\n", e["message"]);
+        using Rosella.Parrot.get_backtrace_ex_strings;
+
+        var bt = get_backtrace_ex_strings(e);
+        for (int i = 0; i < MAX_BACKTRACE_LINES && i < elements(bt); i++)
+            self.__printf("\t>>> %s\n", bt[i]);
+        if (MAX_BACKTRACE_LINES < elements(bt))
+            self.__printf("\t>>> ...\n");
+    }
+
+    function show_code(string func_c)
+    {
+        var lines = split("\n", func_c);
+        for(string line in lines)
+            self.__printf("\t>>> %s\n", line);
+    }
+
+    function print_result(var result, var state)
+    {
+        if (result == null)
+            return;
+
+        int does_array = does(result, "array");
+        if (does_array)
+            self.print_array_result(result, state);
+
+        int does_hash = does(result, "hash");
+        if (does_hash)
+            self.print_hash_result(result, state);
+
+        if (!does_array && !does_hash)
+            self.print_scalar_result(result, state);
+    }
+
+    function print_array_result(var result, var state)
+    {
+        say("\t>>> Result = [");
+        for (int i = 0; i < elements(result); i++)
+            self.__printf("\t>>>\t%d => '%s' (%s)\n", i, result[i], string(typeof(result[i])));
+        say("\t>>> ]");
+    }
+
+    function print_hash_result(var result, var state)
+    {
+        say("\t>>> Result = {");
+        for (string key in result)
+            self.__printf("\t>>>\t'%s' => '%s' (%s)\n", key, result[key], string(typeof(result[key])));
+        say("\t>>> }");
+    }
+
+    function print_scalar_result(var result, var state)
+    {
+        self.__printf("\t>>> Result = '%s'\n", result);
+    }
+
+}
