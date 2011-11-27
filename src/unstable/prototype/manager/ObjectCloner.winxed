@@ -4,9 +4,7 @@ namespace Rosella { namespace Prototype { namespace Manager
     {
         function clone(var prototype)
         {
-            var object = null;
-            ${ clone object, prototype };
-            return object;
+            return clone(prototype);
         }
     }
 }}}

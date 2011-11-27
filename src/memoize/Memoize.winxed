@@ -109,7 +109,7 @@ namespace Rosella
                 var cache = Rosella.Proxy.get_proxy_private_attr(obj, "memoize_cache");
                 if (cache != null) {
                     var cache_class = class Rosella.Memoize.Cache;
-                    ${ isa is_mp, cache, cache_class };
+                    is_mp = isa(cache, cache_class);
                 }
             } catch (e) {
                 is_mp = 0;

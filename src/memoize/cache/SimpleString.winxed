@@ -47,11 +47,11 @@ namespace Rosella { namespace Memoize { namespace Cache
         {
             var sb = new "StringBuilder";
             for (string ip in p)
-                ${ push sb, ip };
+                push(sb, ip);
             for (string key in n) {
-                ${ push sb, key };
+                push(sb, key);
                 string val = n[key];
-                ${ push sb, key };
+                push(sb, key);
             }
             return string(sb);
         }

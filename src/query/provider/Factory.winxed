@@ -20,15 +20,11 @@ class Rosella.Query.Provider.Factory : Rosella.ObjectFactory
     function create(var data, var p [slurpy], var n [slurpy,named])
     {
         for (string role in self.role_map) {
-            int flag;
-            ${ does flag, data, role };
-            if (flag)
+            if (does(data, role))
                 return self.role_map[role];
         }
         for (var type in self.type_map) {
-            int flag;
-            ${ isa flag, data, type };
-            if (flag)
+            if (isa(data, type))
                 return self.type_map[type];
         }
         return self.default_provider;

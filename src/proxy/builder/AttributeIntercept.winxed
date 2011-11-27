@@ -31,7 +31,7 @@ class Rosella.Proxy.Builder.AttributeIntercept : Rosella.Proxy.Builder
         }
         var target = Rosella.Proxy.get_proxy_private_attr(self, "target_object");
         if (target != null)
-            ${ setattribute target, name, value };
+            target.*name = value;
     }
 
     function intercept_get_attr_str[nsentry](string name)

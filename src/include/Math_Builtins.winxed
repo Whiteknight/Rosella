@@ -1,0 +1,27 @@
+inline abs_f(float value) return float
+{
+    ${ abs value };
+    return value;
+}
+
+inline logical_shift_right(int d, int y) return int
+{
+    int result;
+    ${ lsr result, d, y };
+    return result;
+}
+
+// Square-root helper function.
+inline sqrt(float val) return float
+{
+    float result;
+    ${ sqrt result, val };
+    return result;
+}
+
+inline band(int a, int b) return int
+{
+    int value;
+    ${ band value, a, b };
+    return value;
+}

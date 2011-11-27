@@ -48,7 +48,7 @@ class Rosella.Proxy.Controller
         var class_obj = Rosella.Proxy.get_proxy_private_attr(proxy, "target_class");
         int isa_type = 0;
         if (class_obj != null)
-            ${ isa isa_type, class_obj, type };
+            isa_type = isa(class_obj, type);
         return isa_type;
     }
 

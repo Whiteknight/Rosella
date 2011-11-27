@@ -48,17 +48,13 @@ namespace Rosella.Query.Stage
         var iterator;
         function Source(var data)
         {
-            var i;
-            ${ iter i, data };
-            self.iterator = i;
+            self.iterator = iter(data);
         }
 
         function next()
         {
             if (self.iterator) {
-                var d;
-                var i = self.iterator;
-                ${ shift d, i };
+                var d = shift_p(self.iterator);
                 return true, d;
             }
             return false, null;

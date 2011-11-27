@@ -7,15 +7,13 @@ namespace Rosella { namespace Dumper { namespace DumpHandler
         function can_dump(var obj)
         {
             var class_obj = typeof(obj);
-            int isa_class;
-            ${ isa isa_class, class_obj, "PMCProxy" };
+            int isa_class = isa_s(class_obj, "PMCProxy");
             return isa_class == 0 ? false : true;
         }
 
         function dump(var dump, var emit, var obj)
         {
-            var attrs;
-            ${ inspect attrs, obj };
+            var attrs = inspect(obj);
             emit.text("(%s): ", typeof(obj));
             emit.object(function() {
                 for (string key in attrs) {

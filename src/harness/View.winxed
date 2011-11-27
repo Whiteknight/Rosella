@@ -55,8 +55,7 @@ namespace Rosella.Harness
             int len = length(name);
             int line_length = self.line_length;
             int diff = line_length - len + 3;
-            string elipses = "";
-            ${ repeat elipses, '.', diff };
+            string elipses = repeat(".", diff);
             Rosella.IO.printf("%s %s ", name, elipses, self.handle:[named("handle")]);
         }
 
@@ -65,8 +64,7 @@ namespace Rosella.Harness
         {
             if (self.need_backspaces > 0) {
                 int num_b = int(self.need_backspaces);
-                string b;
-                ${ repeat b, "\b", num_b };
+                string b = repeat("\b", num_b);
                 print(b + " ");
                 //print("\b\b\b\b\b\b\b\b\b\b");
                 self.need_backspaces = 0;
@@ -167,8 +165,7 @@ namespace Rosella.Harness
         {
             if (self.need_backspaces > 0) {
                 int num_b = int(self.need_backspaces);
-                string b;
-                ${ repeat b, "\b", num_b };
+                string b = repeat("\b", num_b);
                 print(b + " ");
                 //print("\b\b\b\b\b\b\b\b\b\b");
                 self.need_backspaces = 0;

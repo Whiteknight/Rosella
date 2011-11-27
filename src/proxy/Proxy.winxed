@@ -32,10 +32,9 @@ namespace Rosella.Proxy
     // [get|set]_attr_keyed vtable, which cannot be overridden
     function get_proxy_private_attr(var proxy, string attr)
     {
-        var value = null;
         attr = get_private_attr_name(attr);
         var class_obj = typeof(proxy);
-        ${ getattribute value, proxy, class_obj, attr };
+        var value = getattribute_private(proxy, class_obj, attr);
         return value;
     }
 
@@ -43,15 +42,13 @@ namespace Rosella.Proxy
     function set_proxy_private_attr(var proxy, string attr, var value)
     {
         attr = get_private_attr_name(attr);
-        var class_obj = typeof(proxy);
-        ${ setattribute proxy, class_obj, attr, value };
+        setattribute_private(proxy, typeof(proxy), attr, value);
     }
 
     // Add a vtable override
     function add_vtable_override(var proxy_class, string name, var override)
     {
-        var overrides = null;
-        ${ inspect overrides, proxy_class, "vtable_overrides" };
+        var overrides = inspect_s(proxy_class, "vtable_overrides");
         overrides[name] = override;
     }
 }

@@ -15,6 +15,13 @@ inline isa(var obj, var class_obj) return int
     return isa_class;
 }
 
+inline isa_s(var obj, string type) return int
+{
+    int isa_class;
+    ${ isa isa_class, obj, type };
+    return isa_class;
+}
+
 inline does(var obj, string role) return int
 {
     int does_role;
@@ -27,4 +34,138 @@ inline new_pmc(var class_obj) return var
     var obj;
     ${ new obj, class_obj };
     return obj;
+}
+
+inline iter(var obj) return var
+{
+    var i;
+    ${ iter i, obj };
+    return i;
+}
+
+inline schedule(var task)
+{
+    ${ schedule task };
+}
+
+inline time_i(int dummy) return int
+{
+    int t;
+    ${ time t };
+    return t;
+}
+
+inline getattribute_private(var obj, var target_class, string attr) return var
+{
+    var value;
+    ${ getattribute value, obj, target_class, attr };
+    return value;
+}
+
+inline setattribute_private(var obj, var target_class, string attr, var value)
+{
+    ${ setattribute obj, target_class, attr, value };
+}
+
+inline shift_p(var obj) return var
+{
+    var value;
+    ${ shift value, obj };
+    return value;
+}
+
+inline pop_p(var obj) return var
+{
+    var value;
+    ${ pop value, obj };
+    return value;
+}
+
+inline inspect(var obj) return var
+{
+    var value;
+    ${ inspect value, obj };
+    return value;
+}
+
+inline inspect_s(var obj, string property) return var
+{
+    var value;
+    ${ inspect value, obj, property };
+    return value;
+}
+
+inline newclass(string name) return var
+{
+    var c;
+    ${ newclass c, name };
+    return c;
+}
+
+inline is_cclass(int cclass, string str, int start) return int
+{
+    int is;
+    ${ is_cclass is, cclass, str, start };
+    return is;
+}
+
+inline find_not_cclass(int cclass, string s, int start_idx, int len) return int
+{
+    int idx;
+    ${ find_not_cclass idx, cclass, s, start_idx, len };
+    return idx;
+}
+
+inline find_cclass(int cclass, string s, int start_idx, int len) return int
+{
+    int idx;
+    ${ find_cclass idx, cclass, s, start_idx, len };
+    return idx;
+}
+
+inline repeat(string s, int c) return string
+{
+    string value;
+    ${ repeat value, s, c };
+    return value;
+}
+
+inline get_namespace(var key) return var
+{
+    var value;
+    ${ get_namespace value, key };
+    return value;
+}
+
+inline get_hll_namespace(var key) return var
+{
+    var value;
+    ${ get_hll_namespace value, key };
+    return value;
+}
+
+inline getprop(var obj, string name) return var
+{
+    var value;
+    ${ getprop value, name, obj };
+    return value;
+}
+
+inline setprop(var obj, string name, var value)
+{
+    ${ setprop obj, name, value };
+}
+
+inline defined(var obj) return int
+{
+    int value;
+    ${ defined value, obj };
+    return value;
+}
+
+inline index(string s, string n) return int
+{
+    int value;
+    ${ index value, s, n };
+    return value;
 }

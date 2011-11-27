@@ -112,13 +112,10 @@ namespace Rosella { namespace Winxed
         // Get the .pir filename corresponding to the given winxed file
         function get_pir_file_name(string winxed_file)
         {
-            int index;
-            ${ index index, winxed_file, ".winxed" };
-            if (index == -1)
+            int idx = index(winxed_file, ".winxed");
+            if (idx == -1)
                 die(winxed_file + " is not a winxed file");
-            string pir_file;
-            ${ substr pir_file, winxed_file, 0, index };
-            return pir_file + ".pir";
+            return substr(winxed_file, 0, idx) + ".pir";
         }
 
         // Compile a winxed file to a .pir file

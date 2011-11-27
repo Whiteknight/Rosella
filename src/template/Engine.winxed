@@ -123,9 +123,7 @@ namespace Rosella { namespace Template
         function __get_context_object(var data)
         {
             var context_class = class Rosella.Template.Context;
-            int isa_context = 0;
-            ${ isa isa_context, data, context_class };
-            if (isa_context)
+            if (isa(data, context_class))
                 return data;
             return new Rosella.Template.Context(data);
         }

@@ -70,12 +70,8 @@ class Rosella.String.Tokenizer
     // Get a token from the input data.
     function get_token()
     {
-        if (elements(self.tokens) >= 1) {
-            var token;
-            var tokens = self.tokens;
-            ${ shift token, tokens };
-            return token;
-        }
+        if (elements(self.tokens) >= 1)
+            return shift_p(self.tokens);
         if (self.data != null && self.data != "")
             return self.lex_next_token();
         return null;

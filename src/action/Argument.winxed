@@ -7,9 +7,7 @@ namespace Rosella { namespace Action
         function verify_all_arguments(string caller, var args)
         {
             for (var arg in args) {
-                int is_argument = 0;
-                ${ can is_argument, arg, "resolve_to" };
-                if (!is_argument)
+                if (!can(arg, "resolve_to"))
                     Rosella.Error.invalid_type(__FUNCTION__, class Rosella.Action.Argument, typeof(arg));
             }
         }
@@ -66,7 +64,7 @@ namespace Rosella { namespace Action
             else if (self.position >= 0)
                 pos[self.position] = value;
             else
-                ${ push pos, value };
+                push(pos, value);
         }
 
         // Get the actual value. This happens in a subclass.

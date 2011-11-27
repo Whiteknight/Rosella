@@ -86,8 +86,7 @@ namespace Rosella.Harness
             int exit_code = stream.on_data(function(ih) {
                 var handle = ih.handle();
                 handle.close();
-                int can_exit_status;
-                ${ can can_exit_status, handle, "exit_status" };
+                int can_exit_status = can(handle, "exit_status");
                 return can_exit_status == 1 ? handle.exit_status() : 0;
             });
             file.cleanup_spawn();

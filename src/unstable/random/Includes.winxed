@@ -3,14 +3,6 @@ $loadlib "trans_ops";
 /* inline helpers
 */
 
-// Square-root helper function.
-inline sqrt(float val) return float
-{
-    float result;
-    ${ sqrt result, val };
-    return result;
-}
-
 // Natural logarithm
 inline ln(float val) return float
 {
@@ -19,9 +11,4 @@ inline ln(float val) return float
     return result;
 }
 
-inline logical_shift_right(int d, int y) return int
-{
-    int result;
-    ${ lsr result, d, y };
-    return result;
-}
+

@@ -6,10 +6,8 @@ namespace Rosella { namespace Prototype
 
         function init [vtable,nsentry]()
         {
-            var mytype;
-            ${ typeof mytype, self };
-            var proto;
-            ${ getprop proto, 'prototype', mytype };
+            var mytype = typeof(self);
+            var proto = getprop(mytype, 'prototype');
 
             var attrs = {};
             attrs['prototype'] = proto;
@@ -20,17 +18,14 @@ namespace Rosella { namespace Prototype
         {
             using Rosella.Prototype.Class.init;
             self.*init();
-            ${ setprop self, "code", sub };
+            setprop(self, "code", sub);
         }
 
         function invoke[vtable](var p [slurpy], var n [slurpy,named])
         {
-            var sub = null;
-            ${ getprop sub, "code", self };
-            if (sub == null) {
-                using Rosella.Error.invalid;
-                invalid("Prototype.Object", "Cannot be invoked");
-            }
+            var sub = getprop(self, "code");
+            if (sub == null)
+                Rosella.Error.invalid("Prototype.Object", "Cannot be invoked");
             return sub(p:[flat], n:[flat,named]);
         }
 
@@ -47,27 +42,23 @@ namespace Rosella { namespace Prototype
                     if (prototype != null && exists prototype[n])
                         f = prototype[n];
                 }
-                if (f == null) {
-                    using Rosella.Error.invalid;
-                    invalid("Prototype.Object", "method not found: " + string(n));
-                }
+                if (f == null)
+                    Rosella.Error.invalid("Prototype.Object", "method not found: " + string(n));
                 return obj.*f(p:[flat], n:[flat,named]);
             };
         }
 
         function get_pmc_keyed_str[vtable,nsentry](string name)
         {
-            var attrs;
             var protoclass = class Rosella.Prototype.Object;
-            ${ getattribute attrs, self, protoclass, 'attrs' };
+            var attrs = getattribute_private(self, protoclass, "attrs");
             return attrs[name];
         }
 
         function set_pmc_keyed_str[vtable,nsentry](string name, var value)
         {
-            var attrs;
             var protoclass = class Rosella.Prototype.Object;
-            ${ getattribute attrs, self, protoclass, 'attrs' };
+            var attrs = getattribute_private(self, protoclass, "attrs");
             attrs[name] = value;
         }
 

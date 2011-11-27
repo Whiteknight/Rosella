@@ -33,13 +33,10 @@ namespace Rosella { namespace Template { namespace Handler
                 Rosella.Error.invalid(__FUNCTION__, "no value at '%s'", self.srcname);
 
             self.__save_ctx_values(function() {
-                int does_it;
-                ${ does does_it, values, "hash" };
-                if (does_it)
+                if (does(values, "hash"))
                     self.__render_hash(engine, ctx, sb, values);
                 else {
-                    ${ does does_it, values, "array" };
-                    if (does_it)
+                    if (does(values, "array"))
                         self.__render_array(engine, ctx, sb, values);
                     else
                         self.__render_scalar(engine, ctx, sb, values);

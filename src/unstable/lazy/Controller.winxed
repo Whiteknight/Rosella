@@ -5,15 +5,14 @@ namespace Rosella { namespace Lazy
         function get_attribute(var proxy, string name)
         {
             var target = self.private_get_target(proxy);
-            var value;
-            ${ getattribute value, target, name };
+            var value = target.*name;
             return value;
         }
 
         function set_attribute(var proxy, string name, var value)
         {
             var target = self.private_get_target(proxy);
-            ${ setattribute target, name, value };
+            target.*name = value;
         }
 
         function find_method(var proxy, string name)

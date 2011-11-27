@@ -52,7 +52,7 @@ namespace Rosella { namespace Benchmark
             float diff = self.percent_diff;
             if (diff < 0.0) {
                 sign = "-";
-                ${ abs diff };
+                diff = abs_f(diff);
             }
             return sprintf("%fs - %%%f (%s%%%f compared to base)",
                 [self.time, self.percent, sign, diff]

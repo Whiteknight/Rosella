@@ -130,8 +130,7 @@ namespace Rosella
             for (string role in self.role_dumpers)
             {
                 var role_dumper = self.role_dumpers[role];
-                int does_it = 0;
-                ${ does does_it, obj, role };
+                int does_it = does(obj, role);
                 if (does_it && role_dumper.can_dump(obj)) {
                     role_dumper.dump(self, emit, obj);
                     self.recurse_level--;

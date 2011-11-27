@@ -12,9 +12,8 @@ namespace Rosella { namespace Winxed { namespace Repl
                 return 0;
 
             input = substr(input, 1);
-            int idx = 0;
             int len = length(input);
-            ${ find_cclass idx, 0x0020, input, 0, len };
+            int idx = find_cclass(0x0020, input, 0, len);
             string cmd = "";
             string args = "";
             if (idx == len)
@@ -29,9 +28,8 @@ namespace Rosella { namespace Winxed { namespace Repl
 
         function run_command(string cmd, string args, var state)
         {
-            var func_ns = null;
             var ns_name = ["Rosella", "Winxed", "Repl", "CommandFuncs"];
-            ${ get_hll_namespace func_ns, ns_name };
+            var func_ns = get_hll_namespace(ns_name);
             var func = func_ns.find_sub(cmd);
             if (func == null)
                 return 0;

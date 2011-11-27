@@ -48,13 +48,12 @@ namespace Rosella { namespace Winxed { namespace Repl
         {
             if (result == null)
                 return;
-            int does_array = 0;
-            ${ does does_array, result, "array" };
+
+            int does_array = does(result, "array");
             if (does_array)
                 self.print_array_result(result, state);
 
-            int does_hash = 0;
-            ${ does does_hash, result, "hash" };
+            int does_hash = does(result, "hash");
             if (does_hash)
                 self.print_hash_result(result, state);
 

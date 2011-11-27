@@ -9,9 +9,7 @@ class Rosella.Path.Searcher.Hash
     // by the "does 'hash'" role.
     function can_search(var obj)
     {
-        int is_hash = 0;
-        ${ does is_hash, obj, "hash" };
-        return is_hash;
+        return does(obj, "hash");
     }
 
     // Search the hash for the given item

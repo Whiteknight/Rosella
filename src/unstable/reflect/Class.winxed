@@ -77,8 +77,7 @@ class Rosella.Reflect.Class
     function isa(var obj)
     {
         var class_obj = self.class_obj;
-        int isa_this;
-        ${ isa isa_this, obj, class_obj };
+        int isa_this = isa(obj, class_obj);
         return isa_this == 0 ? false : true;
     }
 

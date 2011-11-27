@@ -235,10 +235,7 @@ class Rosella.Query.Queryable
     // Get an iterator over the data
     function get_iter[vtable]()
     {
-        var iter = null;
-        var data = self.data;
-        ${ iter iter, data };
-        return data;
+        return iter(self.data);
     }
 
     /*

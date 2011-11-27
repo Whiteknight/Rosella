@@ -54,9 +54,7 @@ class Rosella.Test.Asserter
             string message [optional], int has_msg [opt_flag])
     {
         message = self.default_message(message, has_msg, "item failed 'can'");
-        int i_can = 0;
-        ${ can i_can, obj, method };
-        if (!i_can)
+        if (!can(obj, method))
             self.fail(message);
     }
 
@@ -64,9 +62,7 @@ class Rosella.Test.Asserter
             string message [optional], int has_msg [opt_flag])
     {
         message = self.default_message(message, has_msg, "item failed 'can_not'");
-        int i_can = 0;
-        ${ can i_can, obj, method };
-        if (i_can)
+        if (can(obj, method))
             self.fail(message);
     }
 
@@ -74,9 +70,7 @@ class Rosella.Test.Asserter
             string message [optional], int has_msg [opt_flag])
     {
         message = self.default_message(message, has_msg, "item not defined");
-        int is_defined = 0;
-        ${ defined is_defined, obj };
-        if (!is_defined)
+        if (!defined(obj))
             self.fail(message);
     }
 
@@ -84,9 +78,7 @@ class Rosella.Test.Asserter
             string message [optional], int has_msg [opt_flag])
     {
         message = self.default_message(message, has_msg, "item is defined");
-        int is_defined = 0;
-        ${ defined is_defined, obj };
-        if (is_defined)
+        if (defined(obj))
             self.fail(message);
     }
 
@@ -95,21 +87,18 @@ class Rosella.Test.Asserter
     {
         message = self.default_message(message, has_msg, "item failed 'does'");
         int obj_does = 0;
-        if (role instanceof 'String') {
-            string role_s = role;
-            ${ does obj_does, obj, role_s };
-        } else
-            ${ does obj_does, obj, role };
+        if (role instanceof 'String')
+            obj_does = does(obj, string(role));
+        else
+            obj_does = does(obj, role);
         if (!obj_does)
             self.fail(message);
     }
 
-    function does_not(obj, role, string message [optional], int has_msg [opt_flag])
+    function does_not(var obj, var role, string message [optional], int has_msg [opt_flag])
     {
         message = self.default_message(message, has_msg, "item failed 'does'");
-        int obj_does = 0;
-        ${ does obj_does, obj, role };
-        if (obj_does)
+        if (does(obj, role))
             self.fail(message);
     }
 
@@ -145,9 +134,7 @@ class Rosella.Test.Asserter
     {
         message = self.default_message(message, has_msg, "object is not instance_of");
         var class_obj = Rosella.get_type_class(type);
-        int it_isa = 0;
-        ${ isa it_isa, obj, class_obj };
-        if (!it_isa)
+        if (!isa(obj, class_obj))
             self.fail(message);
     }
 
@@ -155,9 +142,7 @@ class Rosella.Test.Asserter
     {
         message = self.default_message(message, has_msg, "object is instance_of");
         var class_obj = Rosella.get_type_class(type);
-        int it_isa = 0;
-        ${ isa it_isa, obj, class_obj };
-        if (it_isa)
+        if (isa(obj, class_obj))
             self.fail(message);
     }
 
@@ -332,9 +317,7 @@ class Rosella.Test.Asserter
         }
 
         string output_s;
-        int is_array;
-        ${ does is_array, output, "array" };
-        if (is_array)
+        if (does(output, "array"))
             output_s = join("\n", output);
         else
             output_s = string(output);

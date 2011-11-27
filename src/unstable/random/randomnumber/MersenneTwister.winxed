@@ -26,9 +26,7 @@ class Rosella.Random.RandomNumber.MersenneTwister : Rosella.Random.RandomNumber
         self.mt = [];
         self.mag01 = [];
 
-        int t;
-        ${ time t };
-        self.initialize(t);
+        self.initialize(time_i(0));
     }
 
     // Return the name of the distribution
@@ -51,7 +49,6 @@ class Rosella.Random.RandomNumber.MersenneTwister : Rosella.Random.RandomNumber
         {
             int y = self.mt[mti - 1];
             int z = logical_shift_right(y, 30);
-            //${ lsr z, y, 30 };
 
             self.mt[mti] = 1812433253 * (self.mt[mti - 1] ^ z) + mti;
             self.mt[mti] = self.mt[mti] & 0xFFFFFFFF;
@@ -76,20 +73,17 @@ class Rosella.Random.RandomNumber.MersenneTwister : Rosella.Random.RandomNumber
             {
                 y = (mt[kk] & UPPER_MASK) | (mt[kk + 1] & LOWER_MASK);
                 z = logical_shift_right(y, 1);
-                //${ lsr z, y, 1 };
                 mt[kk] = mt[kk + M] ^ z ^ mag01[y & 1];
             }
             for (; kk < N - 1; kk++)
             {
                 y = (mt[kk] & UPPER_MASK) | (mt[kk + 1] & LOWER_MASK);
                 z = logical_shift_right(y, 1);
-                //${ lsr z, y, 1 };
                 mt[kk] = mt[kk + (M - N)] ^ z ^ mag01[y & 1];
             }
 
             y = (mt[N - 1] & UPPER_MASK) | (mt[0] & LOWER_MASK);
             z = logical_shift_right(y, 1);
-            //${ lsr z, y, 1 };
             mt[N - 1] = mt[M - 1] ^ z ^ mag01[y & 1];
 
             mti = 0;
@@ -100,12 +94,10 @@ class Rosella.Random.RandomNumber.MersenneTwister : Rosella.Random.RandomNumber
         self.mti = mti;
 
         z = logical_shift_right(y, 11);
-        //${ lsr z, y, 11 };
         y = y ^ z;                                  // TEMPERING_SHIFT_U(y)
         y = y ^ (y << 7) & TEMPERING_MASK_B;        // TEMPERING_SHIFT_S(y)
         y = y ^ (y << 15) & TEMPERING_MASK_C;       // TEMPERING_SHIFT_L(y)
         z = logical_shift_right(y, 18);
-        //${ lsr z, y, 18 };
         y = y ^ z;                                  // TEMPERING_SHIFT_T(y)
 
         return y;
@@ -117,7 +109,6 @@ class Rosella.Random.RandomNumber.MersenneTwister : Rosella.Random.RandomNumber
         float n = (1 << 24);
         int y = self.get_int();
         y = logical_shift_right(y, 18);
-        //${ lsr y, y, 8 };
 
         return y / n;
     }

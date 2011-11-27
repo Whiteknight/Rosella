@@ -6,8 +6,7 @@ namespace Rosella { namespace Dumper { namespace DumpHandler
 
         function can_dump(var obj)
         {
-            int does_hash = 0;
-            ${ does does_hash, obj, "hash" };
+            int does_hash = does(obj, "hash");
             return does_hash == 0 ? false : true;
         }
 

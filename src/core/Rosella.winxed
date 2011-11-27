@@ -89,7 +89,7 @@ namespace Rosella
         else if (type instanceof "Class")
             type = type.get_namespace();
         else if (type instanceof "Key")
-            ${ get_namespace type, type };
+            type = get_namespace(type);
 
         if (type instanceof "NameSpace")
             return join(";", type.get_name());

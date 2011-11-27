@@ -54,7 +54,7 @@ class Rosella.Test.TestCase
             attr = substr(attr, 2);
         attr = "test_" + attr;
         try {
-            ${ getattribute value, self, myclass, attr };
+            value = getattribute_private(self, myclass, attr);
         } catch(e) {
             Rosella.Error.invalid(__FUNCTION__, "TestCase does not have an attribute '" + attr_raw + "'");
         }

@@ -23,10 +23,8 @@ namespace Rosella.String.Tokenizer.CClass
             cclasses = __get_default_cclasses();
         int num_classes = elements(cclasses);
         for (int i = 0; i < num_classes; i++) {
-            int first_is_cclass = 0;
             int cclass = cclasses[i];
-            ${ is_cclass first_is_cclass, cclass, str, 0 };
-            if (first_is_cclass)
+            if (is_cclass(cclass, str, 0))
                 return cclass;
         }
         return 0;
@@ -61,8 +59,7 @@ class Rosella.String.Tokenizer.CClass : Rosella.String.Tokenizer
         if (curr_cclass == 0)
             return self.__new_token(self.__get_chars(1), curr_cclass);
         var token = null;
-        int next_idx = 0;
-        ${ find_not_cclass next_idx, curr_cclass, str, 0, len };
+        int next_idx = find_not_cclass(curr_cclass, str, 0, len);
         string chars = self.__get_chars(next_idx);
         return self.__new_token(chars, curr_cclass);
     }

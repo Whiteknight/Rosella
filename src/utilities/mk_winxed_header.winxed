@@ -42,8 +42,7 @@ function mk_header_main(var args)
 {
     string libpath = args["libpath"];
     using Rosella.IO.sayf;
-    var lib;
-    ${ load_bytecode lib, libpath };
+    var lib = load_packfile(libpath);
     var all_subs = lib.all_subs();
     var all_namespaces = {};
     for (var sub in all_subs) {

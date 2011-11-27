@@ -16,10 +16,7 @@ namespace Rosella { namespace Prototype { namespace Manager
 
         function create()
         {
-            var item = null;
-            var prototype = self.prototype;
-            ${ clone item, prototype };
-            return item;
+            return clone(self.prototype);
         }
 
         function construct(var item,

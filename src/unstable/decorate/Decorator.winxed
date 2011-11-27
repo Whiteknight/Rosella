@@ -6,14 +6,13 @@ class Rosella.Decorate.Decorator
     function __setup_decorator(var target)
     {
         var self_class = class Rosella.Decorate.Decorator;
-        ${ setattribute self, self_class, "target", target };
+        setattribute_private(self, self_class, "target", target);
     }
 
     function get_attr_str[vtable](string name)
     {
         var self_class = class Rosella.Decorate.Decorator;
-        var target;
-        ${ getattribute target, self, self_class, "target" };
+        var target = getattribute_private(self, self_class, "target");
         var value = target.*name;
         return value;
     }
@@ -21,18 +20,15 @@ class Rosella.Decorate.Decorator
     function set_attr_str[vtable](string name, var value)
     {
         var self_class = class Rosella.Decorate.Decorator;
-        var target;
-        ${ getattribute target, self, self_class, "target" };
+        var target = getattribute_private(self, self_class, "target");
         target.*name = value;
     }
 
     function find_method[vtable](string name)
     {
         var decorator_class = class Rosella.Decorate.Decorator;
-        var self_class;
-        ${ typeof self_class, self };
-        var method_cache;
-        ${ getattribute method_cache, self, decorator_class, "method_cache" };
+        var self_class = typeof(self);
+        var method_cache = getattribute_private(self, decorator_class, "method_cache");
 
         // First, check the cache
         // TODO: I don't know if method_cache saves us anything. target

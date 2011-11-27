@@ -36,9 +36,7 @@ namespace Rosella.FileSystem
             return 0;
         var stat = os.stat(path);
         int mode = stat[2];
-        int isfile = 0;
-        ${ band isfile, mode, STAT_ISREG };
-        return isfile;
+        return band(mode, STAT_ISREG);
     }
 
     // Determine if the given path is a directory. Returns non-zero if it
@@ -50,9 +48,7 @@ namespace Rosella.FileSystem
             return 0;
         var stat = os.stat(path);
         int mode = stat[2];
-        int isdir = 0;
-        ${ band isdir, mode, STAT_ISDIR };
-        return isdir;
+        return band(mode, STAT_ISDIR);
     }
 
     // Get the path separator for this system

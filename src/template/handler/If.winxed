@@ -35,9 +35,7 @@ namespace Rosella { namespace Template { namespace Handler
         // required.
         function add_child(var node)
         {
-            int is_logic = 0;
-            ${ can is_logic, node, "logic_name" };
-            if (is_logic && node.logic_name() == "else") {
+            if (can(node, "logic_name") && node.logic_name() == "else") {
                 if (int(self.mode) == ELSE_MODE)
                     Rosella.Error.invalid(__FUNCTION__, "Can only have one ELSE node in an IF block");
                 self.mode = ELSE_MODE;

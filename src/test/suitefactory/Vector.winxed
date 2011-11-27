@@ -25,11 +25,9 @@ class Rosella.Test.SuiteFactory.Vector : Rosella.Test.SuiteFactory
     {
         int is_role = 0;
         var data = self.data;
-        ${ does is_role, data, "array" };
-        if (is_role)
+        if (does(data, "array"))
             return self.__get_test_methods_from_array();
-        ${ does is_role, data, "hash" };
-        if (is_role)
+        if (does(data, "hash"))
             return self.__get_test_methods_from_hash();
         return self.__get_test_method_from_scalar();
     }

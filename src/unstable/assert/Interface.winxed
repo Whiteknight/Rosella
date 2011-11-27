@@ -45,9 +45,7 @@ namespace Rosella { namespace Assert
             for (string meth_name in self.base_methods) {
                 if (!self.__is_valid(meth_name))
                     continue;
-                int can_do;
-                ${ can can_do, obj, meth_name };
-                if (!can_do)
+                if (!can(obj, meth_name))
                     Rosella.Assert.assert_fail("Interface method %s.%s not found in type %s", self.base_type_name, meth_name, type_name);
             }
         }
@@ -69,9 +67,7 @@ namespace Rosella { namespace Assert
             for (string meth_name in self.base_methods) {
                 if (!self.__is_valid(meth_name))
                     continue;
-                int can_do;
-                ${ can can_do, obj, meth_name };
-                if (!can_do)
+                if (!can(obj, meth_name))
                     return false;
             }
             return true;

@@ -89,8 +89,7 @@ class Rosella.Proxy.Factory : Rosella.ObjectFactory
         int id = Rosella.get_unique_count();
         string proxy_class_name = sprintf("!!!PROXY_%s_%d", [string(target_class), id]);
 
-        var proxy_class = null;
-        ${ newclass proxy_class, proxy_class_name };
+        var proxy_class = newclass(proxy_class_name);
         Rosella.Proxy.add_proxy_class_private_attr(proxy_class, "proxy_controller");
         Rosella.Proxy.add_proxy_class_private_attr(proxy_class, "proxy_factory");
         Rosella.Proxy.add_proxy_class_private_attr(proxy_class, "target_class");
@@ -103,8 +102,7 @@ class Rosella.Proxy.Factory : Rosella.ObjectFactory
     // Create and instantiate the new proxy object.
     function create_proxy_internal(var proxy_class, var controller, var target)
     {
-        var proxy = null;
-        ${ new proxy, proxy_class };
+        var proxy = new_pmc(proxy_class);
         Rosella.Proxy.set_proxy_private_attr(proxy, "proxy_factory", self);
         Rosella.Proxy.set_proxy_private_attr(proxy, "proxy_controller", controller);
         Rosella.Proxy.set_proxy_private_attr(proxy, "target_class", self.target_class);

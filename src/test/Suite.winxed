@@ -69,9 +69,7 @@ class Rosella.Test.Suite
             exception = e;
         }
         var status = test.status;
-        int can_cleanup;
-        ${ can can_cleanup, status, "cleanup" };
-        if (can_cleanup)
+        if (can(status, "cleanup"))
             status.cleanup();
         self.__report_test_result(test, result, exception);
     }

@@ -55,7 +55,7 @@ namespace Rosella { namespace Template { namespace Node
                 current_node.add_child(self);
             else if (self.is_logic_end() &&
                 string(self.logic_name) == string(current_node.logic_end_name()))
-                ${ pop current_node, parent_nodes };
+                current_node = pop_p(parent_nodes);
             else {
                 current_node.add_child(self);
                 push(parent_nodes, current_node);
