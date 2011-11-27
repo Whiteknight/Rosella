@@ -40,7 +40,7 @@ namespace Rosella
             object = proto.new();
         else {
             var obj_class = get_type_class(proto);
-            object = new(obj_class);
+            object = new_pmc(obj_class);
         }
         return object;
     }

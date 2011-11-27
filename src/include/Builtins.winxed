@@ -15,13 +15,6 @@ inline isa(var obj, var class_obj) return int
     return isa_class;
 }
 
-inline get_class(var class_obj) return var
-{
-    var type;
-    ${ get_class class_obj, type };
-    return type;
-}
-
 inline does(var obj, string role) return int
 {
     int does_role;
@@ -29,7 +22,7 @@ inline does(var obj, string role) return int
     return does_role;
 }
 
-inline new(var class_obj) return var
+inline new_pmc(var class_obj) return var
 {
     var obj;
     ${ new obj, class_obj };
