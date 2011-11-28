@@ -106,11 +106,11 @@ class Rosella.Random.RandomNumber.MersenneTwister : Rosella.Random.RandomNumber
     // Get a random float
     function get_float()
     {
-        float n = (1 << 24);
         int y = self.get_int();
-        y = logical_shift_right(y, 18);
-
-        return y / n;
+        float z = y / 0xFFFFFFFF;
+        if (z < 0.0)
+            z = -z;
+        return z;
     }
 }
 

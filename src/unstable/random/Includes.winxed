@@ -1,4 +1,5 @@
 $loadlib "trans_ops";
+$loadlib "sys_ops";
 
 /* inline helpers
 */
@@ -11,4 +12,17 @@ inline ln(float val) return float
     return result;
 }
 
+inline intval_max() return int
+{
+    int value;
+    ${ sysinfo value, 9 };
+    return value;
+}
+
+inline intval_min() return int
+{
+    int value;
+    ${ sysinfo value, 10 };
+    return value;
+}
 
