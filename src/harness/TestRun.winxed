@@ -1,107 +1,104 @@
-namespace Rosella.Harness
+/* The Harness "model" in MVC-speak.
+    This class contains the data from the test run. It contains the list
+    of tests to execute, and provides accessors and aggregators to get
+    result information from the tests after the test has completed.
+    TestRun objects are constructed prior to test execution, store result
+    information during execution, and are passed to the View afterwards.
+*/
+class Rosella.Harness.TestRun
 {
-    /* The Harness "model" in MVC-speak.
-        This class contains the data from the test run. It contains the list
-        of tests to execute, and provides accessors and aggregators to get
-        result information from the tests after the test has completed.
-        TestRun objects are constructed prior to test execution, store result
-        information during execution, and are passed to the View afterwards.
-    */
-    class TestRun
+    var tests;
+    var executed;
+
+    // Constructor.
+    function TestRun(var tests)
     {
-        var tests;
-        var executed;
+        self.tests = tests;
+        self.executed = 0;
+    }
 
-        // Constructor.
-        function TestRun(var tests)
-        {
-            self.tests = tests;
-            self.executed = 0;
-        }
+    /* Public API
+        The model must implement these routines in order to be used with
+        the harness.
+    */
 
-        /* Public API
-            The model must implement these routines in order to be used with
-            the harness.
-        */
+    // Return the raw list of tests.
+    function tests()
+    {
+        return self.tests;
+    }
 
-        // Return the raw list of tests.
-        function tests()
-        {
-            return self.tests;
-        }
+    // Determine the maximum file length of tests in the run.
+    function max_file_length(int start_length)
+    {
+        return Rosella.Query.as_queryable(self.tests)
+            .map(function(t) { return length(string(t)); })
+            .fold(function(int max, int l) { return max > l ? max : l; }, start_length)
+            .data();
+    }
 
-        // Determine the maximum file length of tests in the run.
-        function max_file_length(int start_length)
-        {
-            return Rosella.Query.as_queryable(self.tests)
-                .map(function(t) { return length(string(t)); })
-                .fold(function(int max, int l) { return max > l ? max : l; }, start_length)
-                .data();
-        }
+    // Returns 1 if the run was a success, 0 otherwise
+    function run_was_success()
+    {
+        return Rosella.Query.as_queryable(self.tests)
+            .map(function(t) { return t.result.status(); })
+            .any(function(s) { return s == "ABORTED" || s == "FAILED"; })
+            ? false : true;
+    }
 
-        // Returns 1 if the run was a success, 0 otherwise
-        function run_was_success()
-        {
-            return Rosella.Query.as_queryable(self.tests)
-                .map(function(t) { return t.result.status(); })
-                .any(function(s) { return s == "ABORTED" || s == "FAILED"; })
-                ? false : true;
-        }
+    // Get a list of all files with the given status. Status is a string,
+    // one of "ABORTED", "PASSED", or "FAILED"
+    function files_by_status(string status)
+    {
+        return Rosella.Query.as_queryable(self.tests)
+            .filter(function(test) { return test.result.status() == status; })
+            .data();
+    }
 
-        // Get a list of all files with the given status. Status is a string,
-        // one of "ABORTED", "PASSED", or "FAILED"
-        function files_by_status(string status)
-        {
-            return Rosella.Query.as_queryable(self.tests)
-                .filter(function(test) { return test.result.status() == status; })
-                .data();
-        }
+    // Get the number of tests by status. Status is a string, one of
+    // "ABORTED", "PASSED", "FAILED", or "TODOPASSED"
+    function num_files_by_status(string status)
+    {
+        return Rosella.Query.as_queryable(self.tests)
+            .map(function(t) { return t.result.status(); })
+            .count(function(s) { return s == status; });
+    }
 
-        // Get the number of tests by status. Status is a string, one of
-        // "ABORTED", "PASSED", "FAILED", or "TODOPASSED"
-        function num_files_by_status(string status)
-        {
-            return Rosella.Query.as_queryable(self.tests)
-                .map(function(t) { return t.result.status(); })
-                .count(function(s) { return s == status; });
-        }
+    // Get the number of tests by status. Status is a string, one of
+    // "PASSED", "FAILED", or "TODOPASSED"
+    function num_tests_by_status(string status)
+    {
+        return Rosella.Query.as_queryable(self.tests)
+            .map(function(t) { return t.result; })
+            .map(function(r) {
+                switch (status) {
+                    case "PASSED":
+                        return r.passed_tests();
+                    case "FAILED":
+                        return r.list_of_failures();
+                    case "TODOPASSED":
+                        return r.list_of_todo_passed();
+                }
+            })
+            .flatten()
+            .count();
+    }
 
-        // Get the number of tests by status. Status is a string, one of
-        // "PASSED", "FAILED", or "TODOPASSED"
-        function num_tests_by_status(string status)
-        {
-            return Rosella.Query.as_queryable(self.tests)
-                .map(function(t) { return t.result; })
-                .map(function(r) {
-                    switch (status) {
-                        case "PASSED":
-                            return r.passed_tests();
-                        case "FAILED":
-                            return r.list_of_failures();
-                        case "TODOPASSED":
-                            return r.list_of_todo_passed();
-                    }
-                })
-                .flatten()
-                .count();
-        }
+    // Get the total number of test files in the collection
+    function num_files()
+    {
+        return int(self.tests);
+    }
 
-        // Get the total number of test files in the collection
-        function num_files()
-        {
-            return int(self.tests);
-        }
+    // Mark the run as being complete
+    function mark_completed()
+    {
+        self.executed = true;
+    }
 
-        // Mark the run as being complete
-        function mark_completed()
-        {
-            self.executed = true;
-        }
-
-        // Determine if the run is complete
-        function is_complete()
-        {
-            return self.executed;
-        }
+    // Determine if the run is complete
+    function is_complete()
+    {
+        return self.executed;
     }
 }

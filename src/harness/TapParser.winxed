@@ -1,118 +1,116 @@
-namespace Rosella.Harness
+/* TAP Parser
+    The TAP Parser takes a string representing the TAP output of the test
+    file. The stream is parsed to get result information and that
+    information is communicated to the FileResult and the View
+*/
+class Rosella.Harness.TapParser
 {
-    /* TAP Parser
-        The TAP Parser takes a string representing the TAP output of the test
-        file. The stream is parsed to get result information and that
-        information is communicated to the FileResult and the View
-    */
-    class TapParser
+    var tokenizer;
+
+    // Constructor
+    function TapParser()
     {
-        var tokenizer;
+        using Rosella.String.get_character_class;
+        self.tokenizer = new Rosella.String.Tokenizer.CClass([
+            get_character_class("punctuation"),
+            get_character_class("numeric"),
+            get_character_class("word"),
+            get_character_class("whitespace")
+        ]);
+    }
 
-        // Constructor
-        function TapParser()
-        {
-            using Rosella.String.get_character_class;
-            self.tokenizer = new Rosella.String.Tokenizer.CClass([
-                get_character_class("punctuation"),
-                get_character_class("numeric"),
-                get_character_class("word"),
-                get_character_class("whitespace")
-            ]);
+    // Parse the incoming TAP stream. Communicate status and result
+    // information to the view and the FileResult object
+    function parse(var stream, var view, var result)
+    {
+        // Get the plan. That should be the first line of the stream.
+        var plan_stream = stream
+            .take(1)
+            .map(function(l) {
+                self.tokenizer.add_data(l);
+                return self.get_plan(self.tokenizer.all_tokens(), result);
+            });
+        if (plan_stream.has_more() == false || plan_stream.next() == false) {
+            result.mark_test_empty();
+            return;
         }
 
-        // Parse the incoming TAP stream. Communicate status and result
-        // information to the view and the FileResult object
-        function parse(var stream, var view, var result)
-        {
-            // Get the plan. That should be the first line of the stream.
-            var plan_stream = stream
-                .take(1)
-                .map(function(l) {
-                    self.tokenizer.add_data(l);
-                    return self.get_plan(self.tokenizer.all_tokens(), result);
-                });
-            if (plan_stream.has_more() == false || plan_stream.next() == false) {
-                result.mark_test_empty();
-                return;
-            }
+        // Now, parse the remainder of the stream
+        stream
+            // Turn each line into an array of tokens
+            .map(function(string l) {
+                l = Rosella.String.trim(l);
+                self.tokenizer.add_data(l);
+                return Rosella.Query.as_stream(self.tokenizer)
+                    .map(function(t) { return t.data(); })
+                    .filter(function(s) { return indexof(s, "\n") == -1; })
+                    .data();
+            })
 
-            // Now, parse the remainder of the stream
-            stream
-                // Turn each line into an array of tokens
-                .map(function(string l) {
-                    l = Rosella.String.trim(l);
-                    self.tokenizer.add_data(l);
-                    return Rosella.Query.as_stream(self.tokenizer)
-                        .map(function(t) { return t.data(); })
-                        .filter(function(s) { return indexof(s, "\n") == -1; })
-                        .data();
-                })
+            // Remove lines which are empty or which start with a #
+            .filter(function(l) { return elements(l) >= 2 && substr(l[0], 0, 1) != "#"; })
 
-                // Remove lines which are empty or which start with a #
-                .filter(function(l) { return elements(l) >= 2 && substr(l[0], 0, 1) != "#"; })
-
-                // Parse the line. Look for "ok" or "not ok". Get the test number
-                // and the TODO directive, if any. Return a 4-element tuple
-                // with [test name, test number, true/false result, true/false todo]
-                .map(function(l) {
-                    int i = 0;
-                    string r = l[0];
-                    int result;
-                    if (r == "ok")
-                        result = 1;
-                    else if (r == "not" && l[2] == "ok") {
-                        i += 2;
-                        result = 0;
-                    } else
-                        Rosella.Error.invalid(__FUNCTION__, "Unknown TAP sequence: '%s'", join(" ", l));
+            // Parse the line. Look for "ok" or "not ok". Get the test number
+            // and the TODO directive, if any. Return a 4-element tuple
+            // with [test name, test number, true/false result, true/false todo]
+            .map(function(l) {
+                int i = 0;
+                string r = l[0];
+                int result;
+                if (r == "ok")
+                    result = 1;
+                else if (r == "not" && l[2] == "ok") {
                     i += 2;
-                    int num = int(l[i++]);
-                    if (i >= elements(l))
-                        return ["", num, result, 0];
-                    if (l[i] == "-")
-                        i++;
-                    string name = "";
-                    while(i < elements(l) && l[i] != "#") {
-                        name = name + string(l[i]);
-                        i++;
-                    }
-                    name = Rosella.String.trim(name);
-                    if (i < elements(l) && l[i] == "#") {
-                        if (i + 1 < elements(l) && l[i + 1] == "TODO")
-                            return [name, num, result, 1];
-                        if (i + 2 < elements(l) && l[i + 2] == "TODO")
-                            return [name, num, result, 1];
-                    }
-                    return [name, num, result, 0];
-                })
+                    result = 0;
+                } else
+                    Rosella.Error.invalid(__FUNCTION__, "Unknown TAP sequence: '%s'", join(" ", l));
+                i += 2;
+                int num = int(l[i++]);
+                if (i >= elements(l))
+                    return ["", num, result, 0];
+                if (l[i] == "-")
+                    i++;
+                string name = "";
+                while(i < elements(l) && l[i] != "#") {
+                    name = name + string(l[i]);
+                    i++;
+                }
+                name = Rosella.String.trim(name);
+                if (i < elements(l) && l[i] == "#") {
+                    if (i + 1 < elements(l) && l[i + 1] == "TODO")
+                        return [name, num, result, 1];
+                    if (i + 2 < elements(l) && l[i + 2] == "TODO")
+                        return [name, num, result, 1];
+                }
+                return [name, num, result, 0];
+            })
 
-                // Update the view to show current file status
-                .foreach(function(r) { view.show_current_test_progress(r[1], result.num_tests); })
+            // Update the view to show current file status
+            .foreach(function(r) { view.show_current_test_progress(r[1], result.num_tests); })
 
-                // Update the FileResult
-                .foreach(function(r) { result.*(r[2] == 1 ? "add_pass" : "add_fail")(r[0], r[1], r[3]); })
-                .execute();
-        }
+            // Update the FileResult
+            .foreach(function(r) { result.*(r[2] == 1 ? "add_pass" : "add_fail")(r[0], r[1], r[3]); })
+            .execute();
+    }
 
-        // Get the plan. Plan should be in the format "1..X", where X is a
-        // positive integer value. Return true if the plan is found and add it
-        // to the FileResult. Return false otherwise.
-        function get_plan(var tokens, var result)
-        {
-            if (elements(tokens) < 3)
-                return false;
-            if (tokens[0].data() != "1" || tokens[1].data() != "..")
-                return false;
+    // Get the plan. Plan should be in the format "1..X", where X is a
+    // positive integer value. Return true if the plan is found and add it
+    // to the FileResult. Return false otherwise.
+    function get_plan(var tokens, var result)
+    {
+        if (elements(tokens) < 3)
+            return false;
+        if (tokens[0].data() != "1" || tokens[1].data() != "..")
+            return false;
 
-            var plan_t = tokens[2];
-            int num_cclass = Rosella.String.get_character_class("numeric");
-            if (plan_t.metadata() != num_cclass)
-                return false;
+        var plan_t = tokens[2];
+        int num_cclass = Rosella.String.get_character_class("numeric");
+        if (plan_t.metadata() != num_cclass)
+            return false;
 
-            string lim = plan_t.data();
-            result.set_plan(int(lim));
-            return true;
-        }
+        string lim = plan_t.data();
+        result.set_plan(int(lim));
+        return true;
     }
 }
+

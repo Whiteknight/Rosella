@@ -1,201 +1,199 @@
-namespace Rosella
+/* Harness Utility Routines
+*/
+namespace Rosella.Harness
 {
-    /* Harness Utility Routines
-    */
-    namespace Harness
+    const string DEFAULT_TESTEXECUTOR_FACTORY = "Rosella.Harness.TestExecutor_factory";
+    const string DEFAULT_TAPPARSER_FACTORY = "Rosella.Harness.TapParser_factory";
+    const string DEFAULT_FILERESULT_FACTORY = "Rosella.Harness.FileResult_factory";
+
+    // Get a factory for creating TestExecutors
+    function default_testexecutor_factory()
     {
-        const string DEFAULT_TESTEXECUTOR_FACTORY = "Rosella.Harness.TestExecutor_factory";
-        const string DEFAULT_TAPPARSER_FACTORY = "Rosella.Harness.TapParser_factory";
-        const string DEFAULT_FILERESULT_FACTORY = "Rosella.Harness.FileResult_factory";
-
-        // Get a factory for creating TestExecutors
-        function default_testexecutor_factory()
-        {
-            var temp = Rosella.Globals.get_global(DEFAULT_TESTEXECUTOR_FACTORY);
-            if (temp == null) {
-                temp = new Rosella.ObjectFactory(class Rosella.Harness.TestExecutor);
-                Rosella.Globals.register_global(DEFAULT_TESTEXECUTOR_FACTORY, temp);
-            }
-            return temp;
+        var temp = Rosella.Globals.get_global(DEFAULT_TESTEXECUTOR_FACTORY);
+        if (temp == null) {
+            temp = new Rosella.ObjectFactory(class Rosella.Harness.TestExecutor);
+            Rosella.Globals.register_global(DEFAULT_TESTEXECUTOR_FACTORY, temp);
         }
-
-        // Set the global default TestExecutor factory
-        function set_testexecutor_factory(var f)
-        {
-            Rosella.Globals.register_global(DEFAULT_TESTEXECUTOR_FACTORY, f);
-        }
-
-        // Get a factory for creating TapParsers
-        function default_tapparser_factory()
-        {
-            var temp = Rosella.Globals.get_global(DEFAULT_TAPPARSER_FACTORY);
-            if (temp == null) {
-                temp = new Rosella.ObjectFactory(class Rosella.Harness.TapParser);
-                Rosella.Globals.register_global(DEFAULT_TAPPARSER_FACTORY, temp);
-            }
-            return temp;
-        }
-
-        // Set the global default TapParser factory
-        function set_tapparser_factory(var f)
-        {
-            Rosella.Globals.register_global(DEFAULT_TAPPARSER_FACTORY, f);
-        }
-
-        // Get a factory for creating FileResults
-        function default_fileresult_factory()
-        {
-            var temp = Rosella.Globals.get_global(DEFAULT_FILERESULT_FACTORY);
-            if (temp == null) {
-                temp = new Rosella.ObjectFactory(class Rosella.Harness.FileResult);
-                Rosella.Globals.register_global(DEFAULT_FILERESULT_FACTORY, temp);
-            }
-            return temp;
-        }
-
-        // Set the global default FileResult factory
-        function set_fileresult_factory(var f)
-        {
-            Rosella.Globals.register_global(DEFAULT_FILERESULT_FACTORY, f);
-        }
+        return temp;
     }
-    /* TAP Harness class. Contains a list of TestFile objects and executes
-       each in a loop. The Harness keeps statistics about the test run, and
-       passes them off to other routines for display and analysis.
 
-       Harness is the Controller object in the MVC system. Harness.View is
-       the view which displays to the user, and the model is made of
-       Harness.TestRun and Harness.FileResult objects.
-    */
-    class Harness
+    // Set the global default TestExecutor factory
+    function set_testexecutor_factory(var f)
     {
-        var testrun_factory;
-        var view;
-        var saved_runs;
+        Rosella.Globals.register_global(DEFAULT_TESTEXECUTOR_FACTORY, f);
+    }
 
-        // Constructor
-        function Harness()
-        {
-            self.testrun_factory = new Rosella.Harness.TestRun.Factory();
-            self.saved_runs = [];
+    // Get a factory for creating TapParsers
+    function default_tapparser_factory()
+    {
+        var temp = Rosella.Globals.get_global(DEFAULT_TAPPARSER_FACTORY);
+        if (temp == null) {
+            temp = new Rosella.ObjectFactory(class Rosella.Harness.TapParser);
+            Rosella.Globals.register_global(DEFAULT_TAPPARSER_FACTORY, temp);
         }
+        return temp;
+    }
 
-        /* Setup Routines
-        */
+    // Set the global default TapParser factory
+    function set_tapparser_factory(var f)
+    {
+        Rosella.Globals.register_global(DEFAULT_TAPPARSER_FACTORY, f);
+    }
 
-        // Set a customer TestRun.Factory object
-        function set_testrun_factory(var factory)
-        {
-            self.testrun_factory = factory;
-            return self;
+    // Get a factory for creating FileResults
+    function default_fileresult_factory()
+    {
+        var temp = Rosella.Globals.get_global(DEFAULT_FILERESULT_FACTORY);
+        if (temp == null) {
+            temp = new Rosella.ObjectFactory(class Rosella.Harness.FileResult);
+            Rosella.Globals.register_global(DEFAULT_FILERESULT_FACTORY, temp);
         }
+        return temp;
+    }
 
-        // Add a custom testfile type
-        function add_testfile_type(string name, var type)
-        {
-            self.testrun_factory.add_testfile_type(name, type);
-            return self;
-        }
-
-        // Set a view to use
-        function view(var view [optional], int has_view [opt_flag])
-        {
-            if (has_view)
-                self.view = view;
-            if (self.view == null)
-                self.view = new Rosella.Harness.View();
-            return self.view;
-        }
-
-        /* Routines for adding tests to the harness
-        */
-
-        // Add test directories to the current TestRun being constructed
-        function add_test_dirs(string testfile_type_s, var dirs [slurpy],
-            var options [slurpy,named])
-        {
-            self.testrun_factory.add_test_dirs(testfile_type_s, dirs:[flat],
-                options:[flat,named]);
-            return self;
-        }
-
-        // Add specific test files to the current TestRun
-        function add_test_files(string testfile_type_s, var files [slurpy],
-            var options [slurpy,named])
-        {
-            self.testrun_factory.add_test_files(testfile_type_s, files:[flat],
-                options:[flat,named]);
-            return self;
-        }
-
-        // Return the current test run
-        function setup_test_run(var view [optional], int has_view [opt_flag],
-                var options [named,slurpy])
-        {
-            if (!has_view || view == null)
-                view = self.view();
-            var run = self.testrun_factory.create(options:[flat,named]);
-            view.add_run(run, 0);
-            push(self.saved_runs, run);
-            return run;
-        }
-
-        function show_results()
-        {
-            var view = self.view();
-            view.show_results();
-        }
-
-        /* Routines for Running the Harness
-        */
-
-        // Run the harness. Get argument values and pass them to run_internal
-        function run(var test_runs [optional], int has_runs [opt_flag],
-                int run_inline [named,optional],  int has_ri [opt_flag],
-                int debug [named,optional], int has_dbg [opt_flag])
-        {
-            if (!has_ri)
-                run_inline = 0;
-            if (!has_dbg)
-                debug = 0;
-            if (has_runs == false || test_runs == null || elements(test_runs) == 0)
-                test_runs = self.saved_runs;
-            if (has_runs == true && test_runs instanceof Rosella.Harness.TestRun)
-                test_runs = [test_runs];
-            return self.run_internal(test_runs, run_inline, debug);
-        }
-
-        // Show the results with the View
-        function show_results()
-        {
-            var view = self.view();
-            view.show_results();
-        }
-
-        /* Private Internal Routines
-        */
-
-        // Internal routine to run the harness
-        function run_internal(var test_runs, int run_inline, int debug)
-        {
-            var executor = default_testexecutor_factory().create(run_inline);
-            var parser = default_tapparser_factory().create();
-            var fileresult_factory = default_fileresult_factory();
-            var view = self.view();
-
-            for (var test_run in test_runs) {
-                for (var test in test_run.tests()) {
-                    var result = fileresult_factory.create(test);
-                    view.start_test(string(test));
-                    executor.run(view, test, result, parser, debug);
-                    view.end_test(result);
-                }
-                test_run.mark_completed();
-                view.test_run_complete(test_run);
-                if (!test_run.run_was_success())
-                    return false;
-            }
-            return true;
-        }
+    // Set the global default FileResult factory
+    function set_fileresult_factory(var f)
+    {
+        Rosella.Globals.register_global(DEFAULT_FILERESULT_FACTORY, f);
     }
 }
+/* TAP Harness class. Contains a list of TestFile objects and executes
+   each in a loop. The Harness keeps statistics about the test run, and
+   passes them off to other routines for display and analysis.
+
+   Harness is the Controller object in the MVC system. Harness.View is
+   the view which displays to the user, and the model is made of
+   Harness.TestRun and Harness.FileResult objects.
+*/
+class Rosella.Harness
+{
+    var testrun_factory;
+    var view;
+    var saved_runs;
+
+    // Constructor
+    function Harness()
+    {
+        self.testrun_factory = new Rosella.Harness.TestRun.Factory();
+        self.saved_runs = [];
+    }
+
+    /* Setup Routines
+    */
+
+    // Set a customer TestRun.Factory object
+    function set_testrun_factory(var factory)
+    {
+        self.testrun_factory = factory;
+        return self;
+    }
+
+    // Add a custom testfile type
+    function add_testfile_type(string name, var type)
+    {
+        self.testrun_factory.add_testfile_type(name, type);
+        return self;
+    }
+
+    // Set a view to use
+    function view(var view [optional], int has_view [opt_flag])
+    {
+        if (has_view)
+            self.view = view;
+        if (self.view == null)
+            self.view = new Rosella.Harness.View();
+        return self.view;
+    }
+
+    /* Routines for adding tests to the harness
+    */
+
+    // Add test directories to the current TestRun being constructed
+    function add_test_dirs(string testfile_type_s, var dirs [slurpy],
+        var options [slurpy,named])
+    {
+        self.testrun_factory.add_test_dirs(testfile_type_s, dirs:[flat],
+            options:[flat,named]);
+        return self;
+    }
+
+    // Add specific test files to the current TestRun
+    function add_test_files(string testfile_type_s, var files [slurpy],
+        var options [slurpy,named])
+    {
+        self.testrun_factory.add_test_files(testfile_type_s, files:[flat],
+            options:[flat,named]);
+        return self;
+    }
+
+    // Return the current test run
+    function setup_test_run(var view [optional], int has_view [opt_flag],
+            var options [named,slurpy])
+    {
+        if (!has_view || view == null)
+            view = self.view();
+        var run = self.testrun_factory.create(options:[flat,named]);
+        view.add_run(run, 0);
+        push(self.saved_runs, run);
+        return run;
+    }
+
+    function show_results()
+    {
+        var view = self.view();
+        view.show_results();
+    }
+
+    /* Routines for Running the Harness
+    */
+
+    // Run the harness. Get argument values and pass them to run_internal
+    function run(var test_runs [optional], int has_runs [opt_flag],
+            int run_inline [named,optional],  int has_ri [opt_flag],
+            int debug [named,optional], int has_dbg [opt_flag])
+    {
+        if (!has_ri)
+            run_inline = 0;
+        if (!has_dbg)
+            debug = 0;
+        if (has_runs == false || test_runs == null || elements(test_runs) == 0)
+            test_runs = self.saved_runs;
+        if (has_runs == true && test_runs instanceof Rosella.Harness.TestRun)
+            test_runs = [test_runs];
+        return self.run_internal(test_runs, run_inline, debug);
+    }
+
+    // Show the results with the View
+    function show_results()
+    {
+        var view = self.view();
+        view.show_results();
+    }
+
+    /* Private Internal Routines
+    */
+
+    // Internal routine to run the harness
+    function run_internal(var test_runs, int run_inline, int debug)
+    {
+        var executor = default_testexecutor_factory().create(run_inline);
+        var parser = default_tapparser_factory().create();
+        var fileresult_factory = default_fileresult_factory();
+        var view = self.view();
+
+        for (var test_run in test_runs) {
+            for (var test in test_run.tests()) {
+                var result = fileresult_factory.create(test);
+                view.start_test(string(test));
+                executor.run(view, test, result, parser, debug);
+                view.end_test(result);
+            }
+            test_run.mark_completed();
+            view.test_run_complete(test_run);
+            if (!test_run.run_was_success())
+                return false;
+        }
+        return true;
+    }
+}
+

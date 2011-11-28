@@ -1,228 +1,225 @@
-namespace Rosella.Harness
+/* Default Harness View
+    View class for the Harness. Displays running status and result
+    information to the user on the commandline.
+*/
+class Rosella.Harness.View
 {
-    /* Default Harness View
-        View class for the Harness. Displays running status and result
-        information to the user on the commandline.
-    */
-    class View
-    {
-        var handle;
-        var test_runs;
-        var line_length;
-        var total_files;
-        var num_failed_files;
-        var num_passed_tests;
-        var num_failed_tests;
-        var num_aborted_files;
-        var need_backspaces;
+    var handle;
+    var test_runs;
+    var line_length;
+    var total_files;
+    var num_failed_files;
+    var num_passed_tests;
+    var num_failed_tests;
+    var num_aborted_files;
+    var need_backspaces;
 
-        // Constructor
-        function View(var handle [optional], int has_h [opt_flag])
-        {
-            if (!has_h)
-                handle = getstdout();
-            self.handle = handle;
-            self.test_runs = [];
-            self.line_length = 0;
-            self.total_files = 0;
-            self.num_passed_tests = 0;
-            self.num_failed_files = 0;
-            self.num_failed_tests = 0;
-            self.num_aborted_files = 0;
+    // Constructor
+    function View(var handle [optional], int has_h [opt_flag])
+    {
+        if (!has_h)
+            handle = getstdout();
+        self.handle = handle;
+        self.test_runs = [];
+        self.line_length = 0;
+        self.total_files = 0;
+        self.num_passed_tests = 0;
+        self.num_failed_files = 0;
+        self.num_failed_tests = 0;
+        self.num_aborted_files = 0;
+        self.need_backspaces = 0;
+    }
+
+    /* View API.
+        These are the functions that a View should implement to be used
+        with the Harness.
+    */
+
+    // Add in a TestRun object to the view
+    function add_run(var test_run, int line_length)
+    {
+        push(self.test_runs, test_run);
+        int maxlength = test_run.max_file_length(line_length);
+        if (self.line_length > maxlength)
+            maxlength = self.line_length;
+        if (line_length > maxlength)
+            maxlength = line_length;
+        self.line_length = maxlength;
+    }
+
+    // Start an individual test
+    function start_test(string name)
+    {
+        int len = length(name);
+        int line_length = self.line_length;
+        int diff = line_length - len + 3;
+        string elipses = repeat(".", diff);
+        Rosella.IO.printf("%s %s ", name, elipses, self.handle:[named("handle")]);
+    }
+
+    // End a test
+    function end_test(var result)
+    {
+        if (self.need_backspaces > 0) {
+            int num_b = int(self.need_backspaces);
+            string b = repeat("\b", num_b);
+            print(b + " ");
+            //print("\b\b\b\b\b\b\b\b\b\b");
             self.need_backspaces = 0;
         }
-
-        /* View API.
-            These are the functions that a View should implement to be used
-            with the Harness.
-        */
-
-        // Add in a TestRun object to the view
-        function add_run(var test_run, int line_length)
-        {
-            push(self.test_runs, test_run);
-            int maxlength = test_run.max_file_length(line_length);
-            if (self.line_length > maxlength)
-                maxlength = self.line_length;
-            if (line_length > maxlength)
-                maxlength = line_length;
-            self.line_length = maxlength;
+        string msg;
+        if (result.status() != "PASSED")
+            msg = Rosella.String.sprintf("not ok (%s)", self.get_result_status(result));
+        else
+            msg = "ok";
+        msg = Rosella.String.pad_end(msg, 10);
+        Rosella.IO.sayf(msg, self.handle:[named("handle")]);
+        string error_details = result.error_details();
+        if (error_details != null) {
+            var lines = split("\n", error_details);
+            for (string line in lines)
+                Rosella.IO.sayf("# %s", line, self.handle:[named("handle")]);
         }
-
-        // Start an individual test
-        function start_test(string name)
-        {
-            int len = length(name);
-            int line_length = self.line_length;
-            int diff = line_length - len + 3;
-            string elipses = repeat(".", diff);
-            Rosella.IO.printf("%s %s ", name, elipses, self.handle:[named("handle")]);
-        }
-
-        // End a test
-        function end_test(var result)
-        {
-            if (self.need_backspaces > 0) {
-                int num_b = int(self.need_backspaces);
-                string b = repeat("\b", num_b);
-                print(b + " ");
-                //print("\b\b\b\b\b\b\b\b\b\b");
-                self.need_backspaces = 0;
-            }
-            string msg;
-            if (result.status() != "PASSED")
-                msg = Rosella.String.sprintf("not ok (%s)", self.get_result_status(result));
-            else
-                msg = "ok";
-            msg = Rosella.String.pad_end(msg, 10);
-            Rosella.IO.sayf(msg, self.handle:[named("handle")]);
-            string error_details = result.error_details();
-            if (error_details != null) {
-                var lines = split("\n", error_details);
-                for (string line in lines)
-                    Rosella.IO.sayf("# %s", line, self.handle:[named("handle")]);
-            }
-        }
-
-        // Get a status string describing the results of the test
-        function get_result_status(var result)
-        {
-            string status = result.status();
-            switch(status) {
-                case "EMPTY":
-                    return "No tests run or no TAP output";
-                case "ABORTED":
-                    return "Test exited prematurely";
-                case "PASSED":
-                    return "All subtests pass";
-                case "FAILED":
-                    int total_tests = result.total_tests();
-                    int failed_tests = elements(result.list_of_failures());
-                    return Rosella.String.sprintf("Failed %d / %d", failed_tests, total_tests);
-                default:
-                    return "Unknown status '" + status + "'";
-            }
-        }
-
-        // Mark the TestRun as being complete
-        function test_run_complete(var test_run)
-        {
-            self.total_files       += test_run.num_files();
-            self.num_passed_tests  += test_run.num_tests_by_status("PASSED");
-            self.num_failed_files  += test_run.num_files_by_status("FAILED");
-            self.num_failed_tests  += test_run.num_tests_by_status("FAILED");
-            self.num_aborted_files += test_run.num_files_by_status("ABORTED");
-        }
-
-        // Show the results to the user
-        function show_results()
-        {
-            self.show_results_summary();
-            self.show_error_detail();
-            self.show_failure_detail();
-        }
-
-        /* Results Displaying Routines
-            These routines are used internally to display result information.
-        */
-
-        // A quick summary showing whether the test run passed or failed
-        function show_results_summary()
-        {
-            if (int(self.num_aborted_files) || int(self.num_failed_files)) {
-                self.show_result_headline("FAILED");
-
-                var failed_files  = self.get_all_files_by_status("FAILED");
-                if (self.num_aborted_files)
-                    Rosella.IO.sayf("\tFailed %d files due to premature exit", self.num_aborted_files, self.handle:[named("handle")]);
-                if (self.num_failed_tests)
-                    Rosella.IO.sayf("\tFailed %d tests in %d files", self.num_failed_tests, self.num_failed_files, self.handle:[named("handle")]);
-                Rosella.IO.sayf("", self.handle:[named("handle")]);
-            } else
-                self.show_result_headline("PASSED");
-        }
-
-        // Show a summary of all errors. Errors are files that have run, but
-        // with subtests which have failed
-        function show_error_detail()
-        {
-            if (int(self.num_failed_tests) == 0)
-                return;
-
-            var failed_files = self.get_all_files_by_status("FAILED");
-
-            say("\tList of failed tests by file:");
-            for (var test in failed_files) {
-                Rosella.IO.sayf("\t\t%s", string(test), self.handle:[named("handle")]);
-                var result = test.result;
-                for (var failure in result.list_of_failures())
-                    Rosella.IO.sayf("\t\t\t%s", failure, self.handle:[named("handle")]);
-            }
-        }
-
-        // Show the current progress of a test being executed
-        function show_current_test_progress(int done, int total)
-        {
-            if (self.need_backspaces > 0) {
-                int num_b = int(self.need_backspaces);
-                string b = repeat("\b", num_b);
-                print(b + " ");
-                //print("\b\b\b\b\b\b\b\b\b\b");
-                self.need_backspaces = 0;
-            }
-            string p = Rosella.String.sprintf("%d/%d", done, total);
-            //p = Rosella.String.pad_end(p, 10);
-            self.need_backspaces = length(p) + 1;
-            Rosella.IO.printf(p, self.handle:[named("handle")]);
-        }
-
-        // Show a list of failures. Failures are files which have not executed
-        // or which terminated early with an unhandled error of some variety
-        function show_failure_detail()
-        {
-            var aborted_files = self.get_all_files_by_status("ABORTED");
-
-            if (self.num_aborted_files) {
-                say("\tList of files with premature exits:");
-                for (var file in aborted_files) {
-                    // TODO: Should record and output error codes or other
-                    //       error info. Display some diagnostics here
-                    Rosella.IO.sayf("\t\t%s", file, self.handle:[named("handle")]);
-                }
-            }
-        }
-
-        // Print out a debug message
-        function debug(int dbg, var msg)
-        {
-            Rosella.IO.sayf("DEBUG: %s\n", msg, self.handle:[named("handle")]);
-        }
-
-        /* Internal Helper Routines
-        */
-
-        // Helper routine to show a PASSED/FAILED headline message, and
-        // a count of how many tests passed.
-        function show_result_headline(string result)
-        {
-            Rosella.IO.sayf("Result: %s", result, self.handle:[named("handle")]);
-            int num_runs = int(self.test_runs);
-            Rosella.IO.sayf("\tPassed %d tests in %d files (%d test run%s)",
-                self.num_passed_tests, self.total_files, num_runs, num_runs == 1 ? "" : "s",
-                self.handle:[named("handle")]
-            );
-        }
-
-        // Get a list of all executed files from all runs with the given
-        // status
-        function get_all_files_by_status(string status)
-        {
-            return Rosella.Query.as_queryable(self.test_runs)
-                .filter(function(tr) { return tr.is_complete() != 0; })
-                .map(function(tr) { return tr.files_by_status(status); })
-                .flatten()
-                .data();
-        }
-
     }
+
+    // Get a status string describing the results of the test
+    function get_result_status(var result)
+    {
+        string status = result.status();
+        switch(status) {
+            case "EMPTY":
+                return "No tests run or no TAP output";
+            case "ABORTED":
+                return "Test exited prematurely";
+            case "PASSED":
+                return "All subtests pass";
+            case "FAILED":
+                int total_tests = result.total_tests();
+                int failed_tests = elements(result.list_of_failures());
+                return Rosella.String.sprintf("Failed %d / %d", failed_tests, total_tests);
+            default:
+                return "Unknown status '" + status + "'";
+        }
+    }
+
+    // Mark the TestRun as being complete
+    function test_run_complete(var test_run)
+    {
+        self.total_files       += test_run.num_files();
+        self.num_passed_tests  += test_run.num_tests_by_status("PASSED");
+        self.num_failed_files  += test_run.num_files_by_status("FAILED");
+        self.num_failed_tests  += test_run.num_tests_by_status("FAILED");
+        self.num_aborted_files += test_run.num_files_by_status("ABORTED");
+    }
+
+    // Show the results to the user
+    function show_results()
+    {
+        self.show_results_summary();
+        self.show_error_detail();
+        self.show_failure_detail();
+    }
+
+    /* Results Displaying Routines
+        These routines are used internally to display result information.
+    */
+
+    // A quick summary showing whether the test run passed or failed
+    function show_results_summary()
+    {
+        if (int(self.num_aborted_files) || int(self.num_failed_files)) {
+            self.show_result_headline("FAILED");
+
+            var failed_files  = self.get_all_files_by_status("FAILED");
+            if (self.num_aborted_files)
+                Rosella.IO.sayf("\tFailed %d files due to premature exit", self.num_aborted_files, self.handle:[named("handle")]);
+            if (self.num_failed_tests)
+                Rosella.IO.sayf("\tFailed %d tests in %d files", self.num_failed_tests, self.num_failed_files, self.handle:[named("handle")]);
+            Rosella.IO.sayf("", self.handle:[named("handle")]);
+        } else
+            self.show_result_headline("PASSED");
+    }
+
+    // Show a summary of all errors. Errors are files that have run, but
+    // with subtests which have failed
+    function show_error_detail()
+    {
+        if (int(self.num_failed_tests) == 0)
+            return;
+
+        var failed_files = self.get_all_files_by_status("FAILED");
+
+        say("\tList of failed tests by file:");
+        for (var test in failed_files) {
+            Rosella.IO.sayf("\t\t%s", string(test), self.handle:[named("handle")]);
+            var result = test.result;
+            for (var failure in result.list_of_failures())
+                Rosella.IO.sayf("\t\t\t%s", failure, self.handle:[named("handle")]);
+        }
+    }
+
+    // Show the current progress of a test being executed
+    function show_current_test_progress(int done, int total)
+    {
+        if (self.need_backspaces > 0) {
+            int num_b = int(self.need_backspaces);
+            string b = repeat("\b", num_b);
+            print(b + " ");
+            //print("\b\b\b\b\b\b\b\b\b\b");
+            self.need_backspaces = 0;
+        }
+        string p = Rosella.String.sprintf("%d/%d", done, total);
+        //p = Rosella.String.pad_end(p, 10);
+        self.need_backspaces = length(p) + 1;
+        Rosella.IO.printf(p, self.handle:[named("handle")]);
+    }
+
+    // Show a list of failures. Failures are files which have not executed
+    // or which terminated early with an unhandled error of some variety
+    function show_failure_detail()
+    {
+        var aborted_files = self.get_all_files_by_status("ABORTED");
+
+        if (self.num_aborted_files) {
+            say("\tList of files with premature exits:");
+            for (var file in aborted_files) {
+                // TODO: Should record and output error codes or other
+                //       error info. Display some diagnostics here
+                Rosella.IO.sayf("\t\t%s", file, self.handle:[named("handle")]);
+            }
+        }
+    }
+
+    // Print out a debug message
+    function debug(int dbg, var msg)
+    {
+        Rosella.IO.sayf("DEBUG: %s\n", msg, self.handle:[named("handle")]);
+    }
+
+    /* Internal Helper Routines
+    */
+
+    // Helper routine to show a PASSED/FAILED headline message, and
+    // a count of how many tests passed.
+    function show_result_headline(string result)
+    {
+        Rosella.IO.sayf("Result: %s", result, self.handle:[named("handle")]);
+        int num_runs = int(self.test_runs);
+        Rosella.IO.sayf("\tPassed %d tests in %d files (%d test run%s)",
+            self.num_passed_tests, self.total_files, num_runs, num_runs == 1 ? "" : "s",
+            self.handle:[named("handle")]
+        );
+    }
+
+    // Get a list of all executed files from all runs with the given
+    // status
+    function get_all_files_by_status(string status)
+    {
+        return Rosella.Query.as_queryable(self.test_runs)
+            .filter(function(tr) { return tr.is_complete() != 0; })
+            .map(function(tr) { return tr.files_by_status(status); })
+            .flatten()
+            .data();
+    }
+
 }
