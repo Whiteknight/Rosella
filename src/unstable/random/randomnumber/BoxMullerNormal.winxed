@@ -57,7 +57,6 @@ class Rosella.Random.RandomNumber.BoxMullerNormal : Rosella.Random.RandomNumber
             x = self.uniform_generator.get_float() * 2.0 - 1;
             y = self.uniform_generator.get_float() * 2.0 - 1;
             r = x * x + y * y;
-            say(x, " ", y);
         } while(r == 0.0 || r > 1.0);
         float z = sqrt(-2.0 * ln(r) / r);
         self.spare = center + stddev * y * z;
