@@ -1,278 +1,305 @@
-namespace Rosella.CommandLine
+/* Argument Parser and Value Accessor
+    This class takes a series of argument specifications, and parses the
+    argument list to extract the necessary values.
+*/
+class Rosella.CommandLine.Arguments
 {
-    class Arguments
+    var program;    // The Program object
+    var args;       // The list of pre-sorted arguments
+    var remainder;  // The list of all arguments after -- which are not parsed
+    var cache;      // The cache of already-parsed args
+
+    // Constructor. Take the list of arguments and do a fast presort on them.
+    function Arguments(var program, var args)
     {
-        var program;
-        var args;
-        var remainder;
-        var cache;
+        self.program = program;
+        var a = [];
+        for (var arg in args)
+            push(a, arg);
+        self.cache = {};
+        self.presort(a);
+    }
 
-        function Arguments(var program, var args)
-        {
-            self.program = program;
-            var a = [];
-            for (var arg in args)
-                push(a, arg);
-            self.cache = {};
-            self.presort(a);
-        }
+    // Get the program name
+    function program_name()
+    {
+        return self.program.program_name;
+    }
 
-        function program_name()
-        {
-            return self.program.program_name;
-        }
-
-        function presort(var args)
-        {
-            self.remainder = [];
-            var sorted = [];
-            int do_process = true;
-            for (string a in args) {
-                if (do_process && length(a) >= 2 && substr(a, 0, 1) == "-" && substr(a, 1, 1) != "-") {
-                    if (length(a) >= 4 && substr(a, 2, 1) == '=') {
-                        push(sorted, substr(a, 0, 2));
-                        push(sorted, substr(a, 3));
-                        continue;
-                    }
-                    for (int i = 1; i < length(a); i++)
-                        push(sorted, "-" + substr(a, i, 1));
+    // Pre-sort the list of arguments to break up compound arguments into a
+    // common form. For instance the pattern "--foo=bar" is broken up into
+    // "--foo bar". Having all arguments in a common form helps with parsing
+    // later.
+    function presort(var args)
+    {
+        self.remainder = [];
+        var sorted = [];
+        int do_process = true;
+        for (string a in args) {
+            if (do_process && length(a) >= 2 && substr(a, 0, 1) == "-" && substr(a, 1, 1) != "-") {
+                if (length(a) >= 4 && substr(a, 2, 1) == '=') {
+                    push(sorted, substr(a, 0, 2));
+                    push(sorted, substr(a, 3));
                     continue;
                 }
-                if (do_process && length(a) >= 3 && substr(a, 0, 2) == "--" && substr(a, 2, 1) != "-") {
-                    int eq_idx = indexof(a, "=");
-                    if (eq_idx != -1) {
-                        var parts = split("=", a);
-                        for (string b in parts)
-                            push(sorted, b);
-                    } else
-                        push(sorted, a);
-                    continue;
-                }
-                if (indexof(a, "=") != -1) {
+                for (int i = 1; i < length(a); i++)
+                    push(sorted, "-" + substr(a, i, 1));
+                continue;
+            }
+            if (do_process && length(a) >= 3 && substr(a, 0, 2) == "--" && substr(a, 2, 1) != "-") {
+                int eq_idx = indexof(a, "=");
+                if (eq_idx != -1) {
                     var parts = split("=", a);
                     for (string b in parts)
                         push(sorted, b);
-                    continue;
-                }
-                if (do_process && length(a) == 2 && a == "--") {
-                    do_process = false;
-                    continue;
-                }
-                if (do_process)
+                } else
                     push(sorted, a);
+                continue;
+            }
+            if (indexof(a, "=") != -1) {
+                var parts = split("=", a);
+                for (string b in parts)
+                    push(sorted, b);
+                continue;
+            }
+            if (do_process && length(a) == 2 && a == "--") {
+                do_process = false;
+                continue;
+            }
+            if (do_process)
+                push(sorted, a);
+            else
+                push(self.remainder, a);
+        }
+        self.args = sorted;
+    }
+
+    // Fetch a flag. A flag is a named argument like "--help" or "-V"
+    // which may be specified or not, but does not take a value. Flags are
+    // boolean (int)
+    function fetch_flag(string name, int keep)
+    {
+        int found = false;
+        for (int i = 0; i < elements(self.args); i++) {
+            string a = self.args[i];
+            if (a == "")
+                continue;
+            if (a == name) {
+                if (!found) {
+                    found = true;
+                    if (keep)
+                        self.args[i] = "";
+                } else
+                    Rosella.Error.invalid(__FUNCTION__, "Argument '%s' specified more than once", name);
+            }
+        }
+        self.cache[name] = found;
+        return found;
+    }
+
+    // Fetch a scalar value, such as "--foo=bar" or "--foo bar"
+    function fetch_scalar(string name, int keep)
+    {
+        int found = false;
+        string value = "";
+        for (int i = 0; i < elements(self.args) - 1; i++) {
+            string a = self.args[i];
+            if (a == "")
+                continue;
+            if (a == name) {
+                if (!found)
+                    found = true;
                 else
-                    push(self.remainder, a);
-            }
-            self.args = sorted;
-        }
-
-        function fetch_flag(string name, int keep)
-        {
-            int found = false;
-            for (int i = 0; i < elements(self.args); i++) {
-                string a = self.args[i];
-                if (a == "")
-                    continue;
-                if (a == name) {
-                    if (!found) {
-                        found = true;
-                        if (keep)
-                            self.args[i] = "";
-                    } else
-                        Rosella.Error.invalid(__FUNCTION__, "Argument '%s' specified more than once", name);
+                    Rosella.Error.invalid(__FUNCTION__, "Argument '%s' specified more than once", name);
+                value = self.args[i + 1];
+                if (keep) {
+                    self.args[i] = "";
+                    self.args[i + 1] = "";
                 }
+                i++;
             }
-            self.cache[name] = found;
-            return found;
         }
+        self.cache[name] = value;
+        return value;
+    }
 
-        function fetch_scalar(string name, int keep)
-        {
-            int found = false;
-            string value = "";
-            for (int i = 0; i < elements(self.args) - 1; i++) {
-                string a = self.args[i];
-                if (a == "")
-                    continue;
-                if (a == name) {
-                    if (!found)
-                        found = true;
-                    else
-                        Rosella.Error.invalid(__FUNCTION__, "Argument '%s' specified more than once", name);
-                    value = self.args[i + 1];
-                    if (keep) {
-                        self.args[i] = "";
-                        self.args[i + 1] = "";
-                    }
-                    i++;
+    // Fetch a scalar list such as "--foo=bar --foo=baz", returns all values
+    // together in an array
+    function fetch_scalar_list(string name, int keep)
+    {
+        var value = [];
+        for (int i = 0; i < elements(self.args) - 1; i++) {
+            string a = self.args[i];
+            if (a == "")
+                continue;
+            if (a == name && self.args[i + 1] != "") {
+                push(value, self.args[i + 1]);
+                if (keep) {
+                    self.args[i] = "";
+                    self.args[i + 1] = "";
                 }
+                i++;
             }
-            self.cache[name] = value;
-            return value;
         }
+        self.cache[name] = value;
+        return value;
+    }
 
-        function fetch_scalar_list(string name, int keep)
-        {
-            var value = [];
-            for (int i = 0; i < elements(self.args) - 1; i++) {
-                string a = self.args[i];
-                if (a == "")
-                    continue;
-                if (a == name && self.args[i + 1] != "") {
-                    push(value, self.args[i + 1]);
-                    if (keep) {
-                        self.args[i] = "";
-                        self.args[i + 1] = "";
-                    }
-                    i++;
-                }
-            }
-            self.cache[name] = value;
-            return value;
-        }
-
-        function fetch_pair(string name, int keep)
-        {
-            int found = false;
-            string key = "";
-            string value = "";
-            for (int i = 0; i < elements(self.args) - 2; i++) {
-                string a = self.args[i];
-                if (a == "")
-                    continue;
-                if (a == name && self.args[i + 1] != "" && self.args[i + 2] != "") {
-                    if (!found) {
-                        found = true;
-                        key = self.args[i + 1];
-                        value = self.args[i + 2];
-                        if (keep) {
-                            self.args[i] = "";
-                            self.args[i + 1] = "";
-                            self.args[i + 2] = "";
-                        }
-                        i += 2;
-                    } else
-                        Rosella.Error.invalid(__FUNCTION__, "Argument '%s' specified more than once", name);
-                }
-            }
-            var ret = { };
-            ret[key] = value;
-            self.cache[name] = ret;
-            return ret;
-        }
-
-        function fetch_pair_hash(string name, int keep)
-        {
-            var values = {};
-            for (int i = 0; i < elements(self.args) - 2; i++) {
-                string a = self.args[i];
-                if (a == "")
-                    continue;
-                if (a == name && self.args[i + 1] != "" && self.args[i + 2] != "") {
-                    string key = self.args[i + 1];
-                    string value = self.args[i + 2];
+    // Fetch a pair such as "--foo=bar=baz" or "--foo bar=baz" or "--foo bar baz"
+    // Returns a 1-element hash with the name and the value
+    function fetch_pair(string name, int keep)
+    {
+        int found = false;
+        string key = "";
+        string value = "";
+        for (int i = 0; i < elements(self.args) - 2; i++) {
+            string a = self.args[i];
+            if (a == "")
+                continue;
+            if (a == name && self.args[i + 1] != "" && self.args[i + 2] != "") {
+                if (!found) {
+                    found = true;
+                    key = self.args[i + 1];
+                    value = self.args[i + 2];
                     if (keep) {
                         self.args[i] = "";
                         self.args[i + 1] = "";
                         self.args[i + 2] = "";
                     }
-                    values[key] = value;
                     i += 2;
-                }
+                } else
+                    Rosella.Error.invalid(__FUNCTION__, "Argument '%s' specified more than once", name);
             }
-            self.cache[name] = values;
-            return values;
         }
+        var ret = { };
+        ret[key] = value;
+        self.cache[name] = ret;
+        return ret;
+    }
 
-        function fetch_unparsed(string name, int keep)
-        {
-            var args = [];
-            for (int i = 0; i < elements(self.args); i++) {
-                string a = self.args[i];
-                if (a == "")
-                    continue;
-                push(args, a);
-                if (keep)
+    // Fetch all pairs of the form "--foo=bar=baz" or "--foo bar=baz" or
+    // "--foo bar baz". Returns them all as a hash
+    function fetch_pair_hash(string name, int keep)
+    {
+        var values = {};
+        for (int i = 0; i < elements(self.args) - 2; i++) {
+            string a = self.args[i];
+            if (a == "")
+                continue;
+            if (a == name && self.args[i + 1] != "" && self.args[i + 2] != "") {
+                string key = self.args[i + 1];
+                string value = self.args[i + 2];
+                if (keep) {
                     self.args[i] = "";
+                    self.args[i + 1] = "";
+                    self.args[i + 2] = "";
+                }
+                values[key] = value;
+                i += 2;
             }
-            self.cache[name] = args;
-            return args;
         }
+        self.cache[name] = values;
+        return values;
+    }
 
-        function fetch_value(string name)
-        {
-            string value = "";
+    // Fetch a list of all remaining args which have not yet been parsed
+    function fetch_unparsed(string name, int keep)
+    {
+        var args = [];
+        for (int i = 0; i < elements(self.args); i++) {
+            string a = self.args[i];
+            if (a == "")
+                continue;
+            push(args, a);
+            if (keep)
+                self.args[i] = "";
+        }
+        self.cache[name] = args;
+        return args;
+    }
+
+    // Fetch the first of the remaining arguments, and store it as a string.
+    // Does not fetch flags such as -V or --foo
+    function fetch_value(string name)
+    {
+        string value = "";
+        for (int i = 0; i < elements(self.args); i++) {
+            string a = self.args[i];
+            if (a == "" || (length(a) >= 2 && substr(a, 0, 1) == "-") || (length(a) >= 3 && substr(a, 0, 2) == "--"))
+                continue;
+            value = a;
+            break;
+        }
+        self.cache[name] = value;
+        return value;
+    }
+
+    // Fetch a positional argument, which may be a flag or anything else.
+    function fetch_positional(string name, int keep, int idx [optional], int has_idx [opt_flag])
+    {
+        string arg = "";
+        if (has_idx) {
+            if (idx >= elements(self.args)) {
+                self.cache[name] = "";
+                return "";
+            }
+            arg = self.args[idx];
+            if (keep)
+                self.args[idx] = "";
+        } else {
             for (int i = 0; i < elements(self.args); i++) {
                 string a = self.args[i];
-                if (a == "" || (length(a) >= 2 && substr(a, 0, 1) == "-") || (length(a) >= 3 && substr(a, 0, 2) == "--"))
-                    continue;
-                value = a;
-                break;
-            }
-            self.cache[name] = value;
-            return value;
-        }
-
-        function fetch_positional(string name, int keep, int idx [optional], int has_idx [opt_flag])
-        {
-            string arg = "";
-            if (has_idx) {
-                if (idx >= elements(self.args)) {
-                    self.cache[name] = "";
-                    return "";
-                }
-                arg = self.args[idx];
-                if (keep)
-                    self.args[idx] = "";
-            } else {
-                for (int i = 0; i < elements(self.args); i++) {
-                    string a = self.args[i];
-                    if (a != "") {
-                        arg = a;
-                        if (keep)
-                            self.args[i] = "";
-                        break;
-                    }
+                if (a != "") {
+                    arg = a;
+                    if (keep)
+                        self.args[i] = "";
+                    break;
                 }
             }
-            self.cache[name] = arg;
-            return arg;
         }
+        self.cache[name] = arg;
+        return arg;
+    }
 
-        function remainder()
-        {
-            return self.remainder;
-        }
+    // Get the remaining args
+    function remainder()
+    {
+        return self.remainder;
+    }
 
-        function raw_args()
-        {
-            return self.args;
-        }
+    // Get the raw list of args. Notice that this list is destroyed during
+    // parsing
+    function raw_args()
+    {
+        return self.args;
+    }
 
-        function has_unparsed_args()
-        {
-            for (int i = 0; i < elements(self.args); i++) {
-                string a = self.args[i];
-                if (a != "")
-                    return true;
-            }
-            return false;
+    // Return true if there are arguments remaining which have not been parsed.
+    function has_unparsed_args()
+    {
+        for (int i = 0; i < elements(self.args); i++) {
+            string a = self.args[i];
+            if (a != "")
+                return true;
         }
+        return false;
+    }
 
-        function get_string_keyed[vtable](string name)
-        {
-            if (exists self.cache[name])
-                // TODO: Check if it's a string. Lists and hashes shouldn't be
-                //       accessed like this
-                return self.cache[name];
-            return "";
-        }
+    // Once parsed, provide keyed access to the cache
+    function get_string_keyed[vtable](string name)
+    {
+        if (exists self.cache[name])
+            // TODO: Check if it's a string. Lists and hashes shouldn't be
+            //       accessed like this
+            return self.cache[name];
+        return "";
+    }
 
-        function get_pmc_keyed[vtable](string name)
-        {
-            if (exists self.cache[name])
-                return self.cache[name];
-            return [];
-        }
+    // Once parsed, provide keyed access to the cache
+    function get_pmc_keyed[vtable](string name)
+    {
+        if (exists self.cache[name])
+            return self.cache[name];
+        return [];
     }
 }
