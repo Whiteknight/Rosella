@@ -23,6 +23,7 @@ sub library_tests() {
     %h{"tap_harness"} := "Winxed";
     %h{"template"} := "Winxed";
     %h{"test"} := "NQP";
+    %h{"random"} := "Winxed";
     %h;
 }
 
@@ -33,7 +34,6 @@ sub unstable_tests() {
     %h{"event"} := "Winxed";
     %h{"prototype"} := "NQP";
     %h{"decorate"} := "Winxed";
-    %h{"random"} := "Winxed";
     %h;
 }
 

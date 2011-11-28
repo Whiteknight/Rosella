@@ -16,6 +16,7 @@ path: 1 Stable
 prototype: 0 Alpha
 proxy: 2 Stable
 query: 1 Stable
+random: 1 Stable
 reflect: 0 Alpha
 string: 1 Stable
 template: 1 Stable
