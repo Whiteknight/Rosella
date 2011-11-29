@@ -13,7 +13,7 @@ class Test_Rosella_CommandLine_ProgramMode
         self.status.verify("Test Rosella.CommandLine.ProgramMode.set_function()");
         var obj = new Rosella.CommandLine.ProgramMode("");
 
-        var arg_0 = null;
+        var arg_0 = function(var args) { };
         var result = obj.set_function(arg_0);
     }
 

@@ -101,21 +101,26 @@ class Test_Rosella_CommandLine_Arguments
     function fetch_pair()
     {
         self.status.verify("Test Rosella.CommandLine.Arguments.fetch_pair()");
-        var obj = create_new();
+        var obj = create_new("--foo", "a", "b");
 
-        string arg_0 = "foo";
+        string arg_0 = "--foo";
         int arg_1 = 0;
         var result = obj.fetch_pair(arg_0, arg_1);
+        self.assert.equal(elements(result), 1);
+        self.assert.equal(result["a"], "b");
     }
 
     function fetch_pair_hash()
     {
         self.status.verify("Test Rosella.CommandLine.Arguments.fetch_pair_hash()");
-        var obj = create_new();
+        var obj = create_new("--foo=a=b", "--foo=c=d");
 
-        string arg_0 = "";
+        string arg_0 = "--foo";
         int arg_1 = 0;
         var result = obj.fetch_pair_hash(arg_0, arg_1);
+        self.assert.equal(elements(result), 2);
+        self.assert.equal(result["a"], "b");
+        self.assert.equal(result["c"], "d");
     }
 
     function fetch_unparsed()

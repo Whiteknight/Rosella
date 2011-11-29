@@ -13,7 +13,7 @@ class Test_Rosella_CommandLine_Program
         self.status.verify("Test Rosella.CommandLine.Program.on_error()");
         var obj = new Rosella.CommandLine.Program("test");
 
-        var arg_0 = null;
+        var arg_0 = function(var e) { };
         var result = obj.on_error(arg_0);
     }
 
@@ -36,6 +36,9 @@ class Test_Rosella_CommandLine_Program
         self.assert.instance_of(result, class Rosella.CommandLine.ProgramMode);
     }
 
+    // TODO: We need lots of tests for running programs, including mode
+    // dispatch, error recovery, etc.
+
     function run()
     {
         self.status.unimplemented("Test .run()");
@@ -44,16 +47,6 @@ class Test_Rosella_CommandLine_Program
 
         var arg_0 = null;
         var result = obj.run(arg_0);
-    }
-
-    function try_handle_error()
-    {
-        self.status.unimplemented("Test .try_handle_error()");
-        self.status.verify("Test Rosella.CommandLine.Program.try_handle_error()");
-        var obj = new Rosella.CommandLine.Program("");
-
-        var arg_0 = null;
-        var result = obj.try_handle_error(arg_0);
     }
 }
 
