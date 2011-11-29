@@ -13,6 +13,7 @@ sub core_tests() {
 sub library_tests() {
     my %h := {};
     %h{"action"} := "NQP";
+    %h{"commandline"} := "Winxed";
     %h{"filesystem"} := "NQP";
     %h{"memoize"} := "NQP";
     %h{"mockobject"} := "NQP";
@@ -30,7 +31,6 @@ sub library_tests() {
 
 sub unstable_tests() {
     my %h := {};
-    %h{"commandline"} := "Winxed";
     %h{"container"} := "Winxed";
     %h{"event"} := "Winxed";
     %h{"prototype"} := "NQP";

@@ -241,6 +241,7 @@ function setup_stable_libraries(var rosella)
         "string/tokenizer/Token"
     );
 
+    // Templating and formatting text
     setup_winxed_lib(rosella, "template", ["Core", "Path", "String", "FileSystem"],
         "template/Includes",
         "template/Template",
@@ -269,6 +270,13 @@ function setup_stable_libraries(var rosella)
         "random/RandomNumber",
         "random/randomnumber/BoxMullerNormal",
         "random/randomnumber/MersenneTwister"
+    );
+
+    // Working with commandline arguments
+    setup_winxed_lib(rosella, "commandline", ["Core", "String"],
+        "commandline/Arguments",
+        "commandline/Program",
+        "commandline/ProgramMode"
     );
 }
 
@@ -324,12 +332,6 @@ function setup_experimental_libraries(var rosella)
         "dumper/dumphandler/InspectAttrs",
         "dumper/dumphandler/Object",
         "dumper/dumphandler/Null"
-    );
-
-    setup_unstable_lib(rosella, "commandline", ["Core", "String"],
-        "commandline/Arguments",
-        "commandline/Program",
-        "commandline/ProgramMode"
     );
 
     setup_unstable_lib(rosella, "date", [],
