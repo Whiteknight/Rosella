@@ -19,6 +19,7 @@ sub library_tests() {
     %h{"path"} := "NQP";
     %h{"proxy"} := "NQP";
     %h{"query"} := "NQP";
+    %h{"random"} := "Winxed";
     %h{"string"} := "NQP";
     %h{"tap_harness"} := "Winxed";
     %h{"template"} := "Winxed";

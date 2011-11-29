@@ -261,6 +261,15 @@ function setup_stable_libraries(var rosella)
         "template/node/Eval",
         "template/node/Literal"
     );
+
+    // Random number generation and tools
+    setup_winxed_lib(rosella, "random", ["Math_Builtins"],
+        "random/Includes",
+        "random/Random",
+        "random/RandomNumber",
+        "random/randomnumber/BoxMullerNormal",
+        "random/randomnumber/MersenneTwister"
+    );
 }
 
 function setup_experimental_libraries(var rosella)
@@ -321,14 +330,6 @@ function setup_experimental_libraries(var rosella)
         "commandline/Arguments",
         "commandline/Program",
         "commandline/ProgramMode"
-    );
-
-    setup_unstable_lib(rosella, "random", ["Math_Builtins"],
-        "random/Includes",
-        "random/Random",
-        "random/RandomNumber",
-        "random/randomnumber/BoxMullerNormal",
-        "random/randomnumber/MersenneTwister"
     );
 
     setup_unstable_lib(rosella, "date", [],
