@@ -8,7 +8,7 @@ namespace Rosella { namespace Dumper { namespace DumpHandler
         {
             var class_obj = typeof(obj);
             int isa_class = isa_s(class_obj, "PMCProxy");
-            return isa_class == 0 ? false : true;
+            return isa_class == 1 ? false : true;
         }
 
         function dump(var dump, var emit, var obj)

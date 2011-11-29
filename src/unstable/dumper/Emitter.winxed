@@ -5,22 +5,28 @@ namespace Rosella { namespace Dumper
         var prefix;
         var string_builder;
         var current_prefix;
+        var line_count;
 
         function Emitter(string prefix)
         {
             self.prefix = prefix;
             self.current_prefix = "";
             self.string_builder = new 'StringBuilder';
+            self.line_count = 0;
         }
 
         function wrap(string start, string stop, var func)
         {
-            self.text("%s\n", start);
+            self.text("%s", start);
+            int line_count = int(self.line_count);
             string old_prefix = self.current_prefix;
             self.current_prefix = string(self.current_prefix) + string(self.prefix);
             func();
             self.current_prefix = old_prefix;
-            self.text_line("%s\n", stop);
+            if (int(self.line_count) == line_count)
+                self.text(" %s", stop);
+            else
+                self.text_line("%s", stop);
         }
 
         function hash(var func) { self.wrap("{", "}", func); }
@@ -31,7 +37,8 @@ namespace Rosella { namespace Dumper
 
         function text_line(string text, var args [slurpy])
         {
-            string l = sprintf("%s%s", [self.current_prefix, text]);
+            self.line_count = self.line_count + 1;
+            string l = sprintf("\n%s%s", [self.current_prefix, text]);
             push(self.string_builder, sprintf(l, args));
         }
 

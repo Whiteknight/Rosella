@@ -14,7 +14,12 @@ namespace Rosella { namespace Dumper { namespace DumpHandler
         function dump(var dump, var emit, var obj)
         {
             var class_obj = typeof(obj);
-            emit.text("'%s' ", class_obj);
+            string text = "";
+            try {
+                text = string(obj);
+                text = "'" + text + "' ";
+            } catch() { }
+            emit.text("'%s' : %s", class_obj, text);
             emit.object(function() {
                 for (string key in class_obj.attributes()) {
                     emit.text_line("%s => ", key);

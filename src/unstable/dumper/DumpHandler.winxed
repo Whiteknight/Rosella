@@ -13,7 +13,7 @@ namespace Rosella { namespace Dumper
         {
             try {
                 string text = string(obj);
-                emit.text("(%s): '%s'\n", typeof(obj), text);
+                emit.text("(%s) '%s'\n", typeof(obj), text);
             } catch() {
                 emit.text("(%s)\n", typeof(obj));
             }
