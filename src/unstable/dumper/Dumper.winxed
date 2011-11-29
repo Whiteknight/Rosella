@@ -1,152 +1,175 @@
-namespace Rosella
+/* Rosella Dumper Library
+    The Dumper library is a debugging and diagnostics tool for generating a
+    human-readable text representation of complex nested data. It is not
+    intended to be used as a generalized object serialization tool.
+*/
+namespace Rosella.Dumper
 {
-    namespace Dumper
+    const string DEFAULT_DUMPER_GLOBAL = "Rosella.Dumper.default_dumper";
+
+    function default_dumper()
     {
-        const string DEFAULT_DUMPER_GLOBAL = "Rosella.Dumper.default_dumper";
-
-        function default_dumper()
-        {
-            var temp = Rosella.Globals.get_global(DEFAULT_DUMPER_GLOBAL);
-            if (temp == null) {
-                temp = new Rosella.Dumper();
-                Rosella.Globals.register_global(DEFAULT_DUMPER_GLOBAL, temp);
-            }
-            while(1) {
-                yield temp;
-                temp = Rosella.Globals.get_global(DEFAULT_DUMPER_GLOBAL);
-            }
+        var temp = Rosella.Globals.get_global(DEFAULT_DUMPER_GLOBAL);
+        if (temp == null) {
+            temp = new Rosella.Dumper();
+            Rosella.Globals.register_global(DEFAULT_DUMPER_GLOBAL, temp);
         }
-
-        function set_default_dumper(var dumper)
-        {
-            Rosella.Globals.register_global(DEFAULT_DUMPER_GLOBAL, dumper);
+        while(1) {
+            yield temp;
+            temp = Rosella.Globals.get_global(DEFAULT_DUMPER_GLOBAL);
         }
     }
 
-    class Dumper
+    function set_default_dumper(var dumper)
     {
-        var role_dumpers;
-        var type_dumpers;
-        var misc_dumpers;
-        var null_dumper;
-        var fallback_dumper;
-        var indent;
-        var registry;
-        var recurse_level;
+        Rosella.Globals.register_global(DEFAULT_DUMPER_GLOBAL, dumper);
+    }
+}
 
-        const int RECURSE_LIMIT = 6;
+/* The Dumper
+    This is the driver object for the library and the primary user interface for
+    it. The Dumper object contains a collection of DumpHandlers which are each
+    tasked with dumping a different category of objects. The Dumper dispatches
+    requests to the appropriate handler for each object, and also manages
+    recursive calls for nested child data.
+*/
+class Rosella.Dumper
+{
+    var role_dumpers;       // Dumpers for objects with a given role
+    var type_dumpers;       // Dumpers for objects with a specific type
+    var misc_dumpers;       // Dumpers for objects which satisfy certain conditions
+    var null_dumper;        // Dumper for null
+    var fallback_dumper;    // Dumper for objects which are not dumped by any other handler
+    var indent;             // The intentation string to use for each level
+    var registry;           // A registry of PMCs to prevent recursion
+    var recurse_level;      // The current recursion level
 
-        function Dumper()
-        {
-            self.null_dumper = new Rosella.Dumper.DumpHandler.Null();
-            self.role_dumpers = self.default_role_dumpers();
-            self.type_dumpers = self.default_type_dumpers();
-            self.misc_dumpers = self.default_misc_dumpers();
-            self.fallback_dumper = self.default_fallback_dumper();
-            self.indent = "\t";
+    const int RECURSE_LIMIT = 6;    // The maximum recursion depth
+
+    // Constructor
+    function Dumper()
+    {
+        self.null_dumper = new Rosella.Dumper.DumpHandler.Null();
+        self.role_dumpers = self.default_role_dumpers();
+        self.type_dumpers = self.default_type_dumpers();
+        self.misc_dumpers = self.default_misc_dumpers();
+        self.fallback_dumper = self.default_fallback_dumper();
+        self.indent = "\t";
+    }
+
+    // Get the default set of role dumpers
+    function default_role_dumpers()
+    {
+        return {
+            "array" : new Rosella.Dumper.DumpHandler.Array(),
+            "hash"  : new Rosella.Dumper.DumpHandler.Hash()
+        };
+    }
+
+    // Get the default set of type dumpers
+    function default_type_dumpers()
+    {
+        var type_dumpers = Rosella.get_pmc_keyed_hash();
+        return type_dumpers;
+    }
+
+    // Get the default set of miscellaneous dumpers
+    function default_misc_dumpers()
+    {
+        return {
+            "object" : new Rosella.Dumper.DumpHandler.Object(),
+            "attrs" : new Rosella.Dumper.DumpHandler.InspectAttrs()
+        };
+    }
+
+    // Get the default fallback dumper
+    function default_fallback_dumper()
+    {
+        return new Rosella.Dumper.DumpHandler();
+    }
+
+    // Add a new type dumper to the list
+    function add_type_dumper(var type, var dumper [optional], int has_dumper [opt_flag])
+    {
+        if (!has_dumper)
+            dumper = new Rosella.Dumper.DumpHandler.InspectAttr();
+        self.type_dumpers[type] = dumper;
+    }
+
+    // Set a new miscellaneous type dumper by name
+    function set_misc_dumper(string name, var dumper)
+    {
+        self.misc_dumpers[name] = dumper;
+    }
+
+    // Set a new role dumper by string role
+    function set_role_dumper(string role, var dumper)
+    {
+        self.role_dumpers[role] = dumper;
+    }
+
+    function set_indent(string indent)
+    {
+        self.indent = indent;
+    }
+
+    // Dump the given object. Return the formatted string.
+    // This is the function to use for all external calls, it helps manage
+    // recursion and other details.
+    function dump(var obj)
+    {
+        self.recurse_level = 0;
+        var emit = new Rosella.Dumper.Emitter(self.indent);
+        self.registry = new 'Hash';
+        self.registry.set_key_type(3);
+        self.__dump_recurse(emit, obj);
+        return emit.get_output();
+    }
+
+    /* Internal Helper Methods
+    */
+
+    // Internal dump routine.
+    function __dump_recurse(var emit, var obj)
+    {
+        if (int(self.recurse_level) > RECURSE_LIMIT) {
+            self.fallback_dumper(self, emit, obj);
+            return;
         }
-
-        function default_role_dumpers()
-        {
-            return {
-                "array" : new Rosella.Dumper.DumpHandler.Array(),
-                "hash"  : new Rosella.Dumper.DumpHandler.Hash()
-            };
+        self.recurse_level++;
+        if (obj == null) {
+            self.null_dumper.dump(self, emit, obj);
+            self.recurse_level--;
+            return;
         }
-
-        function default_type_dumpers()
-        {
-            var type_dumpers = {};
-            type_dumpers.set_key_type(3);
-            return type_dumpers;
-        }
-
-        function default_misc_dumpers()
-        {
-            return {
-                "object" : new Rosella.Dumper.DumpHandler.Object(),
-                "attrs" : new Rosella.Dumper.DumpHandler.InspectAttrs()
-            };
-        }
-
-        function default_fallback_dumper()
-        {
-            return new Rosella.Dumper.DumpHandler();
-        }
-
-        function add_type_dumper(var type, var dumper [optional], int has_dumper [opt_flag])
-        {
-            if (!has_dumper)
-                dumper = new Rosella.Dumper.DumpHandler.InspectAttr();
-            self.type_dumpers[type] = dumper;
-        }
-
-        function set_misc_dumper(string name, var dumper)
-        {
-            self.misc_dumpers[name] = dumper;
-        }
-
-        function set_role_dumper(string role, var dumper)
-        {
-            self.role_dumpers[role] = dumper;
-        }
-
-        function set_indent(string indent)
-        {
-            self.indent = indent;
-        }
-
-        function dump(var obj)
-        {
-            self.recurse_level = 0;
-            var emit = new Rosella.Dumper.Emitter(self.indent);
-            self.registry = new 'Hash';
-            self.registry.set_key_type(3);
-            self.__dump_recurse(emit, obj);
-            return emit.get_output();
-        }
-
-        function __dump_recurse(var emit, var obj)
-        {
-            if (int(self.recurse_level) > RECURSE_LIMIT) {
-                self.fallback_dumper(self, emit, obj);
-                return;
-            }
-            self.recurse_level++;
-            if (obj == null) {
-                self.null_dumper.dump(self, emit, obj);
+        string type_name = Rosella.get_type_name(typeof(obj));
+        if (exists self.type_dumpers[type_name]) {
+            var type_dumper = self.type_dumpers[type_name];
+            if (type_dumper.can_dump(obj)) {
+                type_dumper.dump(self, emit, obj);
                 self.recurse_level--;
                 return;
             }
-            string type_name = Rosella.get_type_name(typeof(obj));
-            if (exists self.type_dumpers[type_name]) {
-                var type_dumper = self.type_dumpers[type_name];
-                if (type_dumper.can_dump(obj)) {
-                    type_dumper.dump(self, emit, obj);
-                    self.recurse_level--;
-                    return;
-                }
-            }
-            for (string role in self.role_dumpers)
-            {
-                var role_dumper = self.role_dumpers[role];
-                int does_it = does(obj, role);
-                if (does_it && role_dumper.can_dump(obj)) {
-                    role_dumper.dump(self, emit, obj);
-                    self.recurse_level--;
-                    return;
-                }
-            }
-            for (string misc in self.misc_dumpers) {
-                var misc_dumper = self.misc_dumpers[misc];
-                if (misc_dumper.can_dump(obj)) {
-                    misc_dumper.dump(self, emit, obj);
-                    self.recurse_level--;
-                    return;
-                }
-            }
-            self.fallback_dumper.dump(self, emit, obj);
-            self.recurse_level--;
         }
+        for (string role in self.role_dumpers)
+        {
+            var role_dumper = self.role_dumpers[role];
+            int does_it = does(obj, role);
+            if (does_it && role_dumper.can_dump(obj)) {
+                role_dumper.dump(self, emit, obj);
+                self.recurse_level--;
+                return;
+            }
+        }
+        for (string misc in self.misc_dumpers) {
+            var misc_dumper = self.misc_dumpers[misc];
+            if (misc_dumper.can_dump(obj)) {
+                misc_dumper.dump(self, emit, obj);
+                self.recurse_level--;
+                return;
+            }
+        }
+        self.fallback_dumper.dump(self, emit, obj);
+        self.recurse_level--;
     }
 }

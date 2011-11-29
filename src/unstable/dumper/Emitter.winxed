@@ -1,55 +1,64 @@
-namespace Rosella { namespace Dumper
+/* Dumper Emitter Class
+    This class handles output formatting and string building for the Dumper.
+*/
+class Rosella.Dumper.Emitter
 {
-    class Emitter
+    var prefix;             // The prefix to use for each level. By default, it's a number of spaces
+    var string_builder;     // The StringBuilder instance
+    var current_prefix;     // The current total prefix
+    var line_count;         // A count of printed lines
+
+    // Constructor
+    function Emitter(string prefix)
     {
-        var prefix;
-        var string_builder;
-        var current_prefix;
-        var line_count;
-
-        function Emitter(string prefix)
-        {
-            self.prefix = prefix;
-            self.current_prefix = "";
-            self.string_builder = new 'StringBuilder';
-            self.line_count = 0;
-        }
-
-        function wrap(string start, string stop, var func)
-        {
-            self.text("%s", start);
-            int line_count = int(self.line_count);
-            string old_prefix = self.current_prefix;
-            self.current_prefix = string(self.current_prefix) + string(self.prefix);
-            func();
-            self.current_prefix = old_prefix;
-            if (int(self.line_count) == line_count)
-                self.text(" %s", stop);
-            else
-                self.text_line("%s", stop);
-        }
-
-        function hash(var func) { self.wrap("{", "}", func); }
-
-        function array(var func) { self.wrap("[", "]", func); }
-
-        function object(var func) { self.wrap("(", ")", func); }
-
-        function text_line(string text, var args [slurpy])
-        {
-            self.line_count = self.line_count + 1;
-            string l = sprintf("\n%s%s", [self.current_prefix, text]);
-            push(self.string_builder, sprintf(l, args));
-        }
-
-        function text(string text, var args [slurpy])
-        {
-            push(self.string_builder, sprintf(text, args));
-        }
-
-        function get_output()
-        {
-            return string(self.string_builder);
-        }
+        self.prefix = prefix;
+        self.current_prefix = "";
+        self.string_builder = new 'StringBuilder';
+        self.line_count = 0;
     }
-}}
+
+    // Wrap a recursive set of emits in a start/stop delimiter pair
+    function wrap(string start, string stop, var func)
+    {
+        self.text("%s", start);
+        int line_count = int(self.line_count);
+        string old_prefix = self.current_prefix;
+        self.current_prefix = string(self.current_prefix) + string(self.prefix);
+        func();
+        self.current_prefix = old_prefix;
+        if (int(self.line_count) == line_count)
+            self.text(" %s", stop);
+        else
+            self.text_line("%s", stop);
+    }
+
+    // Wrap hash-like data
+    function hash(var func) { self.wrap("{", "}", func); }
+
+    // Wrap array-like data
+    function array(var func) { self.wrap("[", "]", func); }
+
+    // Wrap object-like data
+    function object(var func) { self.wrap("(", ")", func); }
+
+    // Emit a separate line of text. This is used to emit text for child
+    // data
+    function text_line(string text, var args [slurpy])
+    {
+        self.line_count = self.line_count + 1;
+        string l = sprintf("\n%s%s", [self.current_prefix, text]);
+        push(self.string_builder, sprintf(l, args));
+    }
+
+    // Emit some text. This is used to emit text for the current data
+    function text(string text, var args [slurpy])
+    {
+        push(self.string_builder, sprintf(text, args));
+    }
+
+    // Get the current output string
+    function get_output()
+    {
+        return string(self.string_builder);
+    }
+}
