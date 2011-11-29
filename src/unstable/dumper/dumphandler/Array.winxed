@@ -1,23 +1,26 @@
-namespace Rosella { namespace Dumper { namespace DumpHandler
+/* Array Dumper
+    Used to dump arrays and array-like objects
+*/
+class Rosella.Dumper.DumpHandler.Array : Rosella.Dumper.DumpHandler
 {
-    class Array : Rosella.Dumper.DumpHandler
+    // Constructor
+    function Array() { }
+
+    // Can dump anything that has the role "array"
+    function can_dump(var obj)
     {
-        function Array() { }
-
-        function can_dump(var obj)
-        {
-            int does_array = does(obj, "array");
-            return does_array == 0 ? false : true;
-        }
-
-        function dump(var dump, var emit, var obj)
-        {
-            emit.array(function() {
-                for (int i = 0; i < elements(obj); i++) {
-                    emit.text_line("%d => ", i);
-                    dump.__dump_recurse(emit, obj[i]);
-                }
-            });
-        }
+        int does_array = does(obj, "array");
+        return does_array == 0 ? false : true;
     }
-}}}
+
+    // Dump the array
+    function dump(var dump, var emit, var obj)
+    {
+        emit.array(function() {
+            for (int i = 0; i < elements(obj); i++) {
+                emit.text_line("%d => ", i);
+                dump.__dump_recurse(emit, obj[i]);
+            }
+        });
+    }
+}

@@ -1,17 +1,20 @@
-namespace Rosella { namespace Dumper { namespace DumpHandler
+/* Null Dumper
+    This special-purpose dumper is used to handle the null value
+*/
+class Rosella.Dumper.DumpHandler.Null : Rosella.Dumper.DumpHandler
 {
-    class Null : Rosella.Dumper.DumpHandler
+    // Constructor
+    function Null() { }
+
+    // Can dump null
+    function can_dump(var obj)
     {
-        function Null() { }
-
-        function can_dump(var obj)
-        {
-            return obj == null ? true : false;
-        }
-
-        function dump(var dump, var emit, var obj)
-        {
-            emit.text("<NULL>\n");
-        }
+        return obj == null ? true : false;
     }
-}}}
+
+    // Print the string "<NULL>"
+    function dump(var dump, var emit, var obj)
+    {
+        emit.text("<NULL>\n");
+    }
+}

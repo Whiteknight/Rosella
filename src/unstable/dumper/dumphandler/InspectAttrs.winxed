@@ -1,34 +1,34 @@
-namespace Rosella { namespace Dumper { namespace DumpHandler
+/* Attributes Dumper
+    Dump the values of object attributes
+*/
+class Rosella.Dumper.DumpHandler.InspectAttrs : Rosella.Dumper.DumpHandler
 {
-    class InspectAttrs : Rosella.Dumper.DumpHandler
+    // Constructor
+    function InspectAttrs() { }
+
+    // Can dump any type that isn't a built-in PMC type
+    function can_dump(var obj)
     {
-        function InspectAttrs() { }
-
-        function can_dump(var obj)
-        {
-            var class_obj = typeof(obj);
-            int isa_class = isa_s(class_obj, "PMCProxy");
-            return isa_class == 1 ? false : true;
-        }
-
-        function dump(var dump, var emit, var obj)
-        {
-            var attrs = inspect(obj);
-            emit.text("(%s): ", typeof(obj));
-            emit.object(function() {
-                for (string key in attrs) {
-                    var attr = attrs[key];
-                    string text = "";
-                    try {
-                        text = string(attr);
-                    } catch () {}
-                    emit.text_line("'%s' => (%s): '%s'\n", key, typeof(attr), text);
-                    //dump.__dump_recurse(emit, attr);
-                }
-            });
-        }
+        var class_obj = typeof(obj);
+        int isa_class = isa_s(class_obj, "PMCProxy");
+        return isa_class == 1 ? false : true;
     }
-}}}
 
-
-
+    // Dump
+    function dump(var dump, var emit, var obj)
+    {
+        var attrs = inspect(obj);
+        emit.text("(%s): ", typeof(obj));
+        emit.object(function() {
+            for (string key in attrs) {
+                var attr = attrs[key];
+                string text = "";
+                try {
+                    text = string(attr);
+                } catch () {}
+                emit.text_line("'%s' => (%s): '%s'\n", key, typeof(attr), text);
+                //dump.__dump_recurse(emit, attr);
+            }
+        });
+    }
+}

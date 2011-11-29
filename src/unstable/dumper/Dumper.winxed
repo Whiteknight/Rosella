@@ -77,8 +77,8 @@ class Rosella.Dumper
     function default_misc_dumpers()
     {
         return {
-            "object" : new Rosella.Dumper.DumpHandler.Object(),
-            "attrs" : new Rosella.Dumper.DumpHandler.InspectAttrs()
+            "object" : new Rosella.Dumper.DumpHandler.Object()
+            //"attrs" : new Rosella.Dumper.DumpHandler.InspectAttrs()
         };
     }
 

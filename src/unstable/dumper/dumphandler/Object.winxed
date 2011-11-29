@@ -1,31 +1,38 @@
-namespace Rosella { namespace Dumper { namespace DumpHandler
+/* DumpHandler for User-Defined Objects
+    This DumpHandler attempts to dump an object. It prints out the type name,
+    a string representation of the object if possible and the values of all
+    accessible attributes.
+*/
+class Rosella.Dumper.DumpHandler.Object : Rosella.Dumper.DumpHandler
 {
-    class Object : Rosella.Dumper.DumpHandler
+    // Constructor
+    function Object() { }
+
+    // Can dump anything that isn't a built-in type
+    function can_dump(var obj)
     {
-        function Object() { }
-
-        function can_dump(var obj)
-        {
-            var class_obj = typeof(obj);
-            int isa_class = isa_s(class_obj, "PMCProxy");
-            return isa_class == 0 ? true : false;
-        }
-
-        function dump(var dump, var emit, var obj)
-        {
-            var class_obj = typeof(obj);
-            string text = "";
-            try {
-                text = string(obj);
-                text = "'" + text + "' ";
-            } catch() { }
-            emit.text("'%s' : %s", class_obj, text);
-            emit.object(function() {
-                for (string key in class_obj.attributes()) {
-                    emit.text_line("%s => ", key);
-                    dump.__dump_recurse(emit, obj.*key);
-                }
-            });
-        }
+        var class_obj = typeof(obj);
+        int isa_class = isa_s(class_obj, "PMCProxy");
+        return isa_class == 0 ? true : false;
     }
-}}}
+
+    // Dump the object
+    function dump(var dump, var emit, var obj)
+    {
+        // TODO: If the class is anonymous or has no name, we should print out
+        // something anyway
+        var class_obj = typeof(obj);
+        string text = "";
+        try {
+            text = string(obj);
+            text = "'" + text + "' ";
+        } catch() { }
+        emit.text("'%s' : %s", class_obj, text);
+        emit.object(function() {
+            for (string key in class_obj.attributes()) {
+                emit.text_line("%s => ", key);
+                dump.__dump_recurse(emit, obj.*key);
+            }
+        });
+    }
+}
