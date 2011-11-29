@@ -100,17 +100,15 @@ class Rosella.Random.RandomNumber.MersenneTwister : Rosella.Random.RandomNumber
         z = logical_shift_right(y, 18);
         y = y ^ z;                                  // TEMPERING_SHIFT_T(y)
 
-        return y;
+        return y & 0xFFFFFFFF;
     }
 
     // Get a random float
     function get_float()
     {
-        float n = (1 << 24);
         int y = self.get_int();
-        y = logical_shift_right(y, 18);
-
-        return y / n;
+        float z = y / 0xFFFFFFFF;
+        return z;
     }
 }
 
