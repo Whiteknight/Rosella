@@ -30,7 +30,7 @@ class Rosella.Random.RandomNumber.BoxMullerNormal : Rosella.Random.RandomNumber
     // Return a random integer
     function get_int()
     {
-        return int(self.__next(float(self.center), float(self.stddev)));
+        return int(self.__get_next(float(self.center), float(self.stddev)));
     }
 
     // Return a random float with the given center and standard deviation
