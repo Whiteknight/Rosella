@@ -1,0 +1,116 @@
+/* Mersenne Twister
+    This class implements the Mersenne Twister algorithm. It is a high-quality
+    PRNG for generating a uniform distribution
+*/
+class Rosella.Random.RandomNumber.MersenneTwister : Rosella.Random.RandomNumber
+{
+    // Period parameters
+    const int N = 624;
+    const int M = 397;
+    const int MATRIX_A = 0x9908b0df;
+    const int UPPER_MASK = 0x80000000; // most significant bit
+    const int LOWER_MASK = 0x7FFFFFFF; // the rest
+
+    // Tempering parameters
+    const int TEMPERING_MASK_B = 0x9D2C5680;
+    const int TEMPERING_MASK_C = 0xEFC60000;
+
+    // State variables
+    var mt;     // state vector
+    var mti;    // mti == N + 1 means mt[N] is not initialized
+    var mag01;
+
+    // constructor
+    function MersenneTwister()
+    {
+        self.mt = [];
+        self.mag01 = [];
+
+        self.initialize(time_i());
+    }
+
+    // Return the name of the distribution
+    function distribution()
+    {
+        return "uniform";
+    }
+
+    // Initialize the twister with the given seed. The seed should be something
+    // that's random, because identical seeds will produce identical random
+    // sequences
+    function initialize(int seed)
+    {
+        self.mag01[0] = 0;
+        self.mag01[1] = MATRIX_A;
+
+        self.mt[0] = seed & 0xFFFFFFFF;
+        int mti = 1;
+        for (mti = 1; mti < N; mti++)
+        {
+            int y = self.mt[mti - 1];
+            int z = logical_shift_right(y, 30);
+
+            self.mt[mti] = 1812433253 * (self.mt[mti - 1] ^ z) + mti;
+            self.mt[mti] = self.mt[mti] & 0xFFFFFFFF;
+        }
+        self.mti = mti;
+    }
+
+    // Get a random integer
+    function get_int()
+    {
+        int y;
+        int z;
+
+        int mti = int(self.mti);
+        if (mti >= N)
+        {
+            int kk;
+            var mt = self.mt;
+            var mag01 = self.mag01;
+
+            for (kk = 0; kk < N - M; kk++)
+            {
+                y = (mt[kk] & UPPER_MASK) | (mt[kk + 1] & LOWER_MASK);
+                z = logical_shift_right(y, 1);
+                mt[kk] = mt[kk + M] ^ z ^ mag01[y & 1];
+            }
+            for (; kk < N - 1; kk++)
+            {
+                y = (mt[kk] & UPPER_MASK) | (mt[kk + 1] & LOWER_MASK);
+                z = logical_shift_right(y, 1);
+                mt[kk] = mt[kk + (M - N)] ^ z ^ mag01[y & 1];
+            }
+
+            y = (mt[N - 1] & UPPER_MASK) | (mt[0] & LOWER_MASK);
+            z = logical_shift_right(y, 1);
+            mt[N - 1] = mt[M - 1] ^ z ^ mag01[y & 1];
+
+            mti = 0;
+        }
+
+        y = self.mt[mti];
+        mti++;
+        self.mti = mti;
+
+        z = logical_shift_right(y, 11);
+        y = y ^ z;                                  // TEMPERING_SHIFT_U(y)
+        y = y ^ (y << 7) & TEMPERING_MASK_B;        // TEMPERING_SHIFT_S(y)
+        y = y ^ (y << 15) & TEMPERING_MASK_C;       // TEMPERING_SHIFT_L(y)
+        z = logical_shift_right(y, 18);
+        y = y ^ z;                                  // TEMPERING_SHIFT_T(y)
+
+        return y;
+    }
+
+    // Get a random float
+    function get_float()
+    {
+        float n = (1 << 24);
+        int y = self.get_int();
+        y = logical_shift_right(y, 18);
+
+        return y / n;
+    }
+}
+

@@ -1,0 +1,41 @@
+/* Rosella Random Library
+    This library provides some utilitites and routines for working with random
+    numbers. It provides some pseudo-random number generators, and some other
+    related tools.
+*/
+namespace Rosella.Random
+{
+    // Get a default PRNG for a uniform number distribution
+    function default_uniform_random()
+    {
+        return new Rosella.Random.RandomNumber.MersenneTwister();
+    }
+
+    // Get a default PRNG for a normal number distribution
+    function default_normal_random(float center, float stddev)
+    {
+        return new Rosella.Random.RandomNumber.BoxMullerNormal(center, stddev);
+    }
+
+    // Perform a random sort of an array in-place using the knuth-fisher-yates
+    // algorithm.
+    // TODO: Do we want to move this out into a Shuffler class? Will we have
+    // multiple options that need to be interchanged?
+    function __knuth_fisher_yates_shuffle(var d)
+    {
+        int i = elements(d);
+        var rand = default_uniform_random();
+        for (int i = elements(d) - 1; i > 0; i--) {
+            int n = rand.get_range(0, i + 1);
+            var v = d[i];
+            d[i] = d[n];
+            d[n] = v;
+        }
+    }
+
+    // Shuffle the array randomly, using a default algorithm
+    function shuffle_array(var d)
+    {
+        __knuth_fisher_yates_shuffle(d);
+    }
+}

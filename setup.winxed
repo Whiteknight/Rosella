@@ -262,6 +262,7 @@ function setup_stable_libraries(var rosella)
         "template/node/Literal"
     );
 
+    // Random number generation and tools
     setup_winxed_lib(rosella, "random", ["Math_Builtins"],
         "random/Includes",
         "random/Random",

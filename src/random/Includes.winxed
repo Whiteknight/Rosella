@@ -1,0 +1,14 @@
+$loadlib "trans_ops";
+
+/* inline helpers
+*/
+
+// Natural logarithm
+inline ln(float val) return float
+{
+    float result;
+    ${ ln result, val };
+    return result;
+}
+
+
