@@ -328,10 +328,12 @@ function setup_experimental_libraries(var rosella)
     );
 
     setup_unstable_lib(rosella, "reflect", ["Core"],
+        "reflect/Includes",
         "reflect/Class",
         "reflect/class/Member",
         "reflect/class/Attribute",
-        "reflect/class/Method"
+        "reflect/class/Method",
+        "reflect/Module"
     );
 
     setup_unstable_lib(rosella, "date", [],

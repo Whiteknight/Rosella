@@ -1,0 +1,5 @@
+// Constants.
+const int SUB_FLAG_METHOD = 0x04;
+const int SUB_FLAG_INIT = 0x400;
+const int PF_FLAG_ANON = 0x08;
+const int PF_FLAG_LOAD = 0x20;
