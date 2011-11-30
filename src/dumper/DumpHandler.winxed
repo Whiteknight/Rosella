@@ -26,9 +26,9 @@ class Rosella.Dumper.DumpHandler
         // out some kind of message about the class not having a name
         try {
             string text = string(obj);
-            emit.text("(%s) '%s'\n", typeof(obj), text);
+            emit.text("(%s) '%s'", typeof(obj), text);
         } catch() {
-            emit.text("(%s)\n", typeof(obj));
+            emit.text("(%s)", typeof(obj));
         }
     }
 }

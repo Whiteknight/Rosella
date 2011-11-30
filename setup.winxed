@@ -278,6 +278,17 @@ function setup_stable_libraries(var rosella)
         "commandline/Program",
         "commandline/ProgramMode"
     );
+
+    setup_winxed_lib(rosella, "dumper", ["Core"],
+        "dumper/Dumper",
+        "dumper/DumpHandler",
+        "dumper/Emitter",
+        "dumper/dumphandler/Array",
+        "dumper/dumphandler/Hash",
+        "dumper/dumphandler/InspectAttrs",
+        "dumper/dumphandler/Object",
+        "dumper/dumphandler/Null"
+    );
 }
 
 function setup_experimental_libraries(var rosella)
@@ -321,17 +332,6 @@ function setup_experimental_libraries(var rosella)
         "reflect/class/Member",
         "reflect/class/Attribute",
         "reflect/class/Method"
-    );
-
-    setup_unstable_lib(rosella, "dumper", ["Core"],
-        "dumper/Dumper",
-        "dumper/DumpHandler",
-        "dumper/Emitter",
-        "dumper/dumphandler/Array",
-        "dumper/dumphandler/Hash",
-        "dumper/dumphandler/InspectAttrs",
-        "dumper/dumphandler/Object",
-        "dumper/dumphandler/Null"
     );
 
     setup_unstable_lib(rosella, "date", [],

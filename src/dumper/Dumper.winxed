@@ -92,7 +92,7 @@ class Rosella.Dumper
     function add_type_dumper(var type, var dumper [optional], int has_dumper [opt_flag])
     {
         if (!has_dumper)
-            dumper = new Rosella.Dumper.DumpHandler.InspectAttr();
+            dumper = new Rosella.Dumper.DumpHandler();
         self.type_dumpers[type] = dumper;
     }
 

@@ -15,6 +15,6 @@ class Rosella.Dumper.DumpHandler.Null : Rosella.Dumper.DumpHandler
     // Print the string "<NULL>"
     function dump(var dump, var emit, var obj)
     {
-        emit.text("<NULL>\n");
+        emit.text("<NULL>");
     }
 }
