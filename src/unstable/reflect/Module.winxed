@@ -10,7 +10,9 @@ namespace Rosella.Reflect.Module
 
     function get_current_packfile()
     {
-        // TODO: Get a reference to the caller, get the packfile from there
+        var cur_ctx = getinterp()["context"];
+        var pf = cur_ctx.caller_ctx.current_sub.get_packfile();
+        return new Rosella.Reflect.Module(pf);
     }
 
     function get_all_packfiles()
