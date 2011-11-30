@@ -1,0 +1,40 @@
+namespace Rosella.Reflect
+{
+    function get_current_module()
+    {
+        var cur_ctx = getinterp()["context"];
+        var pf = cur_ctx.caller_ctx.current_sub.get_packfile();
+        return new Rosella.Reflect.Module(pf);
+    }
+
+    function get_current_sub()
+    {
+        var cur_ctx = getinterp()["context"];
+        var sub = cur_ctx.caller_ctx.current_sub;
+        return sub;
+    }
+
+    function get_current_context()
+    {
+        var cur_ctx = getinterp()["context"];
+        var ctx = cur_ctx.caller_ctx;
+        return ctx;
+    }
+
+    function get_current_object()
+    {
+        var cur_ctx = getinterp()["context"];
+        var obj = cur_ctx.caller_ctx.current_object;
+        return obj;
+    }
+
+    function get_current_class()
+    {
+        var cur_ctx = getinterp()["context"];
+        var obj = cur_ctx.caller_ctx.current_object;
+        if (obj == null)
+            return null;
+        var c = typeof(obj);
+        return new Rosella.Reflect.Class(c);
+    }
+}

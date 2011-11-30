@@ -7,19 +7,6 @@ namespace Rosella.Reflect.Module
         pf.load();
         return pf;
     }
-
-    function get_current_packfile()
-    {
-        var cur_ctx = getinterp()["context"];
-        var pf = cur_ctx.caller_ctx.current_sub.get_packfile();
-        return new Rosella.Reflect.Module(pf);
-    }
-
-    function get_all_packfiles()
-    {
-        // TODO: Get a list of all loaded parrot packfiles. Can we do this
-        // without implicitly GC-registering all packfiles at the parrot-level?
-    }
 }
 
 class Rosella.Reflect.Module
@@ -41,13 +28,27 @@ class Rosella.Reflect.Module
 
     function path()
     {
-        return string(self.pf);
+        if (self.pf == null)
+            return "<UNINITIALIZED MODULE>";
+        string p = string(self.pf);
+        if (p == null || p == "")
+            // TODO: If we don't have a path, we can try reading the annotations
+            // in effect in the caller, and looking for a "file" annotation
+            // to use.
+            p = "<UNKNOWN>";
+        return p;
+    }
+
+    function get_string[vtable]()
+    {
+        return sprintf("%s@%s", [self.path(), self.version()]);
     }
 
     function version()
     {
-        // TODO: PackfileView doesn't yet have functionality to get the version
-        // information. Probably need to add that.
+        if (self.pf == null)
+            return "0.0.0";
+        return self.pf.get_version();
     }
 
     function classes()
