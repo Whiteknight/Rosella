@@ -1,0 +1,24 @@
+namespace Rosella {
+    class Repl;
+}
+
+namespace Rosella.Repl {
+    class CommandEngine;
+    class Compiler;
+    class State;
+    class View;
+}
+
+namespace Rosella.Repl.CommandFuncs {
+    extern function quit;
+    extern function help;
+    extern function codeon;
+    extern function codeoff;
+    extern function showpre;
+    extern function addpre;
+}
+
+function __load_repl[anon, load, init]()
+{
+    Rosella.load_bytecode_file("rosella/repl.pbc", "load");
+}

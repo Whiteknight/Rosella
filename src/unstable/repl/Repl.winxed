@@ -1,4 +1,4 @@
-class Rosella.Winxed.Repl
+class Rosella.Repl
 {
     var compiler;
     var commands;
@@ -12,19 +12,19 @@ class Rosella.Winxed.Repl
         var view [named,optional], int has_view [opt_flag])
     {
         if (!has_cmds)
-            commands = new Rosella.Winxed.Repl.CommandEngine();
+            commands = new Rosella.Repl.CommandEngine();
         self.commands = commands;
 
         if (!has_comp)
-            compiler = new Rosella.Winxed.Repl.Compiler();
+            compiler = new Rosella.Repl.Compiler();
         self.compiler = compiler;
 
         if (!has_view)
-            view = new Rosella.Winxed.Repl.View();
+            view = new Rosella.Repl.View();
         self.view = view;
 
         if (!has_state)
-            state = new Rosella.Winxed.Repl.State();
+            state = new Rosella.Repl.State();
         self.state = state;
         self.state.set_view(self.view);
     }

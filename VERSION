@@ -18,6 +18,7 @@ proxy: 2 Stable
 query: 1 Stable
 random: 1 Stable
 reflect: 0 Alpha
+repl: 0 Alpha
 string: 1 Stable
 template: 1 Stable
 test: 3 Stable

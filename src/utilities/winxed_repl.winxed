@@ -50,7 +50,7 @@ function show_versions()
 function show_preamble()
 {
     using Rosella.Version.get_version;
-    var winxed_version = get_version("winxed");
+    var winxed_version = get_version("repl");
     var core_version = get_version("core");
     say(sprintf(<<:
 Winxed REPL with Rosella
@@ -62,6 +62,6 @@ Type '%%quit' or 'exit(0)' to quit
 
 function run_repl()
 {
-    var repl = new Rosella.Winxed.Repl();
+    var repl = new Rosella.Repl();
     repl.run_loop();
 }

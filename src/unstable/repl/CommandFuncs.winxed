@@ -1,4 +1,4 @@
-namespace Rosella.Winxed.Repl.CommandFuncs
+namespace Rosella.Repl.CommandFuncs
 {
     function quit (var state, string args)
     {

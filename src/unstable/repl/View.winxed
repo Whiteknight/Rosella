@@ -1,4 +1,4 @@
-class Rosella.Winxed.Repl.View
+class Rosella.Repl.View
 {
     const int MAX_BACKTRACE_LINES = 5;
     const string PROMPT = "\nWinxed-Rosella> ";

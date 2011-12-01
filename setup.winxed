@@ -52,13 +52,7 @@ function setup_stable_libraries(var rosella)
     // to run setup.winxed (this script). This is the only rosella library
     // which doesn't rely on Core.
     setup_winxed_lib(rosella, "winxed", [],
-        "winxed/Distutils",
-        "winxed/Repl",
-        "winxed/repl/Commands",
-        "winxed/repl/CommandFuncs",
-        "winxed/repl/Compiler",
-        "winxed/repl/State",
-        "winxed/repl/View"
+        "winxed/Distutils"
     );
 
     // The Rosella "core" library. Does very little on its own but is
@@ -339,12 +333,21 @@ function setup_experimental_libraries(var rosella)
     setup_unstable_lib(rosella, "date", [],
         "date/Doomsday"
     );
+
+    setup_unstable_lib(rosella, "repl", ["Core"],
+        "repl/Repl",
+        "repl/Commands",
+        "repl/CommandFuncs",
+        "repl/Compiler",
+        "repl/State",
+        "repl/View"
+    );
 }
 
 function setup_utilities(var rosella)
 {
     var utilities = {
-        "winxed_repl" : ["winxed_repl", ["Core"]],
+        "winxed_repl" : ["winxed_repl", ["Core", "Repl"]],
         "test_all_lib" : ["rosella_test_all_lib", ["Core", "FileSystem", "Template", "CommandLine"]],
         "test_template" : ["rosella_test_template", ["Core", "FileSystem", "Template", "CommandLine"]],
         "mk_winxed_header" : ["winxed_mk_header", ["Core", "FileSystem", "CommandLine"]],
@@ -359,7 +362,7 @@ function setup_utilities(var rosella)
         string pir_file = dest_prefix + dest_file_base + ".pir";
         string pbc_file = dest_prefix + dest_file_base + ".pbc";
 
-        var files = [];
+        var files = ["src/include/Builtins.winxed"];
         var includes = utilities[util_source][1];
         for (string include in includes)
             push(files, "src/include/" + include + ".winxed");

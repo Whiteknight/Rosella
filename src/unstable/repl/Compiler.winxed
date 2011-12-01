@@ -1,4 +1,4 @@
-class Rosella.Winxed.Repl.Compiler
+class Rosella.Repl.Compiler
 {
     var compiler;
     var count;
