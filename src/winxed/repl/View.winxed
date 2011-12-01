@@ -80,4 +80,8 @@ class Rosella.Winxed.Repl.View
         self.__printf("\t>>> Result = '%s'\n", result);
     }
 
+    function show_message(string msg)
+    {
+        self.__printf(msg);
+    }
 }

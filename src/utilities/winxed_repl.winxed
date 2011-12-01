@@ -1,12 +1,12 @@
 function main[main](var args)
 {
-    load_bytecode("rosella/core.pbc");
-    load_bytecode("rosella/winxed.pbc");
+    var rosella = load_packfile("rosella/core.pbc");
+    var(Rosella.initialize_rosella)("winxed");
 
-    using Rosella.get_version_hash;
-    var version_hash = get_version_hash();
-    for (string library in version_hash)
-        load_bytecode("rosella/" + library + ".pbc");
+    //using Rosella.get_version_hash;
+    //var version_hash = get_version_hash();
+    //for (string library in version_hash)
+        //load_bytecode("rosella/" + library + ".pbc");
 
     show_preamble();
 
@@ -33,8 +33,8 @@ Winxed/Rosella REPL
 
 function show_versions()
 {
-    using Rosella.get_version_hash;
-    using Rosella.get_version;
+    using Rosella.Version.get_version_hash;
+    using Rosella.Version.get_version;
     // TODO: When the String library gets more stable, use this for prettiness
     //using Rosella.String.pad_right;
 
@@ -49,13 +49,13 @@ function show_versions()
 
 function show_preamble()
 {
-    using Rosella.get_version;
+    using Rosella.Version.get_version;
     var winxed_version = get_version("winxed");
     var core_version = get_version("core");
     say(sprintf(<<:
 Winxed REPL with Rosella
 Version %d %s
-Type 'quit' or 'exit(0)' to quit
+Type '%%quit' or 'exit(0)' to quit
 :>>
         , [winxed_version.version_number, winxed_version.state]));
 }

@@ -28,7 +28,7 @@ class Rosella.Winxed.Repl.Compiler
 function __REPL_line_%d(var state) {
     var result = null;
     %s;
-    %s;
+    result = %s;
     return result;
 }
 :>>
