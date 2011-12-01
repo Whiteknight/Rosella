@@ -1,8 +1,5 @@
 function main[main](var args)
 {
-    var rosella = load_packfile("rosella/core.pbc");
-    var(Rosella.initialize_rosella)("winxed");
-
     //using Rosella.get_version_hash;
     //var version_hash = get_version_hash();
     //for (string library in version_hash)
@@ -10,6 +7,7 @@ function main[main](var args)
 
     show_preamble();
 
+    // TODO: Use CommandLine library to parse args.
     if (elements(args) <= 1)
         run_repl();
     else if (args[1] == "--help")
@@ -33,31 +31,29 @@ Winxed/Rosella REPL
 
 function show_versions()
 {
-    using Rosella.Version.get_version_hash;
-    using Rosella.Version.get_version;
+    // TODO: Show the Winxed compiler version, or versions of any other compilers
+    // loaded
     // TODO: When the String library gets more stable, use this for prettiness
     //using Rosella.String.pad_right;
 
-    var version_hash = get_version_hash();
+    var version_hash = Rosella.Version.get_version_hash();
     say("Rosella library version information:");
     for (string library in version_hash) {
-        var ver = get_version(library);
+        var ver = Rosella.Version.get_version(library);
         //library = pad_right(library, 10);
-        say(sprintf("\t%s : %d (%s)", [library, ver.version_number, ver.state]));
+        Rosella.IO.sayf("\t%s : %d (%s)", library, ver.version_number, ver.state);
     }
 }
 
 function show_preamble()
 {
-    using Rosella.Version.get_version;
-    var winxed_version = get_version("repl");
-    var core_version = get_version("core");
-    say(sprintf(<<:
+    var winxed_version = Rosella.Version.get_version("repl");
+    Rosella.IO.sayf(<<:
 Winxed REPL with Rosella
 Version %d %s
 Type '%%quit' or 'exit(0)' to quit
 :>>
-        , [winxed_version.version_number, winxed_version.state]));
+        , winxed_version.version_number, winxed_version.state);
 }
 
 function run_repl()
