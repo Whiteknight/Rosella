@@ -1,0 +1,61 @@
+class Rosella.Lazy.Generator : Rosella.IteratorBase
+{
+    var cache;
+    var generator;
+}
+
+class Rosella.Lazy.Generator.Array : Rosella.Lazy.Generator
+{
+    var range_start;
+    var range_end;
+
+    function Array(var generator, int start, end)
+    {
+        self.cache = [];
+        self.generator = generator;
+        if (start > end)
+            Rosella.Error.invalid(__FUNCTION__, "Start index must be smaller than or equal to end index");
+        self.range_start = start;
+        self.range_end = end;
+    }
+
+    function __get_value(int idx)
+    {
+        int start = self.range_start;
+        int end = self.range_end;
+        int array_idx
+        if (start != end) {
+            if (idx > end || idx < start)
+                Rosella.Error.invalid(__FUNCTION__, "Index %d is out of range [%d, %d]", idx, start, end);
+            array_idx = idx - start;
+        } else {
+            array_idx = idx;
+        }
+
+        if (array_idx >= 0 && exists self.cache[array_idx])
+            return self.cache[array_idx];
+        var f = self.generator;
+        var v = self.cache[array_idx] = f(idx);
+        return v;
+    }
+
+    function get_pmc_keyed_int(int idx)
+    {
+        return self.__get_value(idx);
+    }
+
+    function get_string_keyed_int(int idx)
+    {
+        return self.__get_value(idx);
+    }
+
+    function get_integer_keyed_int(int idx)
+    {
+        return self.__get_value(idx);
+    }
+
+    function get_number_keyed_int[vtable](int idx)
+    {
+        return self.__get_value(idx);
+    }
+}
