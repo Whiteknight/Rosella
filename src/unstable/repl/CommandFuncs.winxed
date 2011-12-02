@@ -1,4 +1,4 @@
-namespace Rosella.Winxed.Repl.CommandFuncs
+namespace Rosella.Repl.CommandFuncs
 {
     function quit (var state, string args)
     {
@@ -7,7 +7,7 @@ namespace Rosella.Winxed.Repl.CommandFuncs
 
     function help (var state, string args)
     {
-        state.view.show_message("Just type of winxed code!");
+        state.view.show_message("Just type some winxed code!");
     }
 
     function codeon (var state, string args)

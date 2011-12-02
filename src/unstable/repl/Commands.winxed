@@ -1,4 +1,4 @@
-class Rosella.Winxed.Repl.CommandEngine
+class Rosella.Repl.CommandEngine
 {
     function CommandEngine()
     {
@@ -26,7 +26,7 @@ class Rosella.Winxed.Repl.CommandEngine
 
     function run_command(string cmd, string args, var state)
     {
-        var ns_name = ["Rosella", "Winxed", "Repl", "CommandFuncs"];
+        var ns_name = ["Rosella", "Repl", "CommandFuncs"];
         var func_ns = get_hll_namespace(ns_name);
         var func = func_ns.find_sub(cmd);
         if (func == null)

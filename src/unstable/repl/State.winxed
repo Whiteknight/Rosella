@@ -1,4 +1,4 @@
-class Rosella.Winxedl.Repl.State
+class Rosella.Repl.State
 {
     var keep_running;
     var data;
