@@ -1,10 +1,17 @@
+/* Version 4 UUID
+    This algorithm uses the PRNG to generate a Version4 UUID. These are not
+    guaranteed to be unique, though the sample space is so large that collisions
+    are unlikely.
+*/
 class Rosella.Random.UUID.Version4 : Rosella.Random.UUID
 {
+    // Constructor. Create a new UUID
     function Version4()
     {
         self.value = self.__get();
     }
 
+    // Constructor. Create a new UUID object from a given string representation
     function Version4(string uuid)
     {
         if (!Rosella.Random.UUID.is_uuid(uuid))
@@ -12,8 +19,10 @@ class Rosella.Random.UUID.Version4 : Rosella.Random.UUID
         self.value = uuid;
     }
 
+    // These are "Version 4" UUIDs
     function type_name() { return "UUID Version 4"; }
 
+    // Get a new UUID using the default PRNG
     function __get()
     {
         var rand = Rosella.Random.default_uniform_random();

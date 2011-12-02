@@ -1,15 +1,21 @@
+/* UUID Namespace
+    This namespace provides some utilities for working with UUIDs
+*/
 namespace Rosella.Random.UUID
 {
+    // Get a new UUID using a default algorithm
     function new_uuid()
     {
         return new Rosella.Random.UUID.Version4();
     }
 
+    // Get an empty (default) UUID
     function empty()
     {
         return new Rosella.Random.UUID.Version4("00000000-0000-0000-0000-000000000000");
     }
 
+    // Determine if the given string is a valid UUID
     function is_uuid(string uuid)
     {
         if (length(uuid) != 36)
@@ -25,12 +31,20 @@ namespace Rosella.Random.UUID
     }
 }
 
+/* UUID Base Class
+    All UUID subclasses should inherit from this class. Do not use this class
+    directly, use a subclass.
+*/
 class Rosella.Random.UUID
 {
     var value;
 
+    // Every UUID has a type name, since different algorithms create slightly
+    // different results
     function type_name() { return "UNKNOWN UUID TYPE"; }
 
+    // Determine if two UUIDs are equal. They are equal if they are the same
+    // underlying type and if they have the same stringified value
     function is_equal[vtable](var b)
     {
         if (b == null)
@@ -42,6 +56,7 @@ class Rosella.Random.UUID
         return string(self.value) == string(b.value);
     }
 
+    // Get a string representation of the UUID
     function get_string[vtable]()
     {
         return string(self.value);
