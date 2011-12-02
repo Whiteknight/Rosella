@@ -33,4 +33,9 @@ class Rosella.Repl.State
     {
         return self.data[key];
     }
+
+    function get_iter[vtable]()
+    {
+        return iter(self.data);
+    }
 }

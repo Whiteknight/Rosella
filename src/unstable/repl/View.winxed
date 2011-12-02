@@ -26,9 +26,8 @@ class Rosella.Repl.View
     function display_error(var e)
     {
         self.__printf("\t>>> Error: '%s'\n", e["message"]);
-        using Rosella.Parrot.get_backtrace_ex_strings;
 
-        var bt = get_backtrace_ex_strings(e);
+        var bt = Rosella.Parrot.get_backtrace_ex_strings(e);
         for (int i = 0; i < MAX_BACKTRACE_LINES && i < elements(bt); i++)
             self.__printf("\t>>> %s\n", bt[i]);
         if (MAX_BACKTRACE_LINES < elements(bt))
