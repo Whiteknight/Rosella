@@ -1,0 +1,49 @@
+namespace Rosella.Random.UUID
+{
+    function new_uuid()
+    {
+        return new Rosella.Random.UUID.Version4();
+    }
+
+    function empty()
+    {
+        return new Rosella.Random.UUID.Version4("00000000-0000-0000-0000-000000000000");
+    }
+
+    function is_uuid(string uuid)
+    {
+        if (length(uuid) != 36)
+            return false;
+        if (substr(uuid, 8, 1) != "-" ||
+            substr(uuid, 13, 1) != "-" ||
+            substr(uuid, 18, 1) != "-" ||
+            substr(uuid, 23, 1) != "-")
+            return false;
+        string shorter = substr(uuid, 0, 8) + substr(uuid, 9, 4) + substr(uuid, 14, 4) + substr(uuid, 19, 4) + substr(uuid, 24);
+        int is_ok = Rosella.String.is_all_cclass(shorter, "hexadecimal");
+        return is_ok;
+    }
+}
+
+class Rosella.Random.UUID
+{
+    var value;
+
+    function type_name() { return "UNKNOWN UUID TYPE"; }
+
+    function is_equal[vtable](var b)
+    {
+        if (b == null)
+            return false;
+        if (!isa(b, class Rosella.Random.UUID))
+            return false;
+        if (self.type_name() != b.type_name())
+            return false;
+        return string(self.value) == string(b.value);
+    }
+
+    function get_string[vtable]()
+    {
+        return string(self.value);
+    }
+}

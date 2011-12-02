@@ -1,6 +1,20 @@
-class Rosella.Random.UUID.V4
+class Rosella.Random.UUID.Version4 : Rosella.Random.UUID
 {
-    function get()
+    function Version4()
+    {
+        self.value = self.__get();
+    }
+
+    function Version4(string uuid)
+    {
+        if (!Rosella.Random.UUID.is_uuid(uuid))
+            Rosella.Error.invalid(__FUNCTION__, "UUID must be in format xxxxxxxx-xxxx-xxxx-xxxx-xxxxxxxxxxxx");
+        self.value = uuid;
+    }
+
+    function type_name() { return "UUID Version 4"; }
+
+    function __get()
     {
         var rand = Rosella.Random.default_uniform_random();
         string hex[] = ["0", "1", "2", "3", "4", "5", "6", "7", "8", "9", "A", "B", "C", "D", "E", "F"];

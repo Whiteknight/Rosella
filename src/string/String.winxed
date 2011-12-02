@@ -18,6 +18,7 @@ namespace Rosella.String
             case "whitespace": return CCLASS_WHITESPACE;
             case "punctuation": return CCLASS_PUNCTUATION;
             case "graphical": return CCLASS_GRAPHICAL;
+            case "hexadecimal": return CCLASS_HEXADECIMAL;
             default:
                 Rosella.Error.invalid(__FUNCTION__, "Could not find character class '" + name + "'");
         }

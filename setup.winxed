@@ -258,13 +258,14 @@ function setup_stable_libraries(var rosella)
     );
 
     // Random number generation and tools
-    setup_winxed_lib(rosella, "random", ["Math_Builtins"],
+    setup_winxed_lib(rosella, "random", ["Math_Builtins", "String"],
         "random/Includes",
         "random/Random",
         "random/RandomNumber",
         "random/randomnumber/BoxMullerNormal",
         "random/randomnumber/MersenneTwister",
-        "random/uuid/V4"
+        "random/UUID",
+        "random/uuid/Version4"
     );
 
     // Working with commandline arguments
