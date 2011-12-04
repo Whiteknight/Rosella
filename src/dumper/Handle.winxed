@@ -1,0 +1,24 @@
+class Rosella.Dumper.Handle
+{
+    var handle;
+    var dumper;
+
+    function Handle(
+        var handle [named("handle"),optional], int has_handle [opt_flag],
+        var dumper [named("dumper"),optional], int has_dumper [opt_flag])
+    {
+        if (!has_handle)
+            handle = getstdout();
+        if (!has_dumper)
+            dumper = Rosella.Dumper.default_dumper();
+
+        self.handle = handle;
+        self.dumper = dumper;
+    }
+
+    function print(var obj)
+    {
+        string s = self.dumper.dump(obj);
+        self.handle.print(s);
+    }
+}

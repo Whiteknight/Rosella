@@ -285,7 +285,8 @@ function setup_stable_libraries(var rosella)
         "dumper/dumphandler/Hash",
         "dumper/dumphandler/InspectAttrs",
         "dumper/dumphandler/Object",
-        "dumper/dumphandler/Null"
+        "dumper/dumphandler/Null",
+        "dumper/Handle"
     );
 }
 
