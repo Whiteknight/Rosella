@@ -11,14 +11,35 @@ namespace Rosella.String
     function get_character_class(string name)
     {
         switch (name) {
-            // TODO: Add other options
+            // Generic classes
+            case "any": return CCLASS_ANY;
+            case "none": return CCLASS_NONE;
+
+            // Word-like characters
             case "alphabetic": return CCLASS_ALPHABETIC;
+            case "uppercase": return CCLASS_UPPERCASE;
+            case "lowercase": return CCLASS_LOWERCASE;
             case "word": return CCLASS_WORD;
+
+            // Numbers
             case "numeric": return CCLASS_NUMERIC;
-            case "whitespace": return CCLASS_WHITESPACE;
-            case "punctuation": return CCLASS_PUNCTUATION;
-            case "graphical": return CCLASS_GRAPHICAL;
             case "hexadecimal": return CCLASS_HEXADECIMAL;
+
+            case "alphanumeric": return CCLASS_ALPHANUMERIC;
+
+            // Other
+            case "punctuation": return CCLASS_PUNCTUATION;
+            case "printing": return CCLASS_PRINTING;
+            case "graphical": return CCLASS_GRAPHICAL;
+
+            // Whitespace
+            case "whitespace": return CCLASS_WHITESPACE;
+            case "blank": return CCLASS_BLANK;
+            case "newline": return CCLASS_NEWLINE;
+
+            // Control characters
+            case "control": return CCLASS_CONTROL;
+
             default:
                 Rosella.Error.invalid(__FUNCTION__, "Could not find character class '" + name + "'");
         }
