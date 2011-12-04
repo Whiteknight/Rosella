@@ -170,19 +170,25 @@ namespace Rosella.String
     // Remove the given number of characters from the start of the string.
     function remove_start(string str, int start)
     {
+        if (start < 0 || start > length(str))
+            Rosella.Error.invalid(__FUNCTION__, "Start index outside the bounds of the string");
         return substr(str, start);
     }
 
     // Remove the given number of characters from the end of the string.
     function remove_end(string str, int count)
     {
+        if (count < 0 || count > length(str))
+            Rosella.Error.invalid(__FUNCTION__, "Length is outside the bounds of the string");
         return substr(str, 0, count);
     }
 
     // Remove a block of characters from the middle of the string
     function remove_middle(string str, int start, int count)
     {
-        // TODO: bounds check
+        int len = length(str);
+        if (start < 0 || count < 0 || start + count > len)
+            Rosella.Error.invalid(__FUNCTION__, "Cannot substr outside the bounds of the string");
         string first_half = substr(str, 0, start);
         string second_half = substr(str, start + count);
         return first_half + second_half;
@@ -193,7 +199,6 @@ namespace Rosella.String
     {
         return join(subst, split(target, str));
     }
-
 
     /*
     function replace_first(string str, string target, string subst, int count)
