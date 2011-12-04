@@ -14,10 +14,7 @@ namespace Rosella.Dumper
             temp = new Rosella.Dumper();
             Rosella.Globals.register_global(DEFAULT_DUMPER_GLOBAL, temp);
         }
-        while(1) {
-            yield temp;
-            temp = Rosella.Globals.get_global(DEFAULT_DUMPER_GLOBAL);
-        }
+        return temp;
     }
 
     function set_default_dumper(var dumper)
