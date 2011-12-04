@@ -1,20 +1,35 @@
+/* String Formatting Engine
+    This class implements a variant of .NET-style String.Format formatting. It
+    is like an alternate syntax/semantic for sprintf.
+*/
 class Rosella.String.Formatter
 {
-    var converters;
+    var type_converters;
+    var role_converters;
     var default_converter;
 
+    // Constructor
     function Formatter()
     {
-        self.converters = Rosella.get_pmc_keyed_hash();
+        self.type_converters = Rosella.get_pmc_keyed_hash();
+        self.role_converters = {};
         self.default_converter = new Rosella.String.Converter.Sprintf();
     }
 
-    function add_converter(var type, var converter)
+    // Add a converter for a specific type
+    function add_type_converter(var type, var converter)
     {
         var type_c = Rosella.get_type_class(type);
         self.converters[type_c] = converter;
     }
 
+    // Add a converter for a role
+    function add_role_converter(string role, var converter)
+    {
+        self.role_converters[role] = converter;
+    }
+
+    // Format the string
     function format(string fmt, var args [slurpy])
     {
         int cclass_numeric = Rosella.String.get_character_class("numeric");
@@ -55,6 +70,10 @@ class Rosella.String.Formatter
         return join("", output_array);
     }
 
+    /* Internal Helper Methods
+    */
+
+    // Get index/format information from a {...} sequence
     function __get_placeholder(string fmt, int start_idx, int end_idx)
     {
         string f = substr(fmt, start_idx, end_idx - start_idx);
@@ -68,21 +87,32 @@ class Rosella.String.Formatter
             return int(p[0]), string(p[1]);
     }
 
+    // Get the (possibly cached) string value for the given argument with the
+    // given format
     function __get_string_value(var args, var cache, int idx, string fmt)
     {
         string key = string(idx) + ":" + fmt;
         if (exists cache[key])
             return cache[key];
         var obj = args[idx];
-        var obj_c = typeof(obj);
-        var converter = null;
-        if (exists self.converters[obj_c])
-            converter = self.converters[obj_c];
-        else
-            converter = self.default_converter;
+        var converter = self.__get_converter(obj);
         string value = converter.convert(obj, fmt);
-        Rosella.IO.sayf("Got value '%s' from '%s' fmt '%s'", value, obj, fmt);
         cache[key] = value;
         return value;
+    }
+
+    // Get a suitable converter for the given object
+    // Check from most specific first to least specific last
+    function __get_converter(var obj)
+    {
+        var obj_c = typeof(obj);
+        var converter = null;
+        if (exists self.type_converters[obj_c])
+            return self.type_converters[obj_c];
+        for (string role in self.role_converters) {
+            if (does(obj, role))
+                return self.role_converters[role];
+        }
+        return self.default_converter;
     }
 }

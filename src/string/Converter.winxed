@@ -12,9 +12,7 @@ class Rosella.String.Converter.Sprintf : Rosella.String.Converter
     function convert(var obj, string fmt)
     {
         fmt = "%" + fmt;
-        say(typeof(obj));
         string r = sprintf(fmt, obj);
-        Rosella.IO.sayf("Got value '%s' from '%s' fmt '%s'", r, obj, fmt);
         return r;
     }
 }
