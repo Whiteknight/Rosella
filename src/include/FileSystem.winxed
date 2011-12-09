@@ -1,45 +1,43 @@
-namespace Rosella {
-    namespace FileSystem {
-        // src/filesystem/FileSystem.winxed
-        extern function get_os_pmc;
-        extern function set_os_pmc;
-        extern function is_file;
-        extern function is_directory;
-        extern function path_separator;
-        extern function join_path_parts;
-        extern function iterable_handle;
+namespace Rosella.FileSystem {
+    // src/filesystem/FileSystem.winxed
+    extern function get_os_pmc;
+    extern function set_os_pmc;
+    extern function is_file;
+    extern function is_directory;
+    extern function path_separator;
+    extern function join_path_parts;
+    extern function iterable_handle;
 
-        // src/filesystem/Directory.winxed
-        class Directory;
-        namespace Directory {
-            extern function current_directory;
-        }
+    // src/filesystem/Directory.winxed
+    class Directory;
+    namespace Directory {
+        extern function current_directory;
+    }
 
-        // src/filesystem/Entry.winxed
-        class Entry;
+    // src/filesystem/Entry.winxed
+    class Entry;
 
-        // src/filesystem/FilePath.winxed
-        class FilePath;
+    // src/filesystem/FilePath.winxed
+    class FilePath;
 
-        // src/filesystem/File.winxed
-        class File;
-        namespace File {
-            extern function get_filehandle;
-            extern function set_filehandle_factory;
-        }
+    // src/filesystem/File.winxed
+    class File;
+    namespace File {
+        extern function get_filehandle;
+        extern function set_filehandle_factory;
+    }
 
-        // src/filesystem/Visitor.winxed
-        class Visitor;
-        namespace Visitor {
-            // src/filesystem/visitor/Delete.winxed
-            class Delete;
+    // src/filesystem/Visitor.winxed
+    class Visitor;
+    namespace Visitor {
+        // src/filesystem/visitor/Delete.winxed
+        class Delete;
 
-            // src/filesystem/visitor/Function.winxed
-            class Function;
+        // src/filesystem/visitor/Function.winxed
+        class Function;
 
-            // src/filesystem/visitor/List.winxed
-            class List;
-        }
+        // src/filesystem/visitor/List.winxed
+        class List;
     }
 }
 
