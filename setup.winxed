@@ -396,21 +396,21 @@ function setup_data_files(var rosella)
 function setup_include_headers(var rosella)
 {
     rosella["inst_wxheader"] = {
-        "src/include/Action.winxed" : "Rosella/Action.winxed",
-        "src/include/Builtins.winxed" : "Rosella/Builtins.winxed",
-        "src/include/CommandLine.winxed" : "Rosella/CommandLine.winxed",
-        "src/include/Core.winxed" : "Rosella/Core.winxed",
-        "src/include/FileSystem.winxed" : "Rosella/FileSystem.winxed",
-        "src/include/Harness.winxed" : "Rosella/Harness.winxed",
+        "src/include/Action.winxed"        : "Rosella/Action.winxed",
+        "src/include/Builtins.winxed"      : "Rosella/Builtins.winxed",
+        "src/include/CommandLine.winxed"   : "Rosella/CommandLine.winxed",
+        "src/include/Core.winxed"          : "Rosella/Core.winxed",
+        "src/include/FileSystem.winxed"    : "Rosella/FileSystem.winxed",
+        "src/include/Harness.winxed"       : "Rosella/Harness.winxed",
         "src/include/Math_Builtins.winxed" : "Rosella/Math_Builtins.winxed",
-        "src/include/Proxy.winxed" : "Rosella/Proxy.winxed",
-        "src/include/Path.winxed" : "Rosella/Path.winxed",
-        "src/include/Query.winxed" : "Rosella/Query.winxed",
-        "src/include/Random.winxed" : "Rosella/Random.winxed",
-        "src/include/Repl.winxed" : "Rosella/Repl.winxed",
-        "src/include/String.winxed" : "Rosella/String.winxed",
-        "src/include/Template.winxed" : "Rosella/Template.winxed"
-        "src/include/Test.winxed" : "Rosella/Test.winxed",
+        "src/include/Proxy.winxed"         : "Rosella/Proxy.winxed",
+        "src/include/Path.winxed"          : "Rosella/Path.winxed",
+        "src/include/Query.winxed"         : "Rosella/Query.winxed",
+        "src/include/Random.winxed"        : "Rosella/Random.winxed",
+        "src/include/Repl.winxed"          : "Rosella/Repl.winxed",
+        "src/include/String.winxed"        : "Rosella/String.winxed",
+        "src/include/Template.winxed"      : "Rosella/Template.winxed",
+        "src/include/Test.winxed"          : "Rosella/Test.winxed"
     };
 }
 
