@@ -33,6 +33,7 @@ function setup_main(var argv)
     setup_experimental_libraries(rosella);
     setup_utilities(rosella);
     setup_data_files(rosella);
+    setup_include_headers(rosella);
 
     get_all_tests(rosella, "t");
     argv.shift();
@@ -390,6 +391,27 @@ function setup_data_files(var rosella)
         "rosella/data/templates/test_harness.nqp.template",
         "rosella/data/templates/test_harness.winxed.template"
     ];
+}
+
+function setup_include_headers(var rosella)
+{
+    rosella["inst_wxheader"] = {
+        "src/include/Action.winxed" : "Rosella/Action.winxed",
+        "src/include/CommandLine.winxed" : "Rosella/CommandLine.winxed",
+        "src/include/FileSystem.winxed" : "Rosella/FileSystem.winxed",
+        "src/include/Math_Builtins.winxed" : "Rosella/Math_Builtins.winxed",
+        "src/include/Proxy.winxed" : "Rosella/Proxy.winxed",
+        "src/include/Random.winxed" : "Rosella/Random.winxed",
+        "src/include/String.winxed" : "Rosella/String.winxed",
+        "src/include/Test.winxed" : "Rosella/Test.winxed",
+        "src/include/Builtins.winxed" : "Rosella/Builtins.winxed",
+        "src/include/Core.winxed" : "Rosella/Core.winxed",
+        "src/include/Harness.winxed" : "Rosella/Harness.winxed",
+        "src/include/Path.winxed" : "Rosella/Path.winxed",
+        "src/include/Query.winxed" : "Rosella/Query.winxed",
+        "src/include/Repl.winxed" : "Rosella/Repl.winxed",
+        "src/include/Template.winxed" : "Rosella/Template.winxed"
+    };
 }
 
 function setup_winxed_lib(var rosella, string name, var includes, var files [slurpy],

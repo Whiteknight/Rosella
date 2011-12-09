@@ -28,6 +28,9 @@ namespace Rosella.Winxed.Distutils
         register_step_before("clean",function (var args [slurpy,named]) {
             delete_files(args["include_winxed"]);
         });
+
+        register_step_before("install", install_winxed_headers);
+        register_step_before("uninstall", uninstall_winxed_headers);
     }
 
     // Ensure that there is a valid path to the given file, so we can
@@ -100,6 +103,30 @@ namespace Rosella.Winxed.Distutils
 
         for (string file in files)
             delete_file(file);
+    }
+
+    function install_winxed_headers(var args [named,slurpy])
+    {
+        using install;
+        using get_libdir;
+        string inc_dir = string(get_libdir()) + "/include/";
+        var install_headers = args["inst_wxheader"];
+        for (string src in install_headers) {
+            string dest = inc_dir + string(install_headers[src]);
+            install(src, dest, 1:[named("verbose")]);
+        }
+    }
+
+    function uninstall_winxed_headers(var args [named,slurpy])
+    {
+        using get_libdir;
+        using delete_file;
+        string inc_dir = string(get_libdir()) + "/include/";
+        var install_headers = args["inst_wxheader"];
+        for (string src in install_headers) {
+            string dest = inc_dir + string(install_headers[src]);
+            delete_file(dest);
+        }
     }
 
     /* Private Helper Functions

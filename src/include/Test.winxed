@@ -1,56 +1,55 @@
-namespace Rosella {
-    namespace Test {
-        // src/test/Test.winxed
-        extern function test;
-        extern function test_vector;
-        extern function internal_fail;
+namespace Rosella.Test
+{
+    // src/test/Test.winxed
+    extern function test;
+    extern function test_vector;
+    extern function internal_fail;
 
-        // src/test/Asserter.winxed
-        class Assert;
+    // src/test/Asserter.winxed
+    class Assert;
 
-        // src/test/Builder.winxed
-        class Builder;
+    // src/test/Builder.winxed
+    class Builder;
 
-        // src/test/Failure.winxed
-        class Failure;
-        namespace Failure {
-            extern function get_exception_failure;
-        }
-
-        // src/test/Listern.winxed
-        class Listener;
-
-        // src/test/listener/TAP.winxed
-        namespace Listener {
-            class TAP;
-        }
-
-        // src/test/Result.winxed
-        class Result;
-
-        // src/test/SuiteFactory.winxed
-        class SuiteFactory;
-
-        // src/test/suitefactory/Vector.winxed
-        namespace SuiteFactory {
-            class Vector;
-        }
-
-        // src/test/Suite.winxed
-        class Suite;
-
-        // src/test/TestCase.winxed
-        class TestCase;
-
-        // src/test/TestContext.winxed
-        class TestContext;
-
-        // src/test/TestFactory.winxed
-        class TestFactory;
-
-        // src/test/TestStatus.winxed
-        class TestStatus;
+    // src/test/Failure.winxed
+    class Failure;
+    namespace Failure {
+        extern function get_exception_failure;
     }
+
+    // src/test/Listern.winxed
+    class Listener;
+
+    // src/test/listener/TAP.winxed
+    namespace Listener {
+        class TAP;
+    }
+
+    // src/test/Result.winxed
+    class Result;
+
+    // src/test/SuiteFactory.winxed
+    class SuiteFactory;
+
+    // src/test/suitefactory/Vector.winxed
+    namespace SuiteFactory {
+        class Vector;
+    }
+
+    // src/test/Suite.winxed
+    class Suite;
+
+    // src/test/TestCase.winxed
+    class TestCase;
+
+    // src/test/TestContext.winxed
+    class TestContext;
+
+    // src/test/TestFactory.winxed
+    class TestFactory;
+
+    // src/test/TestStatus.winxed
+    class TestStatus;
 }
 
 function __load_test[anon, load, init]()
