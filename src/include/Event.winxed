@@ -1,0 +1,28 @@
+namespace Rosella.Event {
+	class Dispatcher;
+	class Manager;
+	class Payload;
+	class Subscriber;
+	extern function default_subscriber_factory;
+	extern function payload_factory;
+}
+
+namespace Rosella {
+	class Event;
+}
+
+namespace Rosella.Event.Dispatcher {
+	class Immediate;
+	class Task;
+	class Thread;
+	class Factory;
+}
+
+namespace Rosella.Event.Subscriber {
+	class Factory;
+}
+
+function __include_event [anon] ()
+{
+    Rosella.load_bytecode_file('rosella/event.pbc', 'load');
+}

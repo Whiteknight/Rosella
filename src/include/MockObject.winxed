@@ -1,0 +1,38 @@
+namespace Rosella.MockObject {
+	class Controller;
+	class Expectation;
+	class Factory;
+	extern function default_mock_factory;
+	extern function set_default_mock_factory;
+	extern function get_controller;
+}
+
+namespace Rosella.MockObject.Controller {
+	class Ordered;
+}
+
+namespace Rosella.MockObject.Expectation {
+	class Get;
+	class Set;
+	class Method;
+	class Invoke;
+	class Will;
+	class With;
+}
+
+namespace Rosella.MockObject.Expectation.Will {
+	class Return;
+	class Throw;
+	class Do;
+}
+
+namespace Rosella.MockObject.Expectation.With {
+	class Args;
+	class Any;
+	class None;
+}
+
+function __include_mockobject [anon] ()
+{
+    Rosella.load_bytecode_file('rosella/mockobject.pbc', 'load');
+}

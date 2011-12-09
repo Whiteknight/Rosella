@@ -285,6 +285,13 @@ class Rosella.CommandLine.Arguments
         return false;
     }
 
+    function get_integer_keyed[vtable](string name)
+    {
+        if (exists self.cache[name])
+            return self.cache[name];
+        return [];
+    }
+
     // Once parsed, provide keyed access to the cache
     function get_string_keyed[vtable](string name)
     {

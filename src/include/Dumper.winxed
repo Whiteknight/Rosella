@@ -1,0 +1,24 @@
+namespace Rosella.Dumper {
+	class DumpHandler;
+	class Emitter;
+	class Handle;
+	extern function default_dumper;
+	extern function set_default_dumper;
+}
+
+namespace Rosella {
+	class Dumper;
+}
+
+namespace Rosella.Dumper.DumpHandler {
+	class Array;
+	class Hash;
+	class InspectAttrs;
+	class Object;
+	class Null;
+}
+
+function __include_dumper [anon] ()
+{
+    Rosella.load_bytecode_file('rosella/dumper.pbc', 'load');
+}

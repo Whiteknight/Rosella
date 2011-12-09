@@ -1,0 +1,24 @@
+namespace Rosella.Memoize {
+	class Cache;
+	class Controller;
+	class Factory;
+	extern function memoize;
+	extern function Y;
+	extern function memoize_proxy;
+	extern function proxy_cache;
+	extern function proxy_function;
+	extern function is_memoize_proxy;
+	extern function memoize_method;
+	extern function unmemoize_method;
+	extern function private_get_memoize_factory;
+}
+
+namespace Rosella.Memoize.Cache {
+	class Item;
+	class SimpleString;
+}
+
+function __include_memoize [anon] ()
+{
+    Rosella.load_bytecode_file('rosella/memoize.pbc', 'load');
+}
