@@ -106,8 +106,21 @@ including nested arrays:
         "Hello"
     ];
 
-In these initializers, primitive types like integers, floats, and strings are
-automatically boxed to the storage type of the array. Notice the phrase
+Elements of arrays nested within arrays can be accessed with the addition of
+another identifier:
+
+    array[2, 1] //3, the second element of the third element
+
+This allows for the easy access of multidimensional arrays.
+
+    var colors = [
+        [["black", "blue"],["green", "cyan"]],
+        [["red", "pink"],["yellow", "white"]]
+    ];
+    colors[1, 0, 1]; //"pink"
+
+In the initializers shown, primitive types like integers, floats, and strings
+are automatically boxed to the storage type of the array. Notice the phrase
 "storage type of the array". This is included because Parrot supports multiple
 array types, of which ResizablePMCArray is just the most common. Also,
 ResizablePMCArray is the type that is created with the bracket syntax. We can
@@ -116,6 +129,34 @@ also use a different type of array if we create it explicitly.
     var int_array = new 'ResizableIntegerArray'
     int_array[0] = 1;
     int_array[1] = "43";
+
+Arrays of fixed sizes are named with `Fixed` instead of `Resizable`, and differ
+from resizable arrays in that a fixed array's length must be defined in the
+initialization, and cannot be altered at any point.
+
+    var fixed_int_array = new 'FixedIntegerArray'(3)
+    fixed_int_array[0] = 4;
+    fixed_int_array[1] = 8;
+    fixed_int_array[2] = 15;
+
+The previously depicted multidimensional array can be expressed through fixed
+arrays as such:
+
+    var colors = new 'FixedPMCArray'(2);
+    var colors[0] = new 'FixedPMCArray'(2);
+    var colors[0, 0] = new 'FixedStringArray'(2);
+    var colors[0, 0, 0] = "black";
+    var colors[0, 0, 1] = "blue";
+    var colors[0, 1] = new 'FixedStringArray'(2);
+    var colors[0, 1, 0] = "green";
+    var colors[0, 1, 1] = "cyan";
+    var colors[1] = new 'FixedPMCArray'(2);
+    var colors[1, 0] = new 'FixedStringArray'(2);
+    var colors[1, 0, 0] = "red";
+    var colors[1, 0, 1] = "pink";
+    var colors[1, 1] = new 'FixedStringArray'(2);
+    var colors[1, 1, 0] = "yellow";
+    var colors[1, 1, 1] = "white";
 
 We will talk about other types of built-in PMCs and the `new` keyword a little
 bit later.
