@@ -63,7 +63,7 @@ class Rosella.Query.Provider.Array : Rosella.Query.Provider
 
     // Return a new array, the first N items which match the optional
     // predicate
-    function take(var data, var limit, var func)
+    function take(var data, int limit, var func)
     {
         if (func != null)
             return self.filter(data, func, limit);

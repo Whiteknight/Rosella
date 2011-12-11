@@ -120,12 +120,15 @@ class Rosella.Query.Queryable
     // Schwartzian transform. Sort complex data using a derived key for each
     // element. Cache the computed key values so we aren't recreating them for
     // each comparison
-    function cache_sort(var get_key, var compare_key)
+    function cache_sort(var get_key, var compare_key [optional], int has_comparer [opt_flag])
     {
+        if (!has_comparer)
+            compare_key = Rosella.Query.get_default_comparer();
         var d = self
             .map(function(x) { return [get_key(x), x]; })
             .sort_self(function(x, y) { return compare_key(x[0], y[0]); })
-            .map(function(x) { return x[1]; });
+            .map(function(x) { return x[1]; })
+            .data();
         return self.as_queryable(d);
     }
 
