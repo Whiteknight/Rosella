@@ -123,4 +123,16 @@ namespace Rosella.Query
             return 1;
         };
     }
+
+    function get_reverse_comparer()
+    {
+        return function (var a, var b)
+        {
+            if (a == b)
+                return 0;
+            if (a < b)
+                return 1;
+            return -1;
+        };
+    }
 }

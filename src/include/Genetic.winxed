@@ -1,6 +1,7 @@
 namespace Rosella.Genetic
 {
     class Cell;
+    class Context;
     class Engine;
     class Mutator;
 }

@@ -1,63 +1,46 @@
 class Rosella.Genetic.Engine
 {
-    var cells;
-    var mutator;
-    var evaluator;
-    var counts;
-
-    const int COUNT_TOTAL_CELLS = 0;
-    const int COUNT_NUM_WINNERS = 1;
-    const int COUNT_FITNESS_THRESHOLD = 2;
-
-    function Engine(var counts, var mutator, var evaluator)
+    function Engine()
     {
-        self.counts = counts;
-        int num_cells = counts[COUNT_TOTAL_CELLS];
-        var cells = [];
-        mutator.create_initial_cells(cells, num_cells);
-        self.cells = cells;
-        //say(self.cells);
-        self.mutator = mutator;
-        self.evaluator = evaluator;
     }
 
-    function run(int num_generations)
+    function run(var context, var mutator)
     {
-        var winners = self.run_one_generation();
+        int num_cells = context.num_cells();
+        int num_winners = context.num_winners();
+        int threshold = context.fitness_threshold();
+        int num_generations = context.num_generations();
+        var compare_key = context.get_comparer();
+
+        var cells = mutator.create_initial_cells(num_cells);
+        cells = Rosella.Query.as_queryable(cells, true);
+
+        cells = self.run_one_generation(cells, mutator, compare_key, threshold, num_winners);
         for (int i = 1; i < num_generations; i++) {
-            self.get_next_generation(winners);
-            winners = self.run_one_generation();
+            cells = self.get_next_generation(context, mutator, num_cells, cells);
+            cells = self.run_one_generation(cells, mutator, compare_key, threshold, num_winners);
         }
-        return Rosella.Query.as_queryable(winners)
-            .map(function(cell) { return cell.data(); });
+        return cells.map(function(cell) { return cell.data(); });
     }
 
-    function run_one_generation()
+    function run_one_generation(var cells, var mutator, var compare_key, int threshold, int num_winners)
     {
-        int threshold = self.counts[COUNT_FITNESS_THRESHOLD];
-        int num_winners = self.counts[COUNT_NUM_WINNERS];
-        var fitness = self.evaluator;
-        var compare_key = Rosella.Query.get_default_comparer();
-        var winners = Rosella.Query.as_queryable(self.cells)
+        return cells
             .map(function(cell) {
-                int f = int(fitness(cell.data()));
-                //Rosella.IO.sayf("Mapping fitness: %f -> %d", cell.data().value, f);
+                int f = int(mutator.evaluate(cell.data()));
                 return [f, cell];
             })
-            .filter(function(cell) { return int(cell[0]) > threshold; })
-            //.foreach(function(x) { Rosella.IO.sayf("Unsorted: %d", x[0]); })
+            //.filter(function(cell) { return int(cell[0]) < threshold; })
+            //.foreach(function(cell) { Rosella.IO.sayf("unsorted: %s -> %d", cell[1].data(), cell[0]); })
             .sort(function(x, y) { return compare_key(x[0], y[0]); })
-            //.foreach(function(x) { Rosella.IO.sayf("Sorted: %d", x[0]); })
             .take(num_winners)
-            //.foreach(function(x) { Rosella.IO.sayf("Top X: %d", x[0]); })
-            .map(function(x) { return x[1]; })
-            .data();
-        return winners;
+            //.foreach(function(cell) { Rosella.IO.sayf("Sorted: %s -> %d", cell[1].data(), cell[0]); })
+            .map(function(x) { return x[1]; });
     }
 
-    function get_next_generation(var winners)
+    function get_next_generation(var context, var mutator, int num_cells, var cells)
     {
-        int num_cells = self.counts[COUNT_TOTAL_CELLS];
-        self.cells = self.mutator.get_next_generation(winners, num_cells);
+        cells = mutator.get_next_generation(cells.data(), num_cells);
+        return Rosella.Query.as_queryable(cells, true);
     }
 }
