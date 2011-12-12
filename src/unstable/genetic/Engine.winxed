@@ -13,8 +13,10 @@ class Rosella.Genetic.Engine
     {
         self.counts = counts;
         int num_cells = counts[COUNT_TOTAL_CELLS];
-        var cells = new 'ResizablePMCArray'(num_cells);
-        self.cells = mutator.create_initial_cells(cells, num_cells);
+        var cells = [];
+        mutator.create_initial_cells(cells, num_cells);
+        self.cells = cells;
+        //say(self.cells);
         self.mutator = mutator;
         self.evaluator = evaluator;
     }
@@ -34,13 +36,21 @@ class Rosella.Genetic.Engine
     {
         int threshold = self.counts[COUNT_FITNESS_THRESHOLD];
         int num_winners = self.counts[COUNT_NUM_WINNERS];
-        var fitness = self.get_fitness;
+        var fitness = self.evaluator;
+        var compare_key = Rosella.Query.get_default_comparer();
         var winners = Rosella.Query.as_queryable(self.cells)
-            .map(function(cell) { return [int(fitness(cell)), cell]; })
+            .map(function(cell) {
+                int f = int(fitness(cell.data()));
+                //Rosella.IO.sayf("Mapping fitness: %f -> %d", cell.data().value, f);
+                return [f, cell];
+            })
             .filter(function(cell) { return int(cell[0]) > threshold; })
-            .sort_self(function(x, y) { return compare_key(x[0], y[0]); })
-            .map(function(x) { return x[1]; })
+            //.foreach(function(x) { Rosella.IO.sayf("Unsorted: %d", x[0]); })
+            .sort(function(x, y) { return compare_key(x[0], y[0]); })
+            //.foreach(function(x) { Rosella.IO.sayf("Sorted: %d", x[0]); })
             .take(num_winners)
+            //.foreach(function(x) { Rosella.IO.sayf("Top X: %d", x[0]); })
+            .map(function(x) { return x[1]; })
             .data();
         return winners;
     }
@@ -48,6 +58,6 @@ class Rosella.Genetic.Engine
     function get_next_generation(var winners)
     {
         int num_cells = self.counts[COUNT_TOTAL_CELLS];
-        return self.mutator.get_next_generation(winners, num_cells);
+        self.cells = self.mutator.get_next_generation(winners, num_cells);
     }
 }

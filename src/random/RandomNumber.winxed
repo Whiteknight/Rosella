@@ -35,7 +35,7 @@ class Rosella.Random.RandomNumber
     function get_range(int low, int high)
     {
         if (low >= high)
-            Rosella.Error.invalid(__FUNCTION__, "Bad range");
+            Rosella.Error.invalid(__FUNCTION__, "Bad range: [%d, %d]", low, high);
 
         int i;
         int count = 0;

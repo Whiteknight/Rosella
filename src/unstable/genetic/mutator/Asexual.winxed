@@ -16,17 +16,18 @@ class Rosella.Genetic.Mutator.Asexual : Rosella.Genetic.Mutator
         int num_winners = 0;
         if (int(self.include_winners))
             num_winners = self.include_winners(cells, winners, num_cells);
-        self.fill_next_generation(cells, num_winners, num_cells);
+        self.fill_next_generation(cells, winners, num_winners, num_cells);
         return cells;
     }
 
-    function fill_next_generation(var cells, int existing_count, int total_count)
+    function fill_next_generation(var cells, var winners, int existing_count, int total_count)
     {
-        if (existing_count != 0) {
+        int num_winners = elements(winners);
+        if (num_winners != 0) {
             var rand = Rosella.Random.default_uniform_random();
             for (int i = existing_count; i < total_count; i++) {
-                int cell_idx = rand.get_range(0, existing_count);
-                cells[i] = self.mutate(cells[cell_idx]);
+                int cell_idx = rand.get_range(0, num_winners);
+                cells[i] = self.mutate(winners[cell_idx]);
             }
         } else
             self.create_initial_cells(cells, total_count);

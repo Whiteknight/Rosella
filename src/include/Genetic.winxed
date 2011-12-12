@@ -11,7 +11,7 @@ namespace Rosella.Genetic.Mutator
     class Sexual;
 }
 
-function __include_genetic [anon] ()
+function __include_genetic [anon, load, init] ()
 {
     Rosella.load_bytecode_file('rosella/genetic.pbc', 'load');
 }
