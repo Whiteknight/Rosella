@@ -1,0 +1,14 @@
+class Rosella.Genetic.Cell
+{
+    var data;
+
+    function Cell(var d)
+    {
+        self.data = d;
+    }
+
+    function data()
+    {
+        return self.data;
+    }
+}

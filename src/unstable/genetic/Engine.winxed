@@ -1,0 +1,53 @@
+class Rosella.Genetic.Engine
+{
+    var cells;
+    var mutator;
+    var evaluator;
+    var counts;
+
+    const int COUNT_TOTAL_CELLS = 0;
+    const int COUNT_NUM_WINNERS = 1;
+    const int COUNT_FITNESS_THRESHOLD = 2;
+
+    function Engine(var counts, var mutator, var evaluator)
+    {
+        self.counts = counts;
+        int num_cells = counts[COUNT_TOTAL_CELLS];
+        var cells = new 'ResizablePMCArray'(num_cells);
+        self.cells = mutator.create_initial_cells(cells, num_cells);
+        self.mutator = mutator;
+        self.evaluator = evaluator;
+    }
+
+    function run(int num_generations)
+    {
+        var winners = self.run_one_generation();
+        for (int i = 1; i < num_generations; i++) {
+            self.get_next_generation(winners);
+            winners = self.run_one_generation();
+        }
+        return Rosella.Query.as_queryable(winners)
+            .map(function(cell) { return cell.data(); });
+    }
+
+    function run_one_generation()
+    {
+        int threshold = self.counts[COUNT_FITNESS_THRESHOLD];
+        int num_winners = self.counts[COUNT_NUM_WINNERS];
+        var fitness = self.get_fitness;
+        var winners = Rosella.Query.as_queryable(self.cells)
+            .map(function(cell) { return [int(fitness(cell)), cell]; })
+            .filter(function(cell) { return int(cell[0]) > threshold; })
+            .sort_self(function(x, y) { return compare_key(x[0], y[0]); })
+            .map(function(x) { return x[1]; })
+            .take(num_winners)
+            .data();
+        return winners;
+    }
+
+    function get_next_generation(var winners)
+    {
+        int num_cells = self.counts[COUNT_TOTAL_CELLS];
+        return self.mutator.get_next_generation(winners, num_cells);
+    }
+}
