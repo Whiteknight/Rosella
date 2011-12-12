@@ -1,0 +1,17 @@
+class Rosella.Generic.Mutator
+{
+    function evaluate(var d)
+    {
+        Rosella.Error.must_subclass(__CLASS__);
+    }
+
+    function create_initial_cells(int num_cells)
+    {
+        Rosella.Error.must_subclass(__CLASS__);
+    }
+
+    function get_next_generation(var winners, int num_cells)
+    {
+        Rosella.Error.must_subclass(__CLASS__);
+    }
+}

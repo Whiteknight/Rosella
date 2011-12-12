@@ -1,0 +1,43 @@
+class Rosella.Genetic.Context
+{
+    var counts;
+    var comparer;
+
+    function Context(int num_cells, int fitness_threshold, int num_winners, int num_generations)
+    {
+        int counts[] = [num_cells, fitness_threshold, num_winners, num_generations];
+        self.counts = counts;
+    }
+
+    function set_comparer(var comparer)
+    {
+        self.comparer = comparer;
+    }
+
+    function get_comparer()
+    {
+        if (self.comparer == null)
+            return Rosella.Query.get_default_comparer();
+        return self.comparer;
+    }
+
+    function num_cells()
+    {
+        return int(self.counts[0]);
+    }
+
+    function fitness_threshold()
+    {
+        return int(self.counts[1]);
+    }
+
+    function num_winners()
+    {
+        return int(self.counts[2]);
+    }
+
+    function num_generations()
+    {
+        return int(self.counts[3]);
+    }
+}
