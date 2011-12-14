@@ -324,3 +324,29 @@ closure.
 The `function` keyword is used to create normal subroutines (in namespaces),
 methods (in classes) and closures (in functions). It is important to remember
 that all `function`s are objects and can be passed around like objects.
+
+## Inlines
+
+Inlining code and avoiding the call/return sequence entirely can be a big
+optimization boost. Some compilers are able to automatically find inlinable
+functions and inline their contents at compile time. In winxed it's not so easy
+for the compiler to do automatically, but you can manually specify certain
+routines as being intended for inlining. The Winxed compiler will then inline
+these function bodies.
+
+The syntax for writing an inline function is this:
+
+    inline foo(var a, int b, ...) return int
+    {
+        ...
+        return 4;
+    }
+
+This is just an example and the ellipses are not literal code. The `inline`
+keyword is used instead of the `function` keyword and the return type of the
+block must be specified with the declaration. It's important to note that
+inlined blocks do not work with multiple returns or returns with PCC flag
+modifiers. They also do not allow parameters with PCC flag modifiers.
+
+Blocks marked `inline` are for inlining only. These functions are not compiled
+separately, are not included in a namespace and are not searchable at runtime.
