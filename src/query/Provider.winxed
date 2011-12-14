@@ -149,6 +149,11 @@ class Rosella.Query.Provider
         Rosella.Error.must_subclass(__CLASS__);
     }
 
+    function project(var data, var f)
+    {
+        Rosella.Error.must_subclass(__CLASS__);
+    }
+
     // Unwrap the first data item from the aggregate
     function unwrap_first(var data)
     {

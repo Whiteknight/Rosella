@@ -133,6 +133,21 @@ class Rosella.Query.Provider.Hash : Rosella.Query.Provider
         return new_data;
     }
 
+    // For each element in the data, return a sequence of new data items.
+    // Flatten the resulting set into a single array.
+    // Warning: This method turns the result data into an array and the hash
+    // keys are lost.
+    function project(var data, var f)
+    {
+        var result = [];
+        for(string i in data) {
+            var r = f(data[i]);
+            for (var j in r)
+                push(result, j);
+        }
+        return result;
+    }
+
     // Return an array of all values
     function to_array(var data)
     {

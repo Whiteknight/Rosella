@@ -74,6 +74,17 @@ class Rosella.Query.Provider.Scalar : Rosella.Query.Provider
         Rosella.Error.invalid(__FUNCTION__, "Cannot combine scalars");
     }
 
+    // Project each item into a sequence of zero or more items, and flatten all
+    // results sets into a single array
+    function project(var data, var f)
+    {
+        var result = [];
+        var r = f(data);
+        for (var j in r)
+            push(result, j);
+        return result;
+    }
+
     // Return the item
     function unwrap_first(var data)
     {

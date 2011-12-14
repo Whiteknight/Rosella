@@ -6,7 +6,8 @@ class Test_<# ns.cleanname #>
         self.assert.is_true(1);
     }
 
-    // Tests for Functions<$ for subobj in ns.subs $><%
+    // Tests for Functions
+    <$ for subobj in ns.subs $><%
         var sub = context.get_value("subobj");
         int arity = sub.arity();
         context.set_temporary("sub_arity", arity - 1);

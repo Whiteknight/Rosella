@@ -244,6 +244,14 @@ class Rosella.Query.Queryable
         return self.as_queryable(groups);
     }
 
+    // Project each item in the aggregate to an array of items. Flatten these
+    // subarrays into a single result array
+    function project(var f)
+    {
+        var result = self.provider.project(self.data, f);
+        return self.as_queryable(result);
+    }
+
     /* Vtables and Low-level access
     */
 

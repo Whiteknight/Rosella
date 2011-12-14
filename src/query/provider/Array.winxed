@@ -108,6 +108,19 @@ class Rosella.Query.Provider.Array : Rosella.Query.Provider
         return new_data;
     }
 
+    // Project each item into a sequence of zero or more items, and flatten all
+    // results sets into a single array
+    function project(var data, var f)
+    {
+        var result = [];
+        for (var i in data) {
+            var r = f(i);
+            for (var j in r)
+                push(result, j);
+        }
+        return result;
+    }
+
     // Return the first item in the array
     function unwrap_first(var data)
     {
