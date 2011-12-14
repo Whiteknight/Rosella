@@ -28,9 +28,22 @@ class Test_Rosella_Random
         using Rosella.Random.shuffle_array;
 
         var arg_0 = [1, 2, 3, 4, 5];
-        var result = shuffle_array(arg_0);
-        // TODO: How to test if we've shuffled? There's a non-zero chance that we
-        // randomly have the same array
+        var result;
+        int is_same = true;
+
+        // There's a non-zero chance that shuffling will give us the same array.
+        // Run this test a few times before declaring failure.
+        for (int i = 0; i < 20; i++) {
+            result = shuffle_array(arg_0);
+
+            for (int j = 0; j < 5; j++) {
+                if (arg_0[j] != result[j])
+                    is_same = false;
+            }
+            if (!is_same)
+                break;
+        }
+        self.assert.is_false(is_same);
     }
 }
 
