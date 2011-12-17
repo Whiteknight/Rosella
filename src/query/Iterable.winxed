@@ -166,9 +166,7 @@ class Rosella.Query.Iterable : Rosella.IteratorBase
 
     function append(var d)
     {
-        return new Rosella.Query.Iterable.Append(self,
-            Rosella.Query.Iterable.get_data_iterator(d)
-        );
+        return new Rosella.Query.Iterable.Append(self, d);
     }
 
     function take(int count, var f [optional], int has_f [opt_flag])
@@ -402,12 +400,11 @@ class Rosella.Query.Iterable.Hash : Rosella.Query.Iterable
 
     function Hash(var hash)
     {
-        self.data = hash;
-        self.iterator = iter(hash);
         var pairs = [];
         for (var key in hash)
             push(pairs, new Rosella.Query.Iterable.KeyValuePair(key, hash[key]));
-        self.pairs = pairs;
+        self.data = pairs;
+        self.iterator = iter(pairs);
     }
 
     function next()
@@ -524,7 +521,7 @@ class Rosella.Query.Iterable.Append : Rosella.Query.Iterable
             if (elements(self.extra_sources) == 0)
                 self.empty();
             var s = self.extra_sources.shift();
-            self.source = s;
+            self.source = Rosella.Query.Iterable.get_data_iterator(s);
         }
         return self.source.next();
     }
@@ -534,7 +531,7 @@ class Rosella.Query.Iterable.Append : Rosella.Query.Iterable
         if (self.source.has_more())
             return true;
         for (int i = 0; i < elements(self.extra_sources); i++) {
-            if (self.extra_sources[i].has_more())
+            if (elements(self.extra_sources[i]) > 0)
                 return true;
         }
         return false;
@@ -542,7 +539,7 @@ class Rosella.Query.Iterable.Append : Rosella.Query.Iterable
 
     function append(var d)
     {
-        push(self.extra_sources, Rosella.Query.Iterable.get_data_iterator(d));
+        push(self.extra_sources, d);
         return self;
     }
 }
