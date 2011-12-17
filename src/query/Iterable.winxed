@@ -523,7 +523,7 @@ class Rosella.Query.Iterable.Append : Rosella.Query.Iterable
         while (!self.source.has_more()) {
             if (elements(self.extra_sources) == 0)
                 self.empty();
-            var s = self.extra_sources.pop();
+            var s = self.extra_sources.shift();
             self.source = s;
         }
         return self.source.next();
@@ -543,6 +543,7 @@ class Rosella.Query.Iterable.Append : Rosella.Query.Iterable
     function append(var d)
     {
         push(self.extra_sources, Rosella.Query.Iterable.get_data_iterator(d));
+        return self;
     }
 }
 
