@@ -130,6 +130,11 @@ inline iter(var obj) return var
     return i;
 }
 
+inline get_bool(var p) return int
+{
+    return p ? true : false;
+}
+
 /* String Operations
 */
 

@@ -374,8 +374,7 @@ class Rosella.Query.Iterable.Array : Rosella.Query.Iterable
 
     function next()
     {
-        var data;
-        ${ shift data, self.iterator };
+        var data = shift_p(self.iterator);
         return data;
     }
 
@@ -386,9 +385,8 @@ class Rosella.Query.Iterable.Array : Rosella.Query.Iterable
 
     function next_and_more()
     {
-        var data;
-        ${ shift data, self.iterator };
-        int m = self.iterator ? true : false;
+        var data = shift_p(self.iterator);
+        int m = get_bool(self.iterator);
         return data, m;
     }
 }
@@ -400,33 +398,29 @@ class Rosella.Query.Iterable.Hash : Rosella.Query.Iterable
 
     function Hash(var hash)
     {
-        var pairs = [];
-        for (var key in hash)
-            push(pairs, new Rosella.Query.Iterable.KeyValuePair(key, hash[key]));
-        self.data = pairs;
-        self.iterator = iter(pairs);
+        self.data = hash;
+        self.iterator = iter(hash);
     }
 
     function next()
     {
-        var data;
-        ${ shift data, self.data };
-        var kvp = new Rosella.Query.Iterable.KeyValuePair(data, self.data[data]);
-        return kvp;
+        var key = shift_p(self.iterator);
+        var value = self.data[key];
+        return new Rosella.Query.Iterable.KeyValuePair(key, value);
     }
 
     function has_more()
     {
-        return self.iterator ? true : false;
+        return get_bool(self.iterator);
     }
 
     function next_and_more()
     {
-        var data;
-        ${ shift data, self.data };
-        data = new Rosella.Query.Iterable.KeyValuePair(data, self.data[data]);
-        int m = self.iterator ? true : false;
-        return data, m;
+        var key = shift_p(self.data);
+        var value = self.data[key];
+        var kvp = new Rosella.Query.Iterable.KeyValuePair(key, value);
+        int m = get_bool(self.iterator);
+        return kvp, m;
     }
 }
 
