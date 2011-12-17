@@ -623,6 +623,7 @@ class Rosella.Query.Iterable.Flatten : Rosella.Query.Iterable
     function Flatten(var source)
     {
         self.source = source;
+        self.has_cached_item = false;
     }
 
     function next()
@@ -668,32 +669,34 @@ class Rosella.Query.Iterable.Flatten : Rosella.Query.Iterable
         int m;
         do {
             :(d, m) = self.source.next_and_more();
-            var i;
             var item;
             var has_item = false;
-            Rosella.Query.array_or_hash(d,
+            var i = Rosella.Query.array_or_hash(d,
                 function(var a) {
                     if (elements(a) > 0)
-                        i = new Rosella.Query.Iterable.Array(a);
+                        return new Rosella.Query.Iterable.Array(a);
+                    return null;
                 },
                 function(var h) {
                     if (elements(h) > 0)
-                        i = new Rosella.Query.Iterable.Hash(h);
+                        return new Rosella.Query.Iterable.Hash(h);
+                    return null;
                 },
                 function(var s) {
-                    item = s;
-                    has_item = true;
+                    self.cached_item = s;
+                    self.has_cached_item = true;
+                    return null;
                 }
             );
-            if (has_item) {
-                self.cached_item = item;
-                self.has_cached_item = true;
-                return true;
-            }
-            var cache = new Rosella.Query.Iterable.Flatten(i);
-            if (cache.has_more()) {
-                self.cache = cache;
-                return true;
+            if (i == null) {
+                if (int(self.has_cached_item) == true)
+                    return true;
+            } else {
+                var cache = new Rosella.Query.Iterable.Flatten(i);
+                if (cache.has_more()) {
+                    self.cache = cache;
+                    return true;
+                }
             }
         } while (m == true);
 
