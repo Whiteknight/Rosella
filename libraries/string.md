@@ -56,6 +56,27 @@ Here are some examples of string utilities:
     s = pad_end("test", 6);     # "test  "
     s = replace("banana", "a", "X");    # "bXnXnX"
 
+Rosella also provides selected metrics which compare two strings. One of the
+provided algorithms is the Levenshtein distance `String.distance(s1, s2)`.
+The Levenshtein distance between two strings is defined as the minimum number
+of edits needed to transform one string into the other, with the allowable edit
+operations being insertion, deletion, or substitution of a single character.
+
+A quick example of the function and return values:
+
+    i = distance("purl", "perl");       # 1
+    i = distance("Saturday", "Sunday"); # 3 (Saturday -> Sturday, Sturday -> Surday, Surday -> Sunday)
+    i = distance("kitten", "sitting");  # 3 (kitten -> sitten, sitten -> sittin, sittin -> sitting)
+    
+## Functions
+
+### String.distance
+
+The String.distance function provides a simple implementation to compute the
+Levenshtein distance between two strings.
+
+An example of
+
 ## Classes
 
 ### String.Tokenizer
