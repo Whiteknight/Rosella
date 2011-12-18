@@ -65,9 +65,11 @@ operations being insertion, deletion, or substitution of a single character.
 A quick example of the function and return values:
 
     i = distance("purl", "perl");       # 1
-    i = distance("Saturday", "Sunday"); # 3 (Saturday -> Sturday, Sturday -> Surday, Surday -> Sunday)
-    i = distance("kitten", "sitting");  # 3 (kitten -> sitten, sitten -> sittin, sittin -> sitting)
-    
+    i = distance("Saturday", "Sunday"); # 3 (Saturday -> Sturday,
+                                             Sturday -> Surday, Surday -> Sunday)
+    i = distance("kitten", "sitting");  # 3 (kitten -> sitten,
+                                             sitten -> sittin, sittin -> sitting)
+
 ## Functions
 
 ### String.distance
