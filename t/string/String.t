@@ -69,6 +69,22 @@ class Test::String {
         $!assert.equal($s, "   test   ");
     }
 
+    method distance() {
+        my $i := Rosella::String::distance("kitten", "sitting");
+        $!assert.equal($i, 3);
+        $i := Rosella::String::distance("Sunday", "Saturday");
+        $!assert.equal($i, 3);
+        $i := Rosella::String::distance("perl", "purl");
+        $!assert.equal($i, 1);
+
+        $i := Rosella::String::__minimum(4, 3, 6);
+        $!assert.equal($i, 3);
+        $i := Rosella::String::__minimum(3, 4, 6);
+        $!assert.equal($i, 3);
+        $i := Rosella::String::__minimum(4, 6, 3);
+        $!assert.equal($i, 3);
+    }
+
     method sprintf() {
         $!assert.equal(Rosella::String::sprintf("%d %f %s", 1, 3.14, "test"), pir::sprintf__SSP("%d %f %s", [1, 3.14, "test"]));
     }

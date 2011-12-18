@@ -200,6 +200,48 @@ namespace Rosella.String
         return join(subst, split(target, str));
     }
 
+    // Calculate the Levenshtein distance between the two strings.
+    function distance(string str1, string str2)
+    {
+        int n = length(str1), m = length(str2); // str1 and str2 sizes
+
+        // Shortcuts for empty strings.
+        if (n == 0)
+            return m;
+        if (m == 0)
+            return n;
+
+        var matrix = [];
+
+        // Fill matrix with initial values.
+        for (int i = 0; i <= m; i++)
+            matrix[i] = [];
+
+        for (int i = 0; i <= m; i++)
+            matrix[i][0] = i;
+        for (int j = 0; j <= n; j++)
+            matrix[0][j] = j;
+
+        for (int j = 1; j <= n; j++) {
+            for (int i = 1; i <= m; i++) {
+                string schar = substr(str1, j - 1, 1);
+                string tchar = substr(str2, i - 1, 1);
+
+                if (schar == tchar)
+                    matrix[i][j] = matrix[i - 1][j - 1];
+                else {
+                    matrix[i][j] = __minimum(
+                        matrix[i - 1][j] + 1,      // a deletion
+                        matrix[i, j - 1] + 1,      // an insertion
+                        matrix[i - 1][j - 1] + 1   // a substitution
+                    );
+                }
+            }
+        }
+
+        return matrix[m][n];
+    }
+
     /*
     function replace_first(string str, string target, string subst, int count)
     {
@@ -228,6 +270,20 @@ namespace Rosella.String
 
     /* Internal Helper Functions
     */
+
+    // 3-way min function
+    function __minimum(int a, int b, int c)
+    {
+        if (a < b)
+            if (a < c)
+                return a;
+            else
+                return c;
+        else if (b < c)
+            return b;
+        else
+            return c;
+    }
 
     // Create the padding strings necessary for pad_start and pad_end
     function __create_pad(string str, int total_width, string char)
