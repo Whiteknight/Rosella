@@ -1,0 +1,21 @@
+class Rosella.Query.Iterable.KeyValuePair
+{
+    var key;
+    var value;
+
+    function KeyValuePair(var key, var value)
+    {
+        self.key = key;
+        self.value = value;
+    }
+
+    function key()
+    {
+        return self.key;
+    }
+
+    function value()
+    {
+        return self.value;
+    }
+}
