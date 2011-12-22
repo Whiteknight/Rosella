@@ -26,6 +26,25 @@ namespace Rosella.Query
         return new Rosella.Query.Stream(data);
     }
 
+    function iterable(var d)
+    {
+        var i = Rosella.Query.array_or_hash(d,
+            function(a) { return new Rosella.Query.Iterable.Array(a); },
+            function(h) { return new Rosella.Query.Iterable.Hash(h); },
+            function(s) {
+                i = null;
+                // TODO: This
+                return i;
+            }
+        );
+        return i;
+    }
+
+    function wrap_iterator(var i)
+    {
+        return new Rosella.Query.Iterable.Iterator(i);
+    }
+
     // Helper function. Determine if the aggregate is an array
     function is_array(var data)
     {

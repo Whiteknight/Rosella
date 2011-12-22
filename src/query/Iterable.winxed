@@ -1,20 +1,3 @@
-namespace Rosella.Query.Iterable
-{
-    function get_data_iterator(var d)
-    {
-        var i = Rosella.Query.array_or_hash(d,
-            function(a) { return new Rosella.Query.Iterable.Array(a); },
-            function(h) { return new Rosella.Query.Iterable.Hash(h); },
-            function(s) {
-                i = null;
-                // TODO: This
-                return i;
-            }
-        );
-        return i;
-    }
-}
-
 class Rosella.Query.Iterable : Rosella.IteratorBase
 {
     var source;
@@ -133,9 +116,26 @@ class Rosella.Query.Iterable : Rosella.IteratorBase
         return d;
     }
 
+    function foreach(var f)
+    {
+        if (!self.has_more())
+            return;
+        :(var v, int m) = self.next_and_more();
+        f(v);
+        while (m == true) {
+            :(v, m) = self.next_and_more();
+            f(v);
+        }
+    }
+
     function execute()
     {
-        self.to_array();
+        if (!self.has_more())
+            return;
+        :(var v, int m) = self.next_and_more();
+        while (m == true) {
+            :(v, m) = self.next_and_more();
+        }
     }
 
     /* Lazy Iterable Methods
@@ -191,11 +191,6 @@ class Rosella.Query.Iterable : Rosella.IteratorBase
     function project(var f)
     {
         return new Rosella.Query.Iterable.Project(self, f);
-    }
-
-    function foreach(var f)
-    {
-        return new Rosella.Query.Iterable.ForEach(self, f);
     }
 
     /* Eager Iterable Methods
@@ -391,6 +386,34 @@ class Rosella.Query.Iterable.Array : Rosella.Query.Iterable
     }
 }
 
+class Rosella.Query.Iterable.Iterator : Rosella.Query.Iterable
+{
+    var iterator;
+
+    function Iterator(var i)
+    {
+        self.iterator = i;
+    }
+
+    function next()
+    {
+        var data = shift_p(self.iterator);
+        return data;
+    }
+
+    function has_more()
+    {
+        return self.iterator ? true : false;
+    }
+
+    function next_and_more()
+    {
+        var data = shift_p(self.iterator);
+        int m = get_bool(self.iterator);
+        return data, m;
+    }
+}
+
 class Rosella.Query.Iterable.Hash : Rosella.Query.Iterable
 {
     var data;
@@ -515,7 +538,7 @@ class Rosella.Query.Iterable.Append : Rosella.Query.Iterable
             if (elements(self.extra_sources) == 0)
                 self.empty();
             var s = self.extra_sources.shift();
-            self.source = Rosella.Query.Iterable.get_data_iterator(s);
+            self.source = Rosella.Query.iterable(s);
         }
         return self.source.next();
     }
@@ -759,11 +782,11 @@ class Rosella.Query.Iterable.Project : Rosella.Query.Iterable
     }
 }
 
-class Rosella.Query.Iterable.ForEach : Rosella.Query.Iterable
+class Rosella.Query.Iterable.Tap : Rosella.Query.Iterable
 {
     var func;
 
-    function ForEach(var source, var f)
+    function Tap(var source, var f)
     {
         self.source = source;
         self.func = f;
