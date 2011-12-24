@@ -2,6 +2,13 @@
    constants defined in stat.pasm in the Parrot standard library,
    inexplicably.
 */
+// For the stat opcode
 const int STAT_ISREG = 0x8000;
 const int STAT_ISDIR = 0x4000;
+
+// For the OS.stat method
 const int STAT_SIZE = 7;
+const int STAT_ACCESS_TIME = 8;
+const int STAT_MODIFY_TIME = 9;
+const int STAT_CHANGE_TIME = 10;
+
