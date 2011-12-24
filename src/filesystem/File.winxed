@@ -174,4 +174,11 @@ class Rosella.FileSystem.File : Rosella.FileSystem.Entry
     {
         return new Rosella.FileSystem.FileIterator(self);
     }
+
+    function size()
+    {
+        var os = Rosella.FileSystem.get_os_pmc();
+        var s = os.stat(self.path);
+        return s[STAT_SIZE];
+    }
 }

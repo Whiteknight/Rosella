@@ -4,3 +4,4 @@
 */
 const int STAT_ISREG = 0x8000;
 const int STAT_ISDIR = 0x4000;
+const int STAT_SIZE = 7;
