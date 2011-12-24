@@ -5,13 +5,11 @@
 class Rosella.Date.Doomsday
 {
     var doomsdays;
-    var days;
 
     function Doomsday()
     {
-        self.doomsdays = [ 3, 28, 7, 4, 9, 6, 11, 8, 5, 10, 7, 12 ]; // doomsdays[N] is the day of month N that falls
-                                                                     // on a doomsday.
-        self.days = [ "Sunday", "Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday" ];
+        // doomsdays[N] is the day of month N that falls on a doomsday.
+        self.doomsdays = [ 3, 28, 7, 4, 9, 6, 11, 8, 5, 10, 7, 12 ];
     }
 
     function get_day(int year, int month, int day)
@@ -45,13 +43,6 @@ class Rosella.Date.Doomsday
         return day;
     }
 
-    function get_day_of_week(int day)
-    {
-        if (day < 0 || day > 6)
-            Rosella.Error.invalid(__FUNCTION__, "Bad day");
-
-        return self.days[day];
-    }
 
     function __get_dday(int year)
     {

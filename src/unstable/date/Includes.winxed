@@ -1,0 +1,9 @@
+$loadlib "sys_ops";
+$include_const "tm.pasm";
+
+inline decodetime(int sys_time) return var
+{
+    var d;
+    ${ decodetime d, sys_time };
+    return d;
+}

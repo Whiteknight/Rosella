@@ -1,0 +1,312 @@
+namespace Rosella.Date
+{
+    function get_day_of_week(int year, int month, int day)
+    {
+        return default_day_calculator().get_day(year, month, day);
+    }
+
+    function get_day_of_week(int year, int month, int day)
+    {
+        int dow = default_day_calculator().get_day(year, month, day);
+        return get_day_of_week_name(dow);
+    }
+
+    function default_day_calculator()
+    {
+        return new Rosella.Date.Doomsday();
+    }
+
+    function now()
+    {
+        return new Rosella.Date(time_i());
+    }
+
+    function all_months()
+    {
+        // TODO: Cache this so we don't re-build the array every invocation
+        return ["January", "February", "March", "April", "May", "June", "July",
+                "August", "September", "October", "November", "December"];
+    }
+
+    function all_months_short()
+    {
+        // TODO: Cache this so we don't re-build the array every invocation
+        return ["Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep",
+                "Oct", "Nov", "Dec"];
+    }
+
+    function all_week_days()
+    {
+        // TODO: Cache this so we don't re-build the array every invocation
+        return ["Sunday", "Monday", "Tuesday", "Wednesday", "Thursday",
+                "Friday", "Saturday"];
+    }
+
+    function month_day_counts(int year)
+    {
+        // TODO: Cache this so we don't re-build the array every invocation
+        // Cache a year->days map
+        int leap_year = Rosella.Date.is_leap_year(year);
+        int days = [31, 28 + (leap_year ? 1 : 0), 31, 30, 30, 31, 31, 31, 30, 31, 30, 31];
+        return days;
+    }
+
+    function get_day_of_week_name(int day)
+    {
+        if (day < 0 || day > 6)
+            Rosella.Error.invalid(__FUNCTION__, "Bad day %d. Must be 0 (Sunday) to 6 (Saturday)", day);
+
+        return all_week_days()[day];
+    }
+
+    function is_leap_year(int year)
+    {
+        if (year % 4 != 0)
+            return false;
+        if (year % 400 == 0)
+            return true;
+        if (year % 100 == 0)
+            return false;
+        return true;
+    }
+}
+
+class Rosella.Date
+{
+    var time_array;
+    var time_raw;
+
+    function Date(int sys_ms)
+    {
+        self.time_array = decodetime(sys_ms);
+        self.time_raw = sys_ms;
+    }
+
+    function Date(int year, int month, int day)
+    {
+        if (month < 1 || month > 12)
+            Rosella.Error.invalid(__FUNCTION__, "Bad month %d. Must be in the range [1, 12]", month);
+        var month_day_counts = Rosella.Date.month_day_counts(year);
+        int days_in_month = month_day_counts[month - 1];
+        if (day < 1 || day > days_in_month)
+            Rosella.Error.invalid(__FUNCTION__, "Bad day of month %d. For month %d must be in range [1, %d]", day, month, days_in_month);
+        int day_of_year = day - 1;
+        for (int i = 0; i < month; i++)
+            day_of_year += int(month_day_counts[i]);
+        int weekday = Rosella.Date.get_day_of_week(year, month, day);
+
+        // TODO: Calculate isDaylightSavings.
+        int raw[] = [0, 0, 0, day, month, year, weekday, day_of_year, 0];
+        self.time_array = raw;
+        self.time_raw = -1;
+    }
+
+    function Date(int year, int month, int day, int hour, int min, int s)
+    {
+        if (s < 0 || s > 59)
+            Rosella.Error.invalid(__FUNCTION__, "Invalid number of seconds %d", s);
+        if (min < 0 || min > 59)
+            Rosella.Error.invalid(__FUNCTION__, "Invalid number of minutes %d", min);
+        if (hour < 0 || hour > 23)
+            Rosella.Error.invalid(__FUNCTION__, "Invalid number of hours %d", hour);
+
+        self.Date(year, month, day);
+        var time = self.time_array;
+        time[0] = s;
+        time[1] = min;
+        time[2] = hour;
+    }
+
+    function seconds()
+    {
+        return self.time_array[TM_SEC];
+    }
+
+    function add_seconds(int s)
+    {
+        var n = clone(self);
+        n.__add_seconds(s);
+        return n;
+    }
+
+    function __add_seconds(int s)
+    {
+        int m = 0;
+        s += int(self.seconds());
+        if (s >= 60 || s <= -60) {
+            m = int(s / 60);
+            s = s % 60;
+        }
+        self.time_array[TM_SEC] = s;
+        if (m != 0)
+            self.__add_minutes(m);
+    }
+
+    function minutes()
+    {
+        return self.time_array[TM_MIN];
+    }
+
+    function add_minutes(int m)
+    {
+        var n = clone(self);
+        n.__add_minutes(m);
+        return n;
+    }
+
+    function __add_minutes(int m)
+    {
+        int h = 0;
+        m += int(self.minutes());
+        if (m >= 60 || m <= -60) {
+            h = int(m / 60);
+            m = m % 60;
+        }
+        self.time_array[TM_MIN] = m;
+        if (h != 0)
+            self.__add_hours(h);
+    }
+
+    function hours()
+    {
+        return self.time_array[TM_HOUR];
+    }
+
+    function add_hours(int h)
+    {
+        var n = clone(self);
+        n.__add_hours(h);
+        return n;
+    }
+
+    function __add_hours(int h)
+    {
+        int d = 0;
+        h += int(self.hours());
+        if (h >= 24 || h <= -24) {
+            d = int(h / 24);
+            h = h % 24;
+        }
+        self.time_array[TM_HOUR] = h;
+        if (d != 0)
+            self.__add_days(d);
+    }
+
+    function day()
+    {
+        return self.time_array[TM_MDAY];
+    }
+
+    function add_days(int d)
+    {
+        var n = clone(self);
+        n.__add_days(d);
+        return n;
+    }
+
+    function __add_days(int d)
+    {
+        d += int(self.day());
+        int cur_month = self.month() - 1;
+        // TODO: This is going to be wrong if we roll over into a leap year.
+        var counts = Rosella.Date.month_day_counts(int(self.year()));
+        int days_this_month;
+        int m = 0;
+        if (d >= 0) {
+            days_this_month = counts[cur_month];
+            while (d > days_this_month) {
+                d -= days_this_month;
+                m++;
+                cur_month = (cur_month + 1) % 12;
+                days_this_month = counts[cur_month];
+            }
+        } else {
+            cur_month = (cur_month - 1) % 12;
+            days_this_month = counts[cur_month];
+            while (d < -days_this_month) {
+                d += days_this_month;
+                m--;
+                cur_month = (cur_month - 1) % 12;
+                days_this_month = counts[cur_month];
+            }
+            if (d < 0)
+                d = days_this_month + d;
+        }
+        self.time_array[TM_MDAY] = d;
+        if (m != 0)
+            self.__add_months(m);
+    }
+
+    function week_day()
+    {
+        return self.time_array[TM_WDAY];
+    }
+
+    function week_day_name()
+    {
+        return Rosella.Date.all_week_days()[int(self.week_day())];
+    }
+
+    function month()
+    {
+        return self.time_array[TM_MON];
+    }
+
+    function add_months(int m)
+    {
+        var n = clone(self);
+        n.__add_months(m);
+        return n;
+    }
+
+    function __add_months(int m)
+    {
+        int y = 0;
+        m += int(self.time_array[TM_MON]);
+        if (m >= 12 || m <= -12) {
+            y = int(m / 12);
+            m = m % 12;
+        }
+        self.time_array[TM_MON] = m;
+        if (y != 0)
+            self.__add_years(y);
+    }
+
+    function month_name()
+    {
+        return Rosella.Date.all_months()[int(self.month() - 1)];
+    }
+
+    function year()
+    {
+        return self.time_array[TM_YEAR];
+    }
+
+    function add_years(int y)
+    {
+        var n = clone(self);
+        n.__add_years(y);
+        return n;
+    }
+
+    function __add_years(int y)
+    {
+        self.time_array[TM_YEAR] = int(self.year()) + y;
+    }
+
+    function raw_time()
+    {
+        return self.time_raw;
+    }
+
+    function clone[vtable]()
+    {
+        return new Rosella.Date(int(self.year()), int(self.month()), int(self.day()),
+                                int(self.hours()), int(self.minutes()), int(self.seconds()));
+    }
+
+    function get_string[vtable]()
+    {
+        return sprintf("%4d/%02d/%02d %02d:%02d:%02d", [self.year(), self.month(), self.day(), self.hours(), self.minutes(), self.seconds()]);
+    }
+}
