@@ -1,3 +1,7 @@
+/*  Iterable Class
+    This is the abstract base class for all Iterable types. It provides default
+    implementations of the methods which form the core of the Iterable API.
+*/
 class Rosella.Query.Iterable : Rosella.IteratorBase
 {
     var source;
@@ -5,27 +9,28 @@ class Rosella.Query.Iterable : Rosella.IteratorBase
     /* Utility Functions
     */
 
-    function empty()
-    {
-        Rosella.Error.invalid(__FUNCTION__, "Attempt to read from empty iterator of type '%s'", string(typeof(self)));
-    }
-
+    // Get the next item from the iterator
     function next()
     {
         if (self.source == null)
-            self.empty();
+            self.__empty();
         return self.source.next();
     }
 
+    // Get the next item and a flag telling whether we have more data after
+    // that (multi-return)
     function next_and_more()
     {
         if (self.source == null)
-            self.empty();
+            self.__empty();
         var d = self.next();
         int m = self.has_more();
         return d, m;
     }
 
+    // Determine if the iterator has more data to read. Notice that this is not
+    // a pure operation. Some iterators may need to read and examine data to
+    // determine if there is more to be read.
     function has_more()
     {
         if (self.source == null)
@@ -33,40 +38,48 @@ class Rosella.Query.Iterable : Rosella.IteratorBase
         return self.source.has_more();
     }
 
+    // Reset the iterator, so future requests read the complete data set from
+    // the beginning. This is not supported by all iterators.
     function reset()
     {
         self.source.reset();
         return self;
     }
 
-    function need_reset()
-    {
-        return self.source.need_reset();
-    }
+    //function need_reset()
+    //{
+        //return self.source.need_reset();
+    //}
 
     /* Iterator Vtables
     */
 
+    // Determine if the iterator contains more data to be read. Like has_more
+    // above, this is not a pure operation
     function get_bool[vtable]()
     {
         return self.has_more();
     }
 
+    // Get the next item from the iterator as a string
     function shift_string[vtable]()
     {
         return self.next();
     }
 
+    // Get the next item from the iterator as a PMC
     function shift_pmc[vtable]()
     {
         return self.next();
     }
 
+    // Get the next item from the iterator as an integer
     function shift_integer[vtable]()
     {
         return self.next();
     }
 
+    // Return self (is already an iterator)
     function get_iter[vtable]()
     {
         return self;
@@ -75,6 +88,7 @@ class Rosella.Query.Iterable : Rosella.IteratorBase
     /* Data Access Methods
     */
 
+    // Read the source to exhaustion, returning all results as a concrete array.
     function to_array()
     {
         var d = [];
@@ -89,6 +103,9 @@ class Rosella.Query.Iterable : Rosella.IteratorBase
         return d;
     }
 
+    // Read the source to exhaustion, returning all results as a hash. Takes a
+    // function reference used to generate the hash key and optionally a
+    // function reference to generate the data
     function to_hash(var key_f, var value_f [optional], int has_vf [opt_flag])
     {
         var d = {};
@@ -116,6 +133,8 @@ class Rosella.Query.Iterable : Rosella.IteratorBase
         return d;
     }
 
+    // Read the source to exhaustion, performing some callback action on each
+    // item. Returns nothing.
     function foreach(var f)
     {
         if (!self.has_more())
@@ -128,6 +147,8 @@ class Rosella.Query.Iterable : Rosella.IteratorBase
         }
     }
 
+    // Read the source to exhaustion, doing nothing with each data item as it
+    // is received. Returns nothing.
     function execute()
     {
         if (!self.has_more())
@@ -138,20 +159,17 @@ class Rosella.Query.Iterable : Rosella.IteratorBase
         }
     }
 
-    /* Lazy Iterable Methods
-    */
-
-    function map(var f)
+    // Read the source to exhaustion, performing an aggregating operation on
+    // a running sum and each subsequent data item. Return the result.
+    function fold(var f, var seed [optional], int has_seed [opt_flag])
     {
-        return new Rosella.Query.Iterable.Map(self, f);
-    }
+        int m = self.has_more();
+        if (!m)
+            self.__empty();
 
-    function fold(var f)
-    {
-        if (!self.has_more())
-            self.empty();
+        if (!has_seed)
+            :(seed, m) = self.next_and_more();
 
-        :(var seed, int m) = self.next_and_more();
         while(m == true) {
             :(var d, m) = self.next_and_more();
             seed = f(seed, d);
@@ -159,16 +177,31 @@ class Rosella.Query.Iterable : Rosella.IteratorBase
         return seed;
     }
 
+    /* Lazy Iterable Methods
+    */
+
+    // Return a new mapping iterator. The mapping iterator maps each item from
+    // the source to a new item returned from a callback function.
+    function map(var f)
+    {
+        return new Rosella.Query.Iterable.Map(self, f);
+    }
+
+    // Filter the incoming data, only returning items which satisfy the given
+    // predicate
     function filter(var f)
     {
         return new Rosella.Query.Iterable.Filter(self, f);
     }
 
+    // Append a new data source to the end of the current iteration
     function append(var d)
     {
         return new Rosella.Query.Iterable.Append(self, d);
     }
 
+    // Take only the first N items in the sequence, or the first N items which
+    // satisfy the optional predicate
     function take(int count, var f [optional], int has_f [opt_flag])
     {
         if (!has_f)
@@ -176,6 +209,8 @@ class Rosella.Query.Iterable : Rosella.IteratorBase
         return new Rosella.Query.Iterable.TakeSkip(self, f, count, 0);
     }
 
+    // Skip the first N items in the sequence, or the first N items which
+    // satisfy the optional predicate
     function skip(int count, var f [optional], int has_f [opt_flag])
     {
         if (!has_f)
@@ -183,11 +218,15 @@ class Rosella.Query.Iterable : Rosella.IteratorBase
         return new Rosella.Query.Iterable.TakeSkip(self, f, -1, count);
     }
 
+    // Flatten the data source completely
+    // TODO: Should take an optional integer which says how deep we flatten
     function flatten()
     {
         return new Rosella.Query.Iterable.Flatten(self);
     }
 
+    // Project each item to a new sequence, and insert that new sequence inline
+    // into the iteration.
     function project(var f)
     {
         return new Rosella.Query.Iterable.Project(self, f);
@@ -196,6 +235,8 @@ class Rosella.Query.Iterable : Rosella.IteratorBase
     /* Eager Iterable Methods
     */
 
+    // Read all the data into an array, sort the array, and return a new
+    // iterator for it.
     function sort(var f [optional], int has_f [opt_flag])
     {
         if (!has_f)
@@ -205,6 +246,8 @@ class Rosella.Query.Iterable : Rosella.IteratorBase
         return new Rosella.Query.Iterable.Array(d);
     }
 
+    // Read all the data into an array and perform a schwartzian transform sort
+    // on the array. Return a new iterator for the result.
     function cache_sort(var get_key, var compare_key [optional], int has_comparer [opt_flag])
     {
         if (!has_comparer)
@@ -215,6 +258,8 @@ class Rosella.Query.Iterable : Rosella.IteratorBase
             .map(function(i) { return i[1]; });
     }
 
+    // Read all data into an array. Shuffle the array randomly. Return a new
+    // iterator for the result.
     function shuffle()
     {
         var d = self.to_array();
@@ -222,6 +267,8 @@ class Rosella.Query.Iterable : Rosella.IteratorBase
         return new Rosella.Query.Iterable.Array(d);
     }
 
+    // Read all the data, counting items. If provided, only data items matching
+    // the optional predicate are counted.
     function count(var f [optional], int has_f [opt_flag])
     {
         if (!self.has_more())
@@ -248,6 +295,8 @@ class Rosella.Query.Iterable : Rosella.IteratorBase
         }
     }
 
+    // Return true if the iterator contains any items, false otherwise. If
+    // provided, return true only if any data items match the given predicate.
     function any(var f [optional], int has_f [opt_flag])
     {
         :(var v, int m) = self.next_and_more();
@@ -265,20 +314,26 @@ class Rosella.Query.Iterable : Rosella.IteratorBase
         }
     }
 
+    // Expect the iterator to contain exactly one item, and return that. If
+    // given, expect the iterator to contain exactly one item matching the
+    // optional predicate and return that item.
     function single(var f [optional], int has_f [opt_flag])
     {
         if (!self.has_more())
-            self.empty();
+            self.__empty();
         :(var d, int m) = self.next_and_more();
         if (m == true)
             Rosella.Error.invalid(__FUNCTION__, ".single() expects a sequence with exactly one element");
         return d;
     }
 
+    // Return the first item in the iterator (or the first item matching the
+    // optional predicate). Throw an error if the iterator contains no suitable
+    // items to return.
     function first(var f [optional], int has_f [opt_flag])
     {
         if (!self.has_more())
-            self.empty();
+            self.__empty();
         if (has_f) {
             :(var d, int m) = self.next_and_more();
             if (f(d))
@@ -294,6 +349,9 @@ class Rosella.Query.Iterable : Rosella.IteratorBase
         }
     }
 
+    // Return the first item in the iterator or the first item matching the
+    // optional predicate. Return a default value (null, usually) if no matching
+    // items are found.
     function first_or_default(var f [optional], int has_f [opt_flag], var def [named,optional], int has_def [opt_flag])
     {
         if (!has_def)
@@ -315,10 +373,12 @@ class Rosella.Query.Iterable : Rosella.IteratorBase
         }
     }
 
+    // Group items from the source iterator into named arrays based on a key
+    // function. Return a sequence of those arrays.
     function group_by(var f)
     {
         if (!self.has_more())
-            self.empty();
+            self.__empty();
         var groups = Rosella.pmc_keyed_hash();
         :(var d, int m) = self.next_and_more();
         var key = f(d);
@@ -331,6 +391,16 @@ class Rosella.Query.Iterable : Rosella.IteratorBase
             push(groups[key], d);
         }
         return new Rosella.Query.Iterable.Hash(groups);
+    }
+
+    /* Internal Helper Methods
+    */
+
+    // Internal helper function. Throws an error if the iterable is empty but an
+    // attempt is made to read it anyway
+    function __empty()
+    {
+        Rosella.Error.invalid(__FUNCTION__, "Attempt to read from empty iterator of type '%s'", string(typeof(self)));
     }
 }
 

@@ -1,3 +1,6 @@
+/* Mapping Iterator
+    Take each item from the source and perform some mapping on it.
+*/
 class Rosella.Query.Iterable.Map : Rosella.Query.Iterable
 {
     var mapper;
@@ -16,6 +19,10 @@ class Rosella.Query.Iterable.Map : Rosella.Query.Iterable
     }
 }
 
+/* Filtering Iterator
+    Take each item from the source and propagate it only if it matches the
+    given predicate
+*/
 class Rosella.Query.Iterable.Filter : Rosella.Query.Iterable
 {
     var cache;
@@ -69,10 +76,13 @@ class Rosella.Query.Iterable.Filter : Rosella.Query.Iterable
             if (int(f(d)) == true)
                 return d;
         } while(m == true);
-        self.empty();
+        self.__empty();
     }
 }
 
+/* Appending Iterator
+    Add a new data source to the end of the current iteration
+*/
 class Rosella.Query.Iterable.Append : Rosella.Query.Iterable
 {
     var extra_sources;
@@ -87,7 +97,7 @@ class Rosella.Query.Iterable.Append : Rosella.Query.Iterable
     {
         while (!self.source.has_more()) {
             if (elements(self.extra_sources) == 0)
-                self.empty();
+                self.__empty();
             var s = self.extra_sources.shift();
             self.source = Rosella.Query.iterable(s);
         }
@@ -112,6 +122,10 @@ class Rosella.Query.Iterable.Append : Rosella.Query.Iterable
     }
 }
 
+/* Take/Skip Windowing Iterator
+    Iterate over the source items, optionally skipping some from the beginning
+    and ignoring some from the end
+*/
 class Rosella.Query.Iterable.TakeSkip : Rosella.Query.Iterable
 {
     var take;
@@ -158,7 +172,7 @@ class Rosella.Query.Iterable.TakeSkip : Rosella.Query.Iterable
             self._skip();
         int take = int(self.take);
         if (take == 0 || !self.source.has_more())
-            self.empty();
+            self.__empty();
         :(var d, int m) = self.source.next_and_more()
         if (m == false)
             take = 0;
@@ -177,9 +191,12 @@ class Rosella.Query.Iterable.TakeSkip : Rosella.Query.Iterable
     }
 
     // TODO: We can probably optimize repeated take/skip calls to reuse the
-    // same iterator
+    // same iterator, if the predicates are both null
 }
 
+/* Flattening Iterator
+    Flatten nested data structures
+*/
 class Rosella.Query.Iterable.Flatten : Rosella.Query.Iterable
 {
     var cache;
@@ -195,7 +212,7 @@ class Rosella.Query.Iterable.Flatten : Rosella.Query.Iterable
     function next()
     {
         if (!self.has_more())
-            self.empty();
+            self.__empty();
 
         do {
             if (self.has_cached_item == true) {
@@ -214,7 +231,7 @@ class Rosella.Query.Iterable.Flatten : Rosella.Query.Iterable
                 self.cache = null;
         } while (self.has_more() == true);
 
-        self.empty();
+        self.__empty();
     }
 
     function has_more()
@@ -270,6 +287,10 @@ class Rosella.Query.Iterable.Flatten : Rosella.Query.Iterable
     }
 }
 
+/* Projecting Iterator
+    Project each incoming data item to a set of zero or more data items to
+    iterate over inline
+*/
 class Rosella.Query.Iterable.Project : Rosella.Query.Iterable
 {
     var func;
@@ -286,7 +307,7 @@ class Rosella.Query.Iterable.Project : Rosella.Query.Iterable
     {
         if (self.cache == null) {
             if (!self.source.has_more())
-                self.empty();
+                self.__empty();
 
             var f = self.func;
             :(var d, int m) = self.source.next_and_more();
@@ -296,11 +317,11 @@ class Rosella.Query.Iterable.Project : Rosella.Query.Iterable
                 d = f(d);
             }
             if (m == false || elements(d) == 0)
-                self.empty();
+                self.__empty();
             self.cache = new Rosella.Query.Iterable.Array(d);
         }
         if (!self.cache.has_more())
-            self.empty();
+            self.__empty();
 
         :(var a, int o) = self.cache.next_and_more();
         if (o == false)
@@ -333,6 +354,10 @@ class Rosella.Query.Iterable.Project : Rosella.Query.Iterable
     }
 }
 
+/* Iterator Tap
+    For each item iterated, perform a callback operation before returning the
+    value
+*/
 class Rosella.Query.Iterable.Tap : Rosella.Query.Iterable
 {
     var func;

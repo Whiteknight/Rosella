@@ -1,87 +1,129 @@
+/* Array Iterable Source
+    This source class acts like an iterator over an Array type. It is similar to
+    the built-in ArrayIterator class from Parrot except it also exposes all the
+    Iterable methods
+*/
 class Rosella.Query.Iterable.Array : Rosella.Query.Iterable
 {
     var data;
     var iterator;
 
+    // Constructor
     function Array(var array)
     {
         self.data = array;
         self.iterator = iter(array);
     }
 
+    // Get the next item from the Array
     function next()
     {
-        var data = shift_p(self.iterator);
+        var i = self.iterator;
+        if (!get_bool(i))
+            self.__empty();
+        var data = shift_p(i);
         return data;
     }
 
+    // Determine if the Array has more items
     function has_more()
     {
         return self.iterator ? true : false;
     }
 
+    // Return the next item and a flag to indicate whether there are more
     function next_and_more()
     {
-        var data = shift_p(self.iterator);
-        int m = get_bool(self.iterator);
+        var i = self.iterator;
+        if (!get_bool(i))
+            self.__empty();
+        var data = shift_p(i);
+        int m = get_bool(i);
         return data, m;
     }
 }
 
+/* Iterator Wrapper
+    Wrap an existing Iterator object and expose all the Iterable methods
+*/
 class Rosella.Query.Iterable.Iterator : Rosella.Query.Iterable
 {
     var iterator;
 
+    // Constructor
     function Iterator(var i)
     {
         self.iterator = i;
     }
 
+    // Get the next item from the iterator
     function next()
     {
-        var data = shift_p(self.iterator);
+        var i = self.iterator;
+        if (!get_bool(i))
+            self.__empty();
+        var data = shift_p(i);
         return data;
     }
 
+    // Determine if the iterator contains more
     function has_more()
     {
-        return self.iterator ? true : false;
+        return get_bool(self.iterator);
     }
 
+    // Return the next item and a flag to indicate whether there are more
     function next_and_more()
     {
-        var data = shift_p(self.iterator);
-        int m = get_bool(self.iterator);
+        var i = self.iterator;
+        if (!get_bool(i))
+            self.__empty();
+        var data = shift_p(i);
+        int m = get_bool(i);
         return data, m;
     }
 }
 
+/* Hash Iterator
+    Create an iterator over a hash or a hash-like object which returns a stream
+    of KeyValuePair objects.
+*/
 class Rosella.Query.Iterable.Hash : Rosella.Query.Iterable
 {
     var data;
     var iterator;
 
+    // Constructor
     function Hash(var hash)
     {
         self.data = hash;
         self.iterator = iter(hash);
     }
 
+    // Get the next Key/Value pair from the hash
     function next()
     {
-        var key = shift_p(self.iterator);
+        var i = self.iterator;
+        if (!get_bool(i))
+            self.__empty();
+        var key = shift_p(i);
         var value = self.data[key];
         return new Rosella.Query.Iterable.KeyValuePair(key, value);
     }
 
+    // Determine if the iterator contains more data
     function has_more()
     {
         return get_bool(self.iterator);
     }
 
+    // Return the next item and a flag to indicate whether there are more
     function next_and_more()
     {
-        var key = shift_p(self.data);
+        var i = self.iterator;
+        if (!get_bool(i))
+            self.__empty();
+        var key = shift_p(i);
         var value = self.data[key];
         var kvp = new Rosella.Query.Iterable.KeyValuePair(key, value);
         int m = get_bool(self.iterator);
