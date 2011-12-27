@@ -94,6 +94,18 @@ namespace Rosella.Date
             return false;
         return true;
     }
+
+    const string DEFAULT_DATE_FORMATTER = "Rosella.Date.default_date_formatter";
+
+    function default_date_formatter()
+    {
+        var temp = Rosella.Globals.get_global(DEFAULT_DATE_FORMATTER);
+        if (temp == null) {
+            temp = new Rosella.Date.DateFormatter();
+            Rosella.Globals.register_global(DEFAULT_DATE_FORMATTER, temp);
+        }
+        return temp;
+    }
 }
 
 class Rosella.Date
@@ -354,20 +366,15 @@ class Rosella.Date
         return sprintf("%04d/%02d/%02d %02d:%02d:%02d", [self.year(), self.month(), self.day(), self.hours(), self.minutes(), self.seconds()]);
     }
 
-    function get_stringf(string f)
+    function format_string(string f)
     {
-        if (contains(f, "yyyy"))
-            f = f.replace("yyyy", format("%04d", self.year()));
-        if (contains(f, "MM"))
-            f = f.replace("MM", format("%02d", self.month()));
-        if (contains(f, "dd"))
-            f = f.replace("dd", format("%02d", self.day()));
-        if (contains(f, "hh"))
-            f = f.replace("hh", format("%02d", self.hours()));
-        if (contains(f, "mm"))
-            f = f.replace("mm", format("%02d", self.minutes()));
-        if (contains(f, "ss"))
-            f = f.replace("ss", format("%02d", self.seconds()));
-        return f;
+        if (f == null || f == "")
+            return string(self);
+        return Rosella.Date.default_date_formatter().format(self, f);
+    }
+
+    function get_string_converter()
+    {
+        return Rosella.Date.default_date_formatter();
     }
 }
