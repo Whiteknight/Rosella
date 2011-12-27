@@ -307,6 +307,18 @@ class Rosella.Date
         return self.time_raw;
     }
 
+    function date()
+    {
+        return new Rosella.Date(int(self.year()), int(self.month()), int(self.day()),
+                                0, 0, 0);
+    }
+
+    function time()
+    {
+        return new Rosella.Date(1, 1, 1,
+                                int(self.hours()), int(self.minutes()), int(self.seconds()));
+    }
+
     function clone[vtable]()
     {
         return new Rosella.Date(int(self.year()), int(self.month()), int(self.day()),
@@ -315,6 +327,23 @@ class Rosella.Date
 
     function get_string[vtable]()
     {
-        return sprintf("%4d/%02d/%02d %02d:%02d:%02d", [self.year(), self.month(), self.day(), self.hours(), self.minutes(), self.seconds()]);
+        return sprintf("%04d/%02d/%02d %02d:%02d:%02d", [self.year(), self.month(), self.day(), self.hours(), self.minutes(), self.seconds()]);
+    }
+
+    function get_stringf(string f)
+    {
+        if (contains(f, "yyyy"))
+            f = f.replace("yyyy", format("%04d", self.year()));
+        if (contains(f, "MM"))
+            f = f.replace("MM", format("%02d", self.month()));
+        if (contains(f, "dd"))
+            f = f.replace("dd", format("%02d", self.day()));
+        if (contains(f, "hh"))
+            f = f.replace("hh", format("%02d", self.hours()));
+        if (contains(f, "mm"))
+            f = f.replace("mm", format("%02d", self.minutes()));
+        if (contains(f, "ss"))
+            f = f.replace("ss", format("%02d", self.seconds()));
+        return f;
     }
 }

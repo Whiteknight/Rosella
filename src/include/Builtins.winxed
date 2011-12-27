@@ -168,11 +168,23 @@ inline index(string s, string n) return int
     return value;
 }
 
+inline contains(string s, string n) return int
+{
+    int value;
+    ${ index value, s, n };
+    return value == -1 ? false : true;
+}
+
 inline index_ssi(string s, string n, int idx) return int
 {
     int value;
     ${ index value, s, n, idx };
     return value;
+}
+
+inline format(string f, var v) return string
+{
+    return sprintf(f, [v]);
 }
 
 /* Namespaces
