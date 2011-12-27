@@ -68,6 +68,7 @@ function setup_stable_libraries(var rosella)
         "core/ObjectFactory",
         "core/Parrot",
         "core/Version",
+        "core/StringFormatter",
         "_build/_versions"
     );
 
@@ -228,8 +229,7 @@ function setup_stable_libraries(var rosella)
     setup_winxed_lib(rosella, "string", ["Core"],
         "string/Includes",
         "string/String",
-        "string/Converter",
-        "string/Formatter",
+        "string/FormatPrinter",
         "string/Tokenizer",
         "string/tokenizer/CClass",
         "string/tokenizer/Delimiter",

@@ -77,6 +77,17 @@ namespace Rosella {
         extern function get_version;
     }
     class Version;
+
+    // src/core/StringFormatter.winxed
+    namespace StringFormatter
+    {
+        extern function type_formatters;
+        extern function register_type_formatter;
+        extern function role_formatters;
+        extern function register_role_formatter;
+        extern function get_converter;
+    }
+    class StringFormatter;
 }
 
 /* Load the Library

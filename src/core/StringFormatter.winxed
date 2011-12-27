@@ -1,0 +1,76 @@
+namespace Rosella.StringFormatter
+{
+    const string TYPE_FORMATTERS = "Rosella.StringFormatter.type_formatters";
+
+    function type_formatters()
+    {
+        var temp = Rosella.Globals.get_global(TYPE_FORMATTERS);
+        if (temp == null) {
+            temp = Rosella.get_pmc_keyed_hash();
+            Rosella.Globals.register_global(TYPE_FORMATTERS, temp);
+        }
+        return temp;
+    }
+
+    function register_type_formatter(var type, var fmt)
+    {
+        var f = Rosella.StringFormatter.type_formatters();
+        var type_c = Rosella.get_type_class(type);
+        f[type_c] = fmt;
+    }
+
+    const string ROLE_FORMATTERS = "Rosella.StringFormatter.role_formatters";
+
+    function role_formatters()
+    {
+        var temp = Rosella.Globals.get_global(ROLE_FORMATTERS);
+        if (temp == null) {
+            temp = {};
+            Rosella.Globals.register_global(ROLE_FORMATTERS, temp);
+        }
+        return temp;
+    }
+
+    function register_role_formatter(string role, var fmt)
+    {
+        var f = Rosella.StringFormatter.role_formatters();
+        f[role] = fmt;
+    }
+
+    // Get a suitable converter for the given object
+    // Check from most specific first to least specific last
+    function get_converter(var obj)
+    {
+        if (can(obj, "get_string_converter"))
+            return obj.get_string_converter();
+        var obj_c = typeof(obj);
+
+        var type_converters = Rosella.StringFormatter.type_formatters();
+        if (exists type_converters[obj_c])
+            return type_converters[obj_c];
+
+        var role_converters = Rosella.StringFormatter.role_formatters();
+        for (string role in role_converters) {
+            if (does(obj, role))
+                return role_converters[role];
+        }
+        return null;
+    }
+}
+
+class Rosella.StringFormatter
+{
+    function StringFormatter()
+    {
+    }
+
+    function format(var obj, string fmt)
+    {
+        if (fmt == null || fmt == "")
+            fmt = "s";
+        fmt = "%" + fmt;
+        string r = sprintf(fmt, [obj]);
+        return r;
+    }
+}
+

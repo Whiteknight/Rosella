@@ -1,5 +1,6 @@
 /* Doomsday Algorithm
-    This class implements the Doomsday Algorithm, a fast, computationally-simple method
+    This class implements the Doomsday Algorithm, a fast, computationally-simple
+    method
     to determine the day of week of any day.
 */
 class Rosella.Date.Doomsday
@@ -24,7 +25,7 @@ class Rosella.Date.Doomsday
         // Determine the doomsday for this year.
         int dday = self.__get_dday(year);
 
-        int leap = (year % 4) == 0;
+        int leap = Rosella.Date.is_leap_year(year);
         int anchor = self.doomsdays[month - 1];
         if (leap && month <= 2)
             anchor += 1; // the anchor date for jan/feb is +1 for leap years.
@@ -42,7 +43,6 @@ class Rosella.Date.Doomsday
 
         return day;
     }
-
 
     function __get_dday(int year)
     {
