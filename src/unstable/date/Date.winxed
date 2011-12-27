@@ -47,7 +47,7 @@ namespace Rosella.Date
         // TODO: Cache this so we don't re-build the array every invocation
         // Cache a year->days map
         int leap_year = Rosella.Date.is_leap_year(year);
-        int days = [31, 28 + (leap_year ? 1 : 0), 31, 30, 30, 31, 31, 31, 30, 31, 30, 31];
+        var days = [31, 28 + (leap_year ? 1 : 0), 31, 30, 30, 31, 31, 31, 30, 31, 30, 31];
         return days;
     }
 
@@ -208,8 +208,8 @@ class Rosella.Date
     {
         d += int(self.day());
         int cur_month = self.month() - 1;
-        // TODO: This is going to be wrong if we roll over into a leap year.
-        var counts = Rosella.Date.month_day_counts(int(self.year()));
+        int cur_year = int(self.year());
+        var counts = Rosella.Date.month_day_counts(cur_year);
         int days_this_month;
         int m = 0;
         if (d >= 0) {
@@ -218,6 +218,10 @@ class Rosella.Date
                 d -= days_this_month;
                 m++;
                 cur_month = (cur_month + 1) % 12;
+                if (cur_month == 0) {
+                    cur_year++;
+                    counts = Rosella.Date.month_day_counts(cur_year);
+                }
                 days_this_month = counts[cur_month];
             }
         } else {
@@ -227,6 +231,10 @@ class Rosella.Date
                 d += days_this_month;
                 m--;
                 cur_month = (cur_month - 1) % 12;
+                if (cur_month == 11) {
+                    cur_year--;
+                    counts = Rosella.Date.month_day_counts(cur_year);
+                }
                 days_this_month = counts[cur_month];
             }
             if (d < 0)
@@ -262,12 +270,12 @@ class Rosella.Date
     function __add_months(int m)
     {
         int y = 0;
-        m += int(self.time_array[TM_MON]);
+        m += int(self.time_array[TM_MON]) - 1;
         if (m >= 12 || m <= -12) {
             y = int(m / 12);
             m = m % 12;
         }
-        self.time_array[TM_MON] = m;
+        self.time_array[TM_MON] = m + 1;
         if (y != 0)
             self.__add_years(y);
     }
