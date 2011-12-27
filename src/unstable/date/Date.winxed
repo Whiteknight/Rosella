@@ -21,34 +21,59 @@ namespace Rosella.Date
         return new Rosella.Date(time_i());
     }
 
+    const string ALL_MONTHS_KEY = "Rosella.Date.all_months";
+
     function all_months()
     {
-        // TODO: Cache this so we don't re-build the array every invocation
-        return ["January", "February", "March", "April", "May", "June", "July",
-                "August", "September", "October", "November", "December"];
+        var temp = Rosella.Globals.get_global(ALL_MONTHS_KEY);
+        if (temp == null) {
+            temp =  ["January", "February", "March", "April", "May", "June",
+                     "July", "August", "September", "October", "November",
+                     "December"];
+            Rosella.Globals.register_global(ALL_MONTHS_KEY, temp);
+        }
+        return temp;
     }
+
+    const string ALL_MONTHS_SHORT_KEY = "Rosella.Date.all_months_short";
 
     function all_months_short()
     {
-        // TODO: Cache this so we don't re-build the array every invocation
-        return ["Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep",
-                "Oct", "Nov", "Dec"];
+        var temp = Rosella.Globals.get_global(ALL_MONTHS_SHORT_KEY);
+        if (temp == null) {
+            temp = ["Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep",
+                    "Oct", "Nov", "Dec"];
+            Rosella.Globals.register_global(ALL_MONTHS_SHORT_KEY, temp);
+        }
+        return temp;
     }
+
+    const string ALL_WEEK_DAYS_KEY = "Rosella.Date.all_week_days";
 
     function all_week_days()
     {
-        // TODO: Cache this so we don't re-build the array every invocation
-        return ["Sunday", "Monday", "Tuesday", "Wednesday", "Thursday",
-                "Friday", "Saturday"];
+        var temp = Rosella.Globals.get_global(ALL_WEEK_DAYS_KEY);
+        if (temp == null) {
+            temp = ["Sunday", "Monday", "Tuesday", "Wednesday", "Thursday",
+                    "Friday", "Saturday"];
+            Rosella.Globals.register_global(ALL_WEEK_DAYS_KEY, temp);
+        }
+        return temp;
     }
+
+    const string DAY_COUNTS_NORMAL = "Rosella.Date.month_day_counts";
+    const string DAY_COUNTS_LEAP = "Rosella.Date.month_day_counts_leap";
 
     function month_day_counts(int year)
     {
-        // TODO: Cache this so we don't re-build the array every invocation
-        // Cache a year->days map
         int leap_year = Rosella.Date.is_leap_year(year);
-        var days = [31, 28 + (leap_year ? 1 : 0), 31, 30, 30, 31, 31, 31, 30, 31, 30, 31];
-        return days;
+        string key = leap_year == true ? DAY_COUNTS_LEAP : DAY_COUNTS_NORMAL;
+        var temp = Rosella.Globals.get_global(key);
+        if (temp == null) {
+            temp = [31, 28 + (leap_year ? 1 : 0), 31, 30, 30, 31, 31, 31, 30, 31, 30, 31];
+            Rosella.Globals.register_global(key, temp);
+        }
+        return temp;
     }
 
     function get_day_of_week_name(int day)
@@ -95,7 +120,6 @@ class Rosella.Date
             day_of_year += int(month_day_counts[i]);
         int weekday = Rosella.Date.get_day_of_week(year, month, day);
 
-        // TODO: Calculate isDaylightSavings.
         int raw[] = [0, 0, 0, day, month, year, weekday, day_of_year, 0];
         self.time_array = raw;
         self.time_raw = -1;
