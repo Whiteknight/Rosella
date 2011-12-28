@@ -341,7 +341,8 @@ function setup_experimental_libraries(var rosella)
         "date/Includes",
         "date/Date",
         "date/DateFormatter",
-        "date/Doomsday"
+        "date/Doomsday",
+        "date/SpecialDate"
     );
 
     setup_unstable_lib(rosella, "repl", ["Core"],

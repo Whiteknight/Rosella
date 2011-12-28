@@ -1,0 +1,66 @@
+class Rosella.Date.SpecialDate : Rosella.Date
+{
+    var name;
+
+    function SpecialDate(string name, int year, int month, int day, int hour, int min, int sec)
+    {
+        int raw[] = [sec, min, hour, day, month, year, -1, -1, 0];
+        self.time_array = raw;
+        self.name = name;
+    }
+
+    function add_seconds(int x)
+    {
+        Rosella.Error.invalid(__FUNCTION__, "Cannot modify SpecialDate");
+    }
+
+    function add_minutes(int x)
+    {
+        Rosella.Error.invalid(__FUNCTION__, "Cannot modify SpecialDate");
+    }
+
+    function add_hours(int x)
+    {
+        Rosella.Error.invalid(__FUNCTION__, "Cannot modify SpecialDate");
+    }
+
+    function add_days(int x)
+    {
+        Rosella.Error.invalid(__FUNCTION__, "Cannot modify SpecialDate");
+    }
+
+    function add_months(int x)
+    {
+        Rosella.Error.invalid(__FUNCTION__, "Cannot modify SpecialDate");
+    }
+
+    function add_years(int x)
+    {
+        Rosella.Error.invalid(__FUNCTION__, "Cannot modify SpecialDate");
+    }
+
+    function week_day()
+    {
+        Rosella.Error.invalid(__FUNCTION__, "SpecialDate does not have day-of-week");
+    }
+
+    function week_day_name()
+    {
+        Rosella.Error.invalid(__FUNCTION__, "SpecialDate does not have day-of-week");
+    }
+
+    function date()
+    {
+        Rosella.Error.invalid(__FUNCTION__, "SpecialDate cannot be disected");
+    }
+
+    function time()
+    {
+        Rosella.Error.invalid(__FUNCTION__, "SpecialDate cannot be disected");
+    }
+
+    function name()
+    {
+        return string(self.name);
+    }
+}
