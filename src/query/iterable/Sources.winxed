@@ -18,6 +18,11 @@ class Rosella.Query.Iterable.Source : Rosella.Query.Iterable
     {
         return f(self.iterator);
     }
+
+    function reset()
+    {
+        self.iterator = iter(self.data);
+    }
 }
 
 /* Array Iterable Source
@@ -87,6 +92,11 @@ class Rosella.Query.Iterable.Iterator : Rosella.Query.Iterable.Source
         var data = shift_p(i);
         int m = get_bool(i);
         return data, m;
+    }
+
+    function reset()
+    {
+        Rosella.Error.invalid(__FUNCTION__, "Cannot reset an Iterator");
     }
 }
 

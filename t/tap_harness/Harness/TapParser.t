@@ -1,7 +1,7 @@
 // Automatically generated test for Class Rosella.Harness.TapParser
 function test_parse(var data, var setup)
 {
-    var s = Rosella.Query.as_stream(data);
+    var s = Rosella.Query.iterable(data);
     var factory = Rosella.MockObject.default_mock_factory();
     var rcont = factory.create_typed(class Rosella.Harness.FileResult);
     var vcont = factory.create_typed(class Rosella.Harness.View);
