@@ -61,7 +61,7 @@ class Rosella.Harness.TestExecutor
             }
         );
         var ihandle = Rosella.FileSystem.iterable_handle(handle);
-        return Rosella.Query.as_stream(ihandle);
+        return Rosella.Query.iterable(ihandle);
     }
 
     // Open a stream for a pipe to a separate process where the test will
@@ -74,7 +74,7 @@ class Rosella.Harness.TestExecutor
         string cmd = file.get_spawn_command(filename);
         var pipe = Rosella.IO.open_pipe(cmd);
         var ihandle = Rosella.FileSystem.iterable_handle(pipe);
-        return Rosella.Query.as_stream(ihandle);
+        return Rosella.Query.iterable(ihandle);
     }
 
     // Close the stream. Check the exit status if the test was aborted

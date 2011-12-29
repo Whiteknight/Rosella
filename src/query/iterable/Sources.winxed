@@ -1,13 +1,32 @@
+class Rosella.Query.Iterable.Source : Rosella.Query.Iterable
+{
+    var data;
+    var iterator;
+
+    // Determine if the iterator contains more
+    function has_more()
+    {
+        return get_bool(self.iterator);
+    }
+
+    function on_data(var f)
+    {
+        return f(self.data);
+    }
+
+    function on_iterator(var f)
+    {
+        return f(self.iterator);
+    }
+}
+
 /* Array Iterable Source
     This source class acts like an iterator over an Array type. It is similar to
     the built-in ArrayIterator class from Parrot except it also exposes all the
     Iterable methods
 */
-class Rosella.Query.Iterable.Array : Rosella.Query.Iterable
+class Rosella.Query.Iterable.Array : Rosella.Query.Iterable.Source
 {
-    var data;
-    var iterator;
-
     // Constructor
     function Array(var array)
     {
@@ -25,12 +44,6 @@ class Rosella.Query.Iterable.Array : Rosella.Query.Iterable
         return data;
     }
 
-    // Determine if the Array has more items
-    function has_more()
-    {
-        return self.iterator ? true : false;
-    }
-
     // Return the next item and a flag to indicate whether there are more
     function next_and_more()
     {
@@ -46,14 +59,13 @@ class Rosella.Query.Iterable.Array : Rosella.Query.Iterable
 /* Iterator Wrapper
     Wrap an existing Iterator object and expose all the Iterable methods
 */
-class Rosella.Query.Iterable.Iterator : Rosella.Query.Iterable
+class Rosella.Query.Iterable.Iterator : Rosella.Query.Iterable.Source
 {
-    var iterator;
-
     // Constructor
     function Iterator(var i)
     {
         self.iterator = i;
+        self.data = i;
     }
 
     // Get the next item from the iterator
@@ -64,12 +76,6 @@ class Rosella.Query.Iterable.Iterator : Rosella.Query.Iterable
             self.__empty();
         var data = shift_p(i);
         return data;
-    }
-
-    // Determine if the iterator contains more
-    function has_more()
-    {
-        return get_bool(self.iterator);
     }
 
     // Return the next item and a flag to indicate whether there are more
@@ -88,11 +94,8 @@ class Rosella.Query.Iterable.Iterator : Rosella.Query.Iterable
     Create an iterator over a hash or a hash-like object which returns a stream
     of KeyValuePair objects.
 */
-class Rosella.Query.Iterable.Hash : Rosella.Query.Iterable
+class Rosella.Query.Iterable.Hash : Rosella.Query.Iterable.Source
 {
-    var data;
-    var iterator;
-
     // Constructor
     function Hash(var hash)
     {
@@ -109,12 +112,6 @@ class Rosella.Query.Iterable.Hash : Rosella.Query.Iterable
         var key = shift_p(i);
         var value = self.data[key];
         return new Rosella.Query.Iterable.KeyValuePair(key, value);
-    }
-
-    // Determine if the iterator contains more data
-    function has_more()
-    {
-        return get_bool(self.iterator);
     }
 
     // Return the next item and a flag to indicate whether there are more

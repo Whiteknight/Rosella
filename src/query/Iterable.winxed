@@ -46,6 +46,16 @@ class Rosella.Query.Iterable : Rosella.IteratorBase
         return self;
     }
 
+    function on_data(var f)
+    {
+        return self.source.on_data(f);
+    }
+
+    function on_iterator(var f)
+    {
+        return self.source.on_iterator(f);
+    }
+
     //function need_reset()
     //{
         //return self.source.need_reset();
