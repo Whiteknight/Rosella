@@ -232,6 +232,11 @@ class Rosella.Query.Iterable : Rosella.IteratorBase
         return new Rosella.Query.Iterable.Project(self, f);
     }
 
+    function tap(var f)
+    {
+        return new Rosella.Query.Iterable.Tap(self, f);
+    }
+
     /* Eager Iterable Methods
     */
 

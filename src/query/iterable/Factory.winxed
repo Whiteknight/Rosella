@@ -1,0 +1,51 @@
+class Rosella.Query.Iterable.Factory : Rosella.ObjectFactory
+{
+    var role_map;           // Mapping of roles to providers
+    var type_map;           // Mapping of specific types to providers
+    var default_provider;   // Default provider to use if all else fails
+
+    // Constructor.
+    function Factory()
+    {
+        self.default_provider = self.get_default_provider();
+        self.role_map = self.get_role_map();
+        self.type_map = self.get_type_map();
+    }
+
+    function get_default_provider()
+    {
+        return class Rosella.Query.Iterable.Array;
+    }
+
+    function get_role_map()
+    {
+        return {
+            "array" : class Rosella.Query.Iterable.Array,
+            "hash" : class Rosella.Query.Iterable.Hash,
+            "iterator" : class Rosella.Query.Iterable.Iterator
+        };
+    }
+
+    function get_type_map()
+    {
+        return Rosella.get_pmc_keyed_hash();
+    }
+
+    // Create the provider for the given data
+    function create(var data, var p [slurpy], var n [slurpy,named])
+    {
+        for (string role in self.role_map) {
+            if (does(data, role)) {
+                var type = self.role_map[role];
+                return Rosella.construct(type, data, p:[flat], n:[flat,named]);
+            }
+        }
+        for (var type in self.type_map) {
+            if (isa(data, type)) {
+                var t = self.type_map[type];
+                return Rosella.construct(t, data, p:[flat], n:[flat,named]);
+            }
+        }
+        return Rosella.construct(self.default_provider, data, p:[flat], n:[flat,named]);
+    }
+}

@@ -28,16 +28,7 @@ namespace Rosella.Query
 
     function iterable(var d)
     {
-        var i = Rosella.Query.array_or_hash(d,
-            function(a) { return new Rosella.Query.Iterable.Array(a); },
-            function(h) { return new Rosella.Query.Iterable.Hash(h); },
-            function(s) {
-                i = null;
-                // TODO: This
-                return i;
-            }
-        );
-        return i;
+        return Rosella.Query.default_iterable_factory().create(d);
     }
 
     function wrap_iterator(var i)
@@ -121,6 +112,18 @@ namespace Rosella.Query
                     "hash"  : new Rosella.Query.Provider.Hash()
                 }, null);
             Rosella.Globals.register_global(DEFAULT_PROVIDER_FACTORY, temp);
+        }
+        return temp;
+    }
+
+    const string DEFAULT_ITERABLE_FACTORY = "Rosella.Query.default_iterable_factory";
+
+    function default_iterable_factory()
+    {
+        var temp = Rosella.Globals.get_global(DEFAULT_ITERABLE_FACTORY);
+        if (temp == null) {
+            temp = new Rosella.Query.Iterable.Factory();
+            Rosella.Globals.register_global(DEFAULT_ITERABLE_FACTORY, temp);
         }
         return temp;
     }

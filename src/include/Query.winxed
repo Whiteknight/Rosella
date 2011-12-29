@@ -1,8 +1,12 @@
 namespace Rosella.Query {
     class Provider;
     class Queryable;
+    class Iterable;
+
     extern function as_queryable;
     extern function as_stream;
+    extern function iterable;
+    extern function wrap_iterator;
     extern function is_array;
     extern function is_hash;
     extern function array_or_hash;
