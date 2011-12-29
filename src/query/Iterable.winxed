@@ -174,8 +174,11 @@ class Rosella.Query.Iterable : Rosella.IteratorBase
     function fold(var f, var seed [optional], int has_seed [opt_flag])
     {
         int m = self.has_more();
-        if (!m)
-            self.__empty();
+        if (!m) {
+            if (has_seed)
+                return seed;
+            return null;
+        }
 
         if (!has_seed)
             :(seed, m) = self.next_and_more();
@@ -299,6 +302,7 @@ class Rosella.Query.Iterable : Rosella.IteratorBase
                 if (int(f(v)) == true)
                     i++;
             }
+            return i;
         } else {
             :(var v, int m) = self.next_and_more();
             i++;
@@ -314,6 +318,8 @@ class Rosella.Query.Iterable : Rosella.IteratorBase
     // provided, return true only if any data items match the given predicate.
     function any(var f [optional], int has_f [opt_flag])
     {
+        if (!self.has_more())
+            return false;
         :(var v, int m) = self.next_and_more();
         if (has_f) {
             if (f(v))

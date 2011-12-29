@@ -18,7 +18,7 @@ namespace Rosella.Harness.TestRun
         function Factory()
         {
             self.ObjectFactory(class Rosella.Harness.TestRun);
-            self.tests = Rosella.Query.as_queryable([]);
+            self.tests = Rosella.Query.iterable([]);
             self.testfile_factory = new Rosella.Harness.TestFile.Factory(class Rosella.Harness.TestFile.Automatic);
             self.testfile_types = {
                 "Automatic" : class Rosella.Harness.TestFile.Automatic,
@@ -34,9 +34,11 @@ namespace Rosella.Harness.TestRun
                 var n [slurpy,named])
         {
             var sort_routine = self.get_sort_routine(has_sort ? sort : SORT_DEFAULT);
-            var tests = self.tests.sort(sort_routine).to_array().data();
+            var tests = self.tests
+                .cache_sort(function(f) { return string(f); }, sort_routine)
+                .to_array();
             var testrun = Rosella.construct(testrun_type, tests);
-            self.tests = Rosella.Query.as_queryable([]);
+            self.tests = Rosella.Query.iterable([]);
             return testrun;
         }
 
@@ -86,23 +88,11 @@ namespace Rosella.Harness.TestRun
         {
             switch (sort) {
                 case SORT_ORDER:
-                    return function(_a, _b) {
-                        string a = string(_a);
-                        string b = string(_b);
-                        if (a == b)
-                            return 0;
-                        if (a < b)
-                            return -1;
-                        return 1;
-                    };
+                    return Rosella.Query.get_default_comparer();
                 case SORT_DEFAULT:
-                    return function(_a, _b) { return 0; };
+                    return Rosella.Query.get_unmoving_comparer();
                 case SORT_DISORDER:
-                    int i = 0;
-                    return function(_a, _b) {
-                        i = (i + 1) % 3;
-                        return i - 1;
-                    };
+                    return Rosella.Query.get_randomizing_comparer();
             }
         }
     }

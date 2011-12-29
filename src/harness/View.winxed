@@ -215,11 +215,11 @@ class Rosella.Harness.View
     // status
     function get_all_files_by_status(string status)
     {
-        return Rosella.Query.as_queryable(self.test_runs)
+        return Rosella.Query.iterable(self.test_runs)
             .filter(function(tr) { return tr.is_complete() != 0; })
             .map(function(tr) { return tr.files_by_status(status); })
             .flatten()
-            .data();
+            .to_array();
     }
 
 }

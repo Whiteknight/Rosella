@@ -30,7 +30,7 @@ namespace Rosella { namespace Harness { namespace TestFile
         // of files which appear to be tests.
         function create_tests_from_dirs(var test_type, var dirs, int recurse)
         {
-            return Rosella.Query.as_queryable(dirs)
+            return Rosella.Query.iterable(dirs)
                 .map(function(d) { return new Rosella.FileSystem.Directory(d); })
                 .map(function(dir) {
                     if (recurse)
@@ -41,7 +41,7 @@ namespace Rosella { namespace Harness { namespace TestFile
                 .flatten()
                 .filter(function(f) { return f.path_obj().extension() == "t"; })
                 .map(function(f) { return self.create_typed(test_type, string(f)); })
-                .data();
+                .to_array();
         }
 
         // Return a list of TestFile objects from a list of files. Do not do
@@ -49,13 +49,13 @@ namespace Rosella { namespace Harness { namespace TestFile
         // assumed to be valid test files for this loader.
         function create_tests_from_files(var test_type, var filenames)
         {
-            return Rosella.Query.as_queryable(filenames)
-                .foreach(function(filename) {
+            return Rosella.Query.iterable(filenames)
+                .tap(function(filename) {
                     if (!Rosella.FileSystem.is_file(filename))
                         Rosella.Error.invalid(__FUNCTION__, "file '%s' does not exist or is not a file", filename);
                 })
                 .map(function(filename) { return self.create_typed(test_type, filename); })
-                .data();
+                .to_array();
         }
     }
 }}}

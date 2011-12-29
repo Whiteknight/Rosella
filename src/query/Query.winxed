@@ -136,13 +136,26 @@ namespace Rosella.Query
 
     function get_default_comparer()
     {
-        return function (var a, var b)
-        {
+        return function (var a, var b) {
             if (a == b)
                 return 0;
             if (a < b)
                 return -1;
             return 1;
+        };
+    }
+
+    function get_unmoving_comparer()
+    {
+        return function (var a, var b) {
+            return 0;
+        };
+    }
+
+    function get_randomizing_comparer()
+    {
+        return function (var a, var b) {
+            return Rosella.Random.default_uniform_random().get_integer(0, 2) - 1;
         };
     }
 }
