@@ -11,7 +11,7 @@ class Test_<# ns.cleanname #>
         var sub = context.get_value("subobj");
         int arity = sub.arity();
         context.set_temporary("sub_arity", arity - 1);
-        context.set_temporary("has_sub_arity", arity != -1);
+        context.set_temporary("has_sub_arity", (arity - 1) != -1);
     %>
 
     function <# subobj #>()
