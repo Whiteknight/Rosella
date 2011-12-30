@@ -183,7 +183,7 @@ class Rosella.Query.Provider.Array : Rosella.Query.Provider
     // Sort the data in-place, without creating a copy.
     function sort_self(var data, var func)
     {
-        Rosella.Query.qsort(data, 0, elements(data), func);
+        Rosella.Query.sort_array(data, func);
     }
 
     // Shuffle the data in-place.

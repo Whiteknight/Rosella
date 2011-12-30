@@ -22,7 +22,7 @@ namespace Rosella.Query.Sort
 
             array_swap(d, last, store);
             pivot = store;
-            qsort(d, s, pivot, cmp);
+            quicksort(d, s, pivot, cmp);
             s = pivot + 1;
         }
     }
@@ -77,6 +77,8 @@ namespace Rosella.Query.Sort
         }
     }
 
+    // Timsort the array. Best used when the array is already mostly sorted
+    // or reverse-sorted.
     function timsort(var d, var cmp)
     {
         var ts = new Rosella.Query.Sort.Timsort(cmp);
@@ -86,6 +88,7 @@ namespace Rosella.Query.Sort
     /* Default Sort Comparison Routines
     */
 
+    // Default sort routine.
     function get_default_comparer()
     {
         return function (var a, var b) {
@@ -97,6 +100,20 @@ namespace Rosella.Query.Sort
         };
     }
 
+    // Reverse sort routine
+    function get_reverse_comparer()
+    {
+        return function (var a, var b) {
+            if (a == b)
+                return 0;
+            if (a < b)
+                return 1;
+            return -1;
+        };
+    }
+
+    // Null sort-routine. Leave the array unsorted (for stable sort algorithms
+    // only)
     function get_unmoving_comparer()
     {
         return function (var a, var b) {
@@ -104,6 +121,9 @@ namespace Rosella.Query.Sort
         };
     }
 
+    // Randomizing sort routine. "sort" the array into a random order. Not for
+    // use with a sort algorithm that is going to verify the array is sorted
+    // (because comparisons randomly change and verification will fail).
     function get_randomizing_comparer()
     {
         return function (var a, var b) {

@@ -178,7 +178,7 @@ class Rosella.Query.Provider
     function sort(var data, var func)
     {
         var new_data = self.to_array(data);
-        Rosella.Query.qsort(new_data, 0, elements(new_data), func);
+        Rosella.Query.sort_array(new_data, func);
         return new_data;
     }
 

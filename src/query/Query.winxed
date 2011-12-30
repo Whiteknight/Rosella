@@ -68,6 +68,20 @@ namespace Rosella.Query
         });
     }
 
+    // Sort an array in-place. Optionally take a comparison function and a
+    // hint flag that says whether the array should be considered already
+    // mostly-sorted or mostly-reverse-sorted
+    function sort_array(var d, var cmp [optional], int has_cmp [opt_flag],
+            int is_sorted [optional,named], int has_is [opt_flag])
+    {
+        if (!has_cmp || cmp == null)
+            cmp = Rosella.Query.Sort.get_default_comparer();
+        if (has_is && is_sorted)
+            Rosella.Query.Sort.timsort(d, cmp);
+        else
+            Rosella.Query.hybrid_sort(d, 0, elements(d), cmp);
+    }
+
     /* Default Provider Factory
     */
 

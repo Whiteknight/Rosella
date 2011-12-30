@@ -190,7 +190,8 @@ class Rosella.Query.Iterable : Rosella.IteratorBase
         return seed;
     }
 
-    /* Lazy Iterable Methods
+    /* Iterator Methods
+        these methods return a new Iterator and can be chained
     */
 
     // Return a new mapping iterator. The mapping iterator maps each item from
@@ -232,10 +233,11 @@ class Rosella.Query.Iterable : Rosella.IteratorBase
     }
 
     // Flatten the data source completely
-    // TODO: Should take an optional integer which says how deep we flatten
-    function flatten()
+    function flatten(int levels [optional], int has_levels [opt_flag])
     {
-        return new Rosella.Query.Iterable.Flatten(self);
+        if (!has_levels)
+            levels = -1;
+        return new Rosella.Query.Iterable.Flatten(self, -1);
     }
 
     // Project each item to a new sequence, and insert that new sequence inline
@@ -250,18 +252,16 @@ class Rosella.Query.Iterable : Rosella.IteratorBase
         return new Rosella.Query.Iterable.Tap(self, f);
     }
 
-    /* Eager Iterable Methods
-    */
-
     // Read all the data into an array, sort the array, and return a new
     // iterator for it.
-    function sort(var f [optional], int has_f [opt_flag])
+    function sort(var f [optional], int has_f [opt_flag],
+            int is_sorted [optional], int has_is [opt_flag])
     {
+        if (!has_is)
+            is_sorted = false;
         if (!has_f)
             f = Rosella.Query.get_default_comparer();
-        var d = self.to_array();
-        Rosella.Query.qsort(d, 0, elements(d), f);
-        return new Rosella.Query.Iterable.Array(d);
+        return new Rosella.Query.Iterable.Sort(self, f, is_sorted);
     }
 
     // Read all the data into an array and perform a schwartzian transform sort
@@ -280,10 +280,19 @@ class Rosella.Query.Iterable : Rosella.IteratorBase
     // iterator for the result.
     function shuffle()
     {
-        var d = self.to_array();
-        Rosella.Random.shuffle_array(d);
-        return new Rosella.Query.Iterable.Array(d);
+        return new Rosella.Query.Iterable.Shuffle(self);
     }
+
+    // Group items from the source iterator into named arrays based on a key
+    // function. Return a sequence of those arrays.
+    function group_by(var f)
+    {
+        return new Rosella.Query.Iterable.GroupBy(self, f);
+    }
+
+    /* Scalar Methods
+        These methods return a scalar quantity and cannot be chained
+    */
 
     // Read all the data, counting items. If provided, only data items matching
     // the optional predicate are counted.
@@ -392,26 +401,6 @@ class Rosella.Query.Iterable : Rosella.IteratorBase
         } else {
             return self.next();
         }
-    }
-
-    // Group items from the source iterator into named arrays based on a key
-    // function. Return a sequence of those arrays.
-    function group_by(var f)
-    {
-        if (!self.has_more())
-            self.__empty();
-        var groups = Rosella.pmc_keyed_hash();
-        :(var d, int m) = self.next_and_more();
-        var key = f(d);
-        groups[key] = [d];
-        while (m == true) {
-            :(d, m) = self.next_and_more();
-            key = f(d);
-            if (!(exists groups[key]))
-                groups[key] = [];
-            push(groups[key], d);
-        }
-        return new Rosella.Query.Iterable.Hash(groups);
     }
 
     /* Internal Helper Methods

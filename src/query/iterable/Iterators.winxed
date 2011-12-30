@@ -78,6 +78,14 @@ class Rosella.Query.Iterable.Filter : Rosella.Query.Iterable
         } while(m == true);
         self.__empty();
     }
+
+    function reset()
+    {
+        self.cache = null;
+        self.has_cache = false;
+        self.source.reset();
+        return self;
+    }
 }
 
 /* Appending Iterator
@@ -86,19 +94,23 @@ class Rosella.Query.Iterable.Filter : Rosella.Query.Iterable
 class Rosella.Query.Iterable.Append : Rosella.Query.Iterable
 {
     var extra_sources;
+    var source_ptr;
 
     function Append(var first, var second)
     {
         self.source = first;
         self.extra_sources = [second];
+        self.source_ptr = 0;
     }
 
     function next()
     {
+        int sources = elements(self.extra_sources);
         while (!self.source.has_more()) {
-            if (elements(self.extra_sources) == 0)
+            if (sources == 0 || int(self.source_ptr) >= sources)
                 self.__empty();
-            var s = self.extra_sources.shift();
+            var s = self.extra_sources[int(self.source_ptr)];
+            self.source_ptr++;
             self.source = Rosella.Query.iterable(s);
         }
         return self.source.next();
@@ -118,6 +130,15 @@ class Rosella.Query.Iterable.Append : Rosella.Query.Iterable
     function append(var d)
     {
         push(self.extra_sources, d);
+        return self;
+    }
+
+    function reset()
+    {
+        self.source_ptr = 0;
+        self.source.reset();
+        for (int i = 0; i < elements(self.extra_sources); i++)
+            self.extra_sources[i].reset();
         return self;
     }
 }
@@ -192,6 +213,8 @@ class Rosella.Query.Iterable.TakeSkip : Rosella.Query.Iterable
 
     // TODO: We can probably optimize repeated take/skip calls to reuse the
     // same iterator, if the predicates are both null
+
+    // TODO: Need reset()
 }
 
 /* Flattening Iterator
@@ -202,11 +225,13 @@ class Rosella.Query.Iterable.Flatten : Rosella.Query.Iterable
     var cache;
     var cached_item;
     var has_cached_item;
+    var levels;
 
-    function Flatten(var source)
+    function Flatten(var source, int levels)
     {
         self.source = source;
         self.has_cached_item = false;
+        self.levels = levels;
     }
 
     function next()
@@ -248,6 +273,12 @@ class Rosella.Query.Iterable.Flatten : Rosella.Query.Iterable
         if (!self.source.has_more())
             return false;
 
+        if (self.levels == 0) {
+            self.cached_item = self.source.next();
+            self.has_cached_item = true;
+            return true;
+        }
+
         var d;
         int m;
         do {
@@ -275,7 +306,7 @@ class Rosella.Query.Iterable.Flatten : Rosella.Query.Iterable
                 if (int(self.has_cached_item) == true)
                     return true;
             } else {
-                var cache = new Rosella.Query.Iterable.Flatten(i);
+                var cache = new Rosella.Query.Iterable.Flatten(i, self.levels - 1);
                 if (cache.has_more()) {
                     self.cache = cache;
                     return true;
@@ -284,6 +315,15 @@ class Rosella.Query.Iterable.Flatten : Rosella.Query.Iterable
         } while (m == true);
 
         return false;
+    }
+
+    function reset()
+    {
+        self.source.reset();
+        self.cache = null;
+        self.cached_item = null;
+        self.has_cached_item = false;
+        return self;
     }
 }
 
@@ -352,6 +392,13 @@ class Rosella.Query.Iterable.Project : Rosella.Query.Iterable
         self.cache = new Rosella.Query.Iterable.Array(d);
         return self.cache.has_more();
     }
+
+    function reset()
+    {
+        self.cache = null;
+        self.source.reset();
+        return self;
+    }
 }
 
 /* Iterator Tap
@@ -374,5 +421,141 @@ class Rosella.Query.Iterable.Tap : Rosella.Query.Iterable
         var f = self.func;
         f(d);
         return d;
+    }
+}
+
+/* Sorting Iterator.
+    Sorts the incoming data by greedly reading the source to completion and
+    then sorting the resulting array in-place.
+*/
+class Rosella.Query.Iterable.Sort : Rosella.Query.Iterable
+{
+    var func;
+    var sorted;
+    var is_sorted;
+
+    function Sort(var source, var f, int is_sorted)
+    {
+        self.source = source;
+        self.func = f;
+        self.is_sorted = is_sorted;
+        self.sorted = null;
+    }
+
+    function next()
+    {
+        if (self.sorted == null) {
+            int is_sorted = int(self.is_sorted);
+            var d = self.source.to_array();
+            Rosella.Query.sort_array(d, 0, elements(d), f, is_sorted:[named("is_sorted")]);
+            self.sorted = new Rosella.Query.Iterable.Array(d);
+        }
+        if (!self.sorted.has_more())
+            self.__empty();
+        return self.sorted.next();
+    }
+
+    function has_more()
+    {
+        if (self.sorted != null)
+            return self.sorted.has_more();
+        return self.source.has_more();
+    }
+
+    function reset()
+    {
+        self.sorted = null;
+        self.source.reset();
+        return self;
+    }
+}
+
+class Rosella.Query.Iterable.Shuffle : Rosella.Query.Iterable
+{
+    var shuffled;
+
+    function Shuffle(var source)
+    {
+        self.source = source;
+    }
+
+    function next()
+    {
+        if (self.shuffled != null) {
+            if (self.shuffled.has_more())
+                return self.shuffled.next();
+            self.__empty();
+        }
+        var d = self.to_array();
+        Rosella.Random.shuffle_array(d);
+        self.shuffled = new Rosella.Query.Iterable.Array(d);
+        return self.shuffled.next();
+    }
+
+    function has_more()
+    {
+        if (self.shuffled != null)
+            return self.shuffled.has_more();
+        return self.source.has_more();
+    }
+
+    function reset()
+    {
+        self.shuffled = null;
+        self.source.reset();
+        return self;
+    }
+}
+
+class Rosella.Query.Iterable.GroupBy : Rosella.Query.Iterable
+{
+    var func;
+    var grouped;
+
+    function GroupBy(var source, var f)
+    {
+        self.source = source;
+        self.func = f;
+        self.grouped = null;
+    }
+
+    function next()
+    {
+        if (self.grouped != null) {
+            if (self.grouped.has_more())
+                return self.grouped.next();
+            self.__empty();
+        }
+
+        if (!self.source.has_more())
+            self.__empty();
+        var f = self.func;
+        var groups = Rosella.pmc_keyed_hash();
+        :(var d, int m) = self.next_and_more();
+        var key = f(d);
+        groups[key] = [d];
+        while (m == true) {
+            :(d, m) = self.next_and_more();
+            key = f(d);
+            if (!(exists groups[key]))
+                groups[key] = [];
+            push(groups[key], d);
+        }
+        self.grouped = new Rosella.Query.Iterable.Hash(groups);
+        return self.grouped.next();
+    }
+
+    function has_more()
+    {
+        if (self.grouped != null)
+            return self.grouped.has_more();
+        return self.source.has_more();
+    }
+
+    function reset()
+    {
+        self.grouped = null;
+        self.source.reset();
+        return self;
     }
 }

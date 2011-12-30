@@ -103,7 +103,8 @@ class Rosella.Query.Sort.Timsort
         }
     }
 
-    function _countRunAndMakeAscending(int lo, int hi){
+    function _countRunAndMakeAscending(int lo, int hi)
+    {
         __ASSERT__(lo < hi);
 
         int runHi = lo + 1;
@@ -114,7 +115,8 @@ class Rosella.Query.Sort.Timsort
 
         // Find end of run, and reverse the range if the run is descending.
 
-        if (cmp(self.d[runHi++], self.d[lo]) < 0) // Descending {
+        if (cmp(self.d[runHi++], self.d[lo]) < 0) {
+            // Descending
             while (runHi < hi && cmp(self.d[runHi], self.d[runHi - 1]) < 0)
                 runHi++;
             self._reverseRange(lo, runHi);
@@ -175,7 +177,7 @@ class Rosella.Query.Sort.Timsort
                 if (self.run_length[n - 1] < self.run_length[n + 1])
                     n--;
                 self._mergeAt(n);
-            else if (self.run_length[n] <= self.run_length[n + 1])
+            } else if (self.run_length[n] <= self.run_length[n + 1])
                 self._mergeAt(n);
             else
                 break;

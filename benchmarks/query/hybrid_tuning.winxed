@@ -143,7 +143,7 @@ function main[main]()
     say("\nFORWARD-SORTED (PRESORTED) BENCHMARKS\n");
 
     sorted_N_list(d);
-    base = Rosella.Benchmark.benchmark(function() { using static compare; Rosella.Query.as_queryable(d).sort_self(compare); });
+    base = Rosella.Benchmark.benchmark(function() { using static compare; Rosella.Query.sort_array(d, compare); });
     display_result("sort with Rosella Query", base);
 
     sorted_N_list(d);
@@ -159,7 +159,7 @@ function main[main]()
     say("\nREVERSE-SORTED BENCHMARKS\n");
 
     reverse_sorted_N_list(d);
-    base = Rosella.Benchmark.benchmark(function() { using static compare; Rosella.Query.as_queryable(d).sort_self(compare); });
+    base = Rosella.Benchmark.benchmark(function() { using static compare; Rosella.Query.sort_array(d, compare); });
     display_result("sort with Rosella Query", base);
 
     reverse_sorted_N_list(d);
@@ -175,7 +175,7 @@ function main[main]()
     say("\nRANDOM DATA BENCHMARKS\n");
 
     random_N_list(d);
-    base = Rosella.Benchmark.benchmark(function() { using static compare; Rosella.Query.as_queryable(d).sort_self(compare); });
+    base = Rosella.Benchmark.benchmark(function() { using static compare; Rosella.Query.sort_array(d, compare); });
     display_result("sort with Rosella Query", base);
 
     random_N_list(d);
