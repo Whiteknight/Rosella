@@ -1,0 +1,22 @@
+/* Key/Value Pair Helper Class
+    This class provides a nicer way to iterate over hashes and hash-like
+    objects.
+*/
+class Rosella.Query.Iterable.KeyValuePair
+{
+    var key;
+    var value;
+
+    // Constructor. Set up the attributes (they should be considered immutable)
+    function KeyValuePair(var key, var value)
+    {
+        self.key = key;
+        self.value = value;
+    }
+
+    // Get the key
+    function key() { return self.key; }
+
+    // Get the value
+    function value() { return self.value; }
+}

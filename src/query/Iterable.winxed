@@ -1,0 +1,427 @@
+/*  Iterable Class
+    This is the abstract base class for all Iterable types. It provides default
+    implementations of the methods which form the core of the Iterable API.
+*/
+class Rosella.Query.Iterable : Rosella.IteratorBase
+{
+    var source;
+
+    /* Utility Functions
+    */
+
+    // Get the next item from the iterator
+    function next()
+    {
+        if (self.source == null)
+            self.__empty();
+        return self.source.next();
+    }
+
+    // Get the next item and a flag telling whether we have more data after
+    // that (multi-return)
+    function next_and_more()
+    {
+        if (self.source == null)
+            self.__empty();
+        var d = self.next();
+        int m = self.has_more();
+        return d, m;
+    }
+
+    // Determine if the iterator has more data to read. Notice that this is not
+    // a pure operation. Some iterators may need to read and examine data to
+    // determine if there is more to be read.
+    function has_more()
+    {
+        if (self.source == null)
+            return false;
+        return self.source.has_more();
+    }
+
+    // Reset the iterator, so future requests read the complete data set from
+    // the beginning. This is not supported by all iterators.
+    function reset()
+    {
+        self.source.reset();
+        return self;
+    }
+
+    function on_data(var f)
+    {
+        return self.source.on_data(f);
+    }
+
+    function on_iterator(var f)
+    {
+        return self.source.on_iterator(f);
+    }
+
+    //function need_reset()
+    //{
+        //return self.source.need_reset();
+    //}
+
+    /* Iterator Vtables
+    */
+
+    // Determine if the iterator contains more data to be read. Like has_more
+    // above, this is not a pure operation
+    function get_bool[vtable]()
+    {
+        return self.has_more();
+    }
+
+    // Get the next item from the iterator as a string
+    function shift_string[vtable]()
+    {
+        return self.next();
+    }
+
+    // Get the next item from the iterator as a PMC
+    function shift_pmc[vtable]()
+    {
+        return self.next();
+    }
+
+    // Get the next item from the iterator as an integer
+    function shift_integer[vtable]()
+    {
+        return self.next();
+    }
+
+    // Return self (is already an iterator)
+    function get_iter[vtable]()
+    {
+        return self;
+    }
+
+    /* Data Access Methods
+    */
+
+    // Read the source to exhaustion, returning all results as a concrete array.
+    function to_array()
+    {
+        var d = [];
+        if (!self.has_more())
+            return d;
+        :(var v, int m) = self.next_and_more();
+        push(d, v);
+        while (m == true) {
+            :(v, m) = self.next_and_more();
+            push(d, v);
+        }
+        return d;
+    }
+
+    // Read the source to exhaustion, returning all results as a hash. Takes a
+    // function reference used to generate the hash key and optionally a
+    // function reference to generate the data
+    function to_hash(var key_f, var value_f [optional], int has_vf [opt_flag])
+    {
+        var d = {};
+        if (!self.has_more())
+            return d;
+
+        :(var v, int m) = self.next_and_more();
+        var key = key_f(v);
+
+        if (has_vf) {
+            d[key] = value_f(v);
+            while (m == true) {
+                :(v, m) = self.next_and_more();
+                key = key_f(v);
+                d[key] = value_f(v);
+            }
+        } else {
+            d[key] = v;
+            while (m == true) {
+                :(v, m) = self.next_and_more();
+                key = key_f(v);
+                d[key] = v;
+            }
+        }
+        return d;
+    }
+
+    // Read the source to exhaustion, performing some callback action on each
+    // item. Returns nothing.
+    function foreach(var f)
+    {
+        if (!self.has_more())
+            return;
+        :(var v, int m) = self.next_and_more();
+        f(v);
+        while (m == true) {
+            :(v, m) = self.next_and_more();
+            f(v);
+        }
+    }
+
+    // Read the source to exhaustion, doing nothing with each data item as it
+    // is received. Returns nothing.
+    function execute()
+    {
+        if (!self.has_more())
+            return;
+        :(var v, int m) = self.next_and_more();
+        while (m == true) {
+            :(v, m) = self.next_and_more();
+        }
+    }
+
+    // Read the source to exhaustion, performing an aggregating operation on
+    // a running sum and each subsequent data item. Return the result.
+    function fold(var f, var seed [optional], int has_seed [opt_flag])
+    {
+        int m = self.has_more();
+        if (!m) {
+            if (has_seed)
+                return seed;
+            return null;
+        }
+
+        if (!has_seed)
+            :(seed, m) = self.next_and_more();
+
+        while(m == true) {
+            :(var d, m) = self.next_and_more();
+            seed = f(seed, d);
+        }
+        return seed;
+    }
+
+    /* Lazy Iterable Methods
+    */
+
+    // Return a new mapping iterator. The mapping iterator maps each item from
+    // the source to a new item returned from a callback function.
+    function map(var f)
+    {
+        return new Rosella.Query.Iterable.Map(self, f);
+    }
+
+    // Filter the incoming data, only returning items which satisfy the given
+    // predicate
+    function filter(var f)
+    {
+        return new Rosella.Query.Iterable.Filter(self, f);
+    }
+
+    // Append a new data source to the end of the current iteration
+    function append(var d)
+    {
+        return new Rosella.Query.Iterable.Append(self, d);
+    }
+
+    // Take only the first N items in the sequence, or the first N items which
+    // satisfy the optional predicate
+    function take(int count, var f [optional], int has_f [opt_flag])
+    {
+        if (!has_f)
+            f = null;
+        return new Rosella.Query.Iterable.TakeSkip(self, f, count, 0);
+    }
+
+    // Skip the first N items in the sequence, or the first N items which
+    // satisfy the optional predicate
+    function skip(int count, var f [optional], int has_f [opt_flag])
+    {
+        if (!has_f)
+            f = null;
+        return new Rosella.Query.Iterable.TakeSkip(self, f, -1, count);
+    }
+
+    // Flatten the data source completely
+    // TODO: Should take an optional integer which says how deep we flatten
+    function flatten()
+    {
+        return new Rosella.Query.Iterable.Flatten(self);
+    }
+
+    // Project each item to a new sequence, and insert that new sequence inline
+    // into the iteration.
+    function project(var f)
+    {
+        return new Rosella.Query.Iterable.Project(self, f);
+    }
+
+    function tap(var f)
+    {
+        return new Rosella.Query.Iterable.Tap(self, f);
+    }
+
+    /* Eager Iterable Methods
+    */
+
+    // Read all the data into an array, sort the array, and return a new
+    // iterator for it.
+    function sort(var f [optional], int has_f [opt_flag])
+    {
+        if (!has_f)
+            f = Rosella.Query.get_default_comparer();
+        var d = self.to_array();
+        Rosella.Query.qsort(d, 0, elements(d), f);
+        return new Rosella.Query.Iterable.Array(d);
+    }
+
+    // Read all the data into an array and perform a schwartzian transform sort
+    // on the array. Return a new iterator for the result.
+    function cache_sort(var get_key, var compare_key [optional], int has_comparer [opt_flag])
+    {
+        if (!has_comparer)
+            compare_key = Rosella.Query.get_default_comparer();
+        return self
+            .map(function(i) { return [get_key(i), i]; })
+            .sort(function(a, b) { return compare_key(a[0], b[0]); })
+            .map(function(i) { return i[1]; });
+    }
+
+    // Read all data into an array. Shuffle the array randomly. Return a new
+    // iterator for the result.
+    function shuffle()
+    {
+        var d = self.to_array();
+        Rosella.Random.shuffle_array(d);
+        return new Rosella.Query.Iterable.Array(d);
+    }
+
+    // Read all the data, counting items. If provided, only data items matching
+    // the optional predicate are counted.
+    function count(var f [optional], int has_f [opt_flag])
+    {
+        if (!self.has_more())
+            return 0;
+
+        int i = 0;
+        if (has_f) {
+            :(var v, int m) = self.next_and_more();
+            if (f(v))
+                i++;
+            while (m == true) {
+                :(v, m) = self.next_and_more();
+                if (int(f(v)) == true)
+                    i++;
+            }
+            return i;
+        } else {
+            :(var v, int m) = self.next_and_more();
+            i++;
+            while (m == true) {
+                :(v, m) = self.next_and_more();
+                i++;
+            }
+            return i;
+        }
+    }
+
+    // Return true if the iterator contains any items, false otherwise. If
+    // provided, return true only if any data items match the given predicate.
+    function any(var f [optional], int has_f [opt_flag])
+    {
+        if (!self.has_more())
+            return false;
+        :(var v, int m) = self.next_and_more();
+        if (has_f) {
+            if (f(v))
+                return true;
+            while (m == true) {
+                :(v, m) = self.next_and_more();
+                if (int(f(v)) == true)
+                    return true;
+            }
+            return false;
+        } else {
+            return self.has_more();
+        }
+    }
+
+    // Expect the iterator to contain exactly one item, and return that. If
+    // given, expect the iterator to contain exactly one item matching the
+    // optional predicate and return that item.
+    function single(var f [optional], int has_f [opt_flag])
+    {
+        if (!self.has_more())
+            self.__empty();
+        :(var d, int m) = self.next_and_more();
+        if (m == true)
+            Rosella.Error.invalid(__FUNCTION__, ".single() expects a sequence with exactly one element");
+        return d;
+    }
+
+    // Return the first item in the iterator (or the first item matching the
+    // optional predicate). Throw an error if the iterator contains no suitable
+    // items to return.
+    function first(var f [optional], int has_f [opt_flag])
+    {
+        if (!self.has_more())
+            self.__empty();
+        if (has_f) {
+            :(var d, int m) = self.next_and_more();
+            if (f(d))
+                return d;
+            while (m == true) {
+                :(d, m) = self.next_and_more();
+                if (int(f(d)) == true)
+                    return d;
+            }
+            Rosella.Error.invalid(__FUNCTION__, ".first() expects at least one matching item");
+        } else {
+            return self.next();
+        }
+    }
+
+    // Return the first item in the iterator or the first item matching the
+    // optional predicate. Return a default value (null, usually) if no matching
+    // items are found.
+    function first_or_default(var f [optional], int has_f [opt_flag], var def [named,optional], int has_def [opt_flag])
+    {
+        if (!has_def)
+            def = null;
+        if (!self.has_more())
+            return def;
+        if (has_f) {
+            :(var d, int m) = self.next_and_more();
+            if (f(d))
+                return d;
+            while (m == true) {
+                :(d, m) = self.next_and_more();
+                if (int(f(d)) == true)
+                    return d;
+            }
+            return def;
+        } else {
+            return self.next();
+        }
+    }
+
+    // Group items from the source iterator into named arrays based on a key
+    // function. Return a sequence of those arrays.
+    function group_by(var f)
+    {
+        if (!self.has_more())
+            self.__empty();
+        var groups = Rosella.pmc_keyed_hash();
+        :(var d, int m) = self.next_and_more();
+        var key = f(d);
+        groups[key] = [d];
+        while (m == true) {
+            :(d, m) = self.next_and_more();
+            key = f(d);
+            if (!(exists groups[key]))
+                groups[key] = [];
+            push(groups[key], d);
+        }
+        return new Rosella.Query.Iterable.Hash(groups);
+    }
+
+    /* Internal Helper Methods
+    */
+
+    // Internal helper function. Throws an error if the iterable is empty but an
+    // attempt is made to read it anyway
+    function __empty()
+    {
+        Rosella.Error.invalid(__FUNCTION__, "Attempt to read from empty iterator of type '%s'", string(typeof(self)));
+    }
+}
+

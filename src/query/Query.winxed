@@ -26,6 +26,16 @@ namespace Rosella.Query
         return new Rosella.Query.Stream(data);
     }
 
+    function iterable(var d)
+    {
+        return Rosella.Query.default_iterable_factory().create(d);
+    }
+
+    function wrap_iterator(var i)
+    {
+        return new Rosella.Query.Iterable.Iterator(i);
+    }
+
     // Helper function. Determine if the aggregate is an array
     function is_array(var data)
     {
@@ -106,6 +116,18 @@ namespace Rosella.Query
         return temp;
     }
 
+    const string DEFAULT_ITERABLE_FACTORY = "Rosella.Query.default_iterable_factory";
+
+    function default_iterable_factory()
+    {
+        var temp = Rosella.Globals.get_global(DEFAULT_ITERABLE_FACTORY);
+        if (temp == null) {
+            temp = new Rosella.Query.Iterable.Factory();
+            Rosella.Globals.register_global(DEFAULT_ITERABLE_FACTORY, temp);
+        }
+        return temp;
+    }
+
     // Set a customer global provider factory
     function set_provider_factory(var factory)
     {
@@ -114,13 +136,26 @@ namespace Rosella.Query
 
     function get_default_comparer()
     {
-        return function (var a, var b)
-        {
+        return function (var a, var b) {
             if (a == b)
                 return 0;
             if (a < b)
                 return -1;
             return 1;
+        };
+    }
+
+    function get_unmoving_comparer()
+    {
+        return function (var a, var b) {
+            return 0;
+        };
+    }
+
+    function get_randomizing_comparer()
+    {
+        return function (var a, var b) {
+            return Rosella.Random.default_uniform_random().get_integer(0, 2) - 1;
         };
     }
 }

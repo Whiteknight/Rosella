@@ -26,5 +26,12 @@ class Rosella.IteratorBase
         Rosella.Error.must_subclass(__CLASS__);
     }
 
+    function does[vtable](string role)
+    {
+        if (role == "iterator")
+            return true;
+        return false;
+    }
+
     function set_integer_native[vtable](int dummy) { }
 }

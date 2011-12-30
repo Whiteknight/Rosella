@@ -31,16 +31,15 @@ class Rosella.Harness.TestRun
     // Determine the maximum file length of tests in the run.
     function max_file_length(int start_length)
     {
-        return Rosella.Query.as_queryable(self.tests)
+        return Rosella.Query.iterable(self.tests)
             .map(function(t) { return length(string(t)); })
-            .fold(function(int max, int l) { return max > l ? max : l; }, start_length)
-            .data();
+            .fold(function(int max, int l) { return max > l ? max : l; }, start_length);
     }
 
     // Returns 1 if the run was a success, 0 otherwise
     function run_was_success()
     {
-        return Rosella.Query.as_queryable(self.tests)
+        return Rosella.Query.iterable(self.tests)
             .map(function(t) { return t.result.status(); })
             .any(function(s) { return s == "ABORTED" || s == "FAILED"; })
             ? false : true;
@@ -50,16 +49,16 @@ class Rosella.Harness.TestRun
     // one of "ABORTED", "PASSED", or "FAILED"
     function files_by_status(string status)
     {
-        return Rosella.Query.as_queryable(self.tests)
+        return Rosella.Query.iterable(self.tests)
             .filter(function(test) { return test.result.status() == status; })
-            .data();
+            .to_array();
     }
 
     // Get the number of tests by status. Status is a string, one of
     // "ABORTED", "PASSED", "FAILED", or "TODOPASSED"
     function num_files_by_status(string status)
     {
-        return Rosella.Query.as_queryable(self.tests)
+        return Rosella.Query.iterable(self.tests)
             .map(function(t) { return t.result.status(); })
             .count(function(s) { return s == status; });
     }
@@ -68,7 +67,7 @@ class Rosella.Harness.TestRun
     // "PASSED", "FAILED", or "TODOPASSED"
     function num_tests_by_status(string status)
     {
-        return Rosella.Query.as_queryable(self.tests)
+        return Rosella.Query.iterable(self.tests)
             .map(function(t) { return t.result; })
             .map(function(r) {
                 switch (status) {
@@ -80,8 +79,8 @@ class Rosella.Harness.TestRun
                         return r.list_of_todo_passed();
                 }
             })
-            .flatten()
-            .count();
+            .map(function(r) { return elements(r); })
+            .fold(function(s, e) { return s + e; }, 0);
     }
 
     // Get the total number of test files in the collection
