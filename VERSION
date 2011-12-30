@@ -15,7 +15,7 @@ mockobject: 2 Stable
 path: 1 Stable
 prototype: 0 Alpha
 proxy: 2 Stable
-query: 1 Stable
+query: 2 Beta
 random: 1 Stable
 reflect: 0 Alpha
 repl: 0 Alpha
