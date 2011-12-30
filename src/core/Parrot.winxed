@@ -12,6 +12,16 @@ namespace Rosella.Parrot
             return config;
     }
 
+    function is_linux()
+    {
+        return Rosella.Parrot.get_config_hash()["osname"] == "linux";
+    }
+
+    function is_windows()
+    {
+        return Rosella.Parrot.get_config_hash()["osname"] == "windows";
+    }
+
     // Get an array of strings representing a backtrace from the caller
     function get_backtrace_strings()
     {

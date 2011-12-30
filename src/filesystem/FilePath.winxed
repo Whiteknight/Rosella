@@ -37,10 +37,14 @@ class Rosella.FileSystem.FilePath
     // starting at the file system root.
     function full_base_path()
     {
-        // TODO: Fix for windows
         string base_path = string(self.details["basepath"]);
-        if (substr(base_path, 0, 1) == "/")
+        if (Rosella.Parrot.is_linux() && substr(base_path, 0, 1) == "/")
             return base_path;
+        if (Rosella.Parrot.is_windows()) {
+            string prefix = substr(base_path, 1, 2);
+            if (prefix == ":/" || prefix == ":\\")
+                return base_path;
+        }
         var cwd = Rosella.FileSystem.Directory.current_directory();
         return string(cwd) + base_path;
     }
