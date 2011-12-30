@@ -1,0 +1,113 @@
+namespace Rosella.Query.Sort
+{
+    /* Sorting Routines
+    */
+
+    // lightly-optimized implementation of Quicksort.
+    function quicksort(var d, int s, int n, var cmp)
+    {
+        int last = n-1;
+        while (last > s) {
+            int pivot = s + int((n - s) / 2);
+            int store = s;
+
+            var piv = array_swap(d, pivot, last);
+
+            for(int ix = s; ix < last; ix++) {
+                if (cmp(d[ix], piv) < 0) {
+                    array_swap(d, store, ix);
+                    store++;
+                }
+            }
+
+            array_swap(d, last, store);
+            pivot = store;
+            qsort(d, s, pivot, cmp);
+            s = pivot + 1;
+        }
+    }
+
+    // Transition threshold below which the hybrid sort switches to insertion
+    // sort instead of quicksort
+    const int HYBRID_SORT_TRANSITION = 6;
+
+    // Quicksort + Insertion Sort hybrid. For arrays shorter than a certain
+    // length, switch to insertion sort.
+    function hybrid_quicksort(var d, int s, int n, var cmp)
+    {
+        int last = n-1;
+        while (last > s) {
+            if ((last - s) < HYBRID_SORT_TRANSITION) {
+                for (int x = s + 1; x < n; x++)
+                {
+                    var val = d[x];
+                    int j = x - 1;
+                    while (j >= 0 && cmp(val, d[j]) < 0)
+                    {
+                        d[j + 1] = d[j];
+                        j--;
+                    }
+                    d[j + 1] = val;
+                }
+                return;
+            }
+            int pivot = s + int((n - s) / 2);
+            int store = s;
+            var tmp;
+
+            var piv = d[pivot];
+            d[pivot] = d[last];
+            d[last] = piv;
+
+            for(int ix = s; ix < last; ix++) {
+                if (cmp(d[ix], piv) < 0) {
+                    tmp = d[store];
+                    d[store] = d[ix];
+                    d[ix] = tmp;
+                    store++;
+                }
+            }
+
+            tmp = d[last];
+            d[last] = d[store];
+            d[store] = tmp;
+            pivot = store;
+            hybrid_quicksort(d, s, pivot, cmp);
+            s = pivot + 1;
+        }
+    }
+
+    function timsort(var d, var cmp)
+    {
+        var ts = new Rosella.Query.Sort.Timsort(cmp);
+        ts.sort(d, 0, elements(d), cmp);
+    }
+
+    /* Default Sort Comparison Routines
+    */
+
+    function get_default_comparer()
+    {
+        return function (var a, var b) {
+            if (a == b)
+                return 0;
+            if (a < b)
+                return -1;
+            return 1;
+        };
+    }
+
+    function get_unmoving_comparer()
+    {
+        return function (var a, var b) {
+            return 0;
+        };
+    }
+
+    function get_randomizing_comparer()
+    {
+        return function (var a, var b) {
+            return Rosella.Random.default_uniform_random().get_integer(0, 2) - 1;
+        };
+    }
+}

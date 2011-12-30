@@ -193,15 +193,13 @@ function setup_stable_libraries(var rosella)
         "query/provider/Scalar",
         "query/provider/Factory",
         "query/Queryable",
-        "query/queryable/InPlace",
-        "query/Stage",
-        "query/Stream",
-        "query/stream/Iterator",
         "query/Iterable",
         "query/iterable/Factory",
         "query/iterable/KeyValuePair",
         "query/iterable/Sources",
-        "query/iterable/Iterators"
+        "query/iterable/Iterators",
+        "query/Sort",
+        "query/sort/Timsort"
     );
 
     // A library for working with files and directories

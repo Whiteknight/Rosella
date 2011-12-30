@@ -35,7 +35,9 @@ class Rosella.Query.Queryable
     // new Queryable
     function as_queryable(var data)
     {
-        return new Rosella.Query.Queryable(data, self.factory);
+        self.data = data;
+        self.provider = self.factory.create(data);
+        return self;
     }
 
     /* Query Routines

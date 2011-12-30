@@ -12,18 +12,9 @@ namespace Rosella.Query
     // of queryable wrapper to use. 0 (default) = a normal Queryable.
     // 1 = in-place queryable. In-place produces less churn, but is not
     // immutable.
-    function as_queryable(var data, int inplace [optional], int has_ip [opt_flag])
+    function as_queryable(var data)
     {
-        if (has_ip && inplace)
-            return new Rosella.Query.Queryable.InPlace(data);
-        else
-            return new Rosella.Query.Queryable(data);
-    }
-
-    // Return a Stream over the data
-    function as_stream(var data)
-    {
-        return new Rosella.Query.Stream(data);
+        return new Rosella.Query.Queryable(data);
     }
 
     function iterable(var d)
@@ -48,6 +39,11 @@ namespace Rosella.Query
         return does(data, "hash");
     }
 
+    function is_iterator(var data)
+    {
+        return does(data, "iterator");
+    }
+
     // Helper function. Excute one callback depending on whether the given
     // data is an array, a hash, or anything else.
     function array_or_hash(var data, var array_func, var hash_func, var scalar_func)
@@ -59,30 +55,6 @@ namespace Rosella.Query
         return scalar_func(data);
     }
 
-    // lightly-optimized implementation of Quicksort.
-    function qsort(var d, int s, int n, var cmp)
-    {
-        int last = n-1;
-        while (last > s) {
-            int pivot = s + int((n - s) / 2);
-            int store = s;
-
-            var piv = array_swap(d, pivot, last);
-
-            for(int ix = s; ix < last; ix++) {
-                if (cmp(d[ix], piv) < 0) {
-                    array_swap(d, store, ix);
-                    store++;
-                }
-            }
-
-            array_swap(d, last, store);
-            pivot = store;
-            qsort(d, s, pivot, cmp);
-            s = pivot + 1;
-        }
-    }
-
     // Install some common Query methods to the given type. Useful for
     // built-in array and hash types.
     function install_to_type(var type)
@@ -91,8 +63,8 @@ namespace Rosella.Query
         type_class.add_method("queryable", function(var obj) {
             return Rosella.Query.as_queryable(obj);
         });
-        type_class.add_method("stream", function(var obj) {
-            return Rosella.Query.as_queryable(obj);
+        type_class.add_method("iterable", function(var obj) {
+            return Rosella.Query.iterable(obj);
         });
     }
 
@@ -116,6 +88,15 @@ namespace Rosella.Query
         return temp;
     }
 
+    // Set a customer global provider factory
+    function set_provider_factory(var factory)
+    {
+        Rosella.Globals.register_global(DEFAULT_PROVIDER_FACTORY, factory);
+    }
+
+    /* Default Iterable Factory
+    */
+
     const string DEFAULT_ITERABLE_FACTORY = "Rosella.Query.default_iterable_factory";
 
     function default_iterable_factory()
@@ -126,36 +107,5 @@ namespace Rosella.Query
             Rosella.Globals.register_global(DEFAULT_ITERABLE_FACTORY, temp);
         }
         return temp;
-    }
-
-    // Set a customer global provider factory
-    function set_provider_factory(var factory)
-    {
-        Rosella.Globals.register_global(DEFAULT_PROVIDER_FACTORY, factory);
-    }
-
-    function get_default_comparer()
-    {
-        return function (var a, var b) {
-            if (a == b)
-                return 0;
-            if (a < b)
-                return -1;
-            return 1;
-        };
-    }
-
-    function get_unmoving_comparer()
-    {
-        return function (var a, var b) {
-            return 0;
-        };
-    }
-
-    function get_randomizing_comparer()
-    {
-        return function (var a, var b) {
-            return Rosella.Random.default_uniform_random().get_integer(0, 2) - 1;
-        };
     }
 }
