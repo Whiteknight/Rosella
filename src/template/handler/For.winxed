@@ -6,7 +6,7 @@ namespace Rosella { namespace Template { namespace Handler
     */
     class For : Rosella.Template.Handler.Children
     {
-        const string HASH_KEY_VARNAME = "__KEY__";
+        const string KEY_VARNAME = "__KEY__";
         const string FIRST_VARNAME = "__FIRST__";
         const string LAST_VARNAME = "__LAST__";
         var varname;
@@ -41,7 +41,7 @@ namespace Rosella { namespace Template { namespace Handler
                     else
                         self.__render_scalar(engine, ctx, sb, values);
                 }
-            }, ctx, HASH_KEY_VARNAME, FIRST_VARNAME, LAST_VARNAME);
+            }, ctx, KEY_VARNAME, FIRST_VARNAME, LAST_VARNAME);
         }
 
         /* Internal Helper Routines
@@ -57,7 +57,7 @@ namespace Rosella { namespace Template { namespace Handler
             for (string key in values) {
                 var value = values[key];
                 ctx.set_temporary(self.varname, value);
-                ctx.set_temporary(HASH_KEY_VARNAME, key);
+                ctx.set_temporary(KEY_VARNAME, key);
                 ctx.set_temporary(FIRST_VARNAME, is_first);
                 ctx.set_temporary(LAST_VARNAME, is_last);
                 self.__render_children(engine, ctx, sb);
@@ -73,15 +73,17 @@ namespace Rosella { namespace Template { namespace Handler
             int is_first = 1;
             int num_items = elements(values);
             int is_last = num_items == 1;
-            ctx.set_temporary(HASH_KEY_VARNAME, "");
+            int idx = 0;
             for (var value in values) {
                 ctx.set_temporary(self.varname, value);
+                ctx.set_temporary(KEY_VARNAME, idx);
                 ctx.set_temporary(FIRST_VARNAME, is_first);
                 ctx.set_temporary(LAST_VARNAME, is_last);
                 self.__render_children(engine, ctx, sb);
                 num_items--;
                 is_last = num_items == 1;
                 is_first = 0;
+                idx++;
             }
         }
 

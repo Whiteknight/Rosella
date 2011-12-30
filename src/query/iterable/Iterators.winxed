@@ -447,6 +447,7 @@ class Rosella.Query.Iterable.Sort : Rosella.Query.Iterable
         if (self.sorted == null) {
             int is_sorted = int(self.is_sorted);
             var d = self.source.to_array();
+            var f = self.func;
             Rosella.Query.sort_array(d, 0, elements(d), f, is_sorted:[named("is_sorted")]);
             self.sorted = new Rosella.Query.Iterable.Array(d);
         }
@@ -481,14 +482,13 @@ class Rosella.Query.Iterable.Shuffle : Rosella.Query.Iterable
 
     function next()
     {
-        if (self.shuffled != null) {
-            if (self.shuffled.has_more())
-                return self.shuffled.next();
-            self.__empty();
+        if (self.shuffled == null) {
+            var d = self.source.to_array();
+            Rosella.Random.shuffle_array(d);
+            self.shuffled = new Rosella.Query.Iterable.Array(d);
         }
-        var d = self.to_array();
-        Rosella.Random.shuffle_array(d);
-        self.shuffled = new Rosella.Query.Iterable.Array(d);
+        if (!self.shuffled.has_more())
+            self.__empty();
         return self.shuffled.next();
     }
 

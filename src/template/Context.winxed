@@ -46,5 +46,20 @@ namespace Rosella { namespace Template
         {
             return self.get_value(key);
         }
+
+        function get_integer_keyed[vtable](var key)
+        {
+            return int(self.get_value(key));
+        }
+
+        function get_string_keyed[vtable](var key)
+        {
+            return string(self.get_value(key));
+        }
+
+        function get_number_keyed[vtable](var key)
+        {
+            return float(self.get_value(key));
+        }
     }
 }}
