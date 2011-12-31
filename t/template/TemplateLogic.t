@@ -75,7 +75,7 @@ function __test_data() { return {
     "for array key" : [
         "<$ for foo in bar $><# __KEY__ #><# foo #><$ endfor $>",
         {"bar" : [4, 5, 6]},
-        "456"
+        "041526"
     ],
 
     // for loop with hashes

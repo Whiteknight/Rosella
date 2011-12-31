@@ -25,6 +25,7 @@ class Test_Rosella_Random
     function shuffle_array()
     {
         self.status.verify("Test Rosella.Random.shuffle_array()");
+        self.status.unimplemented("TODO");
         using Rosella.Random.shuffle_array;
 
         var arg_0 = [1, 2, 3, 4, 5];
