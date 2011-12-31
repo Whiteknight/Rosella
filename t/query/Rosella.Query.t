@@ -70,11 +70,11 @@ class Test_Rosella_Query
         self.assert.is_false(result);
 
         ${ iter arg_0, arg_0 };
-        int result = is_iterator(arg_0);
+        result = is_iterator(arg_0);
         self.assert.is_true(result);
 
         arg_0 = new Rosella.Query.Iterable.Array([]);
-        int result = is_iterator(arg_0);
+        result = is_iterator(arg_0);
         self.assert.is_true(result);
     }
 
