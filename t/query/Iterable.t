@@ -117,7 +117,7 @@ class Test_Rosella_Query_Iterable
 
         obj = create_new([1,2,3,4,5]);
         arg_0 = 7;
-        var result = obj.take(arg_0);
+        result = obj.take(arg_0);
         self.assert.equal(result.count(), 5);
     }
 
@@ -134,7 +134,7 @@ class Test_Rosella_Query_Iterable
     function flatten()
     {
         self.status.verify("Test Rosella.Query.Iterable.flatten()");
-        var obj = create_new([1, [2], [[3]], [4, [5], [6, [[7]], [], [[]. []], 8]], 9]);
+        var obj = create_new([1, [2], [[3]], [4, [5], [6, [[7]], [], [[], []], 8]], 9]);
 
         var result = obj.flatten();
         self.assert.equal(result.count(), 9);
@@ -147,7 +147,7 @@ class Test_Rosella_Query_Iterable
         self.status.verify("Test Rosella.Query.Iterable.project()");
         var obj = create_new([5, 10, 15]);
 
-        var arg_0 = function(i) { return [i + 1, i + 2, i + 3]);
+        var arg_0 = function(i) { return [i + 1, i + 2, i + 3]; };
         var result = obj.project(arg_0);
         self.assert.equal(result.count(), 9);
         var x = [6, 7, 8, 11, 12, 13, 16, 17, 18];
@@ -279,7 +279,7 @@ class Test_Rosella_Query_Iterable
         self.assert.equal(result, 1);
 
         obj = create_new([]);
-        int result = obj.first_or_default(5:[named("default")]);
+        result = obj.first_or_default(5:[named("default")]);
         self.assert.equal(result, 5);
     }
 }
