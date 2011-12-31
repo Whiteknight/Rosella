@@ -6,44 +6,30 @@ function create_new(var p_args [slurpy], var n_args [slurpy,named])
 
 class Test_Rosella_Query_Iterable_KeyValuePair
 {
-    function test_sanity()
-    {
-        self.assert.is_true(1);
-    }
-
     function test_new()
     {
         // Test simple constructor. For most individual method tests, use create_new() above
-        var obj = new Rosella.Query.Iterable.KeyValuePair();
+        var obj = new Rosella.Query.Iterable.KeyValuePair("test", "foo");
         self.assert.not_null(obj);
         self.assert.instance_of(obj, class Rosella.Query.Iterable.KeyValuePair);
-    }
-
-
-    function KeyValuePair()
-    {
-        self.status.verify("Test Rosella.Query.Iterable.KeyValuePair.KeyValuePair()");
-        var obj = create_new();
-
-        var arg_0 = null;
-        var arg_1 = null;
-        var result = obj.KeyValuePair(arg_0, arg_1);
     }
 
     function key()
     {
         self.status.verify("Test Rosella.Query.Iterable.KeyValuePair.key()");
-        var obj = create_new();
+        var obj = create_new("test", "foo");
 
         var result = obj.key();
+        self.assert.equal(result, "test");
     }
 
     function value()
     {
         self.status.verify("Test Rosella.Query.Iterable.KeyValuePair.value()");
-        var obj = create_new();
+        var obj = create_new("test", "foo");
 
         var result = obj.value();
+        self.assert.equal(result, "foo");
     }
 }
 

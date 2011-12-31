@@ -9,7 +9,7 @@ class Test_Rosella_Query_Sort_Timsort
     function test_new()
     {
         // Test simple constructor. For most individual method tests, use create_new() above
-        var obj = new Rosella.Query.Sort.Timsort(Rosella.Query.get_default_comparer());
+        var obj = new Rosella.Query.Sort.Timsort(Rosella.Query.Sort.get_default_comparer());
         self.assert.not_null(obj);
         self.assert.instance_of(obj, class Rosella.Query.Sort.Timsort);
     }
@@ -17,14 +17,14 @@ class Test_Rosella_Query_Sort_Timsort
     function sort()
     {
         self.status.verify("Test Rosella.Query.Sort.Timsort.sort()");
-        var obj = create_new(Rosella.Query.get_default_comparer());
+        var obj = create_new(Rosella.Query.Sort.get_default_comparer());
 
         var arg_0 = [1,2,3,4,5,7,6,8,9];
         var arg_1 = 0;
         var arg_2 = elements(arg_0);
-        var result = obj.sort(arg_0, arg_1, arg_2);
+        obj.sort(arg_0, arg_1, arg_2);
         for (int i = 0; i < 9; i++)
-            self.assert.equal(result[i], i + 1);
+            self.assert.equal(arg_0[i], i + 1);
     }
 }
 

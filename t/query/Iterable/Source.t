@@ -6,23 +6,10 @@ function create_new(var p_args [slurpy], var n_args [slurpy,named])
 
 class Test_Rosella_Query_Iterable_Source
 {
-    function test_sanity()
-    {
-        self.assert.is_true(1);
-    }
-
-    function test_new()
-    {
-        // Test simple constructor. For most individual method tests, use create_new() above
-        var obj = new Rosella.Query.Iterable.Source();
-        self.assert.not_null(obj);
-        self.assert.instance_of(obj, class Rosella.Query.Iterable.Source);
-    }
-
-
     function has_more()
     {
         self.status.verify("Test Rosella.Query.Iterable.Source.has_more()");
+        self.status.unimplemented("TODO");
         var obj = create_new();
 
         var result = obj.has_more();
@@ -31,6 +18,7 @@ class Test_Rosella_Query_Iterable_Source
     function on_data()
     {
         self.status.verify("Test Rosella.Query.Iterable.Source.on_data()");
+        self.status.unimplemented("TODO");
         var obj = create_new();
 
         var arg_0 = null;
@@ -40,6 +28,7 @@ class Test_Rosella_Query_Iterable_Source
     function on_iterator()
     {
         self.status.verify("Test Rosella.Query.Iterable.Source.on_iterator()");
+        self.status.unimplemented("TODO");
         var obj = create_new();
 
         var arg_0 = null;
@@ -49,6 +38,7 @@ class Test_Rosella_Query_Iterable_Source
     function reset()
     {
         self.status.verify("Test Rosella.Query.Iterable.Source.reset()");
+        self.status.unimplemented("TODO");
         var obj = create_new();
 
         var result = obj.reset();

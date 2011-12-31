@@ -9,6 +9,7 @@ class Test_Rosella_Query_Provider_Factory
     function create()
     {
         self.status.verify("Test Rosella.Query.Provider.Factory.create()");
+        self.status.unimplemented("TODO");
         var obj = create_new();
 
         var arg_0 = [];

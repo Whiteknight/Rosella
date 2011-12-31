@@ -4,6 +4,7 @@ class Test_Rosella_Query_Sort
     function quicksort()
     {
         self.status.verify("Test Rosella.Query.Sort.quicksort()");
+        self.status.unimplemented("TODO");
         using Rosella.Query.Sort.quicksort;
 
         var arg_0 = null;
@@ -16,6 +17,7 @@ class Test_Rosella_Query_Sort
     function hybrid_quicksort()
     {
         self.status.verify("Test Rosella.Query.Sort.hybrid_quicksort()");
+        self.status.unimplemented("TODO");
         using Rosella.Query.Sort.hybrid_quicksort;
 
         var arg_0 = null;
@@ -28,6 +30,7 @@ class Test_Rosella_Query_Sort
     function timsort()
     {
         self.status.verify("Test Rosella.Query.Sort.timsort()");
+        self.status.unimplemented("TODO");
         using Rosella.Query.Sort.timsort;
 
         var arg_0 = null;
@@ -41,6 +44,7 @@ class Test_Rosella_Query_Sort
         using Rosella.Query.Sort.get_default_comparer;
 
         var result = get_default_comparer();
+        self.assert.instance_of(result, "Sub");
     }
 
     function get_reverse_comparer()
@@ -49,6 +53,7 @@ class Test_Rosella_Query_Sort
         using Rosella.Query.Sort.get_reverse_comparer;
 
         var result = get_reverse_comparer();
+        self.assert.instance_of(result, "Sub");
     }
 
     function get_unmoving_comparer()
@@ -57,6 +62,7 @@ class Test_Rosella_Query_Sort
         using Rosella.Query.Sort.get_unmoving_comparer;
 
         var result = get_unmoving_comparer();
+        self.assert.instance_of(result, "Sub");
     }
 
     function get_randomizing_comparer()
@@ -65,6 +71,7 @@ class Test_Rosella_Query_Sort
         using Rosella.Query.Sort.get_randomizing_comparer;
 
         var result = get_randomizing_comparer();
+        self.assert.instance_of(result, "Sub");
     }
 }
 

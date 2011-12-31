@@ -6,33 +6,10 @@ function create_new(var p_args [slurpy], var n_args [slurpy,named])
 
 class Test_Rosella_Query_Iterable_Map
 {
-    function test_sanity()
-    {
-        self.assert.is_true(1);
-    }
-
-    function test_new()
-    {
-        // Test simple constructor. For most individual method tests, use create_new() above
-        var obj = new Rosella.Query.Iterable.Map();
-        self.assert.not_null(obj);
-        self.assert.instance_of(obj, class Rosella.Query.Iterable.Map);
-    }
-
-
-    function Map()
-    {
-        self.status.verify("Test Rosella.Query.Iterable.Map.Map()");
-        var obj = create_new();
-
-        var arg_0 = null;
-        var arg_1 = null;
-        var result = obj.Map(arg_0, arg_1);
-    }
-
     function next()
     {
         self.status.verify("Test Rosella.Query.Iterable.Map.next()");
+        self.status.unimplemented("TODO");
         var obj = create_new();
 
         var result = obj.next();

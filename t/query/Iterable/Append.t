@@ -6,33 +6,10 @@ function create_new(var p_args [slurpy], var n_args [slurpy,named])
 
 class Test_Rosella_Query_Iterable_Append
 {
-    function test_sanity()
-    {
-        self.assert.is_true(1);
-    }
-
-    function test_new()
-    {
-        // Test simple constructor. For most individual method tests, use create_new() above
-        var obj = new Rosella.Query.Iterable.Append();
-        self.assert.not_null(obj);
-        self.assert.instance_of(obj, class Rosella.Query.Iterable.Append);
-    }
-
-
-    function Append()
-    {
-        self.status.verify("Test Rosella.Query.Iterable.Append.Append()");
-        var obj = create_new();
-
-        var arg_0 = null;
-        var arg_1 = null;
-        var result = obj.Append(arg_0, arg_1);
-    }
-
     function next()
     {
         self.status.verify("Test Rosella.Query.Iterable.Append.next()");
+        self.status.unimplemented("TODO");
         var obj = create_new();
 
         var result = obj.next();
@@ -41,6 +18,7 @@ class Test_Rosella_Query_Iterable_Append
     function has_more()
     {
         self.status.verify("Test Rosella.Query.Iterable.Append.has_more()");
+        self.status.unimplemented("TODO");
         var obj = create_new();
 
         var result = obj.has_more();
@@ -49,6 +27,7 @@ class Test_Rosella_Query_Iterable_Append
     function append()
     {
         self.status.verify("Test Rosella.Query.Iterable.Append.append()");
+        self.status.unimplemented("TODO");
         var obj = create_new();
 
         var arg_0 = null;
@@ -58,6 +37,7 @@ class Test_Rosella_Query_Iterable_Append
     function reset()
     {
         self.status.verify("Test Rosella.Query.Iterable.Append.reset()");
+        self.status.unimplemented("TODO");
         var obj = create_new();
 
         var result = obj.reset();

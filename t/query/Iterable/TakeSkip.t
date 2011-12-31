@@ -6,35 +6,10 @@ function create_new(var p_args [slurpy], var n_args [slurpy,named])
 
 class Test_Rosella_Query_Iterable_TakeSkip
 {
-    function test_sanity()
-    {
-        self.assert.is_true(1);
-    }
-
-    function test_new()
-    {
-        // Test simple constructor. For most individual method tests, use create_new() above
-        var obj = new Rosella.Query.Iterable.TakeSkip();
-        self.assert.not_null(obj);
-        self.assert.instance_of(obj, class Rosella.Query.Iterable.TakeSkip);
-    }
-
-
-    function TakeSkip()
-    {
-        self.status.verify("Test Rosella.Query.Iterable.TakeSkip.TakeSkip()");
-        var obj = create_new();
-
-        var arg_0 = null;
-        var arg_1 = null;
-        var arg_2 = null;
-        var arg_3 = null;
-        var result = obj.TakeSkip(arg_0, arg_1, arg_2, arg_3);
-    }
-
     function _skip()
     {
         self.status.verify("Test Rosella.Query.Iterable.TakeSkip._skip()");
+        self.status.unimplemented("TODO");
         var obj = create_new();
 
         var result = obj._skip();
@@ -43,6 +18,7 @@ class Test_Rosella_Query_Iterable_TakeSkip
     function next()
     {
         self.status.verify("Test Rosella.Query.Iterable.TakeSkip.next()");
+        self.status.unimplemented("TODO");
         var obj = create_new();
 
         var result = obj.next();
@@ -51,6 +27,7 @@ class Test_Rosella_Query_Iterable_TakeSkip
     function has_more()
     {
         self.status.verify("Test Rosella.Query.Iterable.TakeSkip.has_more()");
+        self.status.unimplemented("TODO");
         var obj = create_new();
 
         var result = obj.has_more();
