@@ -88,11 +88,11 @@ namespace Rosella.Harness.TestRun
         {
             switch (sort) {
                 case SORT_ORDER:
-                    return Rosella.Query.get_default_comparer();
+                    return Rosella.Query.Sort.get_default_comparer();
                 case SORT_DEFAULT:
-                    return Rosella.Query.get_unmoving_comparer();
+                    return Rosella.Query.Sort.get_unmoving_comparer();
                 case SORT_DISORDER:
-                    return Rosella.Query.get_randomizing_comparer();
+                    return Rosella.Query.Sort.get_randomizing_comparer();
             }
         }
     }

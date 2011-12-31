@@ -41,10 +41,10 @@ class Rosella.Harness.TapParser
             .map(function(string l) {
                 l = Rosella.String.trim(l);
                 self.tokenizer.add_data(l);
-                return Rosella.Query.as_stream(self.tokenizer)
+                return Rosella.Query.iterable(self.tokenizer)
                     .map(function(t) { return t.data(); })
                     .filter(function(s) { return indexof(s, "\n") == -1; })
-                    .data();
+                    .to_array();
             })
 
             // Remove lines which are empty or which start with a #

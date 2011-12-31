@@ -56,6 +56,7 @@ my $harness := Rosella::construct(Rosella::Harness);
 if (pir::elements(@argv)) {
     my %all_tests := all_tests();
     for @argv -> $dir {
+        pir::say(%all_tests{$dir});
         $harness.add_test_dirs(%all_tests{$dir}, "t/$dir", :recurse(1)).setup_test_run(:sort(1));
     }
 } else {

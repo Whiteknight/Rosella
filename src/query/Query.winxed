@@ -79,7 +79,7 @@ namespace Rosella.Query
         if (has_is && is_sorted)
             Rosella.Query.Sort.timsort(d, cmp);
         else
-            Rosella.Query.hybrid_sort(d, 0, elements(d), cmp);
+            Rosella.Query.Sort.hybrid_quicksort(d, 0, elements(d), cmp);
     }
 
     /* Default Provider Factory
