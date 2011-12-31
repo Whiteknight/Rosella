@@ -260,7 +260,7 @@ class Rosella.Query.Iterable : Rosella.IteratorBase
         if (!has_is)
             is_sorted = false;
         if (!has_f)
-            f = Rosella.Query.get_default_comparer();
+            f = Rosella.Query.Sort.get_default_comparer();
         return new Rosella.Query.Iterable.Sort(self, f, is_sorted);
     }
 

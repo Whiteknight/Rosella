@@ -47,7 +47,7 @@ class Test_Rosella_Query_Iterable
         var obj = create_new([1, 2, 3]);
 
         int sum = 0;
-        var arg_0 = function(i) { sum = sum + 0; };
+        var arg_0 = function(i) { sum = sum + i; };
         obj.foreach(arg_0);
         self.assert.equal(sum, 6);
     }
@@ -70,6 +70,7 @@ class Test_Rosella_Query_Iterable
         int result = obj.fold(arg_0);
         self.assert.equal(result, 15);
 
+        obj = create_new([1,2,3,4,5]);
         int arg_1 = 7;
         result = obj.fold(arg_0, arg_1);
         self.assert.equal(result, 22);
@@ -136,8 +137,8 @@ class Test_Rosella_Query_Iterable
         self.status.verify("Test Rosella.Query.Iterable.flatten()");
         var obj = create_new([1, [2], [[3]], [4, [5], [6, [[7]], [], [[], []], 8]], 9]);
 
-        var result = obj.flatten();
-        self.assert.equal(result.count(), 9);
+        var result = obj.flatten().to_array();
+        self.assert.equal(elements(result), 9);
         for (int i = 0; i < 9; i++)
             self.assert.equal(result[i], i + 1);
     }
@@ -148,8 +149,8 @@ class Test_Rosella_Query_Iterable
         var obj = create_new([5, 10, 15]);
 
         var arg_0 = function(i) { return [i + 1, i + 2, i + 3]; };
-        var result = obj.project(arg_0);
-        self.assert.equal(result.count(), 9);
+        var result = obj.project(arg_0).to_array();
+        self.assert.equal(elements(result), 9);
         var x = [6, 7, 8, 11, 12, 13, 16, 17, 18];
         for (int i = 0; i < 9; i++)
             self.assert.equal(result[i], x[i]);
@@ -179,6 +180,7 @@ class Test_Rosella_Query_Iterable
     function cache_sort()
     {
         self.status.verify("Test Rosella.Query.Iterable.cache_sort()");
+        self.status.unimplemented("TODO");
         var obj = create_new();
 
         var arg_0 = null;
@@ -188,6 +190,7 @@ class Test_Rosella_Query_Iterable
     function shuffle()
     {
         self.status.verify("Test Rosella.Query.Iterable.shuffle()");
+        self.status.unimplemented("TODO");
         var obj = create_new([1, 2, 3, 4, 5]);
 
         var result = obj.shuffle();
@@ -197,6 +200,7 @@ class Test_Rosella_Query_Iterable
     function group_by()
     {
         self.status.verify("Test Rosella.Query.Iterable.group_by()");
+        self.status.unimplemented("TODO");
         var obj = create_new();
 
         var arg_0 = null;
@@ -206,6 +210,7 @@ class Test_Rosella_Query_Iterable
     function count()
     {
         self.status.verify("Test Rosella.Query.Iterable.count()");
+        self.status.unimplemented("TODO");
         var obj = create_new();
 
         var result = obj.count();
