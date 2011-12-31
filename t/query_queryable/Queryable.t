@@ -60,7 +60,6 @@ class Test::Query::Queryable {
         my $q := Rosella::construct(Rosella::Query::Queryable, @data);
         my $new_q := $q.as_queryable(@data);
         $!assert.instance_of($new_q, Rosella::Query::Queryable);
-        $!assert.not_same($q, $new_q);
     }
 
     # map
