@@ -382,7 +382,8 @@ class Rosella.Query.Iterable : Rosella.IteratorBase
     // Return the first item in the iterator or the first item matching the
     // optional predicate. Return a default value (null, usually) if no matching
     // items are found.
-    function first_or_default(var f [optional], int has_f [opt_flag], var def [named,optional], int has_def [opt_flag])
+    function first_or_default(var f [optional], int has_f [opt_flag],
+            var def [named("default"),optional], int has_def [opt_flag])
     {
         if (!has_def)
             def = null;

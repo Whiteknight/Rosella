@@ -20,7 +20,8 @@ sub library_tests() {
     %h{"mockobject"} := "NQP";
     %h{"path"} := "NQP";
     %h{"proxy"} := "NQP";
-    %h{"query"} := "NQP";
+    %h{"query"} := "Winxed";
+    %h{"query_queryable"} := "NQP";
     %h{"random"} := "Winxed";
     %h{"string"} := "NQP";
     %h{"tap_harness"} := "Winxed";
