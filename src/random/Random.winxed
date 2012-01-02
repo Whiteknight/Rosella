@@ -5,10 +5,17 @@
 */
 namespace Rosella.Random
 {
+    const string RANDOM_UNIFORM_GENERATOR = "Rosella.Random.default_uniform_random";
+
     // Get a default PRNG for a uniform number distribution
     function default_uniform_random()
     {
-        return new Rosella.Random.RandomNumber.MersenneTwister();
+        var temp = Rosella.Globals.get_global(RANDOM_UNIFORM_GENERATOR);
+        if (temp == null) {
+            temp = new Rosella.Random.RandomNumber.MersenneTwister();
+            Rosella.Globals.register_global(RANDOM_UNIFORM_GENERATOR, temp);
+        }
+        return temp;
     }
 
     // Get a default PRNG for a normal number distribution

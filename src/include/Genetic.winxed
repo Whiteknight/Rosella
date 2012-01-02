@@ -1,0 +1,18 @@
+namespace Rosella.Genetic
+{
+    class Cell;
+    class Context;
+    class Engine;
+    class Mutator;
+}
+
+namespace Rosella.Genetic.Mutator
+{
+    class Asexual;
+    class Sexual;
+}
+
+function __include_genetic [anon, load, init] ()
+{
+    Rosella.load_bytecode_file('rosella/genetic.pbc', 'load');
+}

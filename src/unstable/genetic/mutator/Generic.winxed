@@ -1,0 +1,96 @@
+class Rosella.Genetic.Mutator.Generic : Rosella.Genetic.Mutator
+{
+    var generator;
+    var evaluator;
+    var mutator;
+    var num_parents;
+    var include_winners;
+
+    function Generic(var generator, var evaluator, var mutator, int num_parents, int include_winners)
+    {
+        self.generator = generator;
+        self.evaluator = evaluator;
+        if (mutator == null) {
+            mutator = generator;
+            num_parents = 0;
+        }
+        self.mutator = mutator;
+        self.num_parents = num_parents;
+        self.include_winners = include_winners == 0 ? false : true;
+    }
+
+    function evaluate(var d)
+    {
+        var e = self.evaluator;
+        int fitness = e(d);
+        Rosella.IO.sayf("Evaluated cell, have fitness %d", fitness);
+        return fitness;
+    }
+
+    function create_initial_cells(int num_cells)
+    {
+        //Rosella.IO.sayf("mutator num_cells: %d", num_cells);
+        var cells = [];
+        for (int i = 0; i < num_cells; i++) {
+            cells[i] = self.create_new_cell();
+            //if (cells[i] == null)
+                //Rosella.IO.sayf("mutator null at %d", i);
+        }
+        //Rosella.IO.sayf("mutator num_cells: %d", elements(cells));
+        return cells;
+    }
+
+    function get_next_generation(var winners, int num_cells)
+    {
+        var cells = [];
+        int num_winners = self.include_winners(cells, winners, num_cells);
+        Rosella.IO.sayf("get_next: num_winners = %d, %d", num_winners, elements(winners));
+        self.fill_next_generation(cells, winners, num_winners, num_cells);
+        return cells;
+    }
+
+    function include_winners(var cells, var winners, int num_cells)
+    {
+        if (int(self.include_winners)) {
+            int num_winners = elements(winners);
+            //say("NEXT ROUND WINNERS:");
+            for (int i = 0; i < num_winners && i < num_cells; i++) {
+                cells[i] = winners[i];
+                //say(cells[i].data());
+            }
+            return num_winners;
+        }
+        return 0;
+    }
+
+    function fill_next_generation(var cells, var winners, int existing_count, int total_count)
+    {
+        for (int i = existing_count; i < total_count; i++) {
+            var d = self.get_one_child_data(winners, 0, elements(winners));
+            cells[i] = new Rosella.Genetic.Cell(d);
+        }
+    }
+
+    function create_new_cell()
+    {
+        var g = self.generator;
+        var d = g();
+        return new Rosella.Genetic.Cell(d);
+    }
+
+    function get_one_child_data(var cells, int start, int end)
+    {
+        var m = self.mutator;
+        int num_parents = int(self.num_parents);
+        //Rosella.IO.sayf("get_child: %d, [%d == %d], %d", num_parents, start, end, elements(cells));
+        if (num_parents == 0 || start == end || cells == null || elements(cells) == 0)
+            return m();
+        var parents = [];
+        var rand = Rosella.Random.default_uniform_random();
+        for (int i = 0; i < num_parents; i++) {
+            int idx = rand.get_range(start, end);
+            parents[i] = cells[idx].data();
+        }
+        return m(parents:[flat]);
+    }
+}
