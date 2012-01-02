@@ -98,6 +98,6 @@ class Rosella.Harness.TestRun
     // Determine if the run is complete
     function is_complete()
     {
-        return self.executed;
+        return int(self.executed) == true ? true : false;
     }
 }

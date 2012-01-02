@@ -124,7 +124,7 @@ class Test_Rosella_Harness_View
         view_test(function(obj) {
             var arg_0 = "Foo";
             var result = obj.get_all_files_by_status(arg_0);
-            self.assert.equal(elements(result), 0);
+            self.assert.is_false(result.has_more());
         });
     }
 }

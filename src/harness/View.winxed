@@ -130,7 +130,6 @@ class Rosella.Harness.View
         if (int(self.num_aborted_files) || int(self.num_failed_files)) {
             self.show_result_headline("FAILED");
 
-            var failed_files  = self.get_all_files_by_status("FAILED");
             if (self.num_aborted_files)
                 Rosella.IO.sayf("\tFailed %d files due to premature exit", self.num_aborted_files, self.handle:[named("handle")]);
             if (self.num_failed_tests)
@@ -149,7 +148,7 @@ class Rosella.Harness.View
 
         var failed_files = self.get_all_files_by_status("FAILED");
 
-        say("\tList of failed tests by file:");
+        Rosella.IO.sayf("\tList of failed tests by file:", self.handle:[named("handle")]);
         for (var test in failed_files) {
             Rosella.IO.sayf("\t\t%s", string(test), self.handle:[named("handle")]);
             var result = test.result;
@@ -181,7 +180,7 @@ class Rosella.Harness.View
         var aborted_files = self.get_all_files_by_status("ABORTED");
 
         if (self.num_aborted_files) {
-            say("\tList of files with premature exits:");
+            Rosella.IO.sayf("\tList of files with premature exits:", self.handle:[named("handle")]);
             for (var file in aborted_files) {
                 // TODO: Should record and output error codes or other
                 //       error info. Display some diagnostics here
@@ -218,8 +217,6 @@ class Rosella.Harness.View
         return Rosella.Query.iterable(self.test_runs)
             .filter(function(tr) { return tr.is_complete() != 0; })
             .map(function(tr) { return tr.files_by_status(status); })
-            .flatten()
-            .to_array();
+            .flatten();
     }
-
 }

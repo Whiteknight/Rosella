@@ -1,99 +1,96 @@
-namespace Rosella.Harness.TestRun
+/* TestRun factory type.
+    Builds TestRun objects, pre-populating them with a list of TestFile
+    objects. The TestRun.Factory contains a TestFile.Factory, which is
+    used to build the actual TestFile objects.
+*/
+class Rosella.Harness.TestRun.Factory : Rosella.ObjectFactory
 {
-    /* TestRun factory type.
-        Builds TestRun objects, pre-populating them with a list of TestFile
-        objects. The TestRun.Factory contains a TestFile.Factory, which is
-        used to build the actual TestFile objects.
-    */
-    class Factory : Rosella.ObjectFactory
+    const int SORT_ORDER = 1;
+    const int SORT_DEFAULT = 0;
+    const int SORT_DISORDER = 2;
+    var testfile_factory;
+    var testfile_types;
+    var tests;
+
+    // Constructor
+    function Factory()
     {
-        const int SORT_ORDER = 1;
-        const int SORT_DEFAULT = 0;
-        const int SORT_DISORDER = 2;
-        var testfile_factory;
-        var testfile_types;
-        var tests;
+        self.ObjectFactory(class Rosella.Harness.TestRun);
+        self.tests = Rosella.Query.iterable([]);
+        self.testfile_factory = new Rosella.Harness.TestFile.Factory(class Rosella.Harness.TestFile.Automatic);
+        self.testfile_types = {
+            "Automatic" : class Rosella.Harness.TestFile.Automatic,
+            "NQP"       : class Rosella.Harness.TestFile.NQP,
+            "PIR"       : class Rosella.Harness.TestFile.PIR,
+            "Winxed"    : class Rosella.Harness.TestFile.Winxed
+        };
+    }
 
-        // Constructor
-        function Factory()
-        {
-            self.ObjectFactory(class Rosella.Harness.TestRun);
-            self.tests = Rosella.Query.iterable([]);
-            self.testfile_factory = new Rosella.Harness.TestFile.Factory(class Rosella.Harness.TestFile.Automatic);
-            self.testfile_types = {
-                "Automatic" : class Rosella.Harness.TestFile.Automatic,
-                "NQP"       : class Rosella.Harness.TestFile.NQP,
-                "PIR"       : class Rosella.Harness.TestFile.PIR,
-                "Winxed"    : class Rosella.Harness.TestFile.Winxed
-            };
-        }
+    // Create the TestRun object
+    function create_typed(var testrun_type, var p [slurpy],
+            int sort [named,optional], int has_sort [opt_flag],
+            var n [slurpy,named])
+    {
+        var sort_routine = self.get_sort_routine(has_sort ? sort : SORT_DEFAULT);
+        var tests = self.tests
+            .cache_sort(function(f) { return string(f); }, sort_routine)
+            .to_array();
+        var testrun = Rosella.construct(testrun_type, tests);
+        self.tests = Rosella.Query.iterable([]);
+        return testrun;
+    }
 
-        // Create the TestRun object
-        function create_typed(var testrun_type, var p [slurpy],
-                int sort [named,optional], int has_sort [opt_flag],
-                var n [slurpy,named])
-        {
-            var sort_routine = self.get_sort_routine(has_sort ? sort : SORT_DEFAULT);
-            var tests = self.tests
-                .cache_sort(function(f) { return string(f); }, sort_routine)
-                .to_array();
-            var testrun = Rosella.construct(testrun_type, tests);
-            self.tests = Rosella.Query.iterable([]);
-            return testrun;
-        }
+    /* Routines for Adding and Managing Tests and Loaders
+    */
 
-        /* Routines for Adding and Managing Tests and Loaders
-        */
+    // Add a list of directories. Directories are searched, possibly
+    // recursively, for a list of test files to run.
+    function add_test_dirs(string testfile_type_s, var dirs [slurpy],
+            int recurse [named,optional], int has_recurse [opt_flag])
+    {
+        if (!has_recurse)
+            recurse = 0;
+        var testfile_type = self.get_testfile_type(testfile_type_s);
+        var t = self.testfile_factory.create_tests_from_dirs(testfile_type, dirs, recurse);
+        self.tests = self.tests.append(t);
+    }
 
-        // Add a list of directories. Directories are searched, possibly
-        // recursively, for a list of test files to run.
-        function add_test_dirs(string testfile_type_s, var dirs [slurpy],
-                int recurse [named,optional], int has_recurse [opt_flag])
-        {
-            if (!has_recurse)
-                recurse = 0;
-            var testfile_type = self.get_testfile_type(testfile_type_s);
-            var t = self.testfile_factory.create_tests_from_dirs(testfile_type, dirs, recurse);
-            self.tests = self.tests.append(t);
-        }
+    // Add an individual test file
+    function add_test_files(string testfile_type_s, var files [slurpy])
+    {
+        var testfile_type = self.testfile_types[testfile_type_s];
+        var tests = self.testfile_factory.create_tests_from_files(testfile_type, files);
+        self.tests = self.tests.append(tests);
+    }
 
-        // Add an individual test file
-        function add_test_files(string testfile_type_s, var files [slurpy])
-        {
-            var testfile_type = self.testfile_types[testfile_type_s];
-            var tests = self.testfile_factory.create_tests_from_files(testfile_type, files);
-            self.tests = self.tests.append(tests);
-        }
+    // Add a new loader. If a loader exists with the same name, it is
+    // overwritten
+    function add_testfile_type(string name, var testfile_type)
+    {
+        self.testfile_types[name] = testfile_type;
+    }
 
-        // Add a new loader. If a loader exists with the same name, it is
-        // overwritten
-        function add_testfile_type(string name, var testfile_type)
-        {
-            self.testfile_types[name] = testfile_type;
-        }
+    /* Private helper routines
+    */
 
-        /* Private helper routines
-        */
+    function get_testfile_type(string name)
+    {
+        if (name == null && name == "")
+            return null;
+        if (!(exists self.testfile_types[name]))
+            Rosella.Error.invalid(__FUNCTION__, "Cannot find test file type %s", name);
+        return self.testfile_types[name];
+    }
 
-        function get_testfile_type(string name)
-        {
-            if (name == null && name == "")
-                return null;
-            if (!(exists self.testfile_types[name]))
-                Rosella.Error.invalid(__FUNCTION__, "Cannot find test file type %s", name);
-            return self.testfile_types[name];
-        }
-
-        function get_sort_routine(int sort)
-        {
-            switch (sort) {
-                case SORT_ORDER:
-                    return Rosella.Query.Sort.get_default_comparer();
-                case SORT_DEFAULT:
-                    return Rosella.Query.Sort.get_unmoving_comparer();
-                case SORT_DISORDER:
-                    return Rosella.Query.Sort.get_randomizing_comparer();
-            }
+    function get_sort_routine(int sort)
+    {
+        switch (sort) {
+            case SORT_ORDER:
+                return Rosella.Query.Sort.get_default_comparer();
+            case SORT_DEFAULT:
+                return Rosella.Query.Sort.get_unmoving_comparer();
+            case SORT_DISORDER:
+                return Rosella.Query.Sort.get_randomizing_comparer();
         }
     }
 }

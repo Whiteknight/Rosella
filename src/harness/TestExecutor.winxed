@@ -12,7 +12,7 @@ class Rosella.Harness.TestExecutor
     // Constructor
     function TestExecutor(int mode)
     {
-        self.mode = mode;
+        self.mode = mode == MODE_COMPILE_INLINE ? MODE_COMPILE_INLINE : MODE_SPAWN_EXECUTE;
     }
 
     /* Public API
