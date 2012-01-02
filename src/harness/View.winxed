@@ -216,7 +216,6 @@ class Rosella.Harness.View
     {
         return Rosella.Query.iterable(self.test_runs)
             .filter(function(tr) { return tr.is_complete() != 0; })
-            .map(function(tr) { return tr.files_by_status(status); })
-            .flatten();
+            .project(function(tr) { return tr.files_by_status(status); });
     }
 }

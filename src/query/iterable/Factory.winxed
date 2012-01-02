@@ -34,6 +34,8 @@ class Rosella.Query.Iterable.Factory : Rosella.ObjectFactory
     // Create the provider for the given data
     function create(var data, var p [slurpy], var n [slurpy,named])
     {
+        if (isa(data, class Rosella.Query.Iterable))
+            return data;
         for (string role in self.role_map) {
             if (does(data, role)) {
                 var type = self.role_map[role];

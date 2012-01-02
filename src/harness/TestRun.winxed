@@ -50,8 +50,7 @@ class Rosella.Harness.TestRun
     function files_by_status(string status)
     {
         return Rosella.Query.iterable(self.tests)
-            .filter(function(test) { return test.result.status() == status; })
-            .to_array();
+            .filter(function(test) { return test.result.status() == status; });
     }
 
     // Get the number of tests by status. Status is a string, one of

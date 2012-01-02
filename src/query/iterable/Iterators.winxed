@@ -93,12 +93,14 @@ class Rosella.Query.Iterable.Filter : Rosella.Query.Iterable
 */
 class Rosella.Query.Iterable.Append : Rosella.Query.Iterable
 {
+    var current_source;
     var extra_sources;
     var source_ptr;
 
     function Append(var first, var second)
     {
         self.source = first;
+        self.current_source = first;
         self.extra_sources = [second];
         self.source_ptr = 0;
     }
@@ -106,21 +108,24 @@ class Rosella.Query.Iterable.Append : Rosella.Query.Iterable
     function next()
     {
         int sources = elements(self.extra_sources);
-        while (!self.source.has_more()) {
+        while (!self.current_source.has_more()) {
             if (sources == 0 || int(self.source_ptr) >= sources)
                 self.__empty();
             var s = self.extra_sources[int(self.source_ptr)];
             self.source_ptr++;
-            self.source = Rosella.Query.iterable(s);
+            self.current_source = Rosella.Query.iterable(s);
         }
-        return self.source.next();
+        return self.current_source.next();
     }
 
     function has_more()
     {
-        if (self.source.has_more())
+        if (self.current_source.has_more())
             return true;
         for (int i = int(self.source_ptr); i < elements(self.extra_sources); i++) {
+            var extra_source = self.extra_sources[i];
+            if (isa(extra_source, class Rosella.Query.Iterable) && extra_source.has_more())
+                return true;
             if (elements(self.extra_sources[i]) > 0)
                 return true;
         }
@@ -137,6 +142,7 @@ class Rosella.Query.Iterable.Append : Rosella.Query.Iterable
     {
         self.source_ptr = 0;
         self.source.reset();
+        self.current_source = self.source;
         for (int i = 0; i < elements(self.extra_sources); i++)
             self.extra_sources[i].reset();
         return self;
@@ -345,28 +351,12 @@ class Rosella.Query.Iterable.Project : Rosella.Query.Iterable
 
     function next()
     {
-        if (self.cache == null) {
-            if (!self.source.has_more())
-                self.__empty();
-
-            var f = self.func;
-            :(var d, int m) = self.source.next_and_more();
-            d = f(d);
-            while (elements(d) == 0 && m == true) {
-                :(d, m) = self.source.next_and_more();
-                d = f(d);
-            }
-            if (m == false || elements(d) == 0)
-                self.__empty();
-            self.cache = new Rosella.Query.Iterable.Array(d);
-        }
-        if (!self.cache.has_more())
+        if (!self.has_more())
             self.__empty();
-
-        :(var a, int o) = self.cache.next_and_more();
-        if (o == false)
+        :(var d, int m) = self.cache.next_and_more();
+        if (!m)
             self.cache = null;
-        return a;
+        return d;
     }
 
     function has_more()
@@ -381,16 +371,23 @@ class Rosella.Query.Iterable.Project : Rosella.Query.Iterable
             return false;
 
         var f = self.func;
-        :(var d, int m) = self.source.next_and_more();
-        d = f(d);
-        while (elements(d) == 0 && m == true) {
-            :(d, m) = self.source.next_and_more();
+        int m = true;
+        do {
+            :(var d, m) = self.source.next_and_more();
             d = f(d);
-        }
-        if (elements(d) == 0)
-            return false;
-        self.cache = new Rosella.Query.Iterable.Array(d);
-        return self.cache.has_more();
+            if (isa(d, class Rosella.Query.Iterable)) {
+                if (d.has_more()) {
+                    self.cache = d;
+                    return true;
+                }
+            } else {
+                if (elements(d) > 0) {
+                    self.cache = Rosella.Query.iterable(d);
+                    return true;
+                }
+            }
+        } while (m);
+        return false;
     }
 
     function reset()
