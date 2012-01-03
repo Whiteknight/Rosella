@@ -146,15 +146,15 @@ class Rosella.Harness.View
         if (int(self.num_failed_tests) == 0)
             return;
 
-        var failed_files = self.get_all_files_by_status("FAILED");
-
         Rosella.IO.sayf("\tList of failed tests by file:", self.handle:[named("handle")]);
-        for (var test in failed_files) {
-            Rosella.IO.sayf("\t\t%s", string(test), self.handle:[named("handle")]);
-            var result = test.result;
-            for (var failure in result.list_of_failures())
-                Rosella.IO.sayf("\t\t\t%s", failure, self.handle:[named("handle")]);
-        }
+        self.get_all_files_by_status("FAILED")
+            .tap(function(f) {
+                Rosella.IO.sayf("\t\t%s", string(f), self.handle:[named("handle")]);
+            })
+            .project(function(f) { return f.result.list_of_failures(); })
+            .foreach(function(f) {
+                Rosella.IO.sayf("\t\t\t%s", f, self.handle:[named("handle")]);
+            });
     }
 
     // Show the current progress of a test being executed
@@ -177,16 +177,17 @@ class Rosella.Harness.View
     // or which terminated early with an unhandled error of some variety
     function show_failure_detail()
     {
-        var aborted_files = self.get_all_files_by_status("ABORTED");
+        if (int(self.num_aborted_files) == 0)
+            return;
 
-        if (self.num_aborted_files) {
-            Rosella.IO.sayf("\tList of files with premature exits:", self.handle:[named("handle")]);
-            for (var file in aborted_files) {
-                // TODO: Should record and output error codes or other
-                //       error info. Display some diagnostics here
-                Rosella.IO.sayf("\t\t%s", file, self.handle:[named("handle")]);
-            }
-        }
+        Rosella.IO.sayf("\tList of files with premature exits:", self.handle:[named("handle")]);
+        self.get_all_files_by_status("ABORTED")
+
+            // TODO: Should record and output error codes or other
+            //       error info. Display some diagnostics here
+            .foreach(function(f) {
+                Rosella.IO.sayf("\t\t%s", f, self.handle:[named("handle")]);
+            });
     }
 
     // Print out a debug message
