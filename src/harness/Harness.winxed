@@ -57,6 +57,7 @@ namespace Rosella.Harness
         Rosella.Globals.register_global(DEFAULT_FILERESULT_FACTORY, f);
     }
 }
+
 /* TAP Harness class. Contains a list of TestFile objects and executes
    each in a loop. The Harness keeps statistics about the test run, and
    passes them off to other routines for display and analysis.
@@ -149,18 +150,22 @@ class Rosella.Harness
 
     // Run the harness. Get argument values and pass them to run_internal
     function run(var test_runs [optional], int has_runs [opt_flag],
-            int run_inline [named,optional],  int has_ri [opt_flag],
+            var test_executor [named,optional], int has_te [opt_flag],
             int debug [named,optional], int has_dbg [opt_flag])
     {
-        if (!has_ri)
-            run_inline = 0;
+        if (!has_te)
+            test_executor = default_testexecutor_factory().create();
         if (!has_dbg)
             debug = 0;
         if (has_runs == false || test_runs == null || elements(test_runs) == 0)
             test_runs = self.saved_runs;
-        if (has_runs == true && test_runs instanceof Rosella.Harness.TestRun)
+        else if (has_runs == true && test_runs instanceof Rosella.Harness.TestRun)
             test_runs = [test_runs];
-        return self.run_internal(test_runs, run_inline, debug);
+
+        var parser = default_tapparser_factory().create();
+        var fileresult_factory = default_fileresult_factory();
+        var view = self.view();
+        return self.run_internal(test_runs, test_executor, parser, fileresult_factory, view, debug);
     }
 
     // Show the results with the View
@@ -174,13 +179,9 @@ class Rosella.Harness
     */
 
     // Internal routine to run the harness
-    function run_internal(var test_runs, int run_inline, int debug)
+    function run_internal(var test_runs, var executor, var parser,
+            var fileresult_factory, var view,int debug)
     {
-        var executor = default_testexecutor_factory().create(run_inline);
-        var parser = default_tapparser_factory().create();
-        var fileresult_factory = default_fileresult_factory();
-        var view = self.view();
-
         for (var test_run in test_runs) {
             for (var test in test_run.tests()) {
                 var result = fileresult_factory.create(test);

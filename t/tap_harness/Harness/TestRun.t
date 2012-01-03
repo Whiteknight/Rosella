@@ -52,7 +52,7 @@ class Test_Rosella_Harness_TestRun
 
         var arg_0 = "Foo";
         var result = obj.files_by_status(arg_0);
-        self.assert.equal(elements(result), 0);
+        self.assert.equal(result.count(), 0);
     }
 
     function files_by_status_with_files()

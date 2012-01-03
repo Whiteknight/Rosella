@@ -17,7 +17,7 @@ class Test_Rosella_Harness
         var f = default_testexecutor_factory();
         self.assert.not_null(f);
         self.assert.instance_of(f, class Rosella.ObjectFactory);
-        var e = f.create(0);
+        var e = f.create();
         self.assert.not_null(e);
         self.assert.instance_of(e, class Rosella.Harness.TestExecutor);
     }

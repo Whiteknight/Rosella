@@ -3,17 +3,8 @@
 */
 class Rosella.Harness.TestExecutor
 {
-    const int MODE_SPAWN_EXECUTE = 0;
-    const int MODE_COMPILE_INLINE = 1;
-
-    // Two modes: spawn/execute and compile inline. See the constants above
-    var mode;
-
     // Constructor
-    function TestExecutor(int mode)
-    {
-        self.mode = mode == MODE_COMPILE_INLINE ? MODE_COMPILE_INLINE : MODE_SPAWN_EXECUTE;
-    }
+    function TestExecutor() { }
 
     /* Public API
     */
@@ -22,11 +13,7 @@ class Rosella.Harness.TestExecutor
     // commands to the view.
     function run(var view, var file, var result, var parser, int debug)
     {
-        var stream;
-        if (int(self.mode) == MODE_COMPILE_INLINE)
-            stream = self.compile_and_execute(file, result);
-        else
-            stream = self.open_pipe_stream(file);
+        var stream = self.open_stream(file, result);
         if (result.status == null || result.status != "ABORTED") {
             try {
                 parser.parse(stream, view, result);
@@ -50,23 +37,9 @@ class Rosella.Harness.TestExecutor
     /* Internal Helper Methods
     */
 
-    // Compile the TestFile inline and execute it. Return a Stream over
-    // a StringHandle used to capture output
-    function compile_and_execute(var file, var result)
-    {
-        var sub = file.compile_test();
-        var handle = Rosella.IO.capture_output(1, sub,
-            function(e) {
-                result.mark_test_abort(e);
-            }
-        );
-        var ihandle = Rosella.FileSystem.iterable_handle(handle);
-        return Rosella.Query.iterable(ihandle);
-    }
-
     // Open a stream for a pipe to a separate process where the test will
     // be run.
-    function open_pipe_stream(var file)
+    function open_stream(var file, var result)
     {
         string filename = file.setup_spawn();
         if (filename == null)
@@ -92,3 +65,19 @@ class Rosella.Harness.TestExecutor
     }
 }
 
+class Rosella.Harness.TestExecutor.Inline : Rosella.Harness.TestExecutor
+{
+    // Compile the TestFile inline and execute it. Return a Stream over
+    // a StringHandle used to capture output
+    function open_stream(var file, var result)
+    {
+        var sub = file.compile_test();
+        var handle = Rosella.IO.capture_output(1, sub,
+            function(e) {
+                result.mark_test_abort(e);
+            }
+        );
+        var ihandle = Rosella.FileSystem.iterable_handle(handle);
+        return Rosella.Query.iterable(ihandle);
+    }
+}
