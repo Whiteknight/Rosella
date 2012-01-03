@@ -150,15 +150,15 @@ class Rosella.Container
         var lifetime_manager = null;
         var build_options = [];
         for (var option in options) {
-            if (option instanceof Rosella.Container.Resolver) {
+            if (isa(option, class Rosella.Container.Resolver)) {
                 if (resolver != null)
                     self.__multiple_resolvers_error(type);
                 resolver = option;
                 continue;
-            } else if (option instanceof Rosella.Container.Option) {
+            } else if (isa(option, class Rosella.Container.Option)) {
                 push(build_options, option);
                 continue;
-            } else if (option instanceof Rosella.Container.LifetimeManager) {
+            } else if (isa(option, class Rosella.Container.LifetimeManager)) {
                 lifetime_manager = option;
                 continue;
             } else {
@@ -177,7 +177,7 @@ class Rosella.Container
     // TODO: Add in a way that we can over-ride arguments on the resolver here.
 
     // Sort out a list of options for registration
-    function __sort_options_resolve(var type, var options)
+        function __sort_options_resolve(var type, var options)
     {
         var resolver = null;
         var build_options = [];
@@ -218,6 +218,6 @@ class Rosella.Container
     // type
     function __multiple_resolvers_error(var type)
     {
-        Rosella.Error.invalid(__FUNCTION__, "Multiple resolvers specified for type registration %", Rosella.get_type_name(type));
+        Rosella.Error.invalid(__FUNCTION__, "Multiple resolvers specified for type registration %s", Rosella.get_type_name(type));
     }
 }

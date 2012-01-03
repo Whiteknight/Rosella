@@ -27,7 +27,7 @@ class Rosella.Container.LifetimeManager
     Instances managed with this lifetime manager are never reused and are
     created fresh at each resolution.
 */
-class Rosella.Container.LifetimeManager.Transient
+class Rosella.Container.LifetimeManager.Transient : Rosella.Container.LifetimeManager
 {
     function Transient() { }
 
@@ -41,7 +41,7 @@ class Rosella.Container.LifetimeManager.Transient
 /* Permanent Lifetime Manager
     A single instance is kept permanently, after it is resolved the first time.
 */
-class Rosella.Container.LifetimeManager.Permanent
+class Rosella.Container.LifetimeManager.Permanent : Rosella.Container.LifetimeManager
 {
     var data;
 
@@ -68,7 +68,7 @@ class Rosella.Container.LifetimeManager.Permanent
     per thread. Each thread gets a unique, permanent instance, created lazily.
 */
 // TODO: Implement this, once Parrot has threading
-class Rosella.Container.LifetimeManager.Thread
+class Rosella.Container.LifetimeManager.Thread : Rosella.Container.LifetimeManager
 {
     var lookup;     // Lookup hash thread->instance
 

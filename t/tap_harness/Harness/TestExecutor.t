@@ -3,7 +3,7 @@ class Test_Rosella_Harness_TestExecutor
 {
     function test_new()
     {
-        var obj = new Rosella.Harness.TestExecutor();
+        var obj = new Rosella.Harness.TestExecutor(new Rosella.Harness.TapParser());
         self.assert.not_null(obj);
         self.assert.instance_of(obj, class Rosella.Harness.TestExecutor);
     }

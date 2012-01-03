@@ -3,29 +3,32 @@
 */
 class Rosella.Harness.TestExecutor
 {
+    var parser;
+
     // Constructor
-    function TestExecutor() { }
+    function TestExecutor(var parser)
+    {
+        self.parser = parser;
+    }
 
     /* Public API
     */
 
     // Execute a single test, using the given parser, and sending update
     // commands to the view.
-    function run(var view, var file, var result, var parser, int debug)
+    function run(var view, var file, var result, int debug)
     {
         var stream = self.open_stream(file, result);
         if (result.status == null || result.status != "ABORTED") {
             try {
-                parser.parse(stream, view, result);
+                self.parser.parse(stream, view, result);
             } catch (e) {
-                /*
                 if (__DEBUG__) {
                     say("");
                     say(e.message);
                     for(string bt in e.backtrace_strings())
                         say(bt);
                 }
-                */
                 result.mark_test_abort(e.message);
             }
         }

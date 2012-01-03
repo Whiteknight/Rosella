@@ -1,44 +1,44 @@
 namespace Rosella.Container {
-	class Argument;
-	class LifetimeManager;
-	class Option;
-	class Resolver;
-	class ServiceLocator;
-	extern function default_container;
-	extern function set_default_container;
+    class Argument;
+    class LifetimeManager;
+    class Option;
+    class Resolver;
+    class ServiceLocator;
+    extern function default_container;
+    extern function set_default_container;
 }
 
 namespace Rosella {
-	class Container;
+    class Container;
 }
 
 namespace Rosella.Container.Argument {
-	class Resolve;
-	class Instance;
+    class Resolve;
+    class Instance;
 }
 
 namespace Rosella.Container.LifetimeManager {
-	class Transient;
-	class Permanent;
-	class Thread;
+    class Transient;
+    class Permanent;
+    class Thread;
 }
 
 namespace Rosella.Container.Option {
-	class Method;
-	class Attribute;
-	class Property;
-	class Initializer;
+    class Method;
+    class Attribute;
+    class Property;
+    class Initializer;
 }
 
 namespace Rosella.Container.Resolver {
-	class Instance;
-	class Type;
-	class TypeConstructor;
-	class Factory;
-	class FactoryMethod;
+    class Instance;
+    class Type;
+    class TypeConstructor;
+    class Factory;
+    class FactoryMethod;
 }
 
-function __include_container [anon] ()
+function __include_container [anon,load,init] ()
 {
     Rosella.load_bytecode_file('rosella/container.pbc', 'load');
 }
