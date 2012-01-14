@@ -372,8 +372,8 @@ function setup_utilities(var rosella)
 {
     var utilities = {
         "winxed_repl" : ["winxed_repl", ["Core", "Repl"]],
-        "test_all_lib" : ["rosella_test_all_lib", ["Core", "FileSystem", "Template", "CommandLine"]],
-        "test_template" : ["rosella_test_template", ["Core", "FileSystem", "Template", "CommandLine"]],
+        "test_all_lib" : ["rosella_test_all_lib", ["Core", "FileSystem", "Template", "CommandLine", "Query"]],
+        "test_template" : ["rosella_test_template", ["Core", "FileSystem", "Template", "CommandLine", "Query"]],
         "mk_winxed_header" : ["winxed_mk_header", ["Core", "FileSystem", "CommandLine"]],
         "harness" : ["rosella_harness", ["Core", "Harness"]]
     };

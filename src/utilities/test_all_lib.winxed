@@ -40,6 +40,7 @@ class NamespaceEntry
 // Main entry point. Parse arguments and dispatch to the main handler
 function main[main](var args)
 {
+    Rosella.Query.install_to_type('Hash');
     var p = new Rosella.CommandLine.Program(args.shift());
     p.default_mode().set_function(test_all_main)
         .require_positional("language", 0)
@@ -161,15 +162,23 @@ function get_subs_list_context(string libname, string nsname, var subslist)
 // Get the context object for the test template of methods in a class
 function get_class_context(string libname, string nsname, string classname, var classobj)
 {
-    using Rosella.String.replace_all;
+    string shortname = split(".", classname).pop();
+    var methods = classobj
+        .methods()
+        .iterable()
+        .filter(function(kvp) { return string(kvp.key()) != shortname; })
+        .filter(function(kvp) { return substr(string(kvp.key()), 0, 1) != "_"; })
+        .to_hash(
+            function(kvp) { return kvp.key(); },
+            function(kvp) { return kvp.value(); }
+        );
 
-    var methods = classobj.methods();
     var context = {
         "class" : {
             "name" : classname,
-            "cleanname" : replace_all(classname, ".", "_"),
+            "cleanname" : Rosella.String.replace_all(classname, ".", "_"),
             "winxedname" : classname,
-            "perlname" : replace_all(classname, ".", "::"),
+            "perlname" : Rosella.String.replace_all(classname, ".", "::"),
             "methods" : methods,
             "ownerlib" : libname
         }
