@@ -144,14 +144,12 @@ function get_templates(string lang)
 // Get the context object for the test template of subs in a namespace
 function get_subs_list_context(string libname, string nsname, var subslist)
 {
-    using Rosella.String.replace_all;
-
     var context = {
         "ns" : {
             "name" : nsname,
-            "cleanname" : replace_all(nsname, ".", "_"),
+            "cleanname" : Rosella.String.replace_all(nsname, ".", "_"),
             "winxedname" : nsname,
-            "perlname" : replace_all(nsname, ".", "::"),
+            "perlname" : Rosella.String.replace_all(nsname, ".", "::"),
             "subs" : subslist,
             "ownerlib" : libname
         }
