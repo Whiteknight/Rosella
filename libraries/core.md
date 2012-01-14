@@ -157,6 +157,18 @@ must specify it:
     using Rosella.load_bytecode_file;
     var pf = load_bytecode_file("foo/bar.pbc", "load");
 
+### String Formatting
+
+Creating a string representation of an object, especially one suitable for
+human-readable display, is tricky. This is especially true since almost all
+data objects could be converted into a huge array of different string
+representations depending on different formatting, display aesthetic needs.
+Rosella provides utilities to format data based on custom formatting rules.
+
+The default Rosella string formatter uses `sprintf` internally and so admits
+the same format strings as taken by that opcode. Other Rosella libraries may
+define and provide additional formatters for other purposes.
+
 ## Namespaces
 
 ### Rosella
@@ -255,6 +267,16 @@ disregarding the default type of the factory.
 ObjectFactory is the parent type of all other factory objects in Rosella.
 The basic ObjectFactory has limited utility, but it provides a common
 interface for other, more advanced, factory types.
+
+### Rosella.StringFormatter
+
+The StringFormatter class is used to stringify objects according to a given
+pattern. The default StringFormatter uses Parrot's `sprintf` internally.
+
+Other Rosella libraries and types may define other StringFormatter subclasses
+to use. Where a Rosella type uses a custom formatter, it will define
+`.get_string_converter()` and a `.format_string(fmt)` methods to use with it.
+Only data objects might define these methods and customer formatters.
 
 ### Rosella.Version
 
