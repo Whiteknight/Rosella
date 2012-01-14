@@ -75,16 +75,16 @@ function mk_header_main(var args)
     for (var ns in all_namespaces) {
         Rosella.IO.sayf("namespace %s {", ns);
         for (var c in all_namespaces[ns].classes)
-            Rosella.IO.sayf("\tclass %s;", c);
+            Rosella.IO.sayf("    class %s;", c);
         for (var sub in all_namespaces[ns].subs)
-            Rosella.IO.sayf("\textern function %s;", sub);
+            Rosella.IO.sayf("    extern function %s;", sub);
         say("}\n");
     }
     if (rosella_mode) {
         var fpath = new Rosella.FileSystem.FilePath(libpath);
         string libname_short = fpath.short_name_no_ext();
         string libname = fpath.short_name();
-        Rosella.IO.sayf("function __include_%s [anon] ()\n{", libname_short);
+        Rosella.IO.sayf("function __include_%s [anon,init,load] ()\n{", libname_short);
         Rosella.IO.sayf("    Rosella.load_bytecode_file('rosella/%s', 'load');", libname);
         Rosella.IO.sayf("}");
     }

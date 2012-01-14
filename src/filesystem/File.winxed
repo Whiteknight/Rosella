@@ -186,20 +186,20 @@ class Rosella.FileSystem.File : Rosella.FileSystem.Entry
     {
         var os = Rosella.FileSystem.get_os_pmc();
         var s = os.stat(self.path);
-        return s[STAT_MODIFY_TIME];
+        return new Rosella.Date(int(s[STAT_MODIFY_TIME]));
     }
 
     function access_time()
     {
         var os = Rosella.FileSystem.get_os_pmc();
         var s = os.stat(self.path);
-        return s[STAT_ACCESS_TIME];
+        return new Rosella.Date(int(s[STAT_ACCESS_TIME]));
     }
 
     function change_time()
     {
         var os = Rosella.FileSystem.get_os_pmc();
         var s = os.stat(self.path);
-        return s[STAT_CHANGE_TIME];
+        return new Rosella.Date(int(s[STAT_CHANGE_TIME]));
     }
 }

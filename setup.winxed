@@ -203,7 +203,7 @@ function setup_stable_libraries(var rosella)
     );
 
     // A library for working with files and directories
-    setup_winxed_lib(rosella, "filesystem", ["Core", "Math_Builtins"],
+    setup_winxed_lib(rosella, "filesystem", ["Core", "Math_Builtins", "Date"],
         "filesystem/Includes",
         "filesystem/Entry",
         "filesystem/Directory",
