@@ -41,7 +41,7 @@ class Rosella.Date.Doomsday
         __ASSERT__(anchor <= day < anchor + 7);
 
         int dayoffset = day - anchor;
-        day = (dday + dayoffset) % 7;
+        day = (dday + dayoffset + 1) % 7;
 
         return day;
     }
