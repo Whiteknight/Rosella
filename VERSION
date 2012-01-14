@@ -4,6 +4,7 @@ benchmark: 0 Alpha
 commandline: 1 Stable
 container: 3 Alpha
 core: 2 Stable
+date: 1 Stable
 decorate: 0 Beta
 dumper: 1 Stable
 event: 4 Alpha

@@ -281,6 +281,7 @@ function setup_stable_libraries(var rosella)
         "commandline/ProgramMode"
     );
 
+    // Library for debug-style data dumping
     setup_winxed_lib(rosella, "dumper", ["Core"],
         "dumper/Dumper",
         "dumper/DumpHandler",
@@ -291,6 +292,15 @@ function setup_stable_libraries(var rosella)
         "dumper/dumphandler/Object",
         "dumper/dumphandler/Null",
         "dumper/Handle"
+    );
+
+    // Library for working with date and time
+    setup_winxed_lib(rosella, "date", [],
+        "date/Includes",
+        "date/Date",
+        "date/DateFormatter",
+        "date/Doomsday",
+        "date/SpecialDate"
     );
 }
 
@@ -338,14 +348,6 @@ function setup_experimental_libraries(var rosella)
         "reflect/class/Attribute",
         "reflect/class/Method",
         "reflect/Module"
-    );
-
-    setup_unstable_lib(rosella, "date", [],
-        "date/Includes",
-        "date/Date",
-        "date/DateFormatter",
-        "date/Doomsday",
-        "date/SpecialDate"
     );
 
     setup_unstable_lib(rosella, "repl", ["Core"],
