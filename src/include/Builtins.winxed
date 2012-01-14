@@ -50,6 +50,13 @@ inline defined(var obj) return int
     return value;
 }
 
+inline cmp_p(var a, var b) return int
+{
+    int value;
+    ${ cmp value, a, b };
+    return value;
+}
+
 /* Time and Scheduling
 */
 

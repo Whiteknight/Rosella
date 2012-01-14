@@ -63,4 +63,44 @@ class Rosella.Date.SpecialDate : Rosella.Date
     {
         return string(self.name);
     }
+
+    function is_equal[vtable](var d)
+    {
+        return (d instanceof Rosella.Date.SpecialDate) && d === self;
+    }
+
+    function cmp[vtable](var d)
+    {
+        Rosella.Error.must_subclass(__CLASS__);
+    }
+}
+
+class Rosella.Date.SpecialDate.Minimum : Rosella.Date.SpecialDate
+{
+    function Minimum()
+    {
+        self.SpecialDate("DATE_MINIMUM", 0, 0, 0, 0, 0, 0);
+    }
+
+    function cmp[vtable](var d)
+    {
+        if (d === self)
+            return 0;
+        return -1;
+    }
+}
+
+class Rosella.Date.SpecialDate.Maximum : Rosella.Date.SpecialDate
+{
+    function Maximum()
+    {
+        self.SpecialDate("DATE_MAXIMUM", 9999, 0, 0, 0, 0, 0);
+    }
+
+    function cmp[vtable](var d)
+    {
+        if (d === self)
+            return 0;
+        return 1;
+    }
 }

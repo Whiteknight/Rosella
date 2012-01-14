@@ -27,7 +27,7 @@ namespace Rosella.Date
     {
         var temp = Rosella.Globals.get_global(DATE_MINIMUM);
         if (temp == null) {
-            temp = new Rosella.Date.SpecialDate("DATE_MINIMUM", 0, 0, 0, 0, 0, 0);
+            temp = new Rosella.Date.SpecialDate.Minimum();
             Rosella.Globals.register_global(DATE_MINIMUM, temp);
         }
         return temp;
@@ -39,7 +39,7 @@ namespace Rosella.Date
     {
         var temp = Rosella.Globals.get_global(DATE_MAXIMUM);
         if (temp == null) {
-            temp = new Rosella.Date.SpecialDate("DATE_MAXIMUM", 9999, 0, 0, 0, 0, 0);
+            temp = new Rosella.Date.SpecialDate.Maximum();
             Rosella.Globals.register_global(DATE_MAXIMUM, temp);
         }
         return temp;
@@ -404,5 +404,33 @@ class Rosella.Date
     function get_string_converter()
     {
         return Rosella.Date.default_date_formatter();
+    }
+
+    function is_equal[vtable](var d)
+    {
+        if (!(d instanceof Rosella.Date))
+            return false;
+        var a = self.time_array;
+        var b = d.time_array;
+        for (int i = 0; i < 6; i++) {
+            if (a[i] != b[i])
+                return false;
+        }
+        return true;
+    }
+
+    function cmp[vtable](var d)
+    {
+        if (!(d instanceof Rosella.Date))
+            Rosella.Error.invalid("Cannot compare Date and non-Date PMC");
+        var a = self.time_array;
+        var b = d.time_array;
+        for (int i = 5; i >= 0; i--) {
+            int _a = a[i];
+            int _b = b[i];
+            if (_a != _b)
+                return _a > _b ? 1 : -1;
+        }
+        return 0;
     }
 }
