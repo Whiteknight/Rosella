@@ -1,13 +1,22 @@
+/* Special Date Class
+    This class represents certain special dates which are not real dates.
+*/
 class Rosella.Date.SpecialDate : Rosella.Date
 {
     var name;
 
+    // Constructor. SpecialDate takes the normal representation values and a
+    // name that is supposed to be unique throughout the system
     function SpecialDate(string name, int year, int month, int day, int hour, int min, int sec)
     {
         int raw[] = [sec, min, hour, day, month, year, -1, -1, 0];
         self.time_array = raw;
         self.name = name;
     }
+
+    /* Operations
+        You cannot perform operations on special dates
+    */
 
     function add_seconds(int x)
     {
@@ -59,6 +68,7 @@ class Rosella.Date.SpecialDate : Rosella.Date
         Rosella.Error.invalid(__FUNCTION__, "SpecialDate cannot be disected");
     }
 
+    // Get the name of the SpecialDate
     function name()
     {
         return string(self.name);
@@ -75,6 +85,10 @@ class Rosella.Date.SpecialDate : Rosella.Date
     }
 }
 
+/* Minimum Date
+    This date is the minimum date value. It is guaranteed to compare lower than
+    all dates except itself
+*/
 class Rosella.Date.SpecialDate.Minimum : Rosella.Date.SpecialDate
 {
     function Minimum()
@@ -90,6 +104,10 @@ class Rosella.Date.SpecialDate.Minimum : Rosella.Date.SpecialDate
     }
 }
 
+/* Maximum Date
+    This date is the maximum date value. It is guaranteed to compare higher
+    than all dates except itself
+*/
 class Rosella.Date.SpecialDate.Maximum : Rosella.Date.SpecialDate
 {
     function Maximum()

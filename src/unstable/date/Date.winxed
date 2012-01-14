@@ -1,28 +1,48 @@
+/* Rosella Date Library
+    The Date library provides utilities for working with dates and times. It is
+    not guaranteed to produce perfectly accurate results in all cases for all
+    operations on date and time. It is considered "good enough" for most casual
+    use and is open to iterative improvements and bugfixes. It specifically
+    omits certain complexity such as timezones and other details that would be
+    impossible to track in a library like this.
+
+    This namespace implements several utility routines and provides access to a
+    few global singletons used by the library.
+*/
 namespace Rosella.Date
 {
+    // Get the day of the week as an integer from 0 (Sunday) to 6 (Saturday)
     function get_day_of_week(int year, int month, int day)
     {
         return default_day_calculator().get_day(year, month, day);
     }
 
-    function get_day_of_week(int year, int month, int day)
+    // Get the day of the week as the string name
+    function get_day_of_week_name(int year, int month, int day)
     {
         int dow = default_day_calculator().get_day(year, month, day);
         return get_day_of_week_name(dow);
     }
 
-    function default_day_calculator()
+    // Get the day of week name given the integer index of the day (0=Sunday,
+    // 6=Saturday)
+    function get_day_of_week_name(int day)
     {
-        return new Rosella.Date.Doomsday();
+        if (day < 0 || day > 6)
+            Rosella.Error.invalid(__FUNCTION__, "Bad day %d. Must be 0 (Sunday) to 6 (Saturday)", day);
+
+        return all_week_days()[day];
     }
 
+    // Get a Date object representing the current instant
     function now()
     {
         return new Rosella.Date(time_i());
     }
 
+    // Get a Date object representing the minimum representable date. This
+    // object is guaranteed to always compare lower than all other dates.
     const string DATE_MINIMUM = "Rosella.Date.min";
-
     function min()
     {
         var temp = Rosella.Globals.get_global(DATE_MINIMUM);
@@ -33,8 +53,9 @@ namespace Rosella.Date
         return temp;
     }
 
+    // Get a Date object representing the maximum representable date. This
+    // object is guaranteed to always compare higher than all other dates.
     const string DATE_MAXIMUM = "Rosella.Date.max";
-
     function max()
     {
         var temp = Rosella.Globals.get_global(DATE_MAXIMUM);
@@ -45,12 +66,13 @@ namespace Rosella.Date
         return temp;
     }
 
+    // Get an array with the names of all months in the calendar year
     const string ALL_MONTHS_KEY = "Rosella.Date.all_months";
-
     function all_months()
     {
         var temp = Rosella.Globals.get_global(ALL_MONTHS_KEY);
         if (temp == null) {
+            // TODO: Use an FSA
             temp =  ["January", "February", "March", "April", "May", "June",
                      "July", "August", "September", "October", "November",
                      "December"];
@@ -59,12 +81,13 @@ namespace Rosella.Date
         return temp;
     }
 
+    // Get an array with the abbreviated names of all months in the calendar year
     const string ALL_MONTHS_SHORT_KEY = "Rosella.Date.all_months_short";
-
     function all_months_short()
     {
         var temp = Rosella.Globals.get_global(ALL_MONTHS_SHORT_KEY);
         if (temp == null) {
+            // TODO: Use an FSA
             temp = ["Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep",
                     "Oct", "Nov", "Dec"];
             Rosella.Globals.register_global(ALL_MONTHS_SHORT_KEY, temp);
@@ -72,12 +95,13 @@ namespace Rosella.Date
         return temp;
     }
 
+    // Get an array containing the names of all days of the week
     const string ALL_WEEK_DAYS_KEY = "Rosella.Date.all_week_days";
-
     function all_week_days()
     {
         var temp = Rosella.Globals.get_global(ALL_WEEK_DAYS_KEY);
         if (temp == null) {
+            // TODO: Use an FSA
             temp = ["Sunday", "Monday", "Tuesday", "Wednesday", "Thursday",
                     "Friday", "Saturday"];
             Rosella.Globals.register_global(ALL_WEEK_DAYS_KEY, temp);
@@ -85,9 +109,11 @@ namespace Rosella.Date
         return temp;
     }
 
+    // Get an array containing counts of the number of days in each month of the
+    // given year. This changes depending on whether the given year is a leap
+    // year or not.
     const string DAY_COUNTS_NORMAL = "Rosella.Date.month_day_counts";
     const string DAY_COUNTS_LEAP = "Rosella.Date.month_day_counts_leap";
-
     function month_day_counts(int year)
     {
         int leap_year = Rosella.Date.is_leap_year(year);
@@ -100,14 +126,7 @@ namespace Rosella.Date
         return temp;
     }
 
-    function get_day_of_week_name(int day)
-    {
-        if (day < 0 || day > 6)
-            Rosella.Error.invalid(__FUNCTION__, "Bad day %d. Must be 0 (Sunday) to 6 (Saturday)", day);
-
-        return all_week_days()[day];
-    }
-
+    // Determine if the given year is a leap year
     function is_leap_year(int year)
     {
         if (year % 4 != 0)
@@ -119,8 +138,8 @@ namespace Rosella.Date
         return true;
     }
 
+    // Get the default Date formatter object
     const string DEFAULT_DATE_FORMATTER = "Rosella.Date.default_date_formatter";
-
     function default_date_formatter()
     {
         var temp = Rosella.Globals.get_global(DEFAULT_DATE_FORMATTER);
@@ -130,23 +149,45 @@ namespace Rosella.Date
         }
         return temp;
     }
+
+    // Get a calculator object for calculating day-of-week
+    const string DEFAULT_DAY_CALCULATOR = "Rosella.Date.default_day_calculator";
+    function default_day_calculator()
+    {
+        var temp = Rosella.Globals.get_global(DEFAULT_DAY_CALCULATOR);
+        if (temp == null) {
+            temp = new Rosella.Date.Doomsday();
+            Rosella.Globals.register_global(DEFAULT_DAY_CALCULATOR, temp);
+        }
+        return temp;
+    }
 }
 
-// TODO: Need equality comparisons
+/* Rosella Date Object
+    This is the basic object which represents a Date/Time in Rosella. It stores
+    the necessary data to represent the date, and implements a few basic
+    operations to do on dates.
+
+    Date objects are immutable. Once created, you cannot alter the date/time
+    it represents.
+*/
 // TODO: Need greater-than/less-than comparisons for sorting
-// TODO: Need vtables for operating overloading (add/subtract other Date objects)
+// TODO: Need vtables for operating overloading (subtract other Date objects, etc)
 // TODO: Probably need a class for timespans (start/stop date pairs)
 class Rosella.Date
 {
     var time_array;
     var time_raw;
 
+    // Construct a new Date given an integer system-epoch time (like from the
+    // time_i opcode).
     function Date(int sys_ms)
     {
         self.time_array = decodetime(sys_ms);
         self.time_raw = sys_ms;
     }
 
+    // Construct a new Date given a year, month and day
     function Date(int year, int month, int day)
     {
         if (month < 1 || month > 12)
@@ -165,6 +206,7 @@ class Rosella.Date
         self.time_raw = -1;
     }
 
+    // Construct a complete Date/Time with all date components.
     function Date(int year, int month, int day, int hour, int min, int s)
     {
         if (s < 0 || s > 59)
@@ -181,11 +223,16 @@ class Rosella.Date
         time[2] = hour;
     }
 
+    /* Seconds
+    */
+
+    // Get the number of seconds
     function seconds()
     {
         return self.time_array[TM_SEC];
     }
 
+    // Add the number of seconds to the date and return a new Date
     function add_seconds(int s)
     {
         var n = clone(self);
@@ -193,6 +240,7 @@ class Rosella.Date
         return n;
     }
 
+    // Internal second-adding helper
     function __add_seconds(int s)
     {
         int m = 0;
@@ -206,11 +254,16 @@ class Rosella.Date
             self.__add_minutes(m);
     }
 
+    /* Minutes
+    */
+
+    // Get the number of minutes
     function minutes()
     {
         return self.time_array[TM_MIN];
     }
 
+    // Add the number of minutes and return a new Date
     function add_minutes(int m)
     {
         var n = clone(self);
@@ -218,6 +271,7 @@ class Rosella.Date
         return n;
     }
 
+    // Internal minute-adding helper
     function __add_minutes(int m)
     {
         int h = 0;
@@ -231,11 +285,16 @@ class Rosella.Date
             self.__add_hours(h);
     }
 
+    /* Hours
+    */
+
+    // get the number of hours
     function hours()
     {
         return self.time_array[TM_HOUR];
     }
 
+    // Add the number of hours and return a new Date
     function add_hours(int h)
     {
         var n = clone(self);
@@ -243,6 +302,7 @@ class Rosella.Date
         return n;
     }
 
+    // Internal hour-adding helper
     function __add_hours(int h)
     {
         int d = 0;
@@ -256,11 +316,16 @@ class Rosella.Date
             self.__add_days(d);
     }
 
+    /* Days
+    */
+
+    // Get the number of Days
     function day()
     {
         return self.time_array[TM_MDAY];
     }
 
+    // Add days to the date and return a new Date
     function add_days(int d)
     {
         var n = clone(self);
@@ -268,6 +333,7 @@ class Rosella.Date
         return n;
     }
 
+    // Internal day-adding helper
     function __add_days(int d)
     {
         d += int(self.day());
@@ -309,21 +375,31 @@ class Rosella.Date
             self.__add_months(m);
     }
 
+    /* Week-Day
+    */
+
+    // Get the week-day (integer)
     function week_day()
     {
         return self.time_array[TM_WDAY];
     }
 
+    // Get the week-day (string name)
     function week_day_name()
     {
         return Rosella.Date.all_week_days()[int(self.week_day())];
     }
 
+    /* Month
+    */
+
+    // Get the month
     function month()
     {
         return self.time_array[TM_MON];
     }
 
+    // Add months and return a new Date
     function add_months(int m)
     {
         var n = clone(self);
@@ -331,6 +407,7 @@ class Rosella.Date
         return n;
     }
 
+    // Internal month-adding helper
     function __add_months(int m)
     {
         int y = 0;
@@ -344,16 +421,22 @@ class Rosella.Date
             self.__add_years(y);
     }
 
+    // Get the name of the month
     function month_name()
     {
         return Rosella.Date.all_months()[int(self.month() - 1)];
     }
 
+    /* Year
+    */
+
+    // Get the year
     function year()
     {
         return self.time_array[TM_YEAR];
     }
 
+    // Add years. Return a new date
     function add_years(int y)
     {
         var n = clone(self);
@@ -361,39 +444,36 @@ class Rosella.Date
         return n;
     }
 
+    // Internal year-adding helper
     function __add_years(int y)
     {
         self.time_array[TM_YEAR] = int(self.year()) + y;
     }
 
+    /* Miscellaneous Methods
+    */
+
+    // Get the raw time value, if any
     function raw_time()
     {
         return self.time_raw;
     }
 
+    // Get the Date portion only (not the hour/minute/second)
     function date()
     {
         return new Rosella.Date(int(self.year()), int(self.month()), int(self.day()),
                                 0, 0, 0);
     }
 
+    // Get the Time portion only (not the year/month/day)
     function time()
     {
         return new Rosella.Date(1, 1, 1,
                                 int(self.hours()), int(self.minutes()), int(self.seconds()));
     }
 
-    function clone[vtable]()
-    {
-        return new Rosella.Date(int(self.year()), int(self.month()), int(self.day()),
-                                int(self.hours()), int(self.minutes()), int(self.seconds()));
-    }
-
-    function get_string[vtable]()
-    {
-        return sprintf("%04d/%02d/%02d %02d:%02d:%02d", [self.year(), self.month(), self.day(), self.hours(), self.minutes(), self.seconds()]);
-    }
-
+    // Format the Date into a string
     function format_string(string f)
     {
         if (f == null || f == "")
@@ -401,11 +481,29 @@ class Rosella.Date
         return Rosella.Date.default_date_formatter().format(self, f);
     }
 
+    // Get the string converter to use
     function get_string_converter()
     {
         return Rosella.Date.default_date_formatter();
     }
 
+    /* Vtables
+    */
+
+    // Clone the date object
+    function clone[vtable]()
+    {
+        return new Rosella.Date(int(self.year()), int(self.month()), int(self.day()),
+                                int(self.hours()), int(self.minutes()), int(self.seconds()));
+    }
+
+    // Get a string representation using a default format "yyyy-MM-dd hh:mm:ss"
+    function get_string[vtable]()
+    {
+        return sprintf("%04d/%02d/%02d %02d:%02d:%02d", [self.year(), self.month(), self.day(), self.hours(), self.minutes(), self.seconds()]);
+    }
+
+    // Determine equality between Dates
     function is_equal[vtable](var d)
     {
         if (!(d instanceof Rosella.Date))
@@ -419,10 +517,13 @@ class Rosella.Date
         return true;
     }
 
+    // Compare two Dates
     function cmp[vtable](var d)
     {
         if (!(d instanceof Rosella.Date))
             Rosella.Error.invalid("Cannot compare Date and non-Date PMC");
+        if (d instanceof Rosella.Date.SpecialDate)
+            return cmp_p(d, self);
         var a = self.time_array;
         var b = d.time_array;
         for (int i = 5; i >= 0; i--) {

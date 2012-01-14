@@ -1,7 +1,12 @@
+/* Date String Formatter
+    Formats a Date object into a string according to the given formatting string
+*/
 class Rosella.Date.DateFormatter : Rosella.StringFormatter
 {
+    // Constructor.
     function DateFormatter() { }
 
+    // Format the Date object
     // TODO: Support additional codes
     // TODO: Find an algorithm which isn't so slow and wasteful
     function format(var obj, string f)

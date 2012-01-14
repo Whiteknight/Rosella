@@ -7,12 +7,14 @@ class Rosella.Date.Doomsday
 {
     var doomsdays;
 
+    // Constructor
     function Doomsday()
     {
         // doomsdays[N] is the day of month N that falls on a doomsday.
         self.doomsdays = [ 3, 28, 7, 4, 9, 6, 11, 8, 5, 10, 7, 12 ];
     }
 
+    // Get the day of the week for the give Date. Return an integer
     function get_day(int year, int month, int day)
     {
         if (year < 1)
@@ -44,6 +46,7 @@ class Rosella.Date.Doomsday
         return day;
     }
 
+    // Get the Doomsday for the given year
     function __get_dday(int year)
     {
         return (2 + year + (year / 4) - (year / 100) + (year / 400)) % 7;
