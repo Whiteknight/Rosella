@@ -116,13 +116,31 @@ class Rosella.Query.Iterable : Rosella.IteratorBase
     // Read the source to exhaustion, returning all results as a hash. Takes a
     // function reference used to generate the hash key and optionally a
     // function reference to generate the data
-    function to_hash(var key_f, var value_f [optional], int has_vf [opt_flag])
+    function to_hash(var key_f [optional], int has_kf [opt_flag],
+            var value_f [optional], int has_vf [opt_flag])
     {
         var d = {};
         if (!self.has_more())
             return d;
 
         :(var v, int m) = self.next_and_more();
+
+        if (!has_kf) {
+            if (v instanceof Rosella.Query.Iterable.KeyValuePair) {
+                do {
+                    d[m.key()] = m.value();
+                    :(v, m) = self.next_and_more();
+                } while(m);
+            }
+            else {
+                do {
+                    d[v] = v;
+                    :(v, m) = self.next_and_more();
+                } while(m);
+            }
+            return d;
+        }
+
         var key = key_f(v);
 
         if (has_vf) {
