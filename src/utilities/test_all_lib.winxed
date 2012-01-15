@@ -166,10 +166,7 @@ function get_class_context(string libname, string nsname, string classname, var 
         .iterable()
         .filter(function(kvp) { return string(kvp.key()) != shortname; })
         .filter(function(kvp) { return substr(string(kvp.key()), 0, 1) != "_"; })
-        .to_hash(
-            function(kvp) { return kvp.key(); },
-            function(kvp) { return kvp.value(); }
-        );
+        .to_hash();
 
     var context = {
         "class" : {
