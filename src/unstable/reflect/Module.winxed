@@ -5,6 +5,7 @@ namespace Rosella.Reflect.Module
         var pf_raw = load_packfile(name);
         var pf = new Rosella.Reflect.Module(pf_raw);
         pf.load();
+        __set_cached_reflector(pf_raw, "module", pf);
         return pf;
     }
 }
@@ -24,6 +25,11 @@ class Rosella.Reflect.Module
     function load()
     {
         Rosella.init_bytecode(self.pf, "load");
+    }
+
+    function init()
+    {
+        Rosella.init_bytecode(self.pf, "init");
     }
 
     function path()
@@ -95,7 +101,7 @@ class Rosella.Reflect.Module
             if ((sub_flags & SUB_FLAG_METHOD) != 0) {
                 if (!(exists all_classes[ns])) {
                     var c = ns_pmc.get_class();
-                    all_classes[ns] = new Rosella.Reflect.Class(c);
+                    all_classes[ns] = Rosella.Reflect.get_class_reflector(c);
                 }
             }
             else {

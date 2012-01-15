@@ -4,7 +4,12 @@ namespace Rosella.Reflect
     {
         var cur_ctx = getinterp()["context"];
         var pf = cur_ctx.caller_ctx.current_sub.get_packfile();
-        return new Rosella.Reflect.Module(pf);
+        var m = __get_cached_reflector(pf, "module");
+        if (m == null) {
+            m = new Rosella.Reflect.Module(pf);
+            __set_cached_reflector(pf, "module", m);
+        }
+        return m;
     }
 
     function get_current_sub()
@@ -35,6 +40,16 @@ namespace Rosella.Reflect
         if (obj == null)
             return null;
         var c = typeof(obj);
-        return new Rosella.Reflect.Class(c);
+        return get_class_reflector(c);
+    }
+
+    function get_class_reflector(var c)
+    {
+        var rc = __get_cached_reflector(c, "class");
+        if (rc == null) {
+            rc = new Rosella.Reflect.Class(c);
+            __set_cached_reflector(c, "class", rc);
+        }
+        return rc;
     }
 }

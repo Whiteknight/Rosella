@@ -3,3 +3,15 @@ const int SUB_FLAG_METHOD = 0x04;
 const int SUB_FLAG_INIT = 0x400;
 const int PF_FLAG_ANON = 0x08;
 const int PF_FLAG_LOAD = 0x20;
+
+inline __get_cached_reflector(var obj, string key) return var
+{
+    string k = "!!!Rosella.Reflect." + key + "!!!";
+    return getprop(obj, k);
+}
+
+inline __set_cached_reflector(var obj, string key, var r)
+{
+    string k = "!!!Rosella.Reflect." + key + "!!!";
+    setprop(obj, k, r);
+}

@@ -13,6 +13,16 @@ class Rosella.Reflect.Class
         self.attrs_raw = class_obj.attributes();
         self.attr_cache = {};
         self.method_cache = {};
+
+        string class_name = class_obj.name();
+        var constructor = class_obj.find_method(class_name);
+        if (constructor != null)
+            self.constructor = class_name;
+        else {
+            constructor = class_obj.find_method("BUILD");
+            if (constructor != null)
+                self.constructor = "BUILD";
+        }
     }
 
     function set_constructor(string constructor)
@@ -33,16 +43,16 @@ class Rosella.Reflect.Class
 
     function new(var p [slurpy], var n [slurpy,named])
     {
+        var obj = Rosella.alloc(self.class_obj);
         if (self.constructor != null) {
             string constructor_name = self.constructor;
-            var class_obj = self.class_obj;
-            var obj = Rosella.alloc(class_obj);
-            var constructor = Rosella.find_named_method(obj, self.class_obj.name());
-            if (constructor != null)
-                obj.*constructor(p:[flat], n:[flat]);
-            return obj;
-        } else
-            return Rosella.construct(self.class_obj, p:[flat], n:[flat,named]);
+            if (constructor_name != null && constructor_name != "") {
+                var constructor = Rosella.find_named_method(obj, constructor_name);
+                if (constructor != null)
+                    obj.*constructor(p:[flat], n:[flat]);
+            }
+        }
+        return obj;
     }
 
     function get_attr(string attr_name)
