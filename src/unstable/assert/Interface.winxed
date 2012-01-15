@@ -1,94 +1,91 @@
-namespace Rosella { namespace Assert
+/* Contract class to verify that the given type satisfies the public
+   interface of a base class.
+*/
+class Rosella.Assert.InterfaceContract
 {
-    /* Contract class to verify that the given type satisfies the public
-       interface of a base class.
-    */
-    class InterfaceContract
+    var base_type_name;
+    var base_filter;
+    var base_methods;
+
+    function InterfaceContract(var type,
+            var base_filter [optional], int has_filter [opt_flag])
     {
-        var base_type_name;
-        var base_filter;
-        var base_methods;
+        var type_class = Rosella.get_type_class(type);
+        self.base_methods = type_class.methods();
+        self.base_type_name = Rosella.get_type_name(type);
+        self.base_filter = base_filter;
+    }
 
-        function InterfaceContract(var type,
-                var base_filter [optional], int has_filter [opt_flag])
-        {
-            var type_class = Rosella.get_type_class(type);
-            self.base_methods = type_class.methods();
-            self.base_type_name = Rosella.get_type_name(type);
-            self.base_filter = base_filter;
-        }
+    function assert_type(var type)
+    {
+        if (!Rosella.Assert.is_active())
+            return;
 
-        function assert_type(var type)
-        {
-            if (!Rosella.Assert.is_active())
-                return;
+        var type_class = Rosella.get_type_class(type);
+        var methods = type_class.methods();
 
-            var type_class = Rosella.get_type_class(type);
-            var methods = type_class.methods();
-
-            for (string meth_name in self.base_methods) {
-                if (self.__is_valid(meth_name) && !(exists methods[meth_name])) {
-                    string type_name = Rosella.get_type_name(type);
-                    Rosella.Assert.assert_fail("Interface method %s.%s not found in type %s", self.base_type_name, meth_name, type_name);
-                }
+        for (string meth_name in self.base_methods) {
+            if (self.__is_valid(meth_name) && !(exists methods[meth_name])) {
+                string type_name = Rosella.get_type_name(type);
+                Rosella.Assert.assert_fail("Interface method %s.%s not found in type %s", self.base_type_name, meth_name, type_name);
             }
-        }
-
-        function assert_object(var obj)
-        {
-            if (!Rosella.Assert.is_active())
-                return;
-
-            var obj_class = typeof(obj);
-            string type_name = Rosella.get_class_name(obj_class);
-
-            for (string meth_name in self.base_methods) {
-                if (!self.__is_valid(meth_name))
-                    continue;
-                if (!can(obj, meth_name))
-                    Rosella.Assert.assert_fail("Interface method %s.%s not found in type %s", self.base_type_name, meth_name, type_name);
-            }
-        }
-
-        function test_type(var type)
-        {
-            var type_class = Rosella.get_type_class(type);
-            var methods = type_class.methods();
-
-            for (string meth_name in self.base_methods) {
-                if (self.__is_valid(meth_name) && !(exists methods[meth_name]))
-                    return false;
-            }
-            return true;
-        }
-
-        function test_object(var obj)
-        {
-            for (string meth_name in self.base_methods) {
-                if (!self.__is_valid(meth_name))
-                    continue;
-                if (!can(obj, meth_name))
-                    return false;
-            }
-            return true;
-        }
-
-        function __is_valid(string name)
-        {
-            var filter = self.base_filter;
-            if (filter == null)
-                return true;
-            return filter(name);
-        }
-
-        function __assert_methods(string type_name, var method_list)
-        {
-            Rosella.Error.must_subclass(__CLASS__);
-        }
-
-        function __test_methods(string type_name, var method_list)
-        {
-            Rosella.Error.must_subclass(__CLASS__);
         }
     }
-}}
+
+    function assert_object(var obj)
+    {
+        if (!Rosella.Assert.is_active())
+            return;
+
+        var obj_class = typeof(obj);
+        string type_name = Rosella.get_class_name(obj_class);
+
+        for (string meth_name in self.base_methods) {
+            if (!self.__is_valid(meth_name))
+                continue;
+            if (!can(obj, meth_name))
+                Rosella.Assert.assert_fail("Interface method %s.%s not found in type %s", self.base_type_name, meth_name, type_name);
+        }
+    }
+
+    function test_type(var type)
+    {
+        var type_class = Rosella.get_type_class(type);
+        var methods = type_class.methods();
+
+        for (string meth_name in self.base_methods) {
+            if (self.__is_valid(meth_name) && !(exists methods[meth_name]))
+                return false;
+        }
+        return true;
+    }
+
+    function test_object(var obj)
+    {
+        for (string meth_name in self.base_methods) {
+            if (!self.__is_valid(meth_name))
+                continue;
+            if (!can(obj, meth_name))
+                return false;
+        }
+        return true;
+    }
+
+    function __is_valid(string name)
+    {
+        var filter = self.base_filter;
+        if (filter == null)
+            return true;
+        return filter(name);
+    }
+
+    function __assert_methods(string type_name, var method_list)
+    {
+        Rosella.Error.must_subclass(__CLASS__);
+    }
+
+    function __test_methods(string type_name, var method_list)
+    {
+        Rosella.Error.must_subclass(__CLASS__);
+    }
+}

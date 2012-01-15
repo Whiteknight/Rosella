@@ -1,49 +1,43 @@
-namespace Rosella
+namespace Rosella.Assert
 {
-    namespace Assert
+    const string ASSERT_IS_ACTIVE_KEY = "Rosella.Assert.IsActive";
+
+    function is_active()
     {
-        const string ASSERT_IS_ACTIVE_KEY = "Rosella.Assert.IsActive";
-
-        function is_active()
-        {
-            var temp = Rosella.Globals.get_global(ASSERT_IS_ACTIVE_KEY);
-            if (temp == null) {
-                temp = false;
-                Rosella.Globals.register_global(ASSERT_IS_ACTIVE_KEY, temp);
-            }
-            while(1) {
-                yield temp;
-                temp = Rosella.Globals.get_global(ASSERT_IS_ACTIVE_KEY);
-            }
+        var temp = Rosella.Globals.get_global(ASSERT_IS_ACTIVE_KEY);
+        if (temp == null) {
+            temp = false;
+            Rosella.Globals.register_global(ASSERT_IS_ACTIVE_KEY, temp);
         }
+        return temp;
+    }
 
-        function set_active(int active)
-        {
-            Rosella.Globals.register_global(ASSERT_IS_ACTIVE_KEY, active);
+    function set_active(int active)
+    {
+        Rosella.Globals.register_global(ASSERT_IS_ACTIVE_KEY, active);
+    }
+
+    function assert(int cond, string text)
+    {
+        if (cond || !is_active())
+            return;
+        var cur_ctx = getinterp()["context"];
+        var bt = cur_ctx.backtrace();
+        if (elements(bt) > 1) {
+            string frame = Rosella.Parrot.format_frame(bt[1]);
+            text = Winxed_Builtins.sprintf("%s at %s", [text, frame]);
         }
+        assert_fail(text);
+    }
 
-        function assert(int cond, string text)
-        {
-            if (cond || !is_active())
-                return;
-            var cur_ctx = getinterp()["context"];
-            var bt = cur_ctx.backtrace();
-            if (elements(bt) > 1) {
-                string frame = Rosella.Parrot.format_frame(bt[1]);
-                text = Winxed_Builtins.sprintf("%s at %s", [text, frame]);
-            }
-            assert_fail(text);
-        }
+    function assert_fail(string text, var args [slurpy])
+    {
+        text = "Assertion failure: " + sprintf(text, args);
 
-        function assert_fail(string text, var args [slurpy])
-        {
-            text = "Assertion failure: " + sprintf(text, args);
-
-            using Rosella.Test.internal_fail;
-            if (internal_fail == null)
-                Rosella.Error.throw_error(text);
-            else
-                internal_fail(text, 1, null);
-        }
+        using Rosella.Test.internal_fail;
+        if (internal_fail == null)
+            Rosella.Error.throw_error(text);
+        else
+            internal_fail(text, 1, null);
     }
 }

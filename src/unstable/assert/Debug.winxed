@@ -1,47 +1,41 @@
-namespace Rosella { namespace Assert
+namespace Rosella.Assert.Debug
 {
-    namespace Debug
+    const string DEBUG_HANDLE_KEY = "Rosella.Assert.debug_handle";
+
+    function dbg_handle()
     {
-        const string DEBUG_HANDLE_KEY = "Rosella.Assert.debug_handle";
-
-        function dbg_handle()
-        {
-            var handle = Rosella.Globals.get_global(DEBUG_HANDLE_KEY);
-            if (handle == null) {
-                handle = getstderr();
-                Rosella.Globals.register_global(DEBUG_HANDLE_KEY, handle);
-            }
-            while(1) {
-                yield handle;
-                handle = Rosella.Globals.get_global(DEBUG_HANDLE_KEY);
-            }
-        }
-
-        function set_dbg_handle(var handle)
-        {
+        var handle = Rosella.Globals.get_global(DEBUG_HANDLE_KEY);
+        if (handle == null) {
+            handle = getstderr();
             Rosella.Globals.register_global(DEBUG_HANDLE_KEY, handle);
         }
-
-        function debug(string msg)
-        {
-            if (!Rosella.Assert.is_active())
-                return;
-            var handle = dbg_handle();
-            handle.print(msg);
-        }
-
-        function dsay(string msg)
-        {
-            debug(msg + "\n");
-        }
-
-        function dprintf(string fmt, var args [slurpy])
-        {
-            if (!Rosella.Assert.is_active())
-                return;
-            string text = Winxed_Builtins.sprintf(fmt, args);
-            var handle = dbg_handle();
-            handle.print(text);
-        }
+        return handle;
     }
-}}
+
+    function set_dbg_handle(var handle)
+    {
+        Rosella.Globals.register_global(DEBUG_HANDLE_KEY, handle);
+    }
+
+    function debug(string msg)
+    {
+        if (!Rosella.Assert.is_active())
+            return;
+        var handle = dbg_handle();
+        handle.print(msg);
+    }
+
+    function dsay(string msg)
+    {
+        debug(msg + "\n");
+    }
+
+    function dprintf(string fmt, var args [slurpy])
+    {
+        if (!Rosella.Assert.is_active())
+            return;
+        string text = Winxed_Builtins.sprintf(fmt, args);
+        var handle = dbg_handle();
+        handle.print(text);
+    }
+}
