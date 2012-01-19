@@ -111,7 +111,7 @@ function update_release_json(string version, string name, var date)
 
 function get_release_json_template()
 {
-    return Rosella.Template.get_standard_template_text("release.json.template");
+    return Rosella.Template.get_standard_template_text("release.json");
 }
 
 /* parrothist.pod Update Routines
@@ -175,5 +175,5 @@ function get_directions_context(string version)
 
 function get_directions_template()
 {
-    return Rosella.Template.get_standard_template_text("release_directions.template");
+    return Rosella.Template.get_standard_template_text("release_directions");
 }

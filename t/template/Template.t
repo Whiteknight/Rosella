@@ -5,7 +5,7 @@ class Test_Rosella_Template
         self.status.verify("Test Rosella.Template.get_standard_template_file()");
         using Rosella.Template.get_standard_template_file;
 
-        string arg_0 = "test_ns.winxed.template";
+        string arg_0 = "test_ns.winxed";
         self.assert.throws_nothing(function() {
             var result = get_standard_template_file(arg_0);
             self.assert.not_equal(length(result), 0);
@@ -28,7 +28,7 @@ class Test_Rosella_Template
         self.status.verify("Test Rosella.Template.get_standard_template_text()");
         using Rosella.Template.get_standard_template_text;
 
-        string arg_0 = "test_ns.winxed.template";
+        string arg_0 = "test_ns.winxed";
         self.assert.throws_nothing(function() {
             var result = get_standard_template_text(arg_0);
             self.assert.not_equal(length(result), 0);

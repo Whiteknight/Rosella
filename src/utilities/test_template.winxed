@@ -1,4 +1,4 @@
-const string TEMPLATE_FILE_FMT = "%s.%s.template";
+const string TEMPLATE_FILE_FMT = "%s.%s";
 
 // Entry point. Parse args and dispatch
 function main[main](var args)
@@ -92,10 +92,8 @@ function show_version(var args)
 // Get the template text string
 function get_template_text(string type, string lang)
 {
-    using Rosella.Template.get_standard_template_file;
-
     string filename = sprintf(TEMPLATE_FILE_FMT, [type, lang]);
-    filename = get_standard_template_file(filename);
+    filename = Rosella.Template.get_standard_template_file(filename);
     var file = new Rosella.FileSystem.File(filename);
     if (!file.exists()) {
         say(sprintf("Cannot find %s template for language '%s'", [type, lang]));

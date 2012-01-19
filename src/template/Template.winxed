@@ -9,7 +9,7 @@ namespace Rosella
         // Get a standard template file, by looking in certain standard locations.
         function get_standard_template_file(string shortname)
         {
-            string filepath = Rosella.FileSystem.join_path_parts(TEMPLATE_PATH, shortname);
+            string filepath = Rosella.FileSystem.join_path_parts(TEMPLATE_PATH, shortname + ".template");
             if (Rosella.FileSystem.is_file(filepath))
                 return filepath;
             var config = Rosella.Parrot.get_config_hash();

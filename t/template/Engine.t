@@ -161,7 +161,7 @@ class Test_Rosella_Template_Engine
         self.status.verify("Test Rosella.Template.Engine.__get_template_from_file()");
         var obj = new Rosella.Template.Engine();
         using Rosella.Template.get_standard_template_file;
-        var arg_0 = get_standard_template_file("test_class.winxed.template");
+        var arg_0 = get_standard_template_file("test_class.winxed");
         var result = obj.__get_template_from_file(arg_0);
         self.assert.not_equal(length(result), 0);
     }

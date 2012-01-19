@@ -136,8 +136,8 @@ function get_namespace_directory(var dir, string ns)
 // Get the templates for test files
 function get_templates(string lang)
 {
-    string class_tmpl = Rosella.Template.get_standard_template_file("test_class." + lang + ".template");
-    string ns_tmpl = Rosella.Template.get_standard_template_file("test_ns." + lang + ".template");
+    string class_tmpl = Rosella.Template.get_standard_template_file("test_class." + lang);
+    string ns_tmpl = Rosella.Template.get_standard_template_file("test_ns." + lang);
     return class_tmpl, ns_tmpl;
 }
 
