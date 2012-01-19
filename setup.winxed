@@ -409,7 +409,10 @@ function setup_data_files(var rosella)
         "rosella/data/templates/test_harness.nqp.template",
         "rosella/data/templates/test_harness.winxed.template",
         "rosella/data/templates/release_directions.template",
-        "rosella/data/templates/release.json.template"
+        "rosella/data/templates/release.json.template",
+        "rosella/data/templates/release_announce.txt.template",
+        "rosella/data/templates/release_announce.html.template",
+        "rosella/data/templates/release_announce.md.template"
     ];
 }
 

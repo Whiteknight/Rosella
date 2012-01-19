@@ -1,0 +1,21 @@
+On behalf of the Parrot team, I'm proud to announce Parrot <# release.version #>, also known
+as "<# release.name #>".  Parrot (http://parrot.org/) is a virtual machine aimed
+at running all dynamic languages.
+
+Parrot <# release.version #> is available on Parrot's FTP site
+(ftp://ftp.parrot.org/pub/parrot/releases/<# release.path #>/<# release.version #>/), or by following the
+download instructions at http://parrot.org/download.  For those who would like
+to develop on Parrot, or help develop Parrot itself, we recommend using Git to
+retrieve the source code to get the latest and best Parrot code.
+
+<# release.news #>
+
+The SHA256 message digests for the downloadable tarballs are:
+
+<# release.bz2checksum #>
+<# release.gzchecksum #>
+
+Many thanks to all our contributors for making this possible, and our sponsors
+for supporting this project.  Our next scheduled release is <# next_release.date #>.
+
+Enjoy!

@@ -1,0 +1,35 @@
+<p>On behalf of the Parrot team, I'm proud to announce Parrot <# release.version #>,
+also known as &quot;<# release.name #>&quot;. <a href="http://parrot.org/">Parrot</a>
+is a virtual machine aimed at running all dynamic languages.</p>
+
+<p>Parrot <# release.version #> is available on <a href="ftp://ftp.parrot.org/pub/parrot/releases/<# release.path #>/<# release.version #>/">Parrot's FTP
+site</a>, or by <a href="http://parrot.org/download">following the download
+instructions</a>. For those who want to hack on Parrot or languages that run on top of Parrot,
+we recommend <a href="https://github.com/parrot">our organization page</a> on GitHub,
+or you can go directly to the official Parrot Git repo on <a href="https://github.com/parrot/parrot">Github</a>
+
+To clone the Parrot Git repo into a directory called 'parrot', use the following:
+<pre>
+    git clone git://github.com/parrot/parrot.git
+</pre>
+
+If you want it to be in a directory other than 'parrot', then just give that as a second
+argument to clone:
+<pre>
+    git clone git://github.com/parrot/parrot.git parrot_foo
+</pre>
+
+Parrot <# release.version #> News:<br/>
+
+<pre><# release.news #>
+</pre></p>
+
+<p>The SHA256 message digests for the downloadable tarballs are:</p>
+<pre><# release.bz2checksum #>
+<# release.gzchecksum #>
+</pre>
+
+<p>Thanks to all our contributors for making this possible, and our sponsors
+for supporting this project.  Our next release is <# next_release.date #>.</p>
+
+<p>Enjoy!</p>
