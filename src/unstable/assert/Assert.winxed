@@ -4,7 +4,7 @@ namespace Rosella.Assert
 
     function is_active()
     {
-        int temp = Rosella.Globals.get_global(ASSERT_IS_ACTIVE_KEY);
+        var temp = Rosella.Globals.get_global(ASSERT_IS_ACTIVE_KEY);
         if (temp == null) {
             temp = false;
             Rosella.Globals.register_global(ASSERT_IS_ACTIVE_KEY, temp);
