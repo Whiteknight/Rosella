@@ -1,0 +1,21 @@
+{
+    "release.version"  : "<# this_release.version_raw #>",
+    "release.name"     : "<# this_release.version_name #>",
+    "release.day"      : "Tuesday",
+    "release.date"     : "<# this_release.release_date #>",
+    "release.nextdate" : "<# next_release.release_date #>",
+
+    "web.root"         : "http://parrot.org/",
+    "web.source"       : "download",
+    "web.openpatches"  : "openpatches.html",
+    "web.repository"   : "https://github.com/parrot/parrot",
+    "web.org_root"    :  "https://github.com/parrot",
+
+    "bugday.day"       : "Saturday",
+    "bugday.date"      : "<# next_release.bugday_date #>",
+
+    "wiki.root"        : "https://github.com/parrot/parrot/wiki",
+    "wiki.bugday"      : "bug_day_<# next_release.bugday_clean #>",
+
+    "ftp.path"         : "ftp://ftp.parrot.org/pub/parrot/releases/<# this_release.is_stable #>/<# this_release.version_raw #>/"
+}

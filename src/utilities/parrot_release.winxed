@@ -1,0 +1,180 @@
+function main()
+{
+    var today = Rosella.Date.now();
+    var third_tuesday = third_tuesday_of_the_month(today.month(), today.year());
+    getstdout().print("Preparing release for " + string(third_tuesday) + "\n");
+    string username = getstdin().readline_interactive("Enter username: ");
+    string version = getstdin().readline_interactive("Enter version number: ");
+    string name = getstdin().readline_interactive("Enter version name: ");
+    update_version_numbers(version);
+    update_release_json(version, name, third_tuesday);
+    update_parrothist_pod(username, third_tuesday, version, name);
+    update_release_manager_guide_pod(third_tuesday, version);
+    display_directions_message(version);
+}
+
+/* Utility Functions
+*/
+
+function third_tuesday_of_the_month(int month, int year)
+{
+    int tuesdays = 0;
+    var d = new Rosella.Date(year, month, 1);
+    while(true) {
+        if (d.week_day_name() == "Tuesday")
+            tuesdays++;
+        if (tuesdays == 3)
+            break;
+        d = d.add_days(1);
+    }
+    return d;
+}
+
+function get_bugday(var d)
+{
+    return d.add_days(-2);
+}
+
+function get_version_number(string n)
+{
+    var parts = split(".", n);
+    return int(parts[0]), int(parts[1]), int(parts[2]);
+}
+
+function is_stable_version(int major, int minor, int patch)
+{
+    if (patch != 0)
+        return false;
+    if (minor == 0 || minor == 3 || minor == 6 || minor == 9)
+        return true;
+}
+
+function is_stable_version(string n)
+{
+    :(int a, int b, int c) = get_version_number(n);
+    return is_stable_version(a, b, c);
+}
+
+function get_release_date(int month, int year)
+{
+    return third_tuesday_of_the_month(month, year);
+}
+
+function update_version_numbers(string version)
+{
+    return spawnw("perl tools/release/update_version.pl " + version);
+}
+
+/* release.json Updating Routines
+*/
+
+function get_release_json_context(string version, string name, var release_date)
+{
+    string release_s = release_date.format_string("dd MMMM yyyy");
+
+    var next_month = new Rosella.Date(int(release_date.year()), int(release_date.month()), 1).add_months(1);
+    var next_release_date = third_tuesday_of_the_month(next_month.month(), next_month.year());
+    string next_release_s = next_release_date.format_string("dd MMMM yyyy");
+
+    var bugday = get_bugday(next_release_date);
+    string bugday_s = bugday.format_string("dd MMMM yyyy");
+    string bugday_clean_s = bugday.format_string("yyyy_MM_dd");
+
+    :(int m_a, int m_b, int p) = get_version_number(version);
+    //int is_stable = is_stable_version(m_a, m_b, p);
+    int is_stable = false;
+    string stable_s = is_stable ? "stable" : "devel";
+
+    return {
+        "this_release" : {
+            "version_raw" : version,
+            "version_name" : name,
+            "release_date" : release_s,
+            "is_stable" : stable_s
+        },
+        "next_release" : {
+            "release_date" : next_release_s,
+            "bugday_date" : bugday_s,
+            "bugday_clean" : bugday_clean_s
+        }
+    };
+}
+
+function update_release_json(string version, string name, var date)
+{
+    var context = get_release_json_context(version, name, date);
+    var engine = new Rosella.Template.Engine();
+    string template = get_release_json_template();
+    string output = engine.generate(template, context);
+    var f = new Rosella.FileSystem.File("tools/release/release.json");
+    f.write_all_text(output);
+}
+
+function get_release_json_template()
+{
+    return Rosella.Template.get_standard_template_text("release.json.template");
+}
+
+/* parrothist.pod Update Routines
+*/
+
+function update_parrothist_pod(string username, var date, string version, string name)
+{
+    var f = new Rosella.FileSystem.File("docs/parrothist.pod");
+    string date_s = date.format_string("yyyy-MMM-dd");
+    if (is_stable_version(version))
+        version = version + " *";
+    string l = sprintf(' %s%s%s"%s"', [
+        Rosella.String.pad_end(username, 12),
+        Rosella.String.pad_end(version, 15),
+        Rosella.String.pad_end(date_s, 16),
+        name
+    ]) + "\n";
+    var lines = f.read_all_lines("\n", "unicode");
+    var new_lines = [];
+    int i = 0;
+    for (; i < elements(lines) - 2; i++)
+        new_lines[i] = lines[i];
+    new_lines[i++] = l;
+    for(; i < elements(lines); i++)
+        new_lines[i] = lines[i];
+    f.write_all_lines(new_lines);
+}
+
+function update_release_manager_guide_pod(var date, string version)
+{
+    string search = date.format_string("MMM dd, yyyy") + " - " + version;
+    var f = new Rosella.FileSystem.File("docs/project/release_manager_guide.pod");
+    var text = Rosella.Query.iterable(f.read_all_lines());
+    text = text.
+        filter(function(string l) { return !contains(l, search); })
+        .to_array();
+    f.write_all_lines(text);
+}
+
+/* Directions Routines
+*/
+
+function display_directions_message(string version)
+{
+    string template = get_directions_template();
+    var context = get_directions_context(version);
+    var engine = new Rosella.Template.Engine();
+    string msg = engine.generate(template, context);
+    getstdout().print(msg);
+}
+
+function get_directions_context(string version)
+{
+    return {
+        "release": {
+            "version": version,
+            "version_clean" : version.replace(".", "_")
+        }
+    };
+}
+
+function get_directions_template()
+{
+    return Rosella.Template.get_standard_template_text("release_directions.template");
+}

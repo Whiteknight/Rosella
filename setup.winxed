@@ -321,13 +321,14 @@ function setup_experimental_libraries(var rosella)
         "decorate/Factory"
     );
 
+/*
     setup_unstable_lib(rosella, "assert", ["Core"],
         "assert/Assert",
         "assert/Debug",
         "assert/Method",
         "assert/Interface"
     );
-
+*/
     setup_unstable_lib(rosella, "lazy", ["Core", "Proxy"],
         "lazy/Lazy",
         "lazy/Builder",
@@ -375,7 +376,8 @@ function setup_utilities(var rosella)
         "test_all_lib" : ["rosella_test_all_lib", ["Core", "FileSystem", "Template", "CommandLine", "Query"]],
         "test_template" : ["rosella_test_template", ["Core", "FileSystem", "Template", "CommandLine", "Query"]],
         "mk_winxed_header" : ["winxed_mk_header", ["Core", "FileSystem", "CommandLine"]],
-        "harness" : ["rosella_harness", ["Core", "Harness"]]
+        "harness" : ["rosella_harness", ["Core", "Harness"]],
+        "parrot_release" : ["parrot_release", ["Core", "FileSystem", "Template", "String", "Query", "Date"]]
     };
     string src_prefix = "src/utilities/";
     string dest_prefix = "rosella/";
@@ -406,7 +408,9 @@ function setup_data_files(var rosella)
         "rosella/data/templates/test_class.winxed.template",
         "rosella/data/templates/test_ns.winxed.template",
         "rosella/data/templates/test_harness.nqp.template",
-        "rosella/data/templates/test_harness.winxed.template"
+        "rosella/data/templates/test_harness.winxed.template",
+        "rosella/data/templates/release_directions.template",
+        "rosella/data/templates/release.json.template"
     ];
 }
 

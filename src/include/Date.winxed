@@ -1,0 +1,32 @@
+namespace Rosella.Date {
+    class DateFormatter;
+    class Doomsday;
+    class SpecialDate;
+    extern function get_day_of_week;
+    extern function get_day_of_week_name;
+    extern function get_day_of_week_name;
+    extern function now;
+    extern function min;
+    extern function max;
+    extern function all_months;
+    extern function all_months_short;
+    extern function all_week_days;
+    extern function month_day_counts;
+    extern function is_leap_year;
+    extern function default_date_formatter;
+    extern function default_day_calculator;
+}
+
+namespace Rosella {
+    class Date;
+}
+
+namespace Rosella.Date.SpecialDate {
+    class Minimum;
+    class Maximum;
+}
+
+function __include_date [anon,init,load] ()
+{
+    Rosella.load_bytecode_file('rosella/date.pbc', 'load');
+}

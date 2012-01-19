@@ -1,0 +1,19 @@
+All metadata files have been successfully updated. Run "git diff" to view and
+verify changes. When you are ready, execute:
+
+    git commit -a -m"Updated metadata for release <# release.version #>"
+
+to commit your changes and then push them to github. You may choose to use a
+different branch for this. Use "git checkout -b <branch name>" if so.
+
+Run the following commands to build and test the tarball, and to get the
+checksums:
+
+    perl Configure.pl
+    make release_check
+    cat *.sha256
+    git tag RELEASE_<# release.version_clean #>
+    git push --tags
+
+Finally, upload the tarballs to the ftp server and send out announcements
+for the release.
