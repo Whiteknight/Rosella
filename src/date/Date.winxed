@@ -72,10 +72,10 @@ namespace Rosella.Date
     {
         var temp = Rosella.Globals.get_global(ALL_MONTHS_KEY);
         if (temp == null) {
-            // TODO: Use an FSA
-            temp =  ["January", "February", "March", "April", "May", "June",
+            string months[] =  ["January", "February", "March", "April", "May", "June",
                      "July", "August", "September", "October", "November",
                      "December"];
+            temp = months;
             Rosella.Globals.register_global(ALL_MONTHS_KEY, temp);
         }
         return temp;
@@ -87,9 +87,9 @@ namespace Rosella.Date
     {
         var temp = Rosella.Globals.get_global(ALL_MONTHS_SHORT_KEY);
         if (temp == null) {
-            // TODO: Use an FSA
-            temp = ["Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep",
+            string months[] = ["Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep",
                     "Oct", "Nov", "Dec"];
+            temp = months;
             Rosella.Globals.register_global(ALL_MONTHS_SHORT_KEY, temp);
         }
         return temp;
@@ -101,9 +101,9 @@ namespace Rosella.Date
     {
         var temp = Rosella.Globals.get_global(ALL_WEEK_DAYS_KEY);
         if (temp == null) {
-            // TODO: Use an FSA
-            temp = ["Sunday", "Monday", "Tuesday", "Wednesday", "Thursday",
+            string days[] = ["Sunday", "Monday", "Tuesday", "Wednesday", "Thursday",
                     "Friday", "Saturday"];
+            temp = days;
             Rosella.Globals.register_global(ALL_WEEK_DAYS_KEY, temp);
         }
         return temp;
@@ -171,7 +171,6 @@ namespace Rosella.Date
     Date objects are immutable. Once created, you cannot alter the date/time
     it represents.
 */
-// TODO: Need greater-than/less-than comparisons for sorting
 // TODO: Need vtables for operating overloading (subtract other Date objects, etc)
 // TODO: Probably need a class for timespans (start/stop date pairs)
 class Rosella.Date
