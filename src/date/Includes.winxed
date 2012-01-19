@@ -7,3 +7,11 @@ inline decodetime(int sys_time) return var
     ${ decodetime d, sys_time };
     return d;
 }
+
+
+inline decodelocaltime(int sys_time) return var
+{
+    var d;
+    ${ decodelocaltime d, sys_time };
+    return d;
+}

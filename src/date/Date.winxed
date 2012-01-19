@@ -182,13 +182,7 @@ class Rosella.Date
     // time_i opcode).
     function Date(int sys_ms)
     {
-        self.time_array = decodetime(sys_ms);
-        self.time_array[TM_MDAY] = int(self.time_array[TM_MDAY]) - 1;
-        int year = self.time_array[TM_YEAR];
-        int month = self.time_array[TM_MON];
-        int day = self.time_array[TM_MDAY];
-        int weekday = Rosella.Date.get_day_of_week(year, month, day);
-        self.time_array[TM_WDAY] = weekday;
+        self.time_array = decodelocaltime(sys_ms);
         self.time_raw = sys_ms;
     }
 
