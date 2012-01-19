@@ -11,18 +11,14 @@ class Rosella.Date.DateFormatter : Rosella.StringFormatter
     // TODO: Find an algorithm which isn't so slow and wasteful
     function format(var obj, string f)
     {
-        if (contains(f, "yyyy"))
-            f = f.replace("yyyy", format("%04d", obj.year()));
-        if (contains(f, "MM"))
-            f = f.replace("MM", format("%02d", obj.month()));
-        if (contains(f, "dd"))
-            f = f.replace("dd", format("%02d", obj.day()));
-        if (contains(f, "hh"))
-            f = f.replace("hh", format("%02d", obj.hours()));
-        if (contains(f, "mm"))
-            f = f.replace("mm", format("%02d", obj.minutes()));
-        if (contains(f, "ss"))
-            f = f.replace("ss", format("%02d", obj.seconds()));
+        if (contains(f, "yyyy")) f = f.replace("yyyy", format("%04d", obj.year()));
+        if (contains(f, "MMMM")) f = f.replace("MMMM", obj.month_name());
+        if (contains(f, "MMM"))  f = f.replace("MMM", substr(obj.month_name(), 0, 3));
+        if (contains(f, "MM"))   f = f.replace("MM", format("%02d", obj.month()));
+        if (contains(f, "dd"))   f = f.replace("dd", format("%02d", obj.day()));
+        if (contains(f, "hh"))   f = f.replace("hh", format("%02d", obj.hours()));
+        if (contains(f, "mm"))   f = f.replace("mm", format("%02d", obj.minutes()));
+        if (contains(f, "ss"))   f = f.replace("ss", format("%02d", obj.seconds()));
         return f;
     }
 }
