@@ -11,6 +11,12 @@ function main()
     update_parrothist_pod(username, third_tuesday, version, name);
     update_release_manager_guide_pod(third_tuesday, version);
     display_directions_message(version);
+
+    // TODO: We can't create release announcements until we create the tarballs
+    // and checksums, and we probably don't want to do that until the user has
+    // a chance to review the diff and commit the changes
+    //create_release_announcements();
+
 }
 
 /* Utility Functions
@@ -66,6 +72,12 @@ function update_version_numbers(string version)
     return spawnw("perl tools/release/update_version.pl " + version);
 }
 
+function get_next_month_release_date(var date)
+{
+    var next_month = new Rosella.Date(int(date.year()), int(date.month()), 1).add_months(1);
+    return third_tuesday_of_the_month(next_month.month(), next_month.year());
+}
+
 /* release.json Updating Routines
 */
 
@@ -73,8 +85,7 @@ function get_release_json_context(string version, string name, var release_date)
 {
     string release_s = release_date.format_string("dd MMMM yyyy");
 
-    var next_month = new Rosella.Date(int(release_date.year()), int(release_date.month()), 1).add_months(1);
-    var next_release_date = third_tuesday_of_the_month(next_month.month(), next_month.year());
+    var next_release_date = get_next_month_release_date(release_date);
     string next_release_s = next_release_date.format_string("dd MMMM yyyy");
 
     var bugday = get_bugday(next_release_date);
@@ -177,3 +188,30 @@ function get_directions_template()
 {
     return Rosella.Template.get_standard_template_text("release_directions");
 }
+
+/* Release Announcements
+*/
+
+function create_release_announcements(var release_date, string version)
+{
+    var next_release_date = get_next_month_release_date(release_date);
+    string news = get_news_for_version(version);
+    :(string gz, string bz2) = get_archive_checksums(version);
+    var context = get_release_announcement_context(release_date, next_release_date,
+            version, news, gz, bz2);
+}
+
+function get_news_for_version(string version)
+{
+    // TODO: Read the most recent entry from the ChangeLog
+}
+
+function get_release_announcement_context(var release_date, var next_release_date,
+        string version, string news, string bz_checksum, string bz2_checksum)
+{
+}
+
+
+
+
+
