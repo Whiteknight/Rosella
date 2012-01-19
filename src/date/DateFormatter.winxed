@@ -16,6 +16,25 @@ class Rosella.Date.DateFormatter : Rosella.StringFormatter
         if (contains(f, "MMM"))  f = f.replace("MMM", substr(obj.month_name(), 0, 3));
         if (contains(f, "MM"))   f = f.replace("MM", format("%02d", obj.month()));
         if (contains(f, "dd"))   f = f.replace("dd", format("%02d", obj.day()));
+        if (contains(f, "HHHH")) {
+            int hours = obj.hours();
+            if (hours > 12)
+                f = f.replace("HHHH", "PM");
+            else
+                f = f.replace("HHHH", "AM");
+        }
+        if (contains(f, "HHH")) {
+            int hours = obj.hours();
+            if (hours > 12)
+                hours = hours - 12;
+            f = f.replace("HHH", format("%2d", hours));
+        }
+        if (contains(f, "HH")) {
+            int hours = obj.hours();
+            if (hours > 12)
+                hours = hours - 12;
+            f = f.replace("HH", format("%d", hours));
+        }
         if (contains(f, "hh"))   f = f.replace("hh", format("%02d", obj.hours()));
         if (contains(f, "mm"))   f = f.replace("mm", format("%02d", obj.minutes()));
         if (contains(f, "ss"))   f = f.replace("ss", format("%02d", obj.seconds()));
