@@ -128,7 +128,7 @@ class Rosella.Query.Iterable : Rosella.IteratorBase
         if (!has_kf) {
             if (v instanceof Rosella.Query.Iterable.KeyValuePair) {
                 do {
-                    d[m.key()] = m.value();
+                    d[v.key()] = v.value();
                     :(v, m) = self.next_and_more();
                 } while(m);
             }
