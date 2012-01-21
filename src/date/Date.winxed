@@ -205,6 +205,11 @@ class Rosella.Date
         self.time_raw = -1;
     }
 
+    function Date(var year, var month, var day)
+    {
+        self.Date(int(year), int(month), int(day));
+    }
+
     // Construct a complete Date/Time with all date components.
     function Date(int year, int month, int day, int hour, int min, int s)
     {
@@ -220,6 +225,11 @@ class Rosella.Date
         time[0] = s;
         time[1] = min;
         time[2] = hour;
+    }
+
+    function Date(var year, var month, var day, var hour, var min, var s)
+    {
+        self.Date(int(year), int(month), int(day), int(hour), int(min), int(s));
     }
 
     /* Seconds

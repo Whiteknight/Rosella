@@ -14,6 +14,7 @@ sub library_tests() {
     my %h := {};
     %h{"action"} := "NQP";
     %h{"commandline"} := "Winxed";
+    %h{"date"} := "Winxed";
     %h{"dumper"} := "Winxed";
     %h{"filesystem"} := "NQP";
     %h{"memoize"} := "NQP";
@@ -37,7 +38,7 @@ sub unstable_tests() {
     %h{"event"} := "Winxed";
     %h{"prototype"} := "NQP";
     %h{"decorate"} := "Winxed";
-    %h{"date"} := "Winxed";
+    %h{"reflect"} := "Winxed";
     %h;
 }
 

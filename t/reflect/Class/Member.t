@@ -9,6 +9,7 @@ class Test_Rosella_Reflect_Class_Member
     function class_obj()
     {
         self.status.verify("Test Rosella.Reflect.Class.Member.class_obj()");
+        self.status.unimplemented("TODO");
         var obj = create_new(class Test_Rosella_Reflect_Class_Member);
 
         var result = obj.class_obj();

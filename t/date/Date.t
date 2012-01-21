@@ -16,7 +16,7 @@ class Test_Rosella_Date
 
         obj = create_new(2012, 1, 21, 6, 28, 45);
 
-        int result = obj.seconds();
+        result = obj.seconds();
         self.assert.equal(result, 45);
     }
 
@@ -45,7 +45,7 @@ class Test_Rosella_Date
 
         obj = create_new(2012, 1, 21, 6, 28, 45);
 
-        int result = obj.minutes();
+        result = obj.minutes();
         self.assert.equal(result, 28);
     }
 
