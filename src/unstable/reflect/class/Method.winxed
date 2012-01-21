@@ -1,13 +1,18 @@
+/* Class Method Member
+    This type represents a method of a class
+*/
 class Rosella.Reflect.Class.Method : Rosella.Reflect.Class.Member
 {
-    var method_obj;
+    var method_obj;     // The actual method invokable
 
+    // Constructor
     function Method(var class_obj, string name, var method)
     {
         self.method_obj = method;
         self.Member(class_obj, name);
     }
 
+    // Invoke this method on the given object
     function invoke(var obj, var p, var n)
     {
         if (!self.class_obj.isa(obj))

@@ -1,5 +1,15 @@
+/* Module Namespace
+    A Module is a wrapper around the Parrot Packfile structure (specifically the
+    PackfileView PMC) that provides reflection, introspection and new
+    capabilities.
+
+    This namespace provides some helper routines for working with Packfiles and
+    Modules.
+*/
 namespace Rosella.Reflect.Module
 {
+    // Load the given .pbc file by name/path and create a Module for it. Modules
+    // may be cached on the Packfile itself.
     function load(string name)
     {
         var pf_raw = load_packfile(name);
@@ -10,28 +20,36 @@ namespace Rosella.Reflect.Module
     }
 }
 
+/* Module Class
+    This class is a wrapper around a PackfileView PMC and provides additional
+    functionality.
+*/
 class Rosella.Reflect.Module
 {
-    var pf;
-    var functions;
-    var classes;
-    var namespaces;
+    var pf;             // The PackfileView PMC
+    var functions;      // A list of all functions provided by the Packfile
+    var classes;        // A list of all classes defined at compile-time
+    var namespaces;     // A list of all namespaces defined at compile-time
 
+    // Constructor. Take an existing PackfileView
     function Module(var pf)
     {
         self.pf = pf;
     }
 
+    // If not already done, execute all the "load" functions in the packfile
     function load()
     {
         Rosella.init_bytecode(self.pf, "load");
     }
 
+    // If not already done, execute all the "init" functions in the packfile
     function init()
     {
         Rosella.init_bytecode(self.pf, "init");
     }
 
+    // If provided, get the file path of the packfile
     function path()
     {
         if (self.pf == null)
@@ -45,11 +63,13 @@ class Rosella.Reflect.Module
         return p;
     }
 
+    // Get a string representation of the packfile
     function get_string[vtable]()
     {
         return sprintf("%s@%s", [self.path(), self.version()]);
     }
 
+    // Get the version number information from the packfile
     function version()
     {
         if (self.pf == null)
@@ -57,6 +77,7 @@ class Rosella.Reflect.Module
         return self.pf.get_version();
     }
 
+    // Get a list of classes defined at compile-time (from Sub metadata)
     function classes()
     {
         if (self.classes == null)
@@ -64,6 +85,7 @@ class Rosella.Reflect.Module
         return self.classes;
     }
 
+    // Get a list of functions from the packfile
     function functions()
     {
         if (self.functions == null)
@@ -71,6 +93,7 @@ class Rosella.Reflect.Module
         return self.functions;
     }
 
+    // Get a list of namespaces defined at compile-time (from Sub metadata)
     function namespaces()
     {
         if (self.namespaces == null)
@@ -78,6 +101,7 @@ class Rosella.Reflect.Module
         return self.namespaces;
     }
 
+    // Internal helper function to read the entries from the packfile
     function __read_packfile_entries()
     {
         var all_subs = self.pf.all_subs();

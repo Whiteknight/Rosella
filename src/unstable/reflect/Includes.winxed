@@ -4,6 +4,11 @@ const int SUB_FLAG_INIT = 0x400;
 const int PF_FLAG_ANON = 0x08;
 const int PF_FLAG_LOAD = 0x20;
 
+/* Caching Routines
+    Reflectors are cached on their target object using properties. These
+    routines perform the lookup/save operations.
+*/
+
 inline __get_cached_reflector(var obj, string key) return var
 {
     string k = "!!!Rosella.Reflect." + key + "!!!";

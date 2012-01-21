@@ -1,11 +1,16 @@
+/* Class Reflector
+    This type is a wrapper around Parrot Class routines and provides reflection
+    and other abilities
+*/
 class Rosella.Reflect.Class
 {
-    var class_obj;
-    var constructor;
-    var attr_cache;
-    var attrs_raw;
-    var method_cache;
+    var class_obj;      // The target Class PMC
+    var constructor;    // The constructor method name for the class
+    var attr_cache;     // Cache for Attribute reflectors
+    var attrs_raw;      // The Raw list of attributes from the Class
+    var method_cache;   // Cache for Method reflectors
 
+    // Constructor. Take a Class PMC
     function Class(var type)
     {
         var class_obj = Rosella.get_type_class(type);
@@ -25,22 +30,26 @@ class Rosella.Reflect.Class
         }
     }
 
+    // Set an alternate constructor
     function set_constructor(string constructor)
     {
         self.constructor = constructor == null ? null : constructor;
     }
 
+    // Get the name of the class
     function name()
     {
         return string(self.class_obj.name());
     }
 
+    // Clear caches
     function purge()
     {
         self.attr_cache = {};
         self.method_cache = {};
     }
 
+    // Instantiate a new object of this type
     function new(var p [slurpy], var n [slurpy,named])
     {
         var obj = Rosella.alloc(self.class_obj);
@@ -55,6 +64,7 @@ class Rosella.Reflect.Class
         return obj;
     }
 
+    // Get the attribute reflector of the given name
     function get_attr(string attr_name)
     {
         if (exists self.attr_cache[attr_name])
@@ -66,24 +76,28 @@ class Rosella.Reflect.Class
         return attr;
     }
 
+    // Get the value of the given attribute on the given object
     function get_attr_value(string attr_name, var obj)
     {
         var attr = self.get_attr(attr_name);
         return attr.get_value(obj);
     }
 
+    // Set the value of the given attribute on the given object
     function set_attr_value(string attr_name, var obj, var value)
     {
         var attr = self.get_attr(attr_name);
         attr.set_value(obj, value);
     }
 
+    // Invoke the given method on the object
     function invoke_method(string meth_name, var obj, var p [slurpy], var n [slurpy,named])
     {
         var method = self.get_method(meth_name);
         return method.invoke(obj, p, n);
     }
 
+    // Determine if the given object is a member of this class
     function isa(var obj)
     {
         var class_obj = self.class_obj;
@@ -91,12 +105,14 @@ class Rosella.Reflect.Class
         return isa_this == 0 ? false : true;
     }
 
+    // Determine if the object has a method with the given name
     function can(string meth_name)
     {
         var method = self.class_obj.find_method(meth_name);
         return method == null ? false : true;
     }
 
+    // Get the Method reflector of the given name
     function get_method(string meth_name)
     {
         if (exists self.method_cache[meth_name])

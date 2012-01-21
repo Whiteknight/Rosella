@@ -1,5 +1,15 @@
+/* Rosella Reflect Library
+    This library provides tools for reflection and introspection of types and
+    objects. This namespace provides the primary API for interacting with this
+    library.
+
+    These functions are designed to run in context. In all cases the term
+    "current Sub" is used to mean the subroutine that is the direct caller of
+    the routines in this namespace.
+*/
 namespace Rosella.Reflect
 {
+    // Get the current Module (packfile) where the current sub is located
     function get_current_module()
     {
         var cur_ctx = getinterp()["context"];
@@ -12,6 +22,7 @@ namespace Rosella.Reflect
         return m;
     }
 
+    // Get the current Sub object
     function get_current_sub()
     {
         var cur_ctx = getinterp()["context"];
@@ -19,6 +30,7 @@ namespace Rosella.Reflect
         return sub;
     }
 
+    // Get the current CallContext PMC
     function get_current_context()
     {
         var cur_ctx = getinterp()["context"];
@@ -26,6 +38,8 @@ namespace Rosella.Reflect
         return ctx;
     }
 
+    // Get the current object, if the current Sub is a method. Return null
+    // otherwise.
     function get_current_object()
     {
         var cur_ctx = getinterp()["context"];
@@ -33,6 +47,8 @@ namespace Rosella.Reflect
         return obj;
     }
 
+    // Get the current class if the current Sub is a method. Return null
+    // otherwise
     function get_current_class()
     {
         var cur_ctx = getinterp()["context"];
@@ -43,6 +59,8 @@ namespace Rosella.Reflect
         return get_class_reflector(c);
     }
 
+    // Get a Rosella.Reflect.Class reflector object for the current class.
+    // This value may be cached
     function get_class_reflector(var c)
     {
         var rc = __get_cached_reflector(c, "class");

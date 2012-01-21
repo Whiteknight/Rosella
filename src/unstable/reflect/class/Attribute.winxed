@@ -1,10 +1,15 @@
+/* Attribute Member
+    Represents an Attribute of a class.
+*/
 class Rosella.Reflect.Class.Attribute : Rosella.Reflect.Class.Member
 {
+    // Constructor
     function Attribute(var class_obj, string name)
     {
         self.Member(class_obj, name);
     }
 
+    // Get the value of this attribute from the given object
     function get_value(var obj)
     {
         if (!self.class_obj.isa(obj))
@@ -13,6 +18,7 @@ class Rosella.Reflect.Class.Attribute : Rosella.Reflect.Class.Member
         return obj.*attr;
     }
 
+    // Set the value of this attribute on the given object
     function set_value(var obj, var value)
     {
         if (!self.class_obj.isa(obj))

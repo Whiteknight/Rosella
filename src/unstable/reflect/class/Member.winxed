@@ -1,21 +1,29 @@
+/* Member Parent Class
+    Represents a member of a Class, whether it's an attribute or a method.
+
+    This is an abstract parent type and is not intended to be used directly.
+*/
 class Rosella.Reflect.Class.Member
 {
-    var class_obj;
-    var name;
+    var class_obj;  // The Class object
+    var name;       // The Member name string
 
+    // Constructor
     function Member(var class_obj, string name)
     {
         self.class_obj = class_obj;
         self.name = name;
     }
 
+    // Get the Class object
     function class_obj()
     {
         return self.class_obj;
     }
 
+    // Get the member name
     function name()
     {
-        return self.name;
+        return string(self.name);
     }
 }
