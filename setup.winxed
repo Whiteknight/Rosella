@@ -372,24 +372,42 @@ function setup_experimental_libraries(var rosella)
 function setup_utilities(var rosella)
 {
     var utilities = {
-        "winxed_repl" : ["winxed_repl", ["Core", "Repl"]],
-        "test_all_lib" : ["rosella_test_all_lib", ["Core", "FileSystem", "String", "Template", "CommandLine", "Query", "Reflect"]],
-        "test_template" : ["rosella_test_template", ["Core", "FileSystem", "Template", "CommandLine", "Query", "Reflect"]],
-        "mk_winxed_header" : ["winxed_mk_header", ["Core", "FileSystem", "CommandLine", "Query", "Reflect"]],
-        "harness" : ["rosella_harness", ["Core", "Harness"]],
-        "parrot_release" : ["parrot_release", ["Core", "FileSystem", "Template", "String", "Query", "Date"]]
+        "winxed_repl" : {
+            "install_name" : "winxed_repl",
+            "includes" : ["Core", "Repl"]
+        },
+        "test_all_lib" : {
+            "install_name" : "rosella_test_all_lib",
+            "includes" : ["Core", "FileSystem", "String", "Template", "CommandLine", "Query", "Reflect"]
+        },
+        "test_template" : {
+            "install_name" : "rosella_test_template",
+            "includes" : ["Core", "FileSystem", "Template", "CommandLine", "Query", "Reflect"]
+        },
+        "mk_winxed_header" : {
+            "install_name" : "winxed_mk_header",
+            "includes" : ["Core", "FileSystem", "CommandLine", "Query", "Reflect"]
+        },
+        "harness" : {
+            "install_name" : "rosella_harness",
+            "includes" : ["Core", "Harness"]
+        },
+        "parrot_release" : {
+            "install_name" : "parrot_release",
+            "includes" : ["Core", "FileSystem", "Template", "String", "Query", "Date"]
+        }
     };
     string src_prefix = "src/utilities/";
     string dest_prefix = "rosella/";
     for (string util_source in utilities) {
         string src_file = src_prefix + util_source + ".winxed";
-        string dest_file_base = string(utilities[util_source][0]);
+        string dest_file_base = string(utilities[util_source]["install_name"]);
         string winxed_file = dest_prefix + dest_file_base + ".winxed";
         string pir_file = dest_prefix + dest_file_base + ".pir";
         string pbc_file = dest_prefix + dest_file_base + ".pbc";
 
         var files = ["src/include/Builtins.winxed"];
-        var includes = utilities[util_source][1];
+        var includes = utilities[util_source]["includes"];
         for (string include in includes)
             push(files, "src/include/" + include + ".winxed");
         push(files, src_file);
