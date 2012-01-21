@@ -18,7 +18,7 @@ prototype: 0 Alpha
 proxy: 2 Stable
 query: 2 Beta
 random: 1 Stable
-reflect: 0 Alpha
+reflect: 1 Stable
 repl: 0 Alpha
 string: 1 Stable
 template: 1 Stable

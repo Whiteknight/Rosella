@@ -1,0 +1,25 @@
+namespace Rosella.Reflect {
+    class Class;
+    class Module;
+    extern function get_current_module;
+    extern function get_current_sub;
+    extern function get_current_context;
+    extern function get_current_object;
+    extern function get_current_class;
+    extern function get_class_reflector;
+}
+
+namespace Rosella.Reflect.Class {
+    class Member;
+    class Attribute;
+    class Method;
+}
+
+namespace Rosella.Reflect.Module {
+    extern function load;
+}
+
+function __include_reflect [anon,init,load] ()
+{
+    Rosella.load_bytecode_file('rosella/reflect.pbc', 'load');
+}

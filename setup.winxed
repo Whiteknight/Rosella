@@ -302,6 +302,17 @@ function setup_stable_libraries(var rosella)
         "date/Doomsday",
         "date/SpecialDate"
     );
+
+    // Library for reflection and introspection
+    setup_unstable_lib(rosella, "reflect", ["Core"],
+        "reflect/Includes",
+        "reflect/Reflect",
+        "reflect/Class",
+        "reflect/class/Member",
+        "reflect/class/Attribute",
+        "reflect/class/Method",
+        "reflect/Module"
+    );
 }
 
 function setup_experimental_libraries(var rosella)
@@ -338,16 +349,6 @@ function setup_experimental_libraries(var rosella)
     setup_unstable_lib(rosella, "benchmark", ["Core", "Math_Builtins"],
         "benchmark/Benchmark",
         "benchmark/Result"
-    );
-
-    setup_unstable_lib(rosella, "reflect", ["Core"],
-        "reflect/Includes",
-        "reflect/Reflect",
-        "reflect/Class",
-        "reflect/class/Member",
-        "reflect/class/Attribute",
-        "reflect/class/Method",
-        "reflect/Module"
     );
 
     setup_unstable_lib(rosella, "repl", ["Core"],

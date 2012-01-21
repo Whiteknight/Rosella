@@ -24,11 +24,11 @@ sub library_tests() {
     %h{"query"} := "Winxed";
     %h{"query_queryable"} := "NQP";
     %h{"random"} := "Winxed";
+    %h{"reflect"} := "Winxed";
     %h{"string"} := "NQP";
     %h{"tap_harness"} := "Winxed";
     %h{"template"} := "Winxed";
     %h{"test"} := "NQP";
-    %h{"random"} := "Winxed";
     %h;
 }
 
@@ -38,7 +38,6 @@ sub unstable_tests() {
     %h{"event"} := "Winxed";
     %h{"prototype"} := "NQP";
     %h{"decorate"} := "Winxed";
-    %h{"reflect"} := "Winxed";
     %h;
 }
 
