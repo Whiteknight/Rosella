@@ -156,7 +156,9 @@ class Rosella.Query.Iterable.Append : Rosella.Query.Iterable
 class Rosella.Query.Iterable.TakeSkip : Rosella.Query.Iterable
 {
     var take;
+    var need_take;
     var skip;
+    var need_skip;
     var func;
 
     function TakeSkip(var source, var f, int take, int skip)
@@ -164,15 +166,14 @@ class Rosella.Query.Iterable.TakeSkip : Rosella.Query.Iterable
         self.source = source;
         self.func = f;
         self.take = take;
-        if (skip == 0)
-            self.skip = null;
-        else
-            self.skip = skip;
+        self.need_take = take;
+        self.skip = skip;
+        self.need_skip = skip;
     }
 
     function _skip()
     {
-        int skip = self.skip;
+        int skip = self.need_skip;
         var f = self.func;
 
         if (skip > 0) {
@@ -190,14 +191,14 @@ class Rosella.Query.Iterable.TakeSkip : Rosella.Query.Iterable
                 }
             }
         }
-        self.skip = null;
+        self.need_skip = 0;
     }
 
     function next()
     {
-        if (self.skip != null)
+        if (self.need_skip != 0)
             self._skip();
-        int take = int(self.take);
+        int take = int(self.need_take);
         if (take == 0 || !self.source.has_more())
             self.__empty();
         :(var d, int m) = self.source.next_and_more()
@@ -205,7 +206,7 @@ class Rosella.Query.Iterable.TakeSkip : Rosella.Query.Iterable
             take = 0;
         else
             take--;
-        self.take = take;
+        self.need_take = take;
         return d;
     }
 
@@ -213,14 +214,19 @@ class Rosella.Query.Iterable.TakeSkip : Rosella.Query.Iterable
     {
         if (self.skip != null)
             self._skip();
-        int take = int(self.take);
+        int take = int(self.need_take);
         return take != 0 && self.source.has_more();
+    }
+
+    function reset()
+    {
+        self.need_take = int(self.take);
+        self.need_skip = int(self.skip);
+        self.source.reset();
     }
 
     // TODO: We can probably optimize repeated take/skip calls to reuse the
     // same iterator, if the predicates are both null
-
-    // TODO: Need reset()
 }
 
 /* Flattening Iterator
