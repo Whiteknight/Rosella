@@ -12,6 +12,11 @@ class Rosella.Reflect.Class.Method : Rosella.Reflect.Class.Member
         self.Member(class_obj, name);
     }
 
+    function raw_method()
+    {
+        return self.method_obj;
+    }
+
     // Invoke this method on the given object
     function invoke(var obj, var p, var n)
     {

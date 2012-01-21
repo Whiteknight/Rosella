@@ -125,6 +125,20 @@ class Rosella.Reflect.Class
         return method;
     }
 
+    function get_all_methods()
+    {
+        var methods = self.class_obj.methods();
+        var meths = {};
+        for (string m in methods)
+            meths[m] = self.get_method(m);
+        return meths;
+    }
+
+    function get_all_methods_raw()
+    {
+        return self.class_obj.methods();
+    }
+
     /*
     function set_method(string meth_name, var method)
     {

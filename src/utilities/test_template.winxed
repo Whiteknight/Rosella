@@ -3,6 +3,7 @@ const string TEMPLATE_FILE_FMT = "%s.%s";
 // Entry point. Parse args and dispatch
 function main[main](var args)
 {
+    Rosella.Query.install_to_parrot_types();
     var program = new Rosella.CommandLine.Program(args.shift());
     program.add_mode("help").set_flag("--help").set_function(show_help);
     program.add_mode("version").set_flag("--version").set_function(show_version);
@@ -117,21 +118,25 @@ function harness_template_context(string template, var dirs)
 // Get the template DataContext for a test file
 function test_template_context(string template, string libname, string classname)
 {
-    var pf = load_packfile(libname);
-    using Rosella.get_type_class;
-    using Rosella.String.replace_all;
+    var module = Rosella.Reflect.Module.load(libname);
+    var targetclass = module.classes()[classname];
+    string short_classname = split(".", classname).pop();
 
-    var targetclass = get_type_class(split(".", classname));
     if (targetclass == null)
         Rosella.Error.invalid(__FUNCTION__, "Cannot find class %s", classname);
-    var methods = targetclass.methods();
+    var methods = targetclass
+        .get_all_methods_raw()
+        .iterable()
+        .filter(function(kvp) { return substr(string(kvp.key()), 0, 1) != "_"; })
+        .filter(function(kvp) { return string(kvp.key()) != short_classname; })
+        .to_hash();
 
     var context = {
         "class" : {
             "name" : classname,
-            "cleanname" : replace_all(classname, ".", "_"),
+            "cleanname" : Rosella.String.replace_all(classname, ".", "_"),
             "winxedname" : classname,
-            "perlname" : replace_all(classname, ".", "::"),
+            "perlname" : Rosella.String.replace_all(classname, ".", "::"),
             "methods" : methods,
             "ownerlib" : libname
         }
