@@ -304,7 +304,7 @@ function setup_stable_libraries(var rosella)
     );
 
     // Library for reflection and introspection
-    setup_unstable_lib(rosella, "reflect", ["Core"],
+    setup_winxed_lib(rosella, "reflect", ["Core"],
         "reflect/Includes",
         "reflect/Reflect",
         "reflect/Class",

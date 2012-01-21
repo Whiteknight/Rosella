@@ -131,7 +131,7 @@ class Rosella.Reflect.Module
             else {
                 if (!(exists all_namespaces[ns]))
                     all_namespaces[ns] = ns_pmc;
-                all_namespaces[ns].add_sub(sub);
+                all_namespaces[ns].add_sub(string(sub), sub);
                 push(functions, sub);
             }
         }
