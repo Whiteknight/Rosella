@@ -1,46 +1,7 @@
-// Constants.
-const int SUB_FLAG_METHOD = 0x04;
-const int SUB_FLAG_INIT = 0x400;
-const int PF_FLAG_ANON = 0x08;
-const int PF_FLAG_LOAD = 0x20;
-
-// Class for keeping track of Namespaces and contents
-class NamespaceEntry
-{
-    var classes;
-    var subs;
-
-    function NamespaceEntry()
-    {
-        self.classes = {};
-        self.subs = [];
-    }
-
-    function add_class(string c)
-    {
-        if (!(exists self.classes[c]))
-            self.classes[c] = new 'Class';
-    }
-
-    function add_class_method(string c, var m)
-    {
-        self.add_class(c);
-        var cl = self.classes[c];
-        string m_name = string(m);
-        var old_m = cl.find_method(m_name);
-        if (old_m != null) {
-            // TODO: We have a :multi :method. How to handle that? For now, ignore it
-        } else
-            self.classes[c].add_method(string(m), m);
-    }
-
-    function add_sub(var sub) { push(self.subs, sub); }
-}
-
 // Main entry point. Parse arguments and dispatch to the main handler
 function main[main](var args)
 {
-    Rosella.Query.install_to_type('Hash');
+    Rosella.Query.install_to_parrot_types();
     var p = new Rosella.CommandLine.Program(args.shift());
     p.default_mode().set_function(test_all_main)
         .require_positional("language", 0)
@@ -55,9 +16,41 @@ function main[main](var args)
 function test_all_main(var args)
 {
     string libpath = args["libpath"];
-    var lib = try_load_lib(libpath);
-    var entries = get_lib_entries(lib);
-    output_test_files(args["language"], libpath, entries, args["folder"]);
+    string lang = args["language"];
+    string folder = args["folder"];
+    var module = Rosella.Reflect.Module.load(libpath);
+    var engine = new Rosella.Template.Engine();
+
+    var dir = new Rosella.FileSystem.Directory(folder);
+    if (!dir.exists())
+        dir.create();
+    :(string class_tmpl, string ns_tmpl) = get_templates(lang);
+    module.functions_by_ns()
+        .iterable()
+        .filter(function(kvp) { return elements(kvp.value()) > 0; })
+        .foreach(function(kvp) {
+            var subs = kvp.value();
+            string nsname = kvp.key();
+            var nsdir = get_namespace_directory(dir, nsname);
+            var context = get_subs_list_context(libpath, nsname, subs);
+            string output = engine.generate_from_file(ns_tmpl, context);
+            var file = new Rosella.FileSystem.File(nsname + ".t", nsdir);
+            file.write_all_text(output);
+            Rosella.IO.sayf("\tBuilt Subs test file %s", string(file));
+        });
+
+    module.classes()
+        .iterable()
+        .foreach(function(kvp) {
+            string classname = kvp.key();
+            var classobj = kvp.value();
+            var classdir = get_class_directory(dir, classname);
+            var context = get_class_context(libpath, classname, classobj);
+            string output = engine.generate_from_file(class_tmpl, context);
+            var classfile = new Rosella.FileSystem.File(string(classobj.name()) + ".t", classdir);
+            classfile.write_all_text(output);
+            Rosella.IO.sayf("\tBuilt Class test file %s", string(classfile));
+        });
 }
 
 // Help handler. Show usage information on --help or error
@@ -84,42 +77,6 @@ to <folder>. Tests will be in language <lang>. <lang> is probably one of
     Rosella.IO.sayf(fmt, prog_name);
 }
 
-// Main driver routine. Read the PBC, extract subs and information, and
-// output test files.
-function output_test_files(string lang, string libname, var entries, string folderpath)
-{
-    var dir = new Rosella.FileSystem.Directory(folderpath);
-    if (!dir.exists())
-        dir.create();
-    var engine = new Rosella.Template.Engine();
-    :(string class_tmpl, string ns_tmpl) = get_templates(lang);
-    for (string nsname in entries) {
-        Rosella.IO.sayf("START NameSpace '%s'", nsname);
-        var ns_dir = get_namespace_directory(dir, nsname);
-
-        var classes = entries[nsname].classes;
-        var subs = entries[nsname].subs;
-        if (elements(subs) > 0) {
-            var context = get_subs_list_context(libname, nsname, subs);
-            string output = engine.generate_from_file(ns_tmpl, context);
-            var file = new Rosella.FileSystem.File(nsname + ".t", ns_dir);
-            file.write_all_text(output);
-            Rosella.IO.sayf("\tBuilt Subs test file %s", string(file));
-        }
-        if (elements(classes) > 0) {
-            for (string classname in classes) {
-                var classobj = classes[classname];
-                var context = get_class_context(libname, nsname, nsname + "." + classname, classobj);
-                string output = engine.generate_from_file(class_tmpl, context);
-                var classfile = new Rosella.FileSystem.File(classname + ".t", ns_dir);
-                classfile.write_all_text(output);
-                Rosella.IO.sayf("\tBuilt Class test file %s", string(classfile));
-            }
-        }
-        Rosella.IO.sayf("END NameSpace '%s'", nsname);
-    }
-}
-
 // Get the Directory object for the given namespace
 function get_namespace_directory(var dir, string ns)
 {
@@ -127,10 +84,19 @@ function get_namespace_directory(var dir, string ns)
     var parts = split('.', ns);
     for (string part in parts) {
         cur_dir = new Rosella.FileSystem.Directory(part, cur_dir);
-        if (!cur_dir.exists())
+        if (!cur_dir.exists()) {
+            Rosella.IO.sayf("Creating directory %s", cur_dir);
             cur_dir.create();
+        }
     }
     return cur_dir;
+}
+
+function get_class_directory(var dir, string classname)
+{
+    var parts = split(".", classname);
+    parts.pop();
+    return get_namespace_directory(dir, join(".", parts));
 }
 
 // Get the templates for test files
@@ -144,6 +110,11 @@ function get_templates(string lang)
 // Get the context object for the test template of subs in a namespace
 function get_subs_list_context(string libname, string nsname, var subslist)
 {
+    subslist = subslist
+        .iterable()
+        .filter(function(s) { return substr(string(s), 0, 1) != "_"; })
+        .to_array();
+
     var context = {
         "ns" : {
             "name" : nsname,
@@ -158,11 +129,11 @@ function get_subs_list_context(string libname, string nsname, var subslist)
 }
 
 // Get the context object for the test template of methods in a class
-function get_class_context(string libname, string nsname, string classname, var classobj)
+function get_class_context(string libname, string classname, var classobj)
 {
     string shortname = split(".", classname).pop();
     var methods = classobj
-        .methods()
+        .get_all_methods_raw()
         .iterable()
         .filter(function(kvp) { return string(kvp.key()) != shortname; })
         .filter(function(kvp) { return substr(string(kvp.key()), 0, 1) != "_"; })
@@ -181,51 +152,3 @@ function get_class_context(string libname, string nsname, string classname, var 
     return context;
 }
 
-// Try to load the specified library, by name.
-function try_load_lib(string libpath)
-{
-    var pf = load_packfile(libpath);
-    //var pf = new 'PackfileView';
-    //pf.read_from_file(libpath);
-    //for (var sub in pf.subs_by_tag("load"))
-        //sub();
-    if (pf == null) {
-        Rosella.IO.sayf("FAIL.");
-        Rosella.Error.invalid(__FUNCTION__, "Cannot load '%s'", libpath);
-    }
-    return pf;
-}
-
-// Extract a list of Sub PMCs from the packfile, and create NamespaceEntry
-// objects to hold them.
-function get_lib_entries(var lib)
-{
-    var all_subs = lib.all_subs();
-    var all_namespaces = {};
-    for (var sub in all_subs) {
-        int sub_flags = sub.comp_flags();
-        int pf_flags = sub.pf_flags();
-
-        // Don't list subs marked :anon
-        if ((pf_flags & PF_FLAG_ANON) != 0)
-            continue;
-
-        var nsname = sub.get_namespace().get_name();
-        nsname.shift(); // drop HLL namespace
-        string ns = join(".", nsname);
-
-        if ((sub_flags & SUB_FLAG_METHOD) != 0) {
-            string classname = nsname.pop();
-            string basename = join(".", nsname);
-            if (!(exists all_namespaces[basename]))
-                all_namespaces[basename] = new NamespaceEntry();
-            all_namespaces[basename].add_class_method(classname, sub);
-        }
-        else {
-            if (!(exists all_namespaces[ns]))
-                all_namespaces[ns] = new NamespaceEntry();
-            all_namespaces[ns].add_sub(sub);
-        }
-    }
-    return all_namespaces;
-}
