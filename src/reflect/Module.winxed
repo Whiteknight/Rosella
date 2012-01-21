@@ -26,10 +26,11 @@ namespace Rosella.Reflect.Module
 */
 class Rosella.Reflect.Module
 {
-    var pf;             // The PackfileView PMC
-    var functions;      // A list of all functions provided by the Packfile
-    var classes;        // A list of all classes defined at compile-time
-    var namespaces;     // A list of all namespaces defined at compile-time
+    var pf;                 // The PackfileView PMC
+    var functions;          // A list of all functions provided by the Packfile
+    var classes;            // A list of all classes defined at compile-time
+    var namespaces;         // A list of all namespaces defined at compile-time
+    var functions_by_ns;    // A hash of functions arranged by namespace
 
     // Constructor. Take an existing PackfileView
     function Module(var pf)
@@ -93,6 +94,13 @@ class Rosella.Reflect.Module
         return self.functions;
     }
 
+    function functions_by_ns()
+    {
+        if (self.functions_by_ns == null)
+            self.__read_packfile_entries();
+        return self.functions_by_ns;
+    }
+
     // Get a list of namespaces defined at compile-time (from Sub metadata)
     function namespaces()
     {
@@ -107,6 +115,7 @@ class Rosella.Reflect.Module
         var all_subs = self.pf.all_subs();
         var all_namespaces = {};
         var all_classes = {};
+        var functions_by_ns = {};
         var functions = [];
 
         for (var sub in all_subs) {
@@ -129,14 +138,19 @@ class Rosella.Reflect.Module
                 }
             }
             else {
+                if (!(exists functions_by_ns[ns]))
+                    functions_by_ns[ns] = [];
+                functions_by_ns[ns].push(sub);
                 if (!(exists all_namespaces[ns]))
                     all_namespaces[ns] = ns_pmc;
-                all_namespaces[ns].add_sub(string(sub), sub);
+                if (all_namespaces[ns].find_sub(string(sub)) == null)
+                    all_namespaces[ns].add_sub(string(sub), sub);
                 push(functions, sub);
             }
         }
         self.namespaces = all_namespaces;
         self.classes = all_classes;
         self.functions = functions;
+        self.functions_by_ns = functions_by_ns;
     }
 }

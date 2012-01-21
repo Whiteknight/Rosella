@@ -68,6 +68,12 @@ namespace Rosella.Query
         });
     }
 
+    function install_to_parrot_types()
+    {
+        install_to_type('Hash');
+        install_to_type('ResizablePMCArray');
+    }
+
     // Sort an array in-place. Optionally take a comparison function and a
     // hint flag that says whether the array should be considered already
     // mostly-sorted or mostly-reverse-sorted

@@ -1,34 +1,7 @@
-// Entry object to collect information from the packfile
-class NamespaceEntry {
-    var classes;
-    var subs;
-
-    function NamespaceEntry()
-    {
-        self.classes = {};
-        self.subs = [];
-    }
-
-    function add_class(string c)
-    {
-        self.classes[c] = 1;
-    }
-
-    function add_sub(var sub)
-    {
-        push(self.subs, sub);
-    }
-}
-
-// Useful constants
-const int SUB_FLAG_METHOD = 0x04;
-const int SUB_FLAG_INIT = 0x400;
-const int PF_FLAG_ANON = 0x08;
-const int PF_FLAG_LOAD = 0x20;
-
 // Main entry point. Parse the arguments and call the main function
 function main[main](var args)
 {
+    Rosella.Query.install_to_parrot_types();
     var p = new Rosella.CommandLine.Program(args.shift());
     p.default_mode().set_function(mk_header_main)
         .require_positional("libpath", 0)
@@ -43,48 +16,32 @@ function mk_header_main(var args)
 {
     string libpath = args["libpath"];
     int rosella_mode = args["--rosella"];
+    var module = Rosella.Reflect.Module.load(libpath);
 
-    var lib = load_packfile(libpath);
-    var all_subs = lib.all_subs();
-    var all_namespaces = {};
-    for (var sub in all_subs) {
-        int sub_flags = sub.comp_flags();
-        int pf_flags = sub.pf_flags();
-
-        // Don't list subs marked :anon
-        if ((pf_flags & PF_FLAG_ANON) != 0)
-            continue;
-
-        var nsname = sub.get_namespace().get_name();
-        nsname.shift(); // drop HLL namespace
-        string ns = join(".", nsname);
-
-        if ((sub_flags & SUB_FLAG_METHOD) != 0) {
-            string classname = nsname.pop();
-            string basename = join(".", nsname);
-            if (!(exists all_namespaces[basename]))
-                all_namespaces[basename] = new NamespaceEntry();
-            all_namespaces[basename].add_class(classname);
-        }
-        else {
-            if (!(exists all_namespaces[ns]))
-                all_namespaces[ns] = new NamespaceEntry();
-            all_namespaces[ns].add_sub(sub);
-        }
+    var funcs_by_ns = module.functions_by_ns();
+    for (string ns in funcs_by_ns) {
+        var funcs = funcs_by_ns[ns]
+            .iterable()
+            .map(function(f) { return string(f); })
+            .filter(function(f) { return substr(f, 0, 1) != "_"; });
+        if (funcs.any()) {
+            Rosella.IO.sayf("namespace %s {", ns);
+            funcs.foreach(function(f) { Rosella.IO.sayf("    extern function %s;", f); });
+            Rosella.IO.sayf("}\n");
+        } else
+            Rosella.IO.sayf("namespace %s { }\n", ns);
     }
-    for (var ns in all_namespaces) {
-        Rosella.IO.sayf("namespace %s {", ns);
-        for (var c in all_namespaces[ns].classes)
-            Rosella.IO.sayf("    class %s;", c);
-        for (var sub in all_namespaces[ns].subs)
-            Rosella.IO.sayf("    extern function %s;", sub);
-        say("}\n");
-    }
+    module
+        .classes()
+        .iterable()
+        .map(function(kvp) { return kvp.key(); })
+        .foreach(function(c) { Rosella.IO.sayf("class %s;", c); });
+
     if (rosella_mode) {
         var fpath = new Rosella.FileSystem.FilePath(libpath);
         string libname_short = fpath.short_name_no_ext();
         string libname = fpath.short_name();
-        Rosella.IO.sayf("function __include_%s [anon,init,load] ()\n{", libname_short);
+        Rosella.IO.sayf("\n\nfunction __include_%s [anon,init,load] ()\n{", libname_short);
         Rosella.IO.sayf("    Rosella.load_bytecode_file('rosella/%s', 'load');", libname);
         Rosella.IO.sayf("}");
     }
