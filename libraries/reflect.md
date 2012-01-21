@@ -1,5 +1,5 @@
 ---
-layout: Rosella
+layout: rosella
 title: Rosella Reflect
 ---
 
