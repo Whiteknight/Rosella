@@ -446,6 +446,17 @@ class Rosella.Query.Iterable.Tap : Rosella.Query.Iterable
         f(d);
         return d;
     }
+
+    function tap(var f)
+    {
+        var g = self.func;
+        return new Rosella.Query.Iterable.Tap(self.source,
+            function(x) {
+                g(x);
+                f(x);
+            }
+        );
+    }
 }
 
 /* Sorting Iterator.
