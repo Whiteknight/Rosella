@@ -28,9 +28,8 @@ namespace Rosella.Test
     {
         __default_options(options);
         var suitefactory = new Rosella.Test.SuiteFactory(test_type, options);
+        __initialize_test(suitefactory, options);
         var suite = suitefactory.create();
-        if (exists options["initialize"])
-            options["initialize"](suite);
         var result = suite.run();
         return result.was_successful();
     }
@@ -41,9 +40,8 @@ namespace Rosella.Test
     {
         __default_options(options);
         var suitefactory = new Rosella.Test.SuiteFactory.Vector(func, tests, options);
+        __initialize_test(suitefactory, options);
         var suite = suitefactory.create();
-        if (exists options["initialize"])
-            options["initialize"](suite);
         var result = suite.run();
         return result.was_successful();
     }
@@ -52,9 +50,8 @@ namespace Rosella.Test
     {
         __default_options(options);
         var suitefactory = new Rosella.Test.SuiteFactory.List(list, options);
+        __initialize_test(suitefactory, options);
         var suite = suitefactory.create();
-        if (exists options["initialize"])
-            options["initialize"](suite);
         var result = suite.run();
         return result.was_successful();
     }
@@ -96,6 +93,12 @@ namespace Rosella.Test
 
     /* Private or Internal Routines
     */
+
+    function __initialize_test(var suitefactory, var options)
+    {
+        if (exists options["initialize"])
+            options["initialize"](options["context"]);
+    }
 
     // Make sure that we have some values for the important option keys.
     // If the user has provided an override for any of these, ignore.

@@ -24,9 +24,9 @@ class Test_<# ns.cleanname #>
     }<$ endfor $>
 }
 
-function initialize_test[anon](var suite)
+function initialize_test[anon](var context)
 {
-    // Set up the test suite here. Set options on the Suite, set up matchers
+    // Set up the test suite here. Initialize the context, set up matchers
     // in the matcher factory, load prerequisites, and do other things.
     var(Rosella.load_bytecode_file)("<# ns.ownerlib #>", "load");
 }

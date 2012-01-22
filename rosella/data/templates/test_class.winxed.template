@@ -38,7 +38,7 @@ class Test_<# class.cleanname #>
     }<$ endfor $>
 }
 
-function initialize_test[anon](var suite)
+function initialize_test[anon](var context)
 {
     // Set up the test suite here. Set options on the Suite, set up matchers
     // in the matcher factory, load prerequisites, and do other things.

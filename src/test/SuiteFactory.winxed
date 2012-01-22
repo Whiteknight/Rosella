@@ -8,12 +8,14 @@ class Rosella.Test.SuiteFactory : Rosella.ObjectFactory
 {
     var test_type;      // The type to extract tests from
     var options;        // User-specified options about the test run
+    var context;        // The TestContext object to use
 
     // Constructor. Take the test proto object and a few other options
     function SuiteFactory(var test_type, var options)
     {
         self.target_type = options["suite_type"];
         self.test_type = test_type;
+        self.context = options["context"];
         self.options = options;
     }
 
@@ -27,7 +29,7 @@ class Rosella.Test.SuiteFactory : Rosella.ObjectFactory
             var testcase = testfactory.create(test, test_methods[test]);
             tests[test] = testcase;
         }
-        var suite = Rosella.construct(type, tests, self.options["test_context"]);
+        var suite = Rosella.construct(type, tests, self.context);
         return suite;
     }
 
