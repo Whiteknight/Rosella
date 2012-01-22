@@ -56,7 +56,7 @@ class Rosella.Test.Builder
         string result = null;
         if (pass)
             result = "ok " + number;
-        else            using Rosella.Parrot.get_backtrace_ex_strings;
+        else
             result = "not ok " + number;
         if (msg != null)
             return result + " - " + msg;
@@ -87,7 +87,7 @@ class Rosella.Test.Builder
                     break;
                 display_bt[j++] = bt_list[i];
             }
-            for (string bt in display_bt)
+            for (string bt in bt_list)
                 self._printf("# %s\n", bt);
         } else
             self._printf("# %s\n", string(error));
