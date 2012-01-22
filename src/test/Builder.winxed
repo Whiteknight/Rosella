@@ -56,7 +56,7 @@ class Rosella.Test.Builder
         string result = null;
         if (pass)
             result = "ok " + number;
-        else
+        else            using Rosella.Parrot.get_backtrace_ex_strings;
             result = "not ok " + number;
         if (msg != null)
             return result + " - " + msg;
@@ -73,11 +73,21 @@ class Rosella.Test.Builder
             for (string line in lines)
                 self._printf("# %s\n", line);
 
-            // TODO: scan the backtrace, looking for subs that aren't
-            // part of Rosella. Don't show internal functions in the bt
-            using Rosella.Parrot.get_backtrace_ex_strings;
-            var bt_list = get_backtrace_ex_strings(error);
-            for (string bt in bt_list)
+            var bt_list = Rosella.Parrot.get_backtrace_ex_strings(error);
+            var display_bt = [];
+            int i = 0;
+            for (; i < elements(bt_list); i++) {
+                if (!contains(bt_list[i], "rosella/test.winxed"))
+                    break;
+            }
+            int j = 0;
+            display_bt[j++] = bt_list[i - 1];
+            for (; i < elements(bt_list); i++) {
+                if (contains(bt_list[i], "execute_test") && contains(bt_list[i], "rosella/test.winxed"))
+                    break;
+                display_bt[j++] = bt_list[i];
+            }
+            for (string bt in display_bt)
                 self._printf("# %s\n", bt);
         } else
             self._printf("# %s\n", string(error));
