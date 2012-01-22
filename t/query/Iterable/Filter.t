@@ -32,6 +32,18 @@ class Test_Rosella_Query_Iterable_Filter
 
         var result = obj.reset();
     }
+
+    function filter()
+    {
+        self.assert.equal(0, 0);
+        self.status.verify("Test that .filter operates correctly when chained");
+        var m = Rosella.Query.iterable([1, 2, 3, 4, 5, 6])
+            .filter(function(int x) { return x % 2 == 0; })
+            .filter(function(int x) { return x < 5; });
+        self.assert.equal(m.next(), 2);
+        self.assert.equal(m.next(), 4);
+        self.assert.is_false(m.has_more());
+    }
 }
 
 function main[main]()

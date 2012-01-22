@@ -86,6 +86,19 @@ class Rosella.Query.Iterable.Filter : Rosella.Query.Iterable
         self.source.reset();
         return self;
     }
+
+    function filter(var f)
+    {
+        // If we have cached values, we can't optimize. But if we're chained,
+        // we can optimize by combining functions together.
+        if (self.has_cache == true)
+            return new Rosella.Query.Iterable.Filter(self, f);
+
+        var g = self.func;
+        return new Rosella.Query.Iterable.Filter(self.source,
+            function(x) { return g(x) && f(x); }
+        );
+    }
 }
 
 /* Appending Iterator
