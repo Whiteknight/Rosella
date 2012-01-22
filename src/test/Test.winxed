@@ -29,6 +29,8 @@ namespace Rosella.Test
         __default_options(options);
         var suitefactory = new Rosella.Test.SuiteFactory(test_type, options);
         var suite = suitefactory.create();
+        if (exists options["initialize"])
+            options["initialize"](suite);
         var result = suite.run();
         return result.was_successful();
     }
@@ -40,6 +42,8 @@ namespace Rosella.Test
         __default_options(options);
         var suitefactory = new Rosella.Test.SuiteFactory.Vector(func, tests, options);
         var suite = suitefactory.create();
+        if (exists options["initialize"])
+            options["initialize"](suite);
         var result = suite.run();
         return result.was_successful();
     }
@@ -49,6 +53,8 @@ namespace Rosella.Test
         __default_options(options);
         var suitefactory = new Rosella.Test.SuiteFactory.List(list, options);
         var suite = suitefactory.create();
+        if (exists options["initialize"])
+            options["initialize"](suite);
         var result = suite.run();
         return result.was_successful();
     }
@@ -105,6 +111,8 @@ namespace Rosella.Test
             options["test_prefix"] = "";
         if (!(exists options["asserter"]))
             options["asserter"] = new Rosella.Test.Asserter;
+        if (!(exists options["initialize"]))
+            options["initialize"] = null;
     }
 
     // Unconditional fail. Throws a Rosella.Test.Failure

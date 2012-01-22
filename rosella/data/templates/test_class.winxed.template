@@ -38,10 +38,17 @@ class Test_<# class.cleanname #>
     }<$ endfor $>
 }
 
+function initialize_test[anon](var suite)
+{
+    // Set up the test suite here. Set options on the Suite, set up matchers
+    // in the matcher factory, load prerequisites, and do other things.
+    var(Rosella.load_bytecode_file)("<# class.ownerlib #>", "load");
+}
+
 function main[main]()
 {
     var core = load_packfile("rosella/core.pbc");
     var(Rosella.initialize_rosella)("test");
-    var(Rosella.load_bytecode_file)("<# class.ownerlib #>", "load");
-    var(Rosella.Test.test)(class Test_<# class.cleanname #>);
+    using initialize_test;
+    var(Rosella.Test.test)(class Test_<# class.cleanname #>, initialize_test:[named("initialize")]);
 }
