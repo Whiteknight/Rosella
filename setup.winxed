@@ -117,6 +117,8 @@ function setup_stable_libraries(var rosella)
         "test/Failure",
         "test/Listener",
         "test/Listener/TAP",
+        "test/Matcher",
+        "test/matcher/Factory",
         "test/Result",
         "test/Suite",
         "test/SuiteFactory",

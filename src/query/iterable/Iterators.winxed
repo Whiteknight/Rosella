@@ -245,9 +245,6 @@ class Rosella.Query.Iterable.TakeSkip : Rosella.Query.Iterable
         self.need_skip = int(self.skip);
         self.source.reset();
     }
-
-    // TODO: We can probably optimize repeated take/skip calls to reuse the
-    // same iterator, if the predicates are both null
 }
 
 /* Flattening Iterator

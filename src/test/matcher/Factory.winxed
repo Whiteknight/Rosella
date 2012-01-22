@@ -1,0 +1,39 @@
+class Rosella.Test.Matcher.Factory : Rosella.ObjectFactory
+{
+    var typed_matchers;
+    var role_matchers;
+    var default_matcher;
+
+    function Factory()
+    {
+        self.typed_matchers = Rosella.get_pmc_keyed_hash();
+        self.role_matchers = {
+            "array" : new Rosella.Test.Matcher.Array(),
+            "hash" : new Rosella.Test.Matcher.Hash()
+        };
+        self.default_matcher = new Rosella.Test.Matcher();
+    }
+
+    function create(var obj)
+    {
+        var t = typeof(obj);
+        if (exists self.typed_matchers[t])
+            return self.typed_matchers[t];
+        for (string role in self.role_matchers) {
+            if (does(obj, role))
+                return self.role_matchers[role];
+        }
+        return self.default_matcher;
+    }
+
+    function add_role_matcher(string role, var matcher)
+    {
+        self.role_matchers[role] = matcher;
+    }
+
+    function add_type_matcher(var type, var matcher)
+    {
+        var type_class = Rosella.get_type_class(type);
+        self.type_matchers[type_class] = matcher;
+    }
+}

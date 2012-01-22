@@ -87,7 +87,7 @@ class Rosella.Test.Builder
                     break;
                 display_bt[j++] = bt_list[i];
             }
-            for (string bt in bt_list)
+            for (string bt in display_bt)
                 self._printf("# %s\n", bt);
         } else
             self._printf("# %s\n", string(error));

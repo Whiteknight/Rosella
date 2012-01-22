@@ -1,0 +1,102 @@
+class Rosella.Test.Matcher
+{
+    function Matcher() { }
+
+    function expect_match(var a, var b)
+    {
+        if (a == b)
+            return new Rosella.Test.Matcher.SuccessResult();
+        return new Rosella.Test.Matcher.FailureResult("Values do not match");
+    }
+
+    function expect_no_match(var a, var b)
+    {
+        if (a == b)
+            return new Rosella.Test.Matcher.FailureResult("Values match and shouldn't");
+        return new Rosella.Test.Matcher.SuccessResult();
+    }
+}
+
+class Rosella.Test.Matcher.FailureResult
+{
+    var message;
+
+    function FailureResult(string fail_msg, var args [slurpy])
+    {
+        string message = sprintf(fail_msg, args);
+        self.message = message;
+    }
+
+    function success() { return false; }
+
+    function message() { return string(self.message); }
+}
+
+class Rosella.Test.Matcher.SuccessResult
+{
+    function SuccessResult() { }
+
+    function success() { return true; }
+
+    function message() { return ""; }
+}
+
+class Rosella.Test.Matcher.Array : Rosella.Test.Matcher
+{
+    function Array() { }
+
+    function expect_match(var a, var b)
+    {
+        if (!does(b, "array"))
+            return new Rosella.Test.Matcher.FailureResult("Value is not an array");
+        if (elements(a) != elements(b))
+            return new Rosella.Test.Matcher.FailureResult("Length of arrays do not match");
+        for (int i = 0; i < elements(a); i++) {
+            if (a[i] != b[i])
+                return new Rosella.Test.Matcher.FailureResult("Value in position %d does not match", i);
+        }
+        return new Rosella.Test.Matcher.SuccessResult();
+    }
+
+    function expect_no_match(var a, var b)
+    {
+        if (!does(b, "array"))
+            return new Rosella.Test.Matcher.SuccessResult();
+        if (elements(a) != elements(b))
+            return new Rosella.Test.Matcher.SuccessResult();
+        for (int i = 0; i < elements(a); i++) {
+            if (a[i] != b[i])
+                return new Rosella.Test.Matcher.SuccessResult();
+        }
+        return new Rosella.Test.Matcher.FailureResult("Values match and they shouldn't");
+    }
+}
+
+class Rosella.Test.Matcher.Hash : Rosella.Test.Matcher
+{
+    function Hash() { }
+
+    function expect_match(var a, var b)
+    {
+        if (!does(b, "hash"))
+            return new Rosella.Test.Matcher.FailureResult("Value is not a hash");
+        if (elements(a) != elements(b))
+            return new Rosella.Test.Matcher.FailureResult("Size of hashes do not match");
+        for (var key in a) {
+            if (!(exists b[key]) || a[key] != b[key])
+                return new Rosella.Test.Matcher.FailureResult("Hash element '%s' does not match", key);
+        }
+        return new Rosella.Test.Matcher.SuccessResult();
+    }
+
+    function expect_no_match(var a, var b)
+    {
+        if (!does(b, "hash") || elements(a) != elements(b))
+            return new Rosella.Test.Matcher.SuccessResult();
+        for (var key in a) {
+            if (!(exists b[key]) || a[key] != b[key])
+                return new Rosella.Test.Matcher.SuccessResult();
+        }
+        return new Rosella.Test.Matcher.FailureResult("Hashes are the same");
+    }
+}

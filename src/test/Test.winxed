@@ -67,6 +67,27 @@ namespace Rosella.Test
         return suitefactory.create();
     }
 
+    const string DEFAULT_MATCHER_FACTORY = "Rosella.Test.matcher_factory";
+    function matcher_factory()
+    {
+        var temp = Rosella.Globals.get_global(DEFAULT_MATCHER_FACTORY);
+        if (temp == null) {
+            temp = new Rosella.Test.Matcher.Factory();
+            Rosella.Globals.register_global(DEFAULT_MATCHER_FACTORY, temp);
+        }
+        return temp;
+    }
+
+    function add_role_matcher(string role, var matcher)
+    {
+        Rosella.Test.matcher_factory().add_role_matcher(role, matcher);
+    }
+
+    function add_type_matcher(string type, var matcher)
+    {
+        Rosella.Test.matcher_factory().add_type_matcher(type, matcher);
+    }
+
     /* Private or Internal Routines
     */
 

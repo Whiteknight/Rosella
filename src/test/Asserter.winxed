@@ -351,4 +351,24 @@ class Rosella.Test.Asserter
         if (exists h[k])
             self.fail(message);
     }
+
+    function is_match(var a, var b, string message [optional], int has_msg [opt_flag])
+    {
+        var matcher = Rosella.Test.matcher_factory().create(a);
+        var result = matcher.expect_match(a, b);
+        if (!result.success()) {
+            message = self.__default_message(message, has_msg, result.message());
+            self.fail(message);
+        }
+    }
+
+    function is_not_match(var a, var b, string message [optional], int has_msg [opt_flag])
+    {
+        var matcher = Rosella.Test.matcher_factory().create(a);
+        var result = matcher.expect_no_match(a, b);
+        if (!result.success()) {
+            message = self.__default_message(message, has_msg, result.message());
+            self.fail(message);
+        }
+    }
 }
