@@ -17,8 +17,7 @@ class Test_<# class.cleanname #>
         var obj = new <# class.winxedname #>();
         self.assert.not_null(obj);
         self.assert.instance_of(obj, class <# class.winxedname #>);
-    }
-<$ for method in class.methods $><%
+    }<$ for method in class.methods $><%
         string key = context.get_value("__KEY__");
         var method = context.get_value("class.methods")[key];
         // TODO: Handle MultiSub. Does not have .arity() method

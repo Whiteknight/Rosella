@@ -46,6 +46,8 @@ namespace Rosella.Test
         return result.was_successful();
     }
 
+    // Tests in the form of a list. The first argument is a list of callback
+    // functions to execute as individual tests
     function test_list(var list, var options [slurpy,named])
     {
         __default_options(options);
@@ -56,6 +58,7 @@ namespace Rosella.Test
         return result.was_successful();
     }
 
+    // Make a standard Suite object for class-based tests
     function make_suite(var test_type, var options [slurpy,named])
     {
         __default_options(options);
@@ -63,6 +66,7 @@ namespace Rosella.Test
         return suitefactory.create();
     }
 
+    // Make a Suite object for vector-based tests
     function make_suite_vector(var func, var tests, var options [slurpy,named])
     {
         __default_options(options);
@@ -70,6 +74,7 @@ namespace Rosella.Test
         return suitefactory.create();
     }
 
+    // Get the matcher factory
     const string DEFAULT_MATCHER_FACTORY = "Rosella.Test.matcher_factory";
     function matcher_factory()
     {
@@ -81,11 +86,13 @@ namespace Rosella.Test
         return temp;
     }
 
+    // Add a new matcher to the registry by role name
     function add_role_matcher(string role, var matcher)
     {
         Rosella.Test.matcher_factory().add_role_matcher(role, matcher);
     }
 
+    // Add a new matcher to the registry by type
     function add_type_matcher(string type, var matcher)
     {
         Rosella.Test.matcher_factory().add_type_matcher(type, matcher);
@@ -94,6 +101,7 @@ namespace Rosella.Test
     /* Private or Internal Routines
     */
 
+    // Execute an initialization callback
     function __initialize_test(var suitefactory, var options)
     {
         if (exists options["initialize"])
