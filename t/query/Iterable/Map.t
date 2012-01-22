@@ -14,6 +14,19 @@ class Test_Rosella_Query_Iterable_Map
 
         var result = obj.next();
     }
+
+    function map()
+    {
+        self.status.verify("Test mapping with chains");
+        var m = Rosella.Query.iterable([1, 2, 3, 4])
+            .map(function (int x) { return x * 5; })
+            .map(function (int x) { return x + 2; });
+        self.assert.equal(m.next(), 7);
+        self.assert.equal(m.next(), 12);
+        self.assert.equal(m.next(), 17);
+        self.assert.equal(m.next(), 22);
+        self.assert.is_false(m.has_more());
+    }
 }
 
 function main[main]()

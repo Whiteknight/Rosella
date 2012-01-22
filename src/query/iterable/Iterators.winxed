@@ -17,6 +17,14 @@ class Rosella.Query.Iterable.Map : Rosella.Query.Iterable
         var f = self.mapper;
         return f(d);
     }
+
+    function map(var f)
+    {
+        var g = self.mapper;
+        return new Rosella.Query.Iterable.Map(self.source,
+            function(x) { return f(g(x)); }
+        );
+    }
 }
 
 /* Filtering Iterator
