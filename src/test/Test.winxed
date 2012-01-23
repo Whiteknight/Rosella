@@ -104,7 +104,7 @@ namespace Rosella.Test
     // Execute an initialization callback
     function __initialize_test(var suitefactory, var options)
     {
-        if (exists options["initialize"])
+        if (exists options["initialize"] && options["initialize"] != null)
             options["initialize"](options["context"]);
     }
 
