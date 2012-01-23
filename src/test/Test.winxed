@@ -86,16 +86,16 @@ namespace Rosella.Test
         return temp;
     }
 
-    // Add a new matcher to the registry by role name
-    function add_role_matcher(string role, var matcher)
+    // Add a new matcher to the registry by name
+    function add_matcher(string name, var matcher)
     {
-        Rosella.Test.matcher_factory().add_role_matcher(role, matcher);
+        Rosella.Test.matcher_factory().add_matcher(name, matcher);
     }
 
-    // Add a new matcher to the registry by type
-    function add_type_matcher(string type, var matcher)
+    // Remove a matcher to the registry by name
+    function remove_matcher(string name)
     {
-        Rosella.Test.matcher_factory().add_type_matcher(type, matcher);
+        Rosella.Test.matcher_factory().remove_matcher(name);
     }
 
     /* Private or Internal Routines

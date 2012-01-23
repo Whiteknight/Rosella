@@ -15,6 +15,11 @@ class Rosella.Test.Matcher
             return new Rosella.Test.Matcher.FailureResult("Values match and shouldn't");
         return new Rosella.Test.Matcher.SuccessResult();
     }
+
+    function can_match(var a, var b)
+    {
+        return true;
+    }
 }
 
 class Rosella.Test.Matcher.FailureResult
@@ -70,6 +75,11 @@ class Rosella.Test.Matcher.Array : Rosella.Test.Matcher
         }
         return new Rosella.Test.Matcher.FailureResult("Values match and they shouldn't");
     }
+
+    function can_match(var a, var b)
+    {
+        return does(a, "array") && does(b, "array");
+    }
 }
 
 class Rosella.Test.Matcher.Hash : Rosella.Test.Matcher
@@ -99,4 +109,98 @@ class Rosella.Test.Matcher.Hash : Rosella.Test.Matcher
         }
         return new Rosella.Test.Matcher.FailureResult("Hashes are the same");
     }
+
+    function can_match(var a, var b)
+    {
+        return does(a, "hash") && does(b, "hash");
+    }
 }
+
+class Rosella.Test.Matcher.Stringify : Rosella.Test.Matcher
+{
+    function Stringify() { }
+
+    function can_match(var a, var b)
+    {
+        return isa_s(a, "String") || isa_s(b, "String");
+    }
+
+    function expect_match(var a, var b)
+    {
+        string a_s;
+        try {
+            a_s = string(a);
+        } catch(e) {
+            return new Rosella.Test.Matcher.FailureResult("First item cannot be cast to string");
+        }
+        string b_s;
+        try {
+            b_s = string(b);
+        } catch(e) {
+            return new Rosella.Test.Matcher.FailureResult("Second item cannot be cast to string");
+        }
+        if (a_s == b_s)
+            return new Rosella.Test.Matcher.SuccessResult();
+        return new Rosella.Test.Matcher.FailureResult("String values are not equal");
+    }
+
+    function expect_no_match(var a, var b)
+    {
+        string a_s;
+        try {
+            a_s = string(a);
+        } catch(e) {
+            return new Rosella.Test.Matcher.SuccessResult();
+        }
+        string b_s;
+        try {
+            b_s = string(b);
+        } catch(e) {
+            return new Rosella.Test.Matcher.SuccessResult();
+        }
+        if (a_s == b_s)
+            return new Rosella.Test.Matcher.FailureResult("String values are equal");
+        return new Rosella.Test.Matcher.SuccessResult();
+    }
+}
+
+class Rosella.Test.Matcher.Number : Rosella.Test.Matcher
+{
+    var tolerance;
+
+    function Number(float tolerance)
+    {
+        self.tolerance = tolerance;
+    }
+
+    function can_match(var a, var b)
+    {
+        return isa_s(a, "Number") && isa_s(b, "Number");
+    }
+
+    function expect_match(var a, var b)
+    {
+        float a_f = float(a);
+        float b_f = float(b);
+        float diff = a_f - b_f;
+        float delta = float(self.tolerance);
+        if (delta == 0.0 && diff == 0.0)
+            return new Rosella.Test.Matcher.SuccessResult();
+        if (delta != 0.0 && diff < delta && diff > -delta)
+            return new Rosella.Test.Matcher.SuccessResult();
+        return new Rosella.Test.Matcher.FailureResult("Values are not equal by a difference of %f", diff);
+    }
+
+    function expect_no_match(var a, var b)
+    {
+        float a_f = float(a);
+        float b_f = float(b);
+        float diff = a_f - b_f;
+        float delta = float(self.tolerance);
+        if (diff > delta || diff < -delta)
+            return new Rosella.Test.Matcher.SuccessResult();
+        return new Rosella.Test.Matcher.FailureResult("Values are equal or are within error tolerance");
+    }
+}
+
+
