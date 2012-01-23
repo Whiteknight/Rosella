@@ -89,6 +89,144 @@ class AssertionTest {
         });
     }
 
+    # Matchers
+
+    method is_match_arrays() {
+        $!assert.expect_pass({
+            my @m := [1, 2, 3, 4];
+            my @n := [1, 2, 3, 4];
+            $!assert.is_match(@m, @n);
+        });
+        $!assert.expect_fail({
+            my @m := [1, 2, 3, 4];
+            my @n := [1, 2, 3, 4, 5];
+            $!assert.is_match(@m, @n);
+        });
+        $!assert.expect_fail({
+            my @m := [1, 2, 3, 4];
+            my @n := [5, 6, 7, 8];
+            $!assert.is_match(@m, @n);
+        });
+        $!assert.expect_fail({
+            my @m := [1, 2, 3, 4];
+            my $n := "1234";
+            $!assert.is_match(@m, $n);
+        });
+    }
+
+    method is_not_match_arrays() {
+        $!assert.expect_fail({
+            my @m := [1, 2, 3, 4];
+            my @n := [1, 2, 3, 4];
+            $!assert.is_not_match(@m, @n);
+        });
+        $!assert.expect_pass({
+            my @m := [1, 2, 3, 4];
+            my @n := [1, 2, 3, 4, 5];
+            $!assert.is_not_match(@m, @n);
+        });
+        $!assert.expect_pass({
+            my @m := [1, 2, 3, 4];
+            my @n := [5, 6, 7, 8];
+            $!assert.is_not_match(@m, @n);
+        });
+        $!assert.expect_pass({
+            my @m := [1, 2, 3, 4];
+            my $n := "1234";
+            $!assert.is_not_match(@m, $n);
+        });
+    }
+
+    method is_match_hashes() {
+        $!assert.expect_pass({
+            my %m := {};
+            %m{"foo"} := 1;
+            %m{"bar"} := 2;
+            %m{"baz"} := 3;
+            my %n := {};
+            %n{"foo"} := 1;
+            %n{"bar"} := 2;
+            %n{"baz"} := 3;
+            $!assert.is_match(%m, %n);
+        });
+        $!assert.expect_fail({
+            my %m := {};
+            %m{"foo"} := 1;
+            %m{"bar"} := 2;
+            %m{"baz"} := 3;
+            my %n := {};
+            %n{"foo"} := 1;
+            %n{"bar"} := 2;
+            %n{"baz"} := 3;
+            %n{"fie"} := 4;
+            $!assert.is_match(%m, %n);
+        });
+        $!assert.expect_fail({
+            my %m := {};
+            %m{"foo"} := 1;
+            %m{"bar"} := 2;
+            %m{"baz"} := 3;
+            my %n := {};
+            %n{"foo"} := 4;
+            %n{"bar"} := 5;
+            %n{"baz"} := 6;
+            $!assert.is_match(%m, %n);
+        });
+        $!assert.expect_fail({
+            my %m := {};
+            %m{"foo"} := 1;
+            %m{"bar"} := 2;
+            %m{"baz"} := 3;
+            my $n := "123";
+            $!assert.is_match(%m, $n);
+        });
+    }
+
+    method is_not_match_hashes() {
+        $!assert.expect_fail({
+            my %m := {};
+            %m{"foo"} := 1;
+            %m{"bar"} := 2;
+            %m{"baz"} := 3;
+            my %n := {};
+            %n{"foo"} := 1;
+            %n{"bar"} := 2;
+            %n{"baz"} := 3;
+            $!assert.is_not_match(%m, %n);
+        });
+        $!assert.expect_pass({
+            my %m := {};
+            %m{"foo"} := 1;
+            %m{"bar"} := 2;
+            %m{"baz"} := 3;
+            my %n := {};
+            %n{"foo"} := 1;
+            %n{"bar"} := 2;
+            %n{"baz"} := 3;
+            %n{"fie"} := 4;
+            $!assert.is_not_match(%m, %n);
+        });
+        $!assert.expect_pass({
+            my %m := {};
+            %m{"foo"} := 1;
+            %m{"bar"} := 2;
+            %m{"baz"} := 3;
+            my %n := {};
+            %n{"foo"} := 4;
+            %n{"bar"} := 5;
+            %n{"baz"} := 6;
+            $!assert.is_not_match(%m, %n);
+        });
+        $!assert.expect_pass({
+            my %m := {};
+            %m{"foo"} := 1;
+            %m{"bar"} := 2;
+            %m{"baz"} := 3;
+            my $n := "123";
+            $!assert.is_not_match(%m, $n);
+        });
+    }
+
     # Other Assertions
 
     method exists_keyed_str() {
