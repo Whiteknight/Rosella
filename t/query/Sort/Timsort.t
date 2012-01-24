@@ -23,8 +23,7 @@ class Test_Rosella_Query_Sort_Timsort
         var arg_1 = 0;
         var arg_2 = elements(arg_0);
         obj.sort(arg_0, arg_1, arg_2);
-        for (int i = 0; i < 9; i++)
-            self.assert.equal(arg_0[i], i + 1);
+        self.assert.is_match(arg_0, [1, 2, 3, 4, 5, 6, 7, 8, 9]);
     }
 }
 

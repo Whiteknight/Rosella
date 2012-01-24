@@ -18,24 +18,6 @@ class Test::Query::Queryable {
         return %data;
     }
 
-    sub arrays_equal($assert, @a, @b) {
-        $assert.equal(pir::elements(@a), pir::elements(@b));
-        my $i := 0;
-        while $i <= pir::elements(@a) {
-            $assert.equal(@a[$i], @b[$i]);
-            $i++;
-        }
-    }
-
-    sub hashes_equal($assert, %a, %b) {
-        $assert.equal(pir::elements(%a), pir::elements(%b));
-        $assert.throws_nothing({
-            for %a -> $key {
-                $assert.equal(%a{$key}, %b{$key});
-            }
-        });
-    }
-
     sub hash(*%args) { %args; }
 
     # Methods
@@ -146,7 +128,7 @@ class Test::Query::Queryable {
                 $result;
             }
         ).data;
-        arrays_equal($!assert, @new_data, [2, 3, 5]);
+        $!assert.is_match(@new_data, [2, 3, 5]);
     }
 
     method test_sort_array() {
@@ -159,7 +141,7 @@ class Test::Query::Queryable {
                 $result;
             }
         ).data;
-        arrays_equal($!assert, @new_data, [1, 2, 3, 4, 5]);
+        $!assert.is_match(@new_data, [1, 2, 3, 4, 5]);
     }
 
     method test_sort_scalar() {
@@ -172,7 +154,7 @@ class Test::Query::Queryable {
                 $result;
             }
         ).data;
-        arrays_equal($!assert, @new_data, [1]);
+        $!assert.is_match(@new_data, [1]);
     }
 
     # count
@@ -230,7 +212,7 @@ class Test::Query::Queryable {
     method test_take_array() {
         my @r := Rosella::Query::as_queryable([1, 2, 3, 4]).take(3).data;
         $!assert.equal(+@r, 3);
-        arrays_equal($!assert, @r, [1, 2, 3]);
+        $!assert.is_match(@r, [1, 2, 3]);
     }
 
     method test_take_scalar() {
@@ -247,7 +229,7 @@ class Test::Query::Queryable {
     method test_skip_array() {
         my @r := Rosella::Query::as_queryable([1, 2, 3, 4]).skip(3).data;
         $!assert.equal(+@r, 1);
-        arrays_equal($!assert, @r, [4]);
+        $!assert.is_match(@r, [4]);
     }
 
     method test_skip_scalar() {
@@ -259,7 +241,7 @@ class Test::Query::Queryable {
     method test_to_array_hash() {
         my %data := test_hash();
         my @array := Rosella::Query::as_queryable(%data).to_array.data;
-        arrays_equal($!assert, @array, [1, 2, 3, 4]);
+        $!assert.is_match(@array, [1, 2, 3, 4]);
     }
 
     method test_to_array_array() {
@@ -270,7 +252,7 @@ class Test::Query::Queryable {
 
     method test_to_array_scalar() {
         my @array := Rosella::Query::as_queryable(1).to_array.data;
-        arrays_equal($!assert, @array, [1]);
+        $!assert.is_match(@array, [1]);
     }
 
     # to_hash
@@ -280,7 +262,7 @@ class Test::Query::Queryable {
         my %hash := Rosella::Query::as_queryable(%data).to_hash(
             -> $item { "test_$item"; }
         ).data;
-        hashes_equal($!assert, %hash, hash(:test_1(1), :test_2(2), :test_3(3), :test_4(4)));
+        $!assert.is_match(%hash, hash(:test_1(1), :test_2(2), :test_3(3), :test_4(4)));
     }
 
     method test_to_hash_array() {
@@ -288,14 +270,14 @@ class Test::Query::Queryable {
         my %hash := Rosella::Query::as_queryable(@data).to_hash(
             -> $item { "test_$item"; }
         ).data;
-        hashes_equal($!assert, %hash, hash(:test_foo("foo"), :test_bar("bar"), :test_baz("baz"), :test_fie("fie")));
+        $!assert.is_match(%hash, hash(:test_foo("foo"), :test_bar("bar"), :test_baz("baz"), :test_fie("fie")));
     }
 
     method test_to_hash_scalar() {
         my %hash := Rosella::Query::as_queryable("A").to_hash(
             -> $item { "test_$item"; }
         ).data;
-        hashes_equal($!assert, %hash, hash(:test_A("A")));
+        $!assert.is_match(%hash, hash(:test_A("A")));
     }
 
     # single
@@ -390,7 +372,7 @@ class Test::Query::Queryable {
         my @d := [[1,2,3],[[4],[5],[6,7,8]], 9];
         my @r := Rosella::Query::as_queryable(@d).flatten.data;
         $!assert.equal(+@r, 9);
-        arrays_equal($!assert, @r, [1, 2, 3, 4, 5, 6, 7, 8, 9]);
+        $!assert.is_match(@r, [1, 2, 3, 4, 5, 6, 7, 8, 9]);
     }
 
     # append
@@ -400,6 +382,6 @@ class Test::Query::Queryable {
         my @b := [4, 5, 6];
         my @r := Rosella::Query::as_queryable(@a).append(@b).data;
         $!assert.equal(+@r, 6);
-        arrays_equal($!assert, @r, [1, 2, 3, 4, 5, 6]);
+        $!assert.is_match(@r, [1, 2, 3, 4, 5, 6]);
     }
 }

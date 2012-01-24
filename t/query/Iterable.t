@@ -139,8 +139,7 @@ class Test_Rosella_Query_Iterable
 
         var result = obj.flatten().to_array();
         self.assert.equal(elements(result), 9);
-        for (int i = 0; i < 9; i++)
-            self.assert.equal(result[i], i + 1);
+        self.assert.is_match(result, [1,2,3,4,5,6,7,8,9]);
     }
 
     function project()
@@ -152,8 +151,7 @@ class Test_Rosella_Query_Iterable
         var result = obj.project(arg_0).to_array();
         self.assert.equal(elements(result), 9);
         var x = [6, 7, 8, 11, 12, 13, 16, 17, 18];
-        for (int i = 0; i < 9; i++)
-            self.assert.equal(result[i], x[i]);
+        self.assert.is_match(result, x);
     }
 
     function tap()

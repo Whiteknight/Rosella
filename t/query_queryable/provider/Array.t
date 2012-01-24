@@ -7,23 +7,12 @@ Rosella::Test::test(Test::Query::Provider::Array);
 
 class Test::Query::Provider::Array {
 
-    sub arrays_equal($assert, @a, @b) {
-        $assert.equal(pir::elements(@a), pir::elements(@b));
-        $assert.throws_nothing({
-            my $i := 0;
-            while $i < pir::elements(@a) {
-                $assert.equal(@a[$i], @b[$i]);
-                $i++;
-            }
-        });
-    }
-
     method map() {
         my @data := [1, 2, 3, 4];
         my @result := Rosella::Query::as_queryable(@data).map(
             -> $i { $i + 5; }
         ).data;
-        arrays_equal($!assert, @result, [6, 7, 8, 9]);
+        $!assert.is_match(@result, [6, 7, 8, 9]);
     }
 
     method filter() {
@@ -31,7 +20,7 @@ class Test::Query::Provider::Array {
         my @result := Rosella::Query::as_queryable(@data).filter(
             -> $i { $i % 2; }
         ).data;
-        arrays_equal($!assert, @result, [1, 3]);
+        $!assert.is_match(@result, [1, 3]);
     }
 
     method fold() {
@@ -45,13 +34,13 @@ class Test::Query::Provider::Array {
     method take() {
         my @data := [1, 2, 3, 4];
         my $result := Rosella::Query::as_queryable(@data).take(1).data;
-        arrays_equal($!assert, $result, [1]);
+        $!assert.is_match($result, [1]);
     }
 
     method take_two() {
         my @data := [1, 2, 3, 4];
         my $result := Rosella::Query::as_queryable(@data).take(2).data;
-        arrays_equal($!assert, $result, [1, 2]);
+        $!assert.is_match($result, [1, 2]);
     }
 
     method take_predicate() {
@@ -59,13 +48,13 @@ class Test::Query::Provider::Array {
         my @result := Rosella::Query::as_queryable(@data).take(1,
             -> $i { $i > 2; }
         ).data;
-        arrays_equal($!assert, @result, [3]);
+        $!assert.is_match(@result, [3]);
     }
 
     method skip() {
         my @data := [1, 2, 3, 4];
         my @result := Rosella::Query::as_queryable(@data).skip(1).data;
-        arrays_equal($!assert, @result, [2, 3, 4]);
+        $!assert.is_match(@result, [2, 3, 4]);
     }
 
     method skip_predicate() {
@@ -73,13 +62,13 @@ class Test::Query::Provider::Array {
         my @result := Rosella::Query::as_queryable(@data).skip(1,
             -> $i { $i % 2 == 0; }
         ).data;
-        arrays_equal($!assert, @result, [4]);
+        $!assert.is_match(@result, [4]);
     }
 
     method to_array() {
         my @data := [1, 2, 3, 4];
         my @result := Rosella::Query::as_queryable(@data).to_array.data;
-        arrays_equal($!assert, @result, @data);
+        $!assert.is_match(@result, @data);
         $!assert.not_same(@result, @data);
     }
 

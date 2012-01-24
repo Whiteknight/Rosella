@@ -8,21 +8,12 @@ Rosella::Test::test(Test::Query::Provider::Hash);
 class Test::Query::Provider::Hash {
     sub hash(*%n) { %n; }
 
-    sub hashes_equal($assert, %a, %b) {
-        $assert.equal(pir::elements(%a), pir::elements(%b));
-        $assert.throws_nothing({
-            for %a -> $key {
-                $assert.equal(%a{$key}, %b{$key});
-            }
-        });
-    }
-
     method map() {
         my %data := hash(:foo(1), :bar(2), :baz(3));
         my %new_data := Rosella::Query::as_queryable(%data).map(
             -> $i { $i + 5 }
         ).data;
-        hashes_equal($!assert, %new_data, hash(:foo(6), :bar(7), :baz(8)));
+        $!assert.is_match(%new_data, hash(:foo(6), :bar(7), :baz(8)));
     }
 
     method filter() {
@@ -30,7 +21,7 @@ class Test::Query::Provider::Hash {
         my %new_data := Rosella::Query::as_queryable(%data).filter(
             -> $i { $i % 2 }
         ).data;
-        hashes_equal($!assert, %new_data, hash(:foo(1), :baz(3)));
+        $!assert.is_match(%new_data, hash(:foo(1), :baz(3)));
     }
 
     method fold() {
@@ -137,6 +128,6 @@ class Test::Query::Provider::Hash {
         my %result := Rosella::Query::as_queryable(%data).to_hash(
             -> $i { "test_$i"; }
         ).data;
-        hashes_equal($!assert, %result, hash(:test_1(1), :test_2(2), :test_3(3)));
+        $!assert.is_match(%result, hash(:test_1(1), :test_2(2), :test_3(3)));
     }
 }
