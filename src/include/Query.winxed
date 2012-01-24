@@ -2,6 +2,10 @@ namespace Rosella.Query {
     class Provider;
     class Queryable;
     class Iterable;
+    class Iterable.Source;
+    class Iterable.Array;
+    class Iterable.Hash;
+    class Iterable.Iterator
 
     extern function as_queryable;
     extern function as_stream;
