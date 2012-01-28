@@ -96,7 +96,6 @@ class Rosella.Test.Builder
     // print out a plan
     function plan(int count)
     {
-        // TODO: Error checking
         self._printf("1..%d\n", count);
     }
 }

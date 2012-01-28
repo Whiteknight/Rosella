@@ -12,22 +12,18 @@ class Rosella.Test.Listener.TAP : Rosella.Test.Listener
     }
 
     // Add a new exception result. This test is a failure, unless todo'd
-    function add_exception(var test, var context, var ex)
+    function add_exception(var test, string label, string todo, var ex)
     {
-        string label = context.display_name();
-        string todo = context.test_todo();
         if (todo != null)
             self.test_builder.todo(0, label, todo);
         else
             self.test_builder.ok(0, label);
-        self.display_failure(ex);
+        self.__display_failure(ex);
     }
 
     // The test is a failure with an error message
-    function add_failure_msg(var test, var context, string msg)
+    function add_failure_msg(var test, string label, string todo, string msg)
     {
-        string label = context.display_name();
-        string todo = context.test_todo();
         if (todo != null)
             self.test_builder.todo(0, label, todo);
         else
@@ -35,8 +31,41 @@ class Rosella.Test.Listener.TAP : Rosella.Test.Listener
         self.test_builder.diag(msg);
     }
 
+    // End a test successfully
+    function end_test(var test, string label, string todo)
+    {
+        if (todo != null)
+            self.test_builder.todo(1, label, todo);
+        else
+            self.test_builder.ok(1, label);
+        return self;
+    }
+
+    // Plan a number of tests
+    function plan_tests(int num_tests)
+    {
+        self.test_builder.plan(num_tests);
+    }
+
+    // Mark all tests complete, and show any summary information.
+    function tests_complete(int expected_tests, int total_tests, int num_failures)
+    {
+        if (total_tests > expected_tests)
+            self.test_builder.diag(sprintf("Expected %d tests but you ran %d.", [expected_tests, total_tests]));
+        else if (total_tests < expected_tests)
+            self.test_builder.diag(sprintf("Expected %d tests but you ran %d. Did your test abort prematurely?", [expected_tests, total_tests]));
+
+        if (num_failures == 0)
+            self.test_builder.diag(sprintf("You passed all %d tests", [total_tests]));
+        else
+            self.test_builder.diag(sprintf("Looks like you failed %d of %d tests run", [num_failures, total_tests]));
+    }
+
+    /* Internal Helper Routines
+    */
+
     // Pass information about a failure to the builder
-    function display_failure(var ex)
+    function __display_failure(var ex)
     {
         while (ex != null) {
             var failure = Rosella.Test.Failure.get_exception_failure(ex);
@@ -52,33 +81,6 @@ class Rosella.Test.Listener.TAP : Rosella.Test.Listener
 
             ex = failure.inner_ex;
         }
-    }
-
-    // End a test successfully
-    function end_test(var test, var context)
-    {
-        string label = context.display_name();
-        string todo = context.test_todo();
-        if (todo != null)
-            self.test_builder.todo(1, label, todo);
-        else
-            self.test_builder.ok(1, label);
-        return self;
-    }
-
-    // Plan a number of tests
-    function plan_tests(int num_tests)
-    {
-        self.test_builder.plan(num_tests);
-    }
-
-    // Mark all tests complete, and show any summary information.
-    function tests_complete(int total_tests, int num_failures)
-    {
-        if (num_failures == 0)
-            self.test_builder.diag(Winxed_Builtins.sprintf("You passed all %d tests", [total_tests]));
-        else
-            self.test_builder.diag(Winxed_Builtins.sprintf("Looks like you failed %d of %d tests", [num_failures, total_tests]));
     }
 }
 

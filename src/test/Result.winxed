@@ -8,12 +8,14 @@ class Rosella.Test.Result
     var total_tests;
     var num_failures;
     var listeners;
+    var expected_tests;
 
     // Constructor. Take a list of listeners and initialize the Result
     function Result(var listeners)
     {
         self.total_tests = 0;
         self.num_failures = 0;
+        self.expected_tests = 0;
         self.listeners = listeners;
     }
 
@@ -23,14 +25,19 @@ class Rosella.Test.Result
     // set the expected number of tests to run
     function plan_tests(int num_tests)
     {
-        self.notify_listeners("plan_tests", num_tests);
+        if (num_tests < 0)
+            Rosella.Error.invalid(__FUNCTION__, "Invalid plan");
+        self.expected_tests = num_tests;
+        for (var listener in self.listeners)
+            listener.plan_tests(num_tests);
     }
 
     // Start a test
     function start_test(var test, var context)
     {
         self.total_tests = self.total_tests + 1;
-        self.notify_listeners("start_test", test, context);
+        for (var listener in self.listeners)
+            listener.start_test(test);
     }
 
     // Add a failure test. This picks out the type of failure (either an
@@ -39,19 +46,26 @@ class Rosella.Test.Result
     function add_failure(var test, var context, var ex)
     {
         self.num_failures = self.num_failures + 1;
+        string label = context.display_name();
+        string todo = context.test_todo();
 
         if (Rosella.isa_type("String", ex)) {
-            self.notify_listeners("add_failure_msg", test, context, ex);
+            for (var listener in self.listeners)
+                listener.add_failure_msg(test, label, todo, ex);
             return;
         }
 
-        self.notify_listeners("add_exception", test, context, ex);
+        for (var listener in self.listeners)
+            listener.add_exception(test, label, todo, ex);
     }
 
     // End the test, presuming success
     function end_test(var test, var context)
     {
-        self.notify_listeners("end_test", test, context);
+        string label = context.display_name();
+        string todo = context.test_todo();
+        for (var listener in self.listeners)
+            listener.end_test(test, label, todo);
     }
 
     // Boolean whether the whole run was successful
@@ -63,19 +77,10 @@ class Rosella.Test.Result
     // Tell the listeners that all tests have executed
     function tests_complete()
     {
-        self.notify_listeners("tests_complete", self.total_tests, self.num_failures);
-    }
-
-    /* Internal Routines
-        These methods are not part of the external interface and should
-        not be used elsewhere.
-    */
-
-    // Notify all listeners
-    function notify_listeners(string method, var args [slurpy])
-    {
+        int expected_tests = int(self.expected_tests);
+        int total_tests = int(self.total_tests);
+        int num_failures = int(self.num_failures);
         for (var listener in self.listeners)
-            listener.*method(args:[flat]);
-        return self;
+            listener.tests_complete(expected_tests, total_tests, num_failures);
     }
 }

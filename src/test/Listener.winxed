@@ -9,15 +9,15 @@
 class Rosella.Test.Listener
 {
     // Start the test
-    function start_test(var test, var context) { }
+    function start_test(var test) { }
 
     // End the test successfully
-    function end_test(var test, var context) { }
+    function end_test(var test, string label, string todo) { }
 
     // An error condition, such as an unhandled runtime exception
-    function add_exception(var test, var context, var ex) { }
+    function add_exception(var test, string label, string todo, var ex) { }
 
-    function add_failure_msg(var test, var context, string msg) { }
+    function add_failure_msg(var test, string label, string todo, string msg) { }
 
-    function tests_complete(int total_tests, int num_failures) { }
+    function tests_complete(int expected_tests, int total_tests, int num_failures) { }
 }
