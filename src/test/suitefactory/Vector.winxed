@@ -18,7 +18,6 @@ class Rosella.Test.SuiteFactory.Vector : Rosella.Test.SuiteFactory
     // Get a hash of test methods, one for each item in the data aggregate
     function get_test_methods(var test_factory, var tests, var func)
     {
-        int is_role = 0;
         if (does(tests, "array"))
             return self.__get_test_methods_from_array(test_factory, tests, func);
         if (does(tests, "hash"))

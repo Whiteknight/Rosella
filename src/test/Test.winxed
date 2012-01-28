@@ -118,8 +118,6 @@ namespace Rosella.Test
             options["test_prefix"] = "";
         if (!(exists options["asserter"]))
             options["asserter"] = new Rosella.Test.Asserter;
-        if (!(exists options["initialize"]))
-            options["initialize"] = null;
         if (!(exists options["result"]))
             options["result"] = new Rosella.Test.Result([
                 new Rosella.Test.Listener.TAP()

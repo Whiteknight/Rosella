@@ -47,7 +47,6 @@ class Rosella.Test.Suite
     // Run a single test, catching errors and reporting results.
     function __run_test(string test_name, var test, var result, var context, var asserter)
     {
-        var exception = null;
         result.start_test(test);
         var status = new Rosella.Test.TestStatus(test_name, test.method);
 
@@ -56,6 +55,7 @@ class Rosella.Test.Suite
         setattribute_private(test, testcase_class, "test_status", status);
         setattribute_private(test, testcase_class, "test_assert", asserter);
 
+        var exception = null;
         try {
             self.execute_test(test, test.method, context, status);
         } catch (e) {
