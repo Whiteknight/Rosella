@@ -5,21 +5,17 @@
 */
 class Rosella.Test.TestFactory : Rosella.ObjectFactory
 {
-    var options;
-
     // Set up the factory with the type to create (TestCase or look-alike)
     // and the TestContext object to use.
-    function TestFactory(var options)
+    function TestFactory(var testcase_type)
     {
-        self.target_type = options["testcase_type"];
-        self.options = options;
+        self.target_type = testcase_type;
     }
 
     // Create the TestCase object with the given test method and test
     // method name. Use the existing context object. TestFactory.create
     // calls this method with the type passed in the constructor.
-    function create_typed(var type, var test_name, var test_method,
-            var p [slurpy], var n [slurpy,named])
+    function create_typed(var type, var test_method, var p [slurpy], var n [slurpy,named])
     {
         var test = Rosella.construct(type);
 

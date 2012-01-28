@@ -1,26 +1,22 @@
 class Rosella.Test.SuiteFactory.List : Rosella.Test.SuiteFactory
 {
-    var funcs;   // The collection of functions to execute as tests
-
     /* Public Methods
     */
 
     // Constructor
-    function List(var func_list, var options)
+    function List(var suite_type)
     {
-        self.SuiteFactory(null, options);
-        self.funcs = func_list;
+        self.SuiteFactory(suite_type);
     }
 
     // Get a hash of test methods, one for each item in the data aggregate
-    function get_test_methods()
+    function get_test_methods(var test_factory, var test_list)
     {
-        var data = self.funcs;
-        if (does(data, "array"))
-            return self.__get_test_methods_from_array();
-        if (does(data, "hash"))
-            return self.__get_test_methods_from_hash();
-        return self.__get_test_method_from_scalar();
+        if (does(test_list, "array"))
+            return self.__get_test_methods_from_array(test_factory, test_list);
+        if (does(test_list, "hash"))
+            return self.__get_test_methods_from_hash(test_factory, test_list);
+        return self.__get_test_method_from_scalar(test_factory, test_list);
     }
 
     /* Private Helper Methods
@@ -38,30 +34,34 @@ class Rosella.Test.SuiteFactory.List : Rosella.Test.SuiteFactory
     }
 
     // The data is an array. Get test methods from that.
-    function __get_test_methods_from_array()
+    function __get_test_methods_from_array(var test_factory, var test_list)
     {
         var test_methods = {};
-        for (int i = 0; i < elements(self.funcs); i++) {
+        for (int i = 0; i < elements(test_list); i++) {
             string name = "test " + string(i + 1);
-            test_methods[name] = self.__make_test_method(name, self.funcs[i]);
+            var test_method = self.__make_test_method(name, test_list[i]);
+            test_methods[name] = test_factory.create(test_method);
         }
         return test_methods;
     }
 
     // The data is a hash
-    function __get_test_methods_from_hash()
+    function __get_test_methods_from_hash(var test_factory, var test_list)
     {
         var test_methods = {};
-        for (string key in self.funcs)
-            test_methods[key] = self.__make_test_method(key, self.funcs[key]);
+        for (string key in test_list) {
+            var test_method = self.__make_test_method(key, test_list[key]);
+            test_methods[key] = test_factory.create(test_method);
+        }
         return test_methods;
     }
 
     // The data is not an array or a hash, treat it as a single value
-    function __get_test_methods_from_scalar()
+    function __get_test_methods_from_scalar(var test_factory, var test_list)
     {
+        var test_method = self.__make_test_method("test", self.funcs);
         return {
-            "test" : self.__make_test_method("test", self.funcs)
+            "test" : test_factory.create(test_method)
         };
     }
 }

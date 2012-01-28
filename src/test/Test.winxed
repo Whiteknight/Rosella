@@ -27,9 +27,15 @@ namespace Rosella.Test
     function test(var test_type, var options [slurpy,named])
     {
         __default_options(options);
-        var suitefactory = new Rosella.Test.SuiteFactory(test_type, options);
-        __initialize_test(suitefactory, options);
-        var suite = suitefactory.create();
+        __initialize_test(options);
+
+        var class_obj = Rosella.get_type_class(test_type);
+        var suitefactory = new Rosella.Test.SuiteFactory(options["suite_type"]);
+        var test_factory = new Rosella.Test.TestFactory(options["testcase_type"]);
+
+        var test_methods = __get_test_methods(class_obj, options["test_prefix"]);
+
+        var suite = suitefactory.create(test_factory, test_methods);
         var result = suite.run(options["result"], options["context"], options["asserter"]);
         return result.was_successful();
     }
@@ -39,9 +45,12 @@ namespace Rosella.Test
     function test_vector(var func, var tests, var options [slurpy,named])
     {
         __default_options(options);
-        var suitefactory = new Rosella.Test.SuiteFactory.Vector(func, tests, options);
-        __initialize_test(suitefactory, options);
-        var suite = suitefactory.create();
+        __initialize_test(options);
+
+        var suitefactory = new Rosella.Test.SuiteFactory.Vector(options["suite_type"]);
+        var test_factory = new Rosella.Test.TestFactory(options["testcase_type"]);
+
+        var suite = suitefactory.create(test_factory, tests, func);
         var result = suite.run(options["result"], options["context"], options["asserter"]);
         return result.was_successful();
     }
@@ -51,27 +60,14 @@ namespace Rosella.Test
     function test_list(var list, var options [slurpy,named])
     {
         __default_options(options);
-        var suitefactory = new Rosella.Test.SuiteFactory.List(list, options);
-        __initialize_test(suitefactory, options);
-        var suite = suitefactory.create();
+        __initialize_test(options);
+
+        var suitefactory = new Rosella.Test.SuiteFactory.List(options["suite_type"]);
+        var test_factory = new Rosella.Test.TestFactory(options["testcase_type"]);
+
+        var suite = suitefactory.create(test_factory, list);
         var result = suite.run(options["result"], options["context"], options["asserter"]);
         return result.was_successful();
-    }
-
-    // Make a standard Suite object for class-based tests
-    function make_suite(var test_type, var options [slurpy,named])
-    {
-        __default_options(options);
-        var suitefactory = new Rosella.Test.SuiteFactory(test_type, options);
-        return suitefactory.create();
-    }
-
-    // Make a Suite object for vector-based tests
-    function make_suite_vector(var func, var tests, var options [slurpy,named])
-    {
-        __default_options(options);
-        var suitefactory = new Rosella.Test.SuiteFactory.Vector(func, tests, options);
-        return suitefactory.create();
     }
 
     // Get the matcher factory
@@ -102,7 +98,7 @@ namespace Rosella.Test
     */
 
     // Execute an initialization callback
-    function __initialize_test(var suitefactory, var options)
+    function __initialize_test(var options)
     {
         if (exists options["initialize"] && options["initialize"] != null)
             options["initialize"](options["context"]);
@@ -137,5 +133,40 @@ namespace Rosella.Test
     {
         var ex = new Rosella.Test.Failure(why, exception, is_internal);
         ex.throw();
+    }
+
+    // Get a list of all test methods, searching up the MRO for any
+    // methods which match the prefix.
+    function __get_test_methods(var class_obj, string test_prefix)
+    {
+        //var class_obj = Rosella.get_type_class(self.test_type);
+        var seen_methods = {};
+        var mro = class_obj.inspect("all_parents");
+        var test_methods = {};
+        for (var parent in mro) {
+            if (string(parent) == "P6object")
+                continue;
+            var methods = parent.inspect("methods");
+            for (var method in methods) {
+                if (__is_test_method(method, test_prefix) && !(exists seen_methods[method])) {
+                    seen_methods[method] = 1;
+                    test_methods[method] = methods[method];
+                }
+            }
+        }
+        return test_methods;
+    }
+
+    // Determine if this is a test method or not. There are a handful of
+    // utility methods in Testcase, and others which the user can add too.
+    function __is_test_method(string name, string prefix)
+    {
+        int is_test = false;
+        int prefix_length = length(prefix);
+        if (length(name) > prefix_length &&
+            substr(name, 0, prefix_length) == prefix) {
+            is_test = true;
+        }
+        return is_test;
     }
 }
