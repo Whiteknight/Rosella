@@ -30,7 +30,7 @@ namespace Rosella.Test
         var suitefactory = new Rosella.Test.SuiteFactory(test_type, options);
         __initialize_test(suitefactory, options);
         var suite = suitefactory.create();
-        var result = suite.run();
+        var result = suite.run(options["result"], options["context"], options["asserter"]);
         return result.was_successful();
     }
 
@@ -42,7 +42,7 @@ namespace Rosella.Test
         var suitefactory = new Rosella.Test.SuiteFactory.Vector(func, tests, options);
         __initialize_test(suitefactory, options);
         var suite = suitefactory.create();
-        var result = suite.run();
+        var result = suite.run(options["result"], options["context"], options["asserter"]);
         return result.was_successful();
     }
 
@@ -54,7 +54,7 @@ namespace Rosella.Test
         var suitefactory = new Rosella.Test.SuiteFactory.List(list, options);
         __initialize_test(suitefactory, options);
         var suite = suitefactory.create();
-        var result = suite.run();
+        var result = suite.run(options["result"], options["context"], options["asserter"]);
         return result.was_successful();
     }
 
@@ -124,6 +124,10 @@ namespace Rosella.Test
             options["asserter"] = new Rosella.Test.Asserter;
         if (!(exists options["initialize"]))
             options["initialize"] = null;
+        if (!(exists options["result"]))
+            options["result"] = new Rosella.Test.Result([
+                new Rosella.Test.Listener.TAP()
+            ]);
     }
 
     // Unconditional fail. Throws a Rosella.Test.Failure

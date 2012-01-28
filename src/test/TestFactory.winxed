@@ -22,9 +22,6 @@ class Rosella.Test.TestFactory : Rosella.ObjectFactory
             var p [slurpy], var n [slurpy,named])
     {
         var test = Rosella.construct(type);
-        var asserter = self.options["asserter"];
-        var status = new Rosella.Test.TestStatus(test_name, test_method);
-        var context = self.options["context"];
 
         // setattribute_p_p_s_p sets attributes through a different
         // mechanism and does not get routed through VTABLE_set_attr_str.
@@ -32,10 +29,6 @@ class Rosella.Test.TestFactory : Rosella.ObjectFactory
         // normal accesses through VTABLE_set_attr_str are blocked.
         var testcase_class = class Rosella.Test.TestCase;
         setattribute_private(test, testcase_class, "test_method", test_method);
-        setattribute_private(test, testcase_class, "test_method", test_method);
-        setattribute_private(test, testcase_class, "test_context", context);
-        setattribute_private(test, testcase_class, "test_status", status);
-        setattribute_private(test, testcase_class, "test_assert", asserter);
 
         return test;
     }

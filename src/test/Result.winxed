@@ -33,7 +33,7 @@ class Rosella.Test.Result
     }
 
     // Start a test
-    function start_test(var test, var context)
+    function start_test(var test)
     {
         self.total_tests = self.total_tests + 1;
         for (var listener in self.listeners)
@@ -43,11 +43,11 @@ class Rosella.Test.Result
     // Add a failure test. This picks out the type of failure (either an
     // assertion failure or a stray exception), and passes on the data
     // to the relevant methods on the Listener.
-    function add_failure(var test, var context, var ex)
+    function add_failure(var test, var test_status, var ex)
     {
         self.num_failures = self.num_failures + 1;
-        string label = context.display_name();
-        string todo = context.test_todo();
+        string label = test_status.display_name();
+        string todo = test_status.test_todo();
 
         if (Rosella.isa_type("String", ex)) {
             for (var listener in self.listeners)
@@ -60,10 +60,11 @@ class Rosella.Test.Result
     }
 
     // End the test, presuming success
-    function end_test(var test, var context)
+    function end_test(var test, var test_status)
     {
-        string label = context.display_name();
-        string todo = context.test_todo();
+        string label = test_status.display_name();
+        string todo = test_status.test_todo();
+
         for (var listener in self.listeners)
             listener.end_test(test, label, todo);
     }
