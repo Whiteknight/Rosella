@@ -37,6 +37,8 @@ class Rosella.Harness.TapParser
 
         // Now, parse the remainder of the stream
         stream
+            .filter(function(string l) { return length(l) < 4 || substr(l, 0, 4) != "    "; })
+
             // Turn each line into an array of tokens
             .map(function(string l) {
                 l = Rosella.String.trim(l);
