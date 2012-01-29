@@ -34,20 +34,17 @@ class Rosella.Test.Listener.TAP : Rosella.Test.Listener
             self.test_builder = null;
 
         int is_complete = elements(self.builders) == 0;
+        string type = is_complete ? "tests" : "subtests";
 
-        if (is_complete) {
-            if (total_tests > expected_tests)
-                this_builder.diag(sprintf("Expected %d tests but you ran %d.", [expected_tests, total_tests]));
-            else if (total_tests < expected_tests)
-                this_builder.diag(sprintf("Expected %d tests but you ran %d. Did your test abort prematurely?", [expected_tests, total_tests]));
+        if (total_tests > expected_tests)
+            this_builder.diag(sprintf("Expected %d %s but you ran %d.", [expected_tests, type, total_tests]));
+        else if (total_tests < expected_tests)
+            this_builder.diag(sprintf("Expected %d %s but you ran %d. Did your test abort prematurely?", [expected_tests, type, total_tests]));
 
-            if (num_failures == 0)
-                this_builder.diag(sprintf("You passed all %d tests", [total_tests]));
-            else
-                this_builder.diag(sprintf("Looks like you failed %d of %d tests run", [num_failures, total_tests]));
-        } else {
-            this_builder.diag(sprintf("Passed %d of %d subtests", [total_tests - num_failures, total_tests]));
-        }
+        if (num_failures == 0)
+            this_builder.diag(sprintf("You passed all %d %s", [total_tests, type]));
+        else
+            this_builder.diag(sprintf("Looks like you failed %d of %d %s run", [num_failures, total_tests, type]));
     }
 
     // Add a new exception result. This test is a failure, unless todo'd

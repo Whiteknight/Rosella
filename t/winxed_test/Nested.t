@@ -32,6 +32,15 @@ class Test_A
             [1, 2, 3, 4, 5]
         );
     }
+
+    function test_4()
+    {
+        self.assert.expect_fail(function() {
+            self.status.suite().subtest_list([
+                function () { self.assert.fail("failure"); }
+            ]);
+        });
+    }
 }
 
 function main[main]()

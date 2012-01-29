@@ -52,7 +52,10 @@ class Rosella.Test.Suite
 
         var suite = suite_factory.create(self.test_factory, test_methods);
         result = suite.run(result, self.context, self.asserter);
-        return result.was_successful();
+        if (!result.was_successful()) {
+            string msg = sprintf("Failed %d of %d subtests", [result.num_failures, result.total_tests]);
+            self.asserter.fail(msg, 1, null);
+        }
     }
 
     // Execute a vector-mode subtest
@@ -63,7 +66,10 @@ class Rosella.Test.Suite
 
         var suite = suite_factory.create(self.test_factory, tests, func);
         result = suite.run(result, self.context, self.asserter);
-        return result.was_successful();
+        if (!result.was_successful()) {
+            string msg = sprintf("Failed %d of %d subtests", [result.num_failures, result.total_tests]);
+            self.asserter.fail(msg, 1, null);
+        }
     }
 
     // Execute a list-mode subtest
@@ -74,7 +80,10 @@ class Rosella.Test.Suite
 
         var suite = suite_factory.create(self.test_factory, tests);
         result = suite.run(result, self.context, self.asserter);
-        return result.was_successful();
+        if (!result.was_successful()) {
+            string msg = sprintf("Failed %d of %d subtests", [result.num_failures, result.total_tests]);
+            self.asserter.fail(msg, 1, null);
+        }
     }
 
     /* Helper Methods
