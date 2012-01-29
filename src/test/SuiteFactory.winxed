@@ -2,8 +2,6 @@
    and a suite type, and creates a new Suite with all the tests from that
    test type. Once created, the suite can be further configured and run.
 */
-// TODO: Should be able to support loading several test classes
-//       into a single Suite. The Suite can use nested TAP to handle them.
 class Rosella.Test.SuiteFactory : Rosella.ObjectFactory
 {
     // Constructor. Take the test proto object and a few other options
@@ -20,16 +18,19 @@ class Rosella.Test.SuiteFactory : Rosella.ObjectFactory
         return suite;
     }
 
+    // Get a SuiteFactory type for class-based tests
     function get_factory()
     {
         return new Rosella.Test.SuiteFactory(self.target_type);
     }
 
+    // Get a SuiteFactory type for vectorized tests
     function get_factory_vector()
     {
         return new Rosella.Test.SuiteFactory.Vector(self.target_type);
     }
 
+    // Get a SuiteFactory type for list-based tests
     function get_factory_list()
     {
         return new Rosella.Test.SuiteFactory.List(self.target_type);

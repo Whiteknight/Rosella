@@ -1,5 +1,7 @@
-/* The test Suite object. The Suite takes a list of tests and runs it. As
-   tests are run, events are passed to the Result object.
+/* The Test Suite Object.
+    The Suite represents a list of TestCase objects. The Suite is in charge of
+    maintaining a list of TestCases and running them with given configurations
+    and options.
 */
 class Rosella.Test.Suite
 {
@@ -13,7 +15,7 @@ class Rosella.Test.Suite
     /* Public Methods
     */
 
-    // Set up the suite with the given name and list of tests
+    // Set up the suite with a list of tests.
     function Suite(var tests, var suite_factory, var test_factory)
     {
         self.tests = tests;
@@ -39,6 +41,7 @@ class Rosella.Test.Suite
         return result;
     }
 
+    // Execute a subtest
     function subtest(var test_type)
     {
         var class_obj = Rosella.get_type_class(test_type);
@@ -52,6 +55,7 @@ class Rosella.Test.Suite
         return result.was_successful();
     }
 
+    // Execute a vector-mode subtest
     function subtest_vector(var func, var tests)
     {
         var result = self.result.get_sub_result();
@@ -62,6 +66,7 @@ class Rosella.Test.Suite
         return result.was_successful();
     }
 
+    // Execute a list-mode subtest
     function subtest_list(var tests)
     {
         var result = self.result.get_sub_result();

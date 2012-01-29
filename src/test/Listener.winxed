@@ -1,23 +1,31 @@
-/* A Listener is an object that receives event notifications from the
-   test Result object. The listener takes the information from Result and
-   does something with the data, such as output it in a particular format
-   to the user.
+/* Test Listener.
+    A Listener is an object that receives event notifications from the test
+    Result object durring the running of the Suite. The Listener takes the
+    information from Result and does something with the data, such as output it
+    in a particular format to the user.
 
-   the default listener does nothing. Everything interesting must be done
-   in subclasses.
+    The default Listener does nothing besides define the basic API. Everything
+    interesting must be done in subclasses. See Rosella.Test.Listener.TAP for an
+    example.
 */
 class Rosella.Test.Listener
 {
-    // Start the test
+    // Start a sequence of tests or sequence of subtests.
+    function plan_tests(int num_tests) { }
+
+    // End the sequence of test methods or sequence of subtest methods
+    function tests_complete(int expected_tests, int total_tests, int num_failures) { }
+
+    // Start the individual test method
     function start_test(var test) { }
 
-    // End the test successfully
+    // End the test method successfully
     function end_test(var test, string label, string todo) { }
 
     // An error condition, such as an unhandled runtime exception
     function add_exception(var test, string label, string todo, var ex) { }
 
+    // An error condition that produces an error message but not a full
+    // exception with backtrace
     function add_failure_msg(var test, string label, string todo, string msg) { }
-
-    function tests_complete(int expected_tests, int total_tests, int num_failures) { }
 }

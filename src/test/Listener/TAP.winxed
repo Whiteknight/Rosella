@@ -4,9 +4,10 @@
 */
 class Rosella.Test.Listener.TAP : Rosella.Test.Listener
 {
-    var builders;
-    var test_builder;
+    var builders;       // List of builders (used for nested TAP)
+    var test_builder;   // The current Builder object
 
+    // Constructor
     function TAP()
     {
         self.builders = [];

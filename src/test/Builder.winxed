@@ -1,5 +1,9 @@
-/* A TAP output builder. Can be used similarly to Test::More from the Parrot
-   library.
+/* TAP output builder.
+    This class is a low-level TAP outputter. It can be used similarly to the
+    Test::More library from the Parrot distribution. This class is used by the
+    Test library to implement TAP output for unit tests, and is not used by
+    itself very often. As such, it may be missing features that other TAP
+    producer libraries offer.
 */
 class Rosella.Test.Builder
 {

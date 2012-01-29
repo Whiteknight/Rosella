@@ -1,14 +1,15 @@
-/* Test Result Class. The Result monitors the running suite and handles
-   test events. The Result maintains a list of Listener objects, and
-   broadcasts events to all Listeners. Unless specified otherwise, the
-   default Listener is Rosella::Test::Listener::TAP.
+/* Test Result Class.
+    The Result monitors the running suite and handles test events. The Result
+    maintains a list of Listener objects, and broadcasts events to all
+    Listeners. The Result also keeps track of basic run statistics and can be
+    used later to get statistics about the test.
 */
 class Rosella.Test.Result
 {
-    var total_tests;
-    var num_failures;
-    var listeners;
-    var expected_tests;
+    var total_tests;        // Total number of tests run
+    var num_failures;       // Number of tests marked failure
+    var expected_tests;     // Number of tests expected to be run
+    var listeners;          // List of listeners
 
     // Constructor. Take a list of listeners and initialize the Result
     function Result(var listeners)
@@ -19,6 +20,7 @@ class Rosella.Test.Result
         self.listeners = listeners;
     }
 
+    // Get a new Result object suitable for managing a sub-test or sub-suite
     function get_sub_result()
     {
         var result = new Rosella.Test.Result(self.listeners);
@@ -79,7 +81,10 @@ class Rosella.Test.Result
     // Boolean whether the whole run was successful
     function was_successful()
     {
-        return int(self.num_failures) == 0;
+        if (int(self.expected_tests) == 0)
+            return int(self.num_failures) == 0;
+        else
+            return int(self.expected_tests) == int(self.total_tests) && int(self.num_failures) == 0;
     }
 
     // Tell the listeners that all tests have executed
