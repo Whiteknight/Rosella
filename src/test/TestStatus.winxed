@@ -11,12 +11,13 @@ class Rosella.Test.TestStatus
     var cleanups;       // An array of cleanup routines to run after the test
 
     // Constructor
-    function TestStatus(string test_name, var test)
+    function TestStatus(string test_name, var test, var suite)
     {
         self.current_test = test;
         self.test_name = test_name;
         self.test_todo = null;
         self.cleanups = [];
+        self.suite = suite;
     }
 
     // Get the displayable name of the test. Should not be null.

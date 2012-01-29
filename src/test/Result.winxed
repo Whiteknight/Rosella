@@ -19,6 +19,12 @@ class Rosella.Test.Result
         self.listeners = listeners;
     }
 
+    function get_sub_result()
+    {
+        var result = new Rosella.Test.Result(self.listeners);
+        return result;
+    }
+
     /* Interface Methods
     */
 
@@ -45,9 +51,10 @@ class Rosella.Test.Result
     // to the relevant methods on the Listener.
     function add_failure(var test, var test_status, var ex)
     {
-        self.num_failures = self.num_failures + 1;
         string label = test_status.display_name();
         string todo = test_status.test_todo();
+
+        self.num_failures = self.num_failures + 1;
 
         if (Rosella.isa_type("String", ex)) {
             for (var listener in self.listeners)

@@ -4,11 +4,49 @@
 */
 class Rosella.Test.Listener.TAP : Rosella.Test.Listener
 {
+    var builders;
     var test_builder;
 
     function TAP()
     {
-        self.test_builder = new Rosella.Test.Builder(0);
+        self.builders = [];
+    }
+
+    // Plan a number of tests. This indicates the start of a test or nested
+    // subtest.
+    function plan_tests(int num_tests)
+    {
+        int nest_level = elements(self.builders);
+        self.test_builder = new Rosella.Test.Builder(nest_level);
+        self.builders.push(self.test_builder);
+        self.test_builder.plan(num_tests);
+    }
+
+    // Mark all tests complete. This marks the end of the current test or nested
+    // subtest. If it's the end of all tests, display some summary information
+    function tests_complete(int expected_tests, int total_tests, int num_failures)
+    {
+        var this_builder = self.builders.pop();
+        if (elements(self.builders) > 0)
+            self.test_builder = self.builders[elements(self.builders) - 1];
+        else
+            self.test_builder = null;
+
+        int is_complete = elements(self.builders) == 0;
+
+        if (is_complete) {
+            if (total_tests > expected_tests)
+                this_builder.diag(sprintf("Expected %d tests but you ran %d.", [expected_tests, total_tests]));
+            else if (total_tests < expected_tests)
+                this_builder.diag(sprintf("Expected %d tests but you ran %d. Did your test abort prematurely?", [expected_tests, total_tests]));
+
+            if (num_failures == 0)
+                this_builder.diag(sprintf("You passed all %d tests", [total_tests]));
+            else
+                this_builder.diag(sprintf("Looks like you failed %d of %d tests run", [num_failures, total_tests]));
+        } else {
+            this_builder.diag(sprintf("Passed %d of %d subtests", [total_tests - num_failures, total_tests]));
+        }
     }
 
     // Add a new exception result. This test is a failure, unless todo'd
@@ -39,26 +77,6 @@ class Rosella.Test.Listener.TAP : Rosella.Test.Listener
         else
             self.test_builder.ok(1, label);
         return self;
-    }
-
-    // Plan a number of tests
-    function plan_tests(int num_tests)
-    {
-        self.test_builder.plan(num_tests);
-    }
-
-    // Mark all tests complete, and show any summary information.
-    function tests_complete(int expected_tests, int total_tests, int num_failures)
-    {
-        if (total_tests > expected_tests)
-            self.test_builder.diag(sprintf("Expected %d tests but you ran %d.", [expected_tests, total_tests]));
-        else if (total_tests < expected_tests)
-            self.test_builder.diag(sprintf("Expected %d tests but you ran %d. Did your test abort prematurely?", [expected_tests, total_tests]));
-
-        if (num_failures == 0)
-            self.test_builder.diag(sprintf("You passed all %d tests", [total_tests]));
-        else
-            self.test_builder.diag(sprintf("Looks like you failed %d of %d tests run", [num_failures, total_tests]));
     }
 
     /* Internal Helper Routines

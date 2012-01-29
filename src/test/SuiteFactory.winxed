@@ -16,8 +16,23 @@ class Rosella.Test.SuiteFactory : Rosella.ObjectFactory
     function create_typed(var type, var test_factory, var test_methods, var p [slurpy], var n [slurpy,named])
     {
         var tests = self.get_test_methods(test_factory, test_methods, p:[flat], n:[flat,named]);
-        var suite = Rosella.construct(type, tests);
+        var suite = Rosella.construct(type, tests, self, test_factory);
         return suite;
+    }
+
+    function get_factory()
+    {
+        return new Rosella.Test.SuiteFactory(self.target_type);
+    }
+
+    function get_factory_vector()
+    {
+        return new Rosella.Test.SuiteFactory.Vector(self.target_type);
+    }
+
+    function get_factory_list()
+    {
+        return new Rosella.Test.SuiteFactory.List(self.target_type);
     }
 
     // Given a TestFactory and a hash of methods, return a hash of TestCase

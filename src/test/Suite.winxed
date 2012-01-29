@@ -3,27 +3,73 @@
 */
 class Rosella.Test.Suite
 {
-    var tests;      // Hash of tests to run
+    var tests;          // Hash of tests to run
+    var suite_factory;  // SuiteFactory for creating nested suites
+    var test_factory;   // TestFactory for creating subtests
+    var result;         // The current Result object
+    var context;        // The current TestContext object
+    var asserter;       // The Current Asserter object
 
     /* Public Methods
     */
 
     // Set up the suite with the given name and list of tests
-    function Suite(var tests)
+    function Suite(var tests, var suite_factory, var test_factory)
     {
         self.tests = tests;
+        self.suite_factory = suite_factory;
+        self.test_factory = test_factory;
     }
 
     // Run the tests
     function run(var result, var context, var asserter)
     {
+        self.result = result;
+        self.context = context;
+        self.asserter = asserter;
         result.plan_tests(elements(self.tests));
         for (var test_name in self.tests) {
             var test = self.tests[test_name];
             self.__run_test(test_name, test, result, context, asserter);
         }
         result.tests_complete();
+        self.result = null;
+        self.context = null;
+        self.asserter = null;
         return result;
+    }
+
+    function subtest(var test_type)
+    {
+        var class_obj = Rosella.get_type_class(test_type);
+
+        var test_methods = Rosella.Test.internal_get_test_methods(class_obj, "");
+        var result = self.result.get_sub_result();
+        var suite_factory = self.suite_factory.get_factory();
+
+        var suite = suite_factory.create(self.test_factory, test_methods);
+        result = suite.run(result, self.context, self.asserter);
+        return result.was_successful();
+    }
+
+    function subtest_vector(var func, var tests)
+    {
+        var result = self.result.get_sub_result();
+        var suite_factory = self.suite_factory.get_factory_vector();
+
+        var suite = suite_factory.create(self.test_factory, tests, func);
+        result = suite.run(result, self.context, self.asserter);
+        return result.was_successful();
+    }
+
+    function subtest_list(var tests)
+    {
+        var result = self.result.get_sub_result();
+        var suite_factory = self.suite_factory.get_factory_list();
+
+        var suite = suite_factory.create(self.test_factory, tests);
+        result = suite.run(result, self.context, self.asserter);
+        return result.was_successful();
     }
 
     /* Helper Methods
@@ -48,7 +94,7 @@ class Rosella.Test.Suite
     function __run_test(string test_name, var test, var result, var context, var asserter)
     {
         result.start_test(test);
-        var status = new Rosella.Test.TestStatus(test_name, test.method);
+        var status = new Rosella.Test.TestStatus(test_name, test.method, self);
 
         var testcase_class = class Rosella.Test.TestCase;
         setattribute_private(test, testcase_class, "test_context", context);

@@ -33,7 +33,7 @@ namespace Rosella.Test
         var test_factory = new Rosella.Test.TestFactory(options["testcase_type"]);
 
         var class_obj = Rosella.get_type_class(test_type);
-        var test_methods = __get_test_methods(class_obj, options["test_prefix"]);
+        var test_methods = internal_get_test_methods(class_obj, options["test_prefix"]);
 
         var suite = suitefactory.create(test_factory, test_methods);
         var result = suite.run(options["result"], options["context"], options["asserter"]);
@@ -86,7 +86,7 @@ namespace Rosella.Test
     const string DEFAULT_TEST_BUILDER = "Rosella.Test.default_test_builder";
     function default_test_builder()
     {
-        var temp = Rosella.Globals.get_global(DEFAULT_TEST_BUILDER)
+        var temp = Rosella.Globals.get_global(DEFAULT_TEST_BUILDER);
         if (temp == null) {
             temp = new Rosella.Test.Builder(0);
             Rosella.Globals.register_global(DEFAULT_TEST_BUILDER);
@@ -147,7 +147,7 @@ namespace Rosella.Test
 
     // Get a list of all test methods, searching up the MRO for any
     // methods which match the prefix.
-    function __get_test_methods(var class_obj, string test_prefix)
+    function internal_get_test_methods(var class_obj, string test_prefix)
     {
         //var class_obj = Rosella.get_type_class(self.test_type);
         var seen_methods = {};
