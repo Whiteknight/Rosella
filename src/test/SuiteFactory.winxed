@@ -5,8 +5,10 @@
 class Rosella.Test.SuiteFactory : Rosella.ObjectFactory
 {
     // Constructor. Take the test proto object and a few other options
-    function SuiteFactory(var suite_type)
+    function SuiteFactory(var suite_type [optional], int has_suite_type [opt_flag])
     {
+        if (!has_suite_type)
+            suite_type = class Rosella.Test.Suite;
         self.target_type = suite_type;
     }
 

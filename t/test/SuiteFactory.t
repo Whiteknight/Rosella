@@ -8,18 +8,14 @@ class MyFakeTestClass {}
 Rosella::Test::test(Test::SuiteFactory::Test);
 class Test::SuiteFactory::Test {
     method basic_BUILD() {
-        my $factory := Rosella::construct(Rosella::Test::SuiteFactory,
-            MyFakeTestClass, {}
-        );
+        my $factory := Rosella::construct(Rosella::Test::SuiteFactory);
     }
 
     method test_create_Suite() {
         my %options := {};
         %options{"suite_type"} := Rosella::Test::Suite;
-        my $factory := Rosella::construct(Rosella::Test::SuiteFactory,
-            MyFakeTestClass, %options
-        );
-        my $suite := $factory.create();
+        my $factory := Rosella::construct(Rosella::Test::SuiteFactory);
+        my $suite := $factory.create(Rosella::construct(Rosella::Test::TestFactory), {});
         $!assert.instance_of($suite, Rosella::Test::Suite);
     }
 
@@ -32,12 +28,8 @@ class Test::SuiteFactory::Test {
     }
 
     method test_create_typed_Suite() {
-        my %options := {};
-        %options{"suite_type"} := Rosella::Test::Suite;
-        my $factory := Rosella::construct(Rosella::Test::SuiteFactory,
-            MyFakeTestClass, %options
-        );
-        my $suite := $factory.create_typed(Rosella::Test::Suite);
+        my $factory := Rosella::construct(Rosella::Test::SuiteFactory, Rosella::Test::Suite);
+        my $suite := $factory.create_typed(Rosella::Test::Suite, Rosella::construct(Rosella::Test::TestFactory, Rosella::Test::TestCase), {});
         $!assert.instance_of($suite, Rosella::Test::Suite);
     }
 

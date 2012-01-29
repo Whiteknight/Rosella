@@ -37,10 +37,9 @@ class Test::Result::Test {
         my $clistener := get_listener_controller();
         $clistener.expect_method("start_test").once.with_any_args;
         my $mlistener := $clistener.mock();
-        my $testcontext := "dummy";
         my $result := Rosella::construct(Rosella::Test::Result, [$mlistener]);
         my $faketest := MyFakeTest.new();
-        $result.start_test($faketest, $testcontext);
+        $result.start_test($faketest);
         $clistener.verify();
     }
 
@@ -49,9 +48,9 @@ class Test::Result::Test {
         my $faketest := MyFakeTest.new();
         $c.expect_method("end_test").once.with_any_args;
         my $m := $c.mock();
-        my $testcontext := "dummy";
+        my $teststatus := Rosella::construct(Rosella::Test::TestStatus, "dummy", "", "");
         my $result := Rosella::construct(Rosella::Test::Result, [$m]);
-        $result.end_test($faketest, $testcontext);
+        $result.end_test($faketest, $teststatus);
         $c.verify();
     }
 

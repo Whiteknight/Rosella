@@ -16,15 +16,13 @@ class Test::TestFactory::Test {
     method test_create_TestCase() {
         my %options := {};
         %options{"testcase_type"} := Rosella::Test::TestCase;
-        my $factory := Rosella::construct(Rosella::Test::TestFactory, %options);
+        my $factory := Rosella::construct(Rosella::Test::TestFactory, Rosella::Test::TestCase);
         my $testcase := $factory.create("Foo", "Bar");
         $!assert.instance_of($testcase, Rosella::Test::TestCase);
     }
 
     method test_create_custom_subclass() {
-        my %options := {};
-        %options{"testcase_type"} := MyTestCaseSubclass;
-        my $factory := Rosella::construct(Rosella::Test::TestFactory, %options);
+        my $factory := Rosella::construct(Rosella::Test::TestFactory, MyTestCaseSubclass);
         my $testcase := $factory.create("Foo", "Bar");
         $!assert.instance_of($testcase, MyTestCaseSubclass);
     }
