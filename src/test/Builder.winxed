@@ -5,11 +5,13 @@ class Rosella.Test.Builder
 {
     var test_number;
     var output;
+    var nest_level;
 
     // Constructor
-    function Builder(var output [optional], int has_out [opt_flag])
+    function Builder(int nest_level, var output [optional], int has_out [opt_flag])
     {
         self.test_number = 0;
+        self.nest_level = nest_level;
         if (!has_out)
             output = getstdout();
         self.output = output;
@@ -18,7 +20,9 @@ class Rosella.Test.Builder
     // Helper printf function
     function _printf(string fmt, var args [slurpy])
     {
-        self.output.print(sprintf(fmt, args));
+        int nest_level = int(self.nest_level);
+        string prefix = repeat("    ", nest_level);
+        self.output.print(prefix + sprintf(fmt, args));
     }
 
     // Reset the count

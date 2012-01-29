@@ -158,21 +158,6 @@ class Rosella.Test.Asserter
             self.fail(message);
     }
 
-    // TODO: Port matcher library
-    //function match($obj, $matcher, string message [optional], int has_msg [opt_flag] = "match failed") {
-    //    unless $matcher.matches($obj) {
-    //        my $explain = $matcher.describe_self("\nExpected ")
-    //            ~ $matcher.describe_failure("\nbut ", $obj);
-    //        self.fail($message ~ $explain);
-    //    }
-    //}
-
-    //function not_match($obj, $matcher, string message [optional], int has_msg [opt_flag]) {
-    //    if $matcher.matches($obj) {
-    //        self.fail($message);
-    //    }
-    //}
-
     // Determine if the object is null. Expect so.
     function is_null(var obj, string message [optional], int has_msg [opt_flag])
     {

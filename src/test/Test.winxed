@@ -29,10 +29,10 @@ namespace Rosella.Test
         __default_options(options);
         __initialize_test(options);
 
-        var class_obj = Rosella.get_type_class(test_type);
         var suitefactory = new Rosella.Test.SuiteFactory(options["suite_type"]);
         var test_factory = new Rosella.Test.TestFactory(options["testcase_type"]);
 
+        var class_obj = Rosella.get_type_class(test_type);
         var test_methods = __get_test_methods(class_obj, options["test_prefix"]);
 
         var suite = suitefactory.create(test_factory, test_methods);
@@ -78,6 +78,18 @@ namespace Rosella.Test
         if (temp == null) {
             temp = new Rosella.Test.Matcher.Factory();
             Rosella.Globals.register_global(DEFAULT_MATCHER_FACTORY, temp);
+        }
+        return temp;
+    }
+
+    // Get a default test builder
+    const string DEFAULT_TEST_BUILDER = "Rosella.Test.default_test_builder";
+    function default_test_builder()
+    {
+        var temp = Rosella.Globals.get_global(DEFAULT_TEST_BUILDER)
+        if (temp == null) {
+            temp = new Rosella.Test.Builder(0);
+            Rosella.Globals.register_global(DEFAULT_TEST_BUILDER);
         }
         return temp;
     }
@@ -159,12 +171,9 @@ namespace Rosella.Test
     // utility methods in Testcase, and others which the user can add too.
     function __is_test_method(string name, string prefix)
     {
-        int is_test = false;
         int prefix_length = length(prefix);
-        if (length(name) > prefix_length &&
-            substr(name, 0, prefix_length) == prefix) {
-            is_test = true;
-        }
-        return is_test;
+        if (length(name) > prefix_length && substr(name, 0, prefix_length) == prefix)
+            return true;
+        return false;
     }
 }

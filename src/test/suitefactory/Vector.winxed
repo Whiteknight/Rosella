@@ -29,11 +29,11 @@ class Rosella.Test.SuiteFactory.Vector : Rosella.Test.SuiteFactory
     */
 
     // Create a closure over the function and the particular datum
-    function __make_test_method(var n, var f, var d)
+    function __make_test_method(string n, var f, var d)
     {
         var func = f;
         var data = d;
-        var name = n;
+        string name = n;
         return function(var obj) {
             obj.status.verify(name);
             func(obj, data);

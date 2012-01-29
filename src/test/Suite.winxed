@@ -17,7 +17,7 @@ class Rosella.Test.Suite
     // Run the tests
     function run(var result, var context, var asserter)
     {
-        result.plan_tests(int(self.tests));
+        result.plan_tests(elements(self.tests));
         for (var test_name in self.tests) {
             var test = self.tests[test_name];
             self.__run_test(test_name, test, result, context, asserter);

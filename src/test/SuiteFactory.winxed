@@ -20,6 +20,8 @@ class Rosella.Test.SuiteFactory : Rosella.ObjectFactory
         return suite;
     }
 
+    // Given a TestFactory and a hash of methods, return a hash of TestCase
+    // objects
     function get_test_methods(var test_factory, var test_methods)
     {
         var tests = {};

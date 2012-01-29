@@ -23,10 +23,10 @@ class Rosella.Test.SuiteFactory.List : Rosella.Test.SuiteFactory
     */
 
     // Create a closure over the function and the particular datum
-    function __make_test_method(var n, var f)
+    function __make_test_method(string n, var f)
     {
         var func = f;
-        var name = n;
+        string name = n;
         return function(var obj) {
             obj.status.verify(name);
             func(obj);
