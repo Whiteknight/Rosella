@@ -82,18 +82,23 @@ class Rosella.Test.Builder
                 self._printf("# %s\n", line);
 
             var bt_list = Rosella.Parrot.get_backtrace_ex_strings(error);
-            var display_bt = [];
-            int i = 0;
-            for (; i < elements(bt_list); i++) {
-                if (!contains(bt_list[i], "rosella/test.winxed"))
-                    break;
-            }
-            int j = 0;
-            display_bt[j++] = bt_list[i - 1];
-            for (; i < elements(bt_list); i++) {
-                if (contains(bt_list[i], "execute_test") && contains(bt_list[i], "rosella/test.winxed"))
-                    break;
-                display_bt[j++] = bt_list[i];
+            var display_bt;
+            if (__DEBUG__ || Rosella.Test.debug())
+                display_bt = bt_list;
+            else {
+                display_bt = [];
+                int i = 0;
+                for (; i < elements(bt_list); i++) {
+                    if (!contains(bt_list[i], "rosella/test.winxed"))
+                        break;
+                }
+                int j = 0;
+                display_bt[j++] = bt_list[i - 1];
+                for (; i < elements(bt_list); i++) {
+                    if (contains(bt_list[i], "execute_test") && contains(bt_list[i], "rosella/test.winxed"))
+                        break;
+                    display_bt[j++] = bt_list[i];
+                }
             }
             for (string bt in display_bt)
                 self._printf("# %s\n", bt);
