@@ -6,7 +6,7 @@
 */
 class Rosella.Test.TestContext
 {
-    var data;
+    var data;   // The data hash
 
     // Create the TestContext, initializing the data store with any named
     // values

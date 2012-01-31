@@ -231,12 +231,6 @@ class Rosella.Test.Asserter
             self.fail(message);
     }
 
-    //function within_delta($o1, $o2, $delta, string message [optional], int has_msg [opt_flag] "difference not within delta") {
-    //    my $difference = $o1 - $o2;
-    //    $difference = - $difference if $difference < 0;
-    //    self.fail($message) unless $difference < $delta;
-    //}
-
     // meta-test. Runs the block as a test, and expects a failure
     function expect_fail(var block, string message [optional], int has_msg [opt_flag])
     {

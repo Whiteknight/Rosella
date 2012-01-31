@@ -1,3 +1,7 @@
+/* Function List SuiteFactory
+    This suite factory takes a list of test functions and constructs a suite
+    from them.
+*/
 class Rosella.Test.SuiteFactory.List : Rosella.Test.SuiteFactory
 {
     /* Public Methods

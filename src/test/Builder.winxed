@@ -7,9 +7,9 @@
 */
 class Rosella.Test.Builder
 {
-    var test_number;
-    var output;
-    var nest_level;
+    var test_number;    // The number of the current test, starting at 1
+    var output;         // The output Handle
+    var nest_level;     // The level of TAP nesting
 
     // Constructor
     function Builder(int nest_level, var output [optional], int has_out [opt_flag])
