@@ -4,7 +4,6 @@ INIT {
     Rosella::initialize_rosella("test");
 }
 
-Rosella::Test::debug(1);
 Rosella::Test::test(ErrorTest);
 
 class ErrorTest {
