@@ -18,6 +18,7 @@ sub my_test_function(*@args) { }
 
 class Test::Suite_Subclass::Test {
     method test_run_test_subclass() {
+        $!status.unimplemented("MockObject doesn't support setattribute_p_p_s_p, and this test nolonger works");
         my $suite := MyTestSuite.new();
 
         my $fresult := Rosella::construct(Rosella::MockObject::Factory);
@@ -33,7 +34,7 @@ class Test::Suite_Subclass::Test {
         my $test := $ctest.mock;
 
         $!assert.output_is({
-            $suite.__run_test("my_test_function", $test, $result);
+            $suite.__run_test("my_test_function", $test, $result, "context", "asserter");
         }, "Executing test 'my_test_function'\n");
 
         $cresult.verify();

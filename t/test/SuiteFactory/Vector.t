@@ -8,7 +8,7 @@ sub hash(*%h) { %h }
 Rosella::Test::test(Test::SuiteFactory::Test);
 class Test::SuiteFactory::Test {
     method test_BUILD() {
-        my $v := Rosella::construct(Rosella::Test::SuiteFactory::Vector, "", "", {});
+        my $v := Rosella::construct(Rosella::Test::SuiteFactory::Vector, Rosella::Test::Suite);
         $!assert.not_null($v);
         $!assert.instance_of($v, Rosella::Test::SuiteFactory::Vector);
     }
@@ -17,23 +17,15 @@ class Test::SuiteFactory::Test {
     # target the get_test_methods method here
     method get_test_methods() {
         my $result := "";
-        my $v := Rosella::construct(Rosella::Test::SuiteFactory::Vector,
-            -> $obj, $data {},
-            <foo bar baz fie>,
-            {}
-        );
-        my %m := $v.get_test_methods();
+        my $v := Rosella::construct(Rosella::Test::SuiteFactory::Vector, Rosella::Test::Suite);
+        my %m := $v.get_test_methods(Rosella::construct(Rosella::Test::TestFactory), <foo bar baz fie>, -> $obj, $data {});
         $!assert.does(%m, "hash");
     }
 
     method get_test_methods_array() {
         my $result := "";
-        my $v := Rosella::construct(Rosella::Test::SuiteFactory::Vector,
-            -> $obj, $data {},
-            <foo bar baz fie>,
-            {}
-        );
-        my %m := $v.get_test_methods();
+        my $v := Rosella::construct(Rosella::Test::SuiteFactory::Vector, Rosella::Test::Suite);
+        my %m := $v.get_test_methods(Rosella::construct(Rosella::Test::TestFactory), <foo bar baz fie>, -> $obj, $data {});
         $!assert.equal(+%m, 4);
         $!assert.exists_keyed_str(%m, "test 1");
         $!assert.exists_keyed_str(%m, "test 2");
@@ -43,12 +35,8 @@ class Test::SuiteFactory::Test {
 
     method get_test_methods_hash() {
         my $result := "";
-        my $v := Rosella::construct(Rosella::Test::SuiteFactory::Vector,
-            -> $obj, $data {},
-            hash(:foo("foo"), :bar("bar"), :baz("baz"), :fie("fie")),
-            {}
-        );
-        my %m := $v.get_test_methods();
+        my $v := Rosella::construct(Rosella::Test::SuiteFactory::Vector, Rosella::Test::Suite);
+        my %m := $v.get_test_methods(Rosella::construct(Rosella::Test::TestFactory), hash(:foo("foo"), :bar("bar"), :baz("baz"), :fie("fie")), -> $obj, $data {});
         $!assert.equal(+%m, 4);
         $!assert.exists_keyed_str(%m, "foo");
         $!assert.exists_keyed_str(%m, "bar");

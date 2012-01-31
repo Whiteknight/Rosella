@@ -84,10 +84,10 @@ class Rosella.Test.Builder
             var bt_list = Rosella.Parrot.get_backtrace_ex_strings(error);
             var display_bt = [];
             int i = 0;
-            for (; i < elements(bt_list); i++) {
+            /*for (; i < elements(bt_list); i++) {
                 if (!contains(bt_list[i], "rosella/test.winxed"))
                     break;
-            }
+            }*/
             int j = 0;
             display_bt[j++] = bt_list[i - 1];
             for (; i < elements(bt_list); i++) {
