@@ -14,11 +14,6 @@ class ErrorTest {
         });
     }
 
-    method ooopsie_doopsies()
-    {
-        $!assert.equal(0, 1);
-    }
-
     # TODO: We need an Asserter method for matching error messages to test
     #       other stuff.
 }
