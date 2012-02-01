@@ -20,11 +20,6 @@ class Rosella.Test.TestContext
         for running tests. These are not required for normal running of
         the Suite, and can be optionally disallowed or overridden in
         custom Context objects.
-
-        Notice that if you don't provide some of these things, they won't
-        be available to running tests. For instance, this is the only
-        mechanism for marking a test as todo'd, so if you take that away
-        you won't be able to use that.
     */
 
     // Get a named data value

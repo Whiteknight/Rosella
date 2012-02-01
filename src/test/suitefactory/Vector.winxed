@@ -10,9 +10,11 @@ class Rosella.Test.SuiteFactory.Vector : Rosella.Test.SuiteFactory
     */
 
     // Constructor
-    function Vector(var suite_type)
+    function Vector(var suite_type [optional], int has_type [opt_flag])
     {
-        self.SuiteFactory(suite_type);
+        if (has_type)
+            self.SuiteFactory(suite_type);
+        else self.SuiteFactory();
     }
 
     // Get a hash of test methods, one for each item in the data aggregate

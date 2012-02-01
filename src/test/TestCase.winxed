@@ -7,22 +7,20 @@
 
     TestCase intercepts attribute accesses. Attributes on a TestCase are
     read-only, and any attempt to modify them from within a running test
-    will cause an exception.
-
-    By default, TestCase provides two attributes, one for the currently
-    executing test method object, and one for the current TestContext data
-    object. Subclasses of TestCase can add additional attributes or
-    methods which can be used from inside tests.
+    will cause an exception. TestCase provides four attributes standard: The
+    currently executing method object, the TestContext object, the TestStatus
+    object and the Asserter object.
 
     TestCase maps attribute names to private internal attributes. This is
     done to make sure attributes are "natural" for use in both NQP and
-    Winxed. Also, the names need to be translated anyway to allow them to
-    be intercepted. Here's a basic mapping:
+    Winxed, and also that attributes are not modified directly by test code.
+    Also, the names need to be translated anyway to allow them to be
+    intercepted. Here's a basic mapping example:
 
     "attr"   -> "test_attr"
     "$!attr" -> "test_attr"
 
-    The attributes "context" and "$!context" both map to the attribute
+    The attributes "context" and "$!context" both map to the private attribute
     "test_context. "method" and "$!method" both map to "test_method".
     Subclasses of TestCase can follow this pattern to provide access to
     additional attributes, if needed.
@@ -47,17 +45,14 @@ class Rosella.Test.TestCase
     // agnostic way.
     function get_attr_str[vtable](string attr_raw)
     {
-        var myclass = class Rosella.Test.TestCase;
-        var value = null;
         string attr = attr_raw;
         if (substr(attr, 0, 2) == '$!')
             attr = substr(attr, 2);
-        attr = "test_" + attr;
         try {
-            value = getattribute_private(self, myclass, attr);
+            return getattribute_private(self, class Rosella.Test.TestCase, "test_" + attr);
         } catch(e) {
             Rosella.Error.invalid(__FUNCTION__, "TestCase does not have an attribute '" + attr_raw + "'");
         }
-        return value;
+        return null;
     }
 }
