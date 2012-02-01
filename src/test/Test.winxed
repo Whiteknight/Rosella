@@ -97,6 +97,16 @@ namespace Rosella.Test
         return suitefactory.create(test_factory, list);
     }
 
+    function run_suite(var suite)
+    {
+        var result = new Rosella.Test.Result([
+            new Rosella.Test.Listener.TAP()
+        ]);
+        var context = new Rosella.Test.TestContext();
+        var asserter = new Rosella.Test.Asserter;
+        return suite.run(result, context, asserter);
+    }
+
     function test_suites(var suites, var options[slurpy,named])
     {
         test_vector(
