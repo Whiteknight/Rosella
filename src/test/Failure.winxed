@@ -13,15 +13,15 @@ namespace Rosella.Test.Failure
     }
 }
 
-/* A test failure. Set up and throw an exception with this object as a
-   payload to signal an assertion failure (as opposed to other kind of
-   runtime error).
+/* Test Failure Exception
+    Wrapper type for Parrot's Exception object which holds some metadata about
+    test failures and other errors
 */
 class Rosella.Test.Failure
 {
-    var exception;
-    var inner_ex;
-    var is_internal;
+    var exception;      // The Parrot Exception object
+    var inner_ex;       // The inner exception
+    var is_internal;    // Whether this exception is an internal error message or a user-visible failure
 
     // Build the exception object. If the exception is_internal, we won't
     // show a backtrace.

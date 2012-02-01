@@ -13,14 +13,6 @@ namespace Rosella.Test
     /* Public API functions
     */
 
-    /* Test options:
-        suite_type: The type of Suite object to use.
-        testcase_type: The type of TestCase object to use.
-        context: The TestContext object instance to use. Stored in $!context
-        test_prefix: A prefix string that all test methods must have.
-        asserter: The assertion object. Stored in $!assert
-    */
-
     // Setup and run a test using Testcase-based tests. This is basically
     // a thin facade over SuiteFactory and Suite with some defaults thrown
     // in. Returns 1 if the test was a success, 0 otherwise.
@@ -186,6 +178,15 @@ namespace Rosella.Test
         if (exists options["initialize"] && options["initialize"] != null)
             options["initialize"](options["context"]);
     }
+
+    /* Test options:
+        suite_type: The type of Suite object to use.
+        testcase_type: The type of TestCase object to use.
+        context: The TestContext object instance to use. Stored in $!context
+        test_prefix: A prefix string that all test methods must have.
+        asserter: The assertion object. Stored in $!assert
+        result: A Result object
+    */
 
     // Make sure that we have some values for the important option keys.
     // If the user has provided an override for any of these, ignore.
