@@ -23,6 +23,13 @@ class Rosella.Test.Matcher.Factory : Rosella.ObjectFactory
         return self.default_matcher;
     }
 
+    function create_named(string name)
+    {
+        if (exists self.matchers[name])
+            return self.matchers[name];
+        return null;
+    }
+
     function add_matcher(string name, var matcher)
     {
         self.matchers[name] = matcher;

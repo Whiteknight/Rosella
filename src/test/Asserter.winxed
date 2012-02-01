@@ -38,164 +38,164 @@ class Rosella.Test.Asserter
         holds, nothing happens. If the condition fails, we call fail().
     */
 
-    // Execute a block of code that is expected to return a boolean. Expect true
-    function block(string message, var block)
-    {
-        if (!block())
-            self.fail(message);
-    }
-
-    // Execute a block of code that is expected to return a boolean. Expect false
-    function block_false(string message, var block)
-    {
-        if (block())
-            self.fail(message);
-    }
-
     // Determine if the object "can" do the given method. Expect that it can
     function can(var obj, string method,
             string message [optional], int has_msg [opt_flag])
     {
-        message = self.__default_message(message, has_msg, "item failed 'can'");
-        if (!can(obj, method))
+        if (!can(obj, method)) {
+            message = self.__default_message(message, has_msg, "item failed 'can'");
             self.fail(message);
+        }
     }
 
     // Determine if the object "can" do the given method. Expect that it can not
     function can_not(var obj, string method,
             string message [optional], int has_msg [opt_flag])
     {
-        message = self.__default_message(message, has_msg, "item failed 'can_not'");
-        if (can(obj, method))
+        if (can(obj, method)) {
+            message = self.__default_message(message, has_msg, "item failed 'can_not'");
             self.fail(message);
+        }
     }
 
     // Determine if the object is defined. Expect that it is
     function defined(var obj,
             string message [optional], int has_msg [opt_flag])
     {
-        message = self.__default_message(message, has_msg, "item not defined");
-        if (!defined(obj))
+        if (!defined(obj)) {
+            message = self.__default_message(message, has_msg, "item not defined");
             self.fail(message);
+        }
     }
 
     // Determine if the object is defined. Expect that it is not
     function not_defined(var obj,
             string message [optional], int has_msg [opt_flag])
     {
-        message = self.__default_message(message, has_msg, "item is defined");
-        if (defined(obj))
+        if (defined(obj)) {
+            message = self.__default_message(message, has_msg, "item is defined");
             self.fail(message);
+        }
     }
 
     // Determine if the object implements the given role. Expect that it does
     function does(var obj, var role,
             string message [optional], int has_msg [opt_flag])
     {
-        message = self.__default_message(message, has_msg, "item failed 'does'");
         int obj_does = 0;
         if (role instanceof 'String')
             obj_does = does(obj, string(role));
         else
             obj_does = does(obj, role);
-        if (!obj_does)
+        if (!obj_does) {
+            message = self.__default_message(message, has_msg, "item failed 'does'");
             self.fail(message);
+        }
     }
 
     // Determine if the object implements the given role. Expect that it doesn't
     function does_not(var obj, var role, string message [optional], int has_msg [opt_flag])
     {
-        message = self.__default_message(message, has_msg, "item failed 'does'");
-        if (does(obj, role))
+        if (does(obj, role)) {
+            message = self.__default_message(message, has_msg, "item failed 'does'");
             self.fail(message);
+        }
     }
 
     // Determine if the two objects are equal. Expect that they are
     function equal(var o1, var o2,
             string message [optional], int has_msg [opt_flag])
     {
-        if (!has_msg) {
-            try {
-                string s1 = string(o1);
-                string s2 = string(o2);
-                message = sprintf("objects not equal '%s' != '%s'", [s1, s2]);
-                has_msg = 1;
-            } catch() { }
-        }
-        message = self.__default_message(message, has_msg, "objects not equal");
         int equal = 0;
         ${ iseq equal, o1, o2 };
-        if (!equal)
+        if (!equal) {
+            if (!has_msg) {
+                try {
+                    string s1 = string(o1);
+                    string s2 = string(o2);
+                    message = sprintf("objects not equal '%s' != '%s'", [s1, s2]);
+                    has_msg = 1;
+                } catch() { }
+            }
+            message = self.__default_message(message, has_msg, "objects not equal");
             self.fail(message);
+        }
     }
 
     // Determine if the two objects are equal. Expect that they are not
     function not_equal(var o1, var o2,
             string message [optional], int has_msg [opt_flag])
     {
-        message = self.__default_message(message, has_msg, "objects equal");
         int equal = 0;
         ${ iseq equal, o1, o2 };
-        if (equal)
+        if (equal) {
+            message = self.__default_message(message, has_msg, "objects equal");
             self.fail(message);
+        }
     }
 
     // Determine if the object is an instance of the type. Expect so.
     function instance_of(var obj, var type, string message [optional], int has_msg [opt_flag])
     {
-        message = self.__default_message(message, has_msg, "object is not instance_of");
         var class_obj = Rosella.get_type_class(type);
-        if (!isa(obj, class_obj))
+        if (!isa(obj, class_obj)) {
+            message = self.__default_message(message, has_msg, "object is not instance_of");
             self.fail(message);
+        }
     }
 
     // Determine if the object is an instance of the type. Expect not.
     function not_instance_of(var obj, var type, string message [optional], int has_msg [opt_flag])
     {
-        message = self.__default_message(message, has_msg, "object is instance_of");
         var class_obj = Rosella.get_type_class(type);
-        if (isa(obj, class_obj))
+        if (isa(obj, class_obj)) {
+            message = self.__default_message(message, has_msg, "object is instance_of");
             self.fail(message);
+        }
     }
 
     // Determine if the object is null. Expect so.
     function is_null(var obj, string message [optional], int has_msg [opt_flag])
     {
-        message = self.__default_message(message, has_msg, "object is not null");
-        if (obj != null)
+        if (obj != null) {
+            message = self.__default_message(message, has_msg, "object is not null");
             self.fail(message);
+        }
     }
 
     // Determine if the object is null. Expect not.
     function not_null(var obj, string message [optional], int has_msg [opt_flag])
     {
-        message = self.__default_message(message, has_msg, "object is null");
-        if (obj == null)
+        if (obj == null) {
+            message = self.__default_message(message, has_msg, "object is null");
             self.fail(message);
+        }
     }
 
     // Determine if the two objects are the same instance. Expect so.
     function same(var o1, var o2, string message [optional], int has_msg [opt_flag])
     {
-        message = self.__default_message(message, has_msg, "objects not same");
-        if (o1 !== o2)
+        if (o1 !== o2) {
+            message = self.__default_message(message, has_msg, "objects not same");
             self.fail(message);
+        }
     }
 
     // Determine if the two objects are the same instance. Expect not.
     function not_same(var o1, var o2, string message [optional], int has_msg [opt_flag])
     {
-        message = self.__default_message(message, has_msg, "objects are same");
-        if (o1 === o2)
+        if (o1 === o2) {
+            message = self.__default_message(message, has_msg, "objects are same");
             self.fail(message);
+        }
     }
 
     // Expect that the given block, when executed, throws an exception.
     function throws(var block, string message [optional], int has_msg [opt_flag])
     {
-        message = self.__default_message(message, has_msg, "does not throw");
         try {
             block();
+            message = self.__default_message(message, has_msg, "does not throw");
             self.fail(message);
         } catch() {}
     }
@@ -203,10 +203,10 @@ class Rosella.Test.Asserter
     // Expect that the given block, when executed, does not throw any exceptions
     function throws_nothing(var block, string message [optional], int has_msg [opt_flag])
     {
-        message = self.__default_message(message, has_msg, "block throws");
         try {
             block();
         } catch(e) {
+            message = self.__default_message(message, has_msg, "block throws");
             self.fail(message, e:[named("exception")]);
         }
     }
@@ -214,27 +214,28 @@ class Rosella.Test.Asserter
     // Check that the value is true
     function is_true(var bool, string message [optional], int has_msg [opt_flag])
     {
-        message = self.__default_message(message, has_msg, "is not true");
         int false_flag;
         ${ isfalse false_flag, bool };
-        if (false_flag)
+        if (false_flag) {
+            message = self.__default_message(message, has_msg, "is not true");
             self.fail(message);
+        }
     }
 
     // Check that the value is false
     function is_false(var bool, string message [optional], int has_msg [opt_flag])
     {
-        message = self.__default_message(message, has_msg, "is not false");
         int true_flag;
         ${ istrue true_flag, bool };
-        if (true_flag)
+        if (true_flag) {
+            message = self.__default_message(message, has_msg, "is not false");
             self.fail(message);
+        }
     }
 
     // meta-test. Runs the block as a test, and expects a failure
     function expect_fail(var block, string message [optional], int has_msg [opt_flag])
     {
-        message = self.__default_message(message, has_msg, "test did not fail");
         var exception = null;
         try {
             block();
@@ -245,27 +246,31 @@ class Rosella.Test.Asserter
             self.fail(message);
 
         var payload = exception.payload;
-        if (payload == null)
-            self.fail(message, exception:[named("exception")]);
+        if (payload == null) {
+            message = self.__default_message(message, has_msg, "test threw a non-failure exception");
+            self.fail(message,exception:[named("exception")]);
+        }
 
-        using Rosella.isa_type;
-        int isa_failure = isa_type(class Rosella.Test.Failure, payload);
-        if (!isa_failure)
+        int isa_failure = Rosella.isa_type(class Rosella.Test.Failure, payload);
+        if (!isa_failure) {
+            message = self.__default_message(message, has_msg, "test did not fail");
             self.fail(message, exception:[named("exception")]);
+        }
     }
 
     // meta-test. Runs the block as a test, and expects a pass
     function expect_pass(var block, string message [optional], int has_msg [opt_flag])
     {
-        message = self.__default_message(message, has_msg, "test did not pass");
         var exception = null;
         try {
             block();
         } catch (e) {
             exception = e;
         }
-        if (exception != null)
+        if (exception != null) {
+            message = self.__default_message(message, has_msg, "test did not pass");
             self.fail(message, exception:[named("exception")]);
+        }
     }
 
     // Run the test, show that the output (and maybe the error output) matches
@@ -275,7 +280,6 @@ class Rosella.Test.Asserter
             string message [optional], int has_msg [opt_flag],
             string erroutput [named,optional], int has_erroutput [opt_flag])
     {
-        message = self.__default_message(message, has_msg, "output did not match");
         var stdout = new "StringHandle";
         stdout.open("Rosella.Test.Assert.stdout", "rw");
         var stderr = new "StringHandle";
@@ -290,7 +294,8 @@ class Rosella.Test.Asserter
         Rosella.IO.swap_handles(save_handles);
 
         if (exception != null) {
-            say(exception);
+            if (Rosella.Test.debug())
+                say(exception);
             self.fail("Block threw exception before output received",
                 exception:[named("exception")]
             );
@@ -302,8 +307,10 @@ class Rosella.Test.Asserter
         else
             output_s = string(output);
         string out_str = stdout.readall();
-        if (out_str != output_s)
+        if (out_str != output_s) {
+            message = self.__default_message(message, has_msg, "output did not match");
             self.fail(sprintf("%s\nExpected: '%s'\nReceived: '%s'", [message, output_s, out_str]));
+        }
 
         if (!has_erroutput)
             return;
@@ -317,18 +324,20 @@ class Rosella.Test.Asserter
     function exists_keyed_str(var h, string k,
         string message [optional], int has_msg [opt_flag])
     {
-        message = self.__default_message(message, has_msg, sprintf("key '%s' does not exist", [k]));
-        if (!(exists h[k]))
+        if (!(exists h[k])) {
+            message = self.__default_message(message, has_msg, sprintf("key '%s' does not exist", [k]));
             self.fail(message);
+        }
     }
 
     // Check that the hash does not contain a value at the given key
     function not_exists_keyed_str(var h, string k,
         string message [optional], int has_msg [opt_flag])
     {
-        message = self.__default_message(message, has_msg, sprintf("key '%s' does exist", [k]));
-        if (exists h[k])
+        if (exists h[k]) {
+            message = self.__default_message(message, has_msg, sprintf("key '%s' does exist", [k]));
             self.fail(message);
+        }
     }
 
     function is_match(var a, var b, string message [optional], int has_msg [opt_flag])
@@ -349,5 +358,16 @@ class Rosella.Test.Asserter
             message = self.__default_message(message, has_msg, result.message());
             self.fail(message);
         }
+    }
+
+    function assert_matcher(string matcher_name, var a, var b, string message [optional], int has_msg [opt_flag])
+    {
+        var matcher = Rosella.Test.matcher_factory().create_named(matcher_name);
+        if (matcher == null)
+            Rosella.Test.internal_fail("Could not find matcher " + matcher_name, 1, null);
+        var result = matcher.expect_match(a, b);
+        if (!result.success())
+            message = self.__default_message(message, has_msg, result.message());
+            self.fail(message);
     }
 }
