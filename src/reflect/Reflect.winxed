@@ -12,7 +12,7 @@ namespace Rosella.Reflect
     // Get the current Module (packfile) where the current sub is located
     function get_current_module()
     {
-        var cur_ctx = getinterp()["context"];
+        var cur_ctx = get_context();
         var pf = cur_ctx.caller_ctx.current_sub.get_packfile();
         var m = __get_cached_reflector(pf, "module");
         if (m == null) {
@@ -25,7 +25,7 @@ namespace Rosella.Reflect
     // Get the current Sub object
     function get_current_sub()
     {
-        var cur_ctx = getinterp()["context"];
+        var cur_ctx = get_context();
         var sub = cur_ctx.caller_ctx.current_sub;
         return sub;
     }
@@ -33,7 +33,7 @@ namespace Rosella.Reflect
     // Get the current CallContext PMC
     function get_current_context()
     {
-        var cur_ctx = getinterp()["context"];
+        var cur_ctx = get_context();
         var ctx = cur_ctx.caller_ctx;
         return ctx;
     }
@@ -42,7 +42,7 @@ namespace Rosella.Reflect
     // otherwise.
     function get_current_object()
     {
-        var cur_ctx = getinterp()["context"];
+        var cur_ctx = get_context();
         var obj = cur_ctx.caller_ctx.current_object;
         return obj;
     }
@@ -51,7 +51,7 @@ namespace Rosella.Reflect
     // otherwise
     function get_current_class()
     {
-        var cur_ctx = getinterp()["context"];
+        var cur_ctx = get_context();
         var obj = cur_ctx.caller_ctx.current_object;
         if (obj == null)
             return null;

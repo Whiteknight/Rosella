@@ -20,3 +20,10 @@ inline __set_cached_reflector(var obj, string key, var r)
     string k = "!!!Rosella.Reflect." + key + "!!!";
     setprop(obj, k, r);
 }
+
+inline get_context() return var
+{
+    var cc;
+    ${ get_context cc };
+    return cc;
+}
