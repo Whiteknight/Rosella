@@ -25,7 +25,7 @@ namespace Rosella.Parrot
     // Get an array of strings representing a backtrace from the caller
     function get_backtrace_strings()
     {
-        var cur_ctx = getinterp()["context"];
+        var cur_ctx = get_context();
         var last_ctx = cur_ctx.caller_ctx;
         return format_backtrace(last_ctx.backtrace());
     }

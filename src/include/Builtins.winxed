@@ -215,3 +215,13 @@ inline get_hll_namespace(var key) return var
     ${ get_hll_namespace value, key };
     return value;
 }
+
+/* Interp Stuff
+*/
+
+inline get_context() return var
+{
+    var cc;
+    ${ get_context cc };
+    return cc;
+}
