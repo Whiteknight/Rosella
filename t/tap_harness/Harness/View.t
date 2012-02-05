@@ -75,22 +75,6 @@ class Test_Rosella_Harness_View
         });
     }
 
-    function show_results_summary()
-    {
-        self.status.verify("Test Rosella.Harness.View.show_results_summary()");
-        view_test(function(obj) {
-            var result = obj.show_results_summary();
-        });
-    }
-
-    function show_error_detail()
-    {
-        self.status.verify("Test Rosella.Harness.View.show_error_detail()");
-        view_test(function(obj) {
-            var result = obj.show_error_detail();
-        });
-    }
-
     function show_current_test_progress()
     {
         self.status.verify("Test Rosella.Harness.View.show_current_test_progress()");
@@ -101,20 +85,12 @@ class Test_Rosella_Harness_View
         });
     }
 
-    function show_failure_detail()
+    function show_result_coda()
     {
-        self.status.verify("Test Rosella.Harness.View.show_failure_detail()");
-        view_test(function(obj) {
-            var result = obj.show_failure_detail();
-        });
-    }
-
-    function show_result_headline()
-    {
-        self.status.verify("Test Rosella.Harness.View.show_result_headline()");
+        self.status.verify("Test Rosella.Harness.View.show_result_coda()");
         view_test(function(obj) {
             var arg_0 = "Test";
-            obj.show_result_headline(arg_0);
+            obj.show_result_coda(arg_0);
         });
     }
 

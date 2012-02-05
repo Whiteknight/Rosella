@@ -32,6 +32,7 @@ class Rosella.Harness.TapParser
             });
         if (plan_stream.has_more() == false || plan_stream.next() == false) {
             result.mark_test_empty();
+            result.mark_complete();
             return;
         }
 

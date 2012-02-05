@@ -170,8 +170,6 @@ class Rosella.Harness.View
             self.sayf("All %d subtests passed", num_passed_tests);
             return;
         }
-
-        return;
     }
 
     /* Internal Helper Routines

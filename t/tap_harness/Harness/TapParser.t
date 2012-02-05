@@ -26,6 +26,7 @@ class Test_Rosella_Harness_TapParser
     {
         test_parse([""], function(r, v) {
             r.expect_method("mark_test_empty").once().with_no_args();
+            r.expect_method("mark_complete").once().with_no_args();
         });
     }
 
@@ -36,6 +37,7 @@ class Test_Rosella_Harness_TapParser
             r.expect_get("num_tests").once().will_return(1);
             v.expect_method("show_current_test_progress").once().with_args(1, 1);
             r.expect_method("add_pass").once().with_args("", 1, 0);
+            r.expect_method("mark_complete").once().with_no_args();
         });
     }
 
@@ -50,6 +52,7 @@ class Test_Rosella_Harness_TapParser
             r.expect_method("add_pass").once().with_args("", 1, 0);
             r.expect_method("add_pass").once().with_args("", 2, 0);
             r.expect_method("add_pass").once().with_args("", 3, 0);
+            r.expect_method("mark_complete").once().with_no_args();
         });
     }
 
@@ -60,6 +63,7 @@ class Test_Rosella_Harness_TapParser
             r.expect_get("num_tests").once().will_return(1);
             v.expect_method("show_current_test_progress").once().with_args(1, 1);
             r.expect_method("add_fail").once().with_args("", 1, 0);
+            r.expect_method("mark_complete").once().with_no_args();
         });
     }
 
@@ -74,6 +78,7 @@ class Test_Rosella_Harness_TapParser
             r.expect_method("add_fail").once().with_args("", 1, 0);
             r.expect_method("add_fail").once().with_args("", 2, 0);
             r.expect_method("add_fail").once().with_args("", 3, 0);
+            r.expect_method("mark_complete").once().with_no_args();
         });
     }
 
@@ -90,6 +95,7 @@ class Test_Rosella_Harness_TapParser
             r.expect_method("add_pass").once().with_args("", 2, 0);
             r.expect_method("add_fail").once().with_args("", 3, 0);
             r.expect_method("add_pass").once().with_args("", 4, 0);
+            r.expect_method("mark_complete").once().with_no_args();
         });
     }
 
@@ -100,6 +106,7 @@ class Test_Rosella_Harness_TapParser
             r.expect_get("num_tests").once().will_return(1);
             v.expect_method("show_current_test_progress").once().with_args(1, 1);
             r.expect_method("add_fail").once().with_args("", 1, 1);
+            r.expect_method("mark_complete").once().with_no_args();
         });
     }
 
@@ -110,6 +117,7 @@ class Test_Rosella_Harness_TapParser
             r.expect_get("num_tests").once().will_return(1);
             v.expect_method("show_current_test_progress").once().with_args(1, 1);
             r.expect_method("add_pass").once().with_args("", 1, 1);
+            r.expect_method("mark_complete").once().with_no_args();
         });
     }
 }
