@@ -101,6 +101,7 @@ class Rosella.Harness.View
         self.total_files       += test_run.num_files();
         self.num_passed_tests  += test_run.num_tests_by_status("PASSED");
         self.num_failed_files  += test_run.num_files_by_status("FAILED");
+        self.num_failed_files  += test_run.num_files_by_status("BADPLAN");
         self.num_failed_tests  += test_run.num_tests_by_status("FAILED");
         self.num_aborted_files += test_run.num_files_by_status("ABORTED");
     }
@@ -108,63 +109,69 @@ class Rosella.Harness.View
     // Show the results to the user
     function show_results()
     {
-        self.show_results_summary();
-        self.show_error_detail();
-        self.show_failure_detail();
-    }
+        self.show_basic_result_info();
 
-    /* Results Displaying Routines
-        These routines are used internally to display result information.
-    */
-
-    // A quick summary showing whether the test run passed or failed
-    function show_results_summary()
-    {
-        if (int(self.num_aborted_files) || int(self.num_failed_files)) {
-            self.show_result_headline("FAILED");
-
-            if (self.num_aborted_files)
-                self.sayf("\tFailed %d files due to premature exit", self.num_aborted_files);
-            if (self.num_failed_tests)
-                self.sayf("\tFailed %d tests in %d files", self.num_failed_tests, self.num_failed_files);
-            self.sayf("");
-        } else
-            self.show_result_headline("PASSED");
-    }
-
-    // Show a summary of all errors. Errors are files that have run, but
-    // with subtests which have failed
-    function show_error_detail()
-    {
-        if (int(self.num_failed_tests) == 0)
+        if (int(self.num_aborted_files) == 0 && int(self.num_failed_files) == 0) {
+            self.show_result_coda("PASS");
             return;
+        }
+        self.sayf("\nTest Summary Report\n-------------------");
 
-        self.sayf("\tList of failed tests by file:");
+        // TODO: Should record and output error codes or other error info.
+        // Display some diagnostics here
+        self.get_all_files_by_status("ABORTED")
+            .foreach(function(f) {
+                self.show_file_result_info(f);
+                self.sayf("\tTest aborted with non-zero exit code");
+            });
+
+        self.get_all_files_by_status("BADPLAN")
+            .foreach(function(f) {
+                self.show_file_result_info(f);
+                var r = f.get_result();
+                self.sayf("\tBad Plan. Planned %d tests, ran %d", r.total_tests(), r.ran_tests());
+            });
+
         self.get_all_files_by_status("FAILED")
             .tap(function(f) {
-                self.sayf("\t\t%s", string(f));
+                self.show_file_result_info(f);
+                var r = f.get_result();
+                int total_tests = r.total_tests();
+                int ran_tests = r.ran_tests();
+                if (total_tests != ran_tests)
+                    self.sayf("\tBad Plan. Planned %d tests, ran %d", total_tests, ran_tests);
             })
             .project(function(f) { return f.result.list_of_failures(); })
             .foreach(function(f) {
-                self.sayf("\t\t\t%s", f);
+                self.sayf("  Failed test: %s", f);
             });
+
+        self.show_result_coda("FAIL");
     }
 
-    // Show a list of failures. Failures are files which have not executed
-    // or which terminated early with an unhandled error of some variety
-    function show_failure_detail()
+    function show_file_result_info(var file)
     {
-        if (int(self.num_aborted_files) == 0)
+        var r = file.get_result();
+        self.sayf("%s (exit code: %d Tests: %d Failed: %d)", file, r.exit_code(), r.ran_tests(), r.num_subtest_failures());
+    }
+
+    function show_basic_result_info()
+    {
+        int num_aborted_files = int(self.num_aborted_files);
+        int num_failed_files = int(self.num_failed_files);
+        if (num_aborted_files == 0 && num_failed_files == 0) {
+            self.sayf("All tests successful");
             return;
+        }
 
-        self.sayf("\tList of files with premature exits:");
-        self.get_all_files_by_status("ABORTED")
+        int num_failed_tests = int(self.num_failed_tests);
+        int num_passed_tests = int(self.num_passed_tests);
+        if (num_failed_tests == 0) {
+            self.sayf("All %d subtests passed", num_passed_tests);
+            return;
+        }
 
-            // TODO: Should record and output error codes or other
-            //       error info. Display some diagnostics here
-            .foreach(function(f) {
-                self.sayf("\t\t%s", f);
-            });
+        return;
     }
 
     /* Internal Helper Routines
@@ -172,13 +179,18 @@ class Rosella.Harness.View
 
     // Helper routine to show a PASSED/FAILED headline message, and
     // a count of how many tests passed.
-    function show_result_headline(string result)
+    function show_result_coda(string result)
     {
-        self.sayf("Result: %s", result);
         int num_runs = int(self.test_runs);
-        self.sayf("\tPassed %d tests in %d files (%d test run%s)",
-            self.num_passed_tests, self.total_files, num_runs, num_runs == 1 ? "" : "s"
+        self.sayf("Passed %d tests in %d files (%d test run%s, %f seconds)",
+            self.num_passed_tests,
+            self.total_files,
+            num_runs,
+            num_runs == 1 ? "" : "s",
+            self.get_total_test_time()
         );
+        // TODO: Show total runtime information
+        self.sayf("Result: %s", result);
     }
 
     // Get a list of all executed files from all runs with the given
@@ -190,10 +202,20 @@ class Rosella.Harness.View
             .project(function(tr) { return tr.files_by_status(status); });
     }
 
+    function get_total_test_time()
+    {
+        return Rosella.Query.iterable(self.test_runs)
+            .filter(function(tr) { return tr.is_complete() != 0; })
+            .project(function(tr) { return tr.tests(); })
+            .map(function(t) { return t.get_result(); })
+            .fold(function(float s, r) { return s + float(r.run_time()); }, 0.0);
+    }
+
     // Get a status string describing the results of the test
     function get_result_status(var result)
     {
         string status = result.status();
+        int total_tests = result.total_tests();
         switch(status) {
             case "EMPTY":
                 return "No tests run or no TAP output";
@@ -202,9 +224,10 @@ class Rosella.Harness.View
             case "PASSED":
                 return "All subtests pass";
             case "FAILED":
-                int total_tests = result.total_tests();
                 int failed_tests = elements(result.list_of_failures());
                 return Rosella.String.sprintf("Failed %d / %d", failed_tests, total_tests);
+            case "BADPLAN":
+                return "Bad plan";
             default:
                 return "Unknown status '" + status + "'";
         }

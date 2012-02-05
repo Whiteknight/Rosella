@@ -92,6 +92,8 @@ class Rosella.Harness.TapParser
 
             // Update the FileResult
             .foreach(function(r) { result.*(r[2] == 1 ? "add_pass" : "add_fail")(r[0], r[1], r[3]); });
+
+        result.mark_complete();
     }
 
     // Get the plan. Plan should be in the format "1..X", where X is a

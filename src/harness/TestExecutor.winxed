@@ -18,21 +18,25 @@ class Rosella.Harness.TestExecutor
     // commands to the view.
     function run(var view, var file, var result, int debug)
     {
+        result.start_test(time());
         var stream = self.open_stream(file, result);
         if (result.status == null || result.status != "ABORTED") {
             try {
                 self.parser.parse(stream, view, result);
             } catch (e) {
-                if (__DEBUG__) {
+                //if (__DEBUG__) {
                     say("");
                     say(e.message);
                     for(string bt in e.backtrace_strings())
                         say(bt);
-                }
+                //}
                 result.mark_test_abort(e.message);
             }
         }
         int exit_status = self.close_stream(file, stream);
+        result.end_test(time(), exit_status);
+
+        // TODO: Move this logic into FileResult
         if (exit_status != 0 || (result.status != null && result.status == "ABORTED"))
             result.mark_test_abort("Test aborted with exit code " + string(exit_status));
     }

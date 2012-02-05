@@ -12,6 +12,9 @@ namespace Rosella.Harness
         var num_tests;
         var passed_tests;
         var status;
+        var exit_status;
+        var start_time;
+        var end_time;
 
         // Constructor. Take the TestFile object and initialize
         function FileResult(var file)
@@ -40,6 +43,8 @@ namespace Rosella.Harness
 
         // The list of to-do test result strings which passed unexpectedly
         function list_of_todo_passed() { return self.todo_passed; }
+
+        function num_subtest_failures() { return elements(self.failures); }
 
         // A string representing status. Can be one of "PASSED", "FAILED",
         // "ABORTED", or "EMPTY"
@@ -89,7 +94,11 @@ namespace Rosella.Harness
         // test was marked to-do
         function add_fail(string name, int num, int todo)
         {
-            string msg = Rosella.String.sprintf("test %d: %s", num, name);
+            string msg;
+            if (name == null || name == "")
+                msg = Rosella.String.sprintf("subtest %d", num);
+            else
+                msg = Rosella.String.sprintf("subtest %d: %s", num, name);
             if (todo == 1)
                 push(self.passed_tests, msg);
             else
@@ -101,6 +110,39 @@ namespace Rosella.Harness
         {
             // TODO: Check bounds. Make sure we run this many tests
             self.num_tests = num;
+        }
+
+        function ran_tests()
+        {
+            return elements(self.passed_tests) + elements(self.failures) + elements(self.todo_passed);
+        }
+
+        function mark_complete()
+        {
+            int ran_tests = elements(self.passed_tests) + elements(self.failures) + elements(self.todo_passed);
+            if (ran_tests != int(self.num_tests) && (self.status == null || self.status == "PASSED"))
+                self.status = "BADPLAN";
+        }
+
+        function start_test(float start_time)
+        {
+            self.start_time = start_time;
+        }
+
+        function end_test(float end_time, int exit_status)
+        {
+            self.end_time = end_time;
+            self.exit_status = exit_status;
+        }
+
+        function run_time()
+        {
+            return float(self.end_time) - float(self.start_time);
+        }
+
+        function exit_code()
+        {
+            return self.exit_status;
         }
     }
 }

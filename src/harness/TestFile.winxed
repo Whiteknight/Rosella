@@ -32,6 +32,11 @@ class Rosella.Harness.TestFile
         self.result = result;
     }
 
+    function get_result()
+    {
+        return self.result;
+    }
+
     // Compile the contents of the file inline, in this process. Do not
     // spawn a separate interpreter to execute it. Compile the file and
     // return an invokable Sub PMC that can be used to execute it
