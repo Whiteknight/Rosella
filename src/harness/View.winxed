@@ -54,7 +54,21 @@ class Rosella.Harness.View
         int line_length = self.line_length;
         int diff = line_length - len + 3;
         string elipses = repeat(".", diff);
-        Rosella.IO.printf("%s %s ", name, elipses, self.handle:[named("handle")]);
+        self.printf("%s %s ", name, elipses);
+    }
+
+    // Show the current progress of a test being executed
+    function show_current_test_progress(int done, int total)
+    {
+        if (self.need_backspaces > 0) {
+            int num_b = int(self.need_backspaces);
+            string b = repeat("\b", num_b);
+            print(b + " ");
+            self.need_backspaces = 0;
+        }
+        string p = Rosella.String.sprintf("%d/%d", done, total);
+        self.need_backspaces = length(p) + 1;
+        self.printf(p);
     }
 
     // End a test
@@ -64,7 +78,6 @@ class Rosella.Harness.View
             int num_b = int(self.need_backspaces);
             string b = repeat("\b", num_b);
             print(b + " ");
-            //print("\b\b\b\b\b\b\b\b\b\b");
             self.need_backspaces = 0;
         }
         string msg;
@@ -73,32 +86,12 @@ class Rosella.Harness.View
         else
             msg = "ok";
         msg = Rosella.String.pad_end(msg, 10);
-        Rosella.IO.sayf(msg, self.handle:[named("handle")]);
+        self.sayf(msg);
         string error_details = result.error_details();
         if (error_details != null) {
             var lines = split("\n", error_details);
             for (string line in lines)
-                Rosella.IO.sayf("# %s", line, self.handle:[named("handle")]);
-        }
-    }
-
-    // Get a status string describing the results of the test
-    function get_result_status(var result)
-    {
-        string status = result.status();
-        switch(status) {
-            case "EMPTY":
-                return "No tests run or no TAP output";
-            case "ABORTED":
-                return "Test exited prematurely";
-            case "PASSED":
-                return "All subtests pass";
-            case "FAILED":
-                int total_tests = result.total_tests();
-                int failed_tests = elements(result.list_of_failures());
-                return Rosella.String.sprintf("Failed %d / %d", failed_tests, total_tests);
-            default:
-                return "Unknown status '" + status + "'";
+                self.sayf("# %s", line);
         }
     }
 
@@ -131,10 +124,10 @@ class Rosella.Harness.View
             self.show_result_headline("FAILED");
 
             if (self.num_aborted_files)
-                Rosella.IO.sayf("\tFailed %d files due to premature exit", self.num_aborted_files, self.handle:[named("handle")]);
+                self.sayf("\tFailed %d files due to premature exit", self.num_aborted_files);
             if (self.num_failed_tests)
-                Rosella.IO.sayf("\tFailed %d tests in %d files", self.num_failed_tests, self.num_failed_files, self.handle:[named("handle")]);
-            Rosella.IO.sayf("", self.handle:[named("handle")]);
+                self.sayf("\tFailed %d tests in %d files", self.num_failed_tests, self.num_failed_files);
+            self.sayf("");
         } else
             self.show_result_headline("PASSED");
     }
@@ -146,31 +139,15 @@ class Rosella.Harness.View
         if (int(self.num_failed_tests) == 0)
             return;
 
-        Rosella.IO.sayf("\tList of failed tests by file:", self.handle:[named("handle")]);
+        self.sayf("\tList of failed tests by file:");
         self.get_all_files_by_status("FAILED")
             .tap(function(f) {
-                Rosella.IO.sayf("\t\t%s", string(f), self.handle:[named("handle")]);
+                self.sayf("\t\t%s", string(f));
             })
             .project(function(f) { return f.result.list_of_failures(); })
             .foreach(function(f) {
-                Rosella.IO.sayf("\t\t\t%s", f, self.handle:[named("handle")]);
+                self.sayf("\t\t\t%s", f);
             });
-    }
-
-    // Show the current progress of a test being executed
-    function show_current_test_progress(int done, int total)
-    {
-        if (self.need_backspaces > 0) {
-            int num_b = int(self.need_backspaces);
-            string b = repeat("\b", num_b);
-            print(b + " ");
-            //print("\b\b\b\b\b\b\b\b\b\b");
-            self.need_backspaces = 0;
-        }
-        string p = Rosella.String.sprintf("%d/%d", done, total);
-        //p = Rosella.String.pad_end(p, 10);
-        self.need_backspaces = length(p) + 1;
-        Rosella.IO.printf(p, self.handle:[named("handle")]);
     }
 
     // Show a list of failures. Failures are files which have not executed
@@ -180,20 +157,14 @@ class Rosella.Harness.View
         if (int(self.num_aborted_files) == 0)
             return;
 
-        Rosella.IO.sayf("\tList of files with premature exits:", self.handle:[named("handle")]);
+        self.sayf("\tList of files with premature exits:");
         self.get_all_files_by_status("ABORTED")
 
             // TODO: Should record and output error codes or other
             //       error info. Display some diagnostics here
             .foreach(function(f) {
-                Rosella.IO.sayf("\t\t%s", f, self.handle:[named("handle")]);
+                self.sayf("\t\t%s", f);
             });
-    }
-
-    // Print out a debug message
-    function debug(int dbg, var msg)
-    {
-        Rosella.IO.sayf("DEBUG: %s\n", msg, self.handle:[named("handle")]);
     }
 
     /* Internal Helper Routines
@@ -203,11 +174,10 @@ class Rosella.Harness.View
     // a count of how many tests passed.
     function show_result_headline(string result)
     {
-        Rosella.IO.sayf("Result: %s", result, self.handle:[named("handle")]);
+        self.sayf("Result: %s", result);
         int num_runs = int(self.test_runs);
-        Rosella.IO.sayf("\tPassed %d tests in %d files (%d test run%s)",
-            self.num_passed_tests, self.total_files, num_runs, num_runs == 1 ? "" : "s",
-            self.handle:[named("handle")]
+        self.sayf("\tPassed %d tests in %d files (%d test run%s)",
+            self.num_passed_tests, self.total_files, num_runs, num_runs == 1 ? "" : "s"
         );
     }
 
@@ -218,5 +188,44 @@ class Rosella.Harness.View
         return Rosella.Query.iterable(self.test_runs)
             .filter(function(tr) { return tr.is_complete() != 0; })
             .project(function(tr) { return tr.files_by_status(status); });
+    }
+
+    // Get a status string describing the results of the test
+    function get_result_status(var result)
+    {
+        string status = result.status();
+        switch(status) {
+            case "EMPTY":
+                return "No tests run or no TAP output";
+            case "ABORTED":
+                return "Test exited prematurely";
+            case "PASSED":
+                return "All subtests pass";
+            case "FAILED":
+                int total_tests = result.total_tests();
+                int failed_tests = elements(result.list_of_failures());
+                return Rosella.String.sprintf("Failed %d / %d", failed_tests, total_tests);
+            default:
+                return "Unknown status '" + status + "'";
+        }
+    }
+
+    /* IO Routines
+    */
+
+    // Print out a debug message
+    function debug(int dbg, var msg)
+    {
+        self.sayf("DEBUG: %s\n", msg);
+    }
+
+    function sayf(string fmt, var args [slurpy])
+    {
+        Rosella.IO.sayf(fmt, args:[flat], self.handle:[named("handle")]);
+    }
+
+    function printf(string fmt, var args [slurpy])
+    {
+        Rosella.IO.printf(fmt, args:[flat], self.handle:[named("handle")]);
     }
 }
