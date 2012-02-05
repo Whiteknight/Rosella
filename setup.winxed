@@ -297,7 +297,7 @@ function setup_stable_libraries(var rosella)
     );
 
     // Library for working with date and time
-    setup_winxed_lib(rosella, "date", [],
+    setup_winxed_lib(rosella, "date", ["Core"],
         "date/Includes",
         "date/Date",
         "date/DateFormatter",
