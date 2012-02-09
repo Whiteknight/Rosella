@@ -161,7 +161,7 @@ regular release. For the complete list with descriptions and ideas, see the
 package-management program for Parrot. If you have Plumage
 and Winxed already installed getting Rosella is a breeze:
 
-    $ plumage install rosella</pre>
+    $ plumage install rosella
 
 That's all there is to it! You now have Rosella. If you don't have
 Plumage on your system you'll need to follow the rest of the
