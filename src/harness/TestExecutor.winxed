@@ -18,7 +18,7 @@ class Rosella.Harness.TestExecutor
     // commands to the view.
     function run(var view, var file, var result, int debug)
     {
-        result.start_test(time());
+        result.start_test(floattime());
         var stream = self.open_stream(file, result);
         if (result.status == null || result.status != "ABORTED") {
             try {
@@ -34,7 +34,7 @@ class Rosella.Harness.TestExecutor
             }
         }
         int exit_status = self.close_stream(file, stream);
-        result.end_test(time(), exit_status);
+        result.end_test(floattime(), exit_status);
 
         // TODO: Move this logic into FileResult
         if (exit_status != 0 || (result.status != null && result.status == "ABORTED"))

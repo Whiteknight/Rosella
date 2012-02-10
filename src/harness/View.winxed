@@ -180,7 +180,7 @@ class Rosella.Harness.View
     function show_result_coda(string result)
     {
         int num_runs = int(self.test_runs);
-        self.sayf("Passed %d tests in %d files (%d test run%s, %f seconds)",
+        self.sayf("Passed %d tests in %d files (%d test run%s, %0.2f seconds)",
             self.num_passed_tests,
             self.total_files,
             num_runs,

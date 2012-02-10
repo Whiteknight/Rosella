@@ -137,7 +137,8 @@ namespace Rosella.Harness
 
         function run_time()
         {
-            return float(self.end_time) - float(self.start_time);
+            float t = float(self.end_time) - float(self.start_time);
+            return t;
         }
 
         function exit_code()
