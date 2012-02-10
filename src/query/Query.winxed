@@ -8,20 +8,19 @@
 */
 namespace Rosella.Query
 {
-    // Get a Queryable. The optional second argument determines the type
-    // of queryable wrapper to use. 0 (default) = a normal Queryable.
-    // 1 = in-place queryable. In-place produces less churn, but is not
-    // immutable.
+    // Get a Queryable. Deprecated
     function as_queryable(var data)
     {
         return new Rosella.Query.Queryable(data);
     }
 
+    // Get an interable
     function iterable(var d)
     {
         return Rosella.Query.default_iterable_factory().create(d);
     }
 
+    // Wrap a Parrot-level iterator type as a Query.Iterable
     function wrap_iterator(var i)
     {
         return new Rosella.Query.Iterable.Iterator(i);
@@ -39,6 +38,7 @@ namespace Rosella.Query
         return does(data, "hash");
     }
 
+    // Helper function. Determine if the object is an iterator
     function is_iterator(var data)
     {
         return does(data, "iterator");
@@ -68,6 +68,8 @@ namespace Rosella.Query
         });
     }
 
+    // Automatically add iterable behavior to Parrot Hash and ResizablePMCArray
+    // types for easier use
     function install_to_parrot_types()
     {
         install_to_type('Hash');
@@ -127,17 +129,5 @@ namespace Rosella.Query
             Rosella.Globals.register_global(DEFAULT_ITERABLE_FACTORY, temp);
         }
         return temp;
-    }
-
-    function get_reverse_comparer()
-    {
-        return function (var a, var b)
-        {
-            if (a == b)
-                return 0;
-            if (a < b)
-                return 1;
-            return -1;
-        };
     }
 }
