@@ -35,4 +35,14 @@ class Rosella.Test.TestContext
     {
         self.data[n] = value;
     }
+
+    function get_pmc_keyed_str[vtable](string n)
+    {
+        return self.get_data(n);
+    }
+
+    function set_pmc_keyed_str[vtable](string n, var v)
+    {
+        self.set_data(n, v);
+    }
 }
