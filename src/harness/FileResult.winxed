@@ -147,3 +147,10 @@ class Rosella.Harness.FileResult
     }
 }
 
+class Rosella.Harness.FileResult.Factory : Rosella.ObjectFactory
+{
+    function Factory()
+    {
+        self.ObjectFactory(class Rosella.Harness.FileResult);
+    }
+}
