@@ -106,15 +106,16 @@ class Rosella.Harness.FileResult
     // Set the expected number of tests
     function set_plan(int num)
     {
-        // TODO: Check bounds. Make sure we run this many tests
         self.num_tests = num;
     }
 
+    // Get the number of tests that were actually ran
     function ran_tests()
     {
         return elements(self.passed_tests) + elements(self.failures) + elements(self.todo_passed);
     }
 
+    // Mark this test complete and check to make sure we've run all our tests
     function mark_complete()
     {
         int ran_tests = elements(self.passed_tests) + elements(self.failures) + elements(self.todo_passed);
@@ -122,11 +123,14 @@ class Rosella.Harness.FileResult
             self.status = "BADPLAN";
     }
 
+    // Start the test, take the time that the test was started
     function start_test(float start_time)
     {
         self.start_time = start_time;
     }
 
+    // End the test, take the time that the test was ended and the exit status
+    // if any
     function end_test(float end_time, int exit_status)
     {
         self.end_time = end_time;
@@ -135,18 +139,23 @@ class Rosella.Harness.FileResult
             self.mark_test_abort("Test aborted with exit code " + string(exit_status));
     }
 
+    // Get the total run time
     function run_time()
     {
         float t = float(self.end_time) - float(self.start_time);
         return t;
     }
 
+    // Get the exit code
     function exit_code()
     {
         return self.exit_status;
     }
 }
 
+/* FileResult Factory Type
+    This is a simple factory for creating FileResult objects
+*/
 class Rosella.Harness.FileResult.Factory : Rosella.ObjectFactory
 {
     function Factory()

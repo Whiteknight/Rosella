@@ -1,3 +1,5 @@
+$include_const "iglobals.pasm";
+
 /* Forward declarations
 */
 namespace Rosella {

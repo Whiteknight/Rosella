@@ -1,20 +1,17 @@
-namespace Rosella { namespace Harness { namespace TestFile
+/* Automatic test file
+    Reads the #! shebang line from the file to try and determine how to
+    execute it.
+*/
+class Rosella.Harness.TestFile.Automatic : Rosella.Harness.TestFile
 {
-    /* Automatic test file
-        Reads the #! shebang line from the file to try and determine how to
-        execute it.
-    */
-    class Automatic : Rosella.Harness.TestFile
-    {
-        function Automatic(var p [slurpy]) { self.TestFile(p:[flat]); }
+    function Automatic(var p [slurpy]) { self.TestFile(p:[flat]); }
 
-        function get_spawn_command(string filename)
-        {
-            string line = (new Rosella.FileSystem.File(filename)).read_top_lines(1)[0];
-            if (substr(line, 0, 2) == "#!")
-                return Rosella.String.sprintf("%s %s", Rosella.String.trim(substr(line, 2)), filename);
-            else
-                Rosella.Error.invalid(__FUNCTION__, "Cannot determine how to run test file %s", filename);
-        }
+    function get_spawn_command(string filename)
+    {
+        string line = (new Rosella.FileSystem.File(filename)).read_top_lines(1)[0];
+        if (substr(line, 0, 2) == "#!")
+            return Rosella.String.sprintf("%s %s", Rosella.String.trim(substr(line, 2)), filename);
+        else
+            Rosella.Error.invalid(__FUNCTION__, "Cannot determine how to run test file %s", filename);
     }
-}}}
+}

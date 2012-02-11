@@ -4,6 +4,8 @@
 */
 class Rosella.Harness.View
 {
+    const int MIN_NUM_ELLIPSES = 3;
+
     var handle;
     var test_runs;
     var line_length;
@@ -46,8 +48,6 @@ class Rosella.Harness.View
             maxlength = line_length;
         self.line_length = maxlength;
     }
-
-    const int MIN_NUM_ELLIPSES = 3;
 
     // Start an individual test
     function start_test(string name)
@@ -149,12 +149,15 @@ class Rosella.Harness.View
         self.show_result_coda("FAIL");
     }
 
+    // Show basic run information about the test file if needed
     function show_file_result_info(var file)
     {
         var r = file.get_result();
         self.sayf("%s (exit code: %d Tests: %d Failed: %d)", file, r.exit_code(), r.ran_tests(), r.num_subtest_failures());
     }
 
+    // Show a quick summary about the test run, after all tests but before
+    // detailed summary info
     function show_basic_result_info()
     {
         int num_aborted_files = int(self.num_aborted_files);
@@ -199,6 +202,7 @@ class Rosella.Harness.View
             .project(function(tr) { return tr.files_by_status(status); });
     }
 
+    // Get the total amount of execution time for the test run
     function get_total_test_time()
     {
         return Rosella.Query.iterable(self.test_runs)
@@ -239,11 +243,13 @@ class Rosella.Harness.View
         self.sayf("DEBUG: %s\n", msg);
     }
 
+    // sayf, using the view handle
     function sayf(string fmt, var args [slurpy])
     {
         Rosella.IO.sayf(fmt, args:[flat], self.handle:[named("handle")]);
     }
 
+    // printf, using the view handle
     function printf(string fmt, var args [slurpy])
     {
         Rosella.IO.printf(fmt, args:[flat], self.handle:[named("handle")]);

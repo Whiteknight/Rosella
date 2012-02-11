@@ -1,25 +1,22 @@
-namespace Rosella { namespace Harness { namespace TestFile
+/* NQP Compiler class
+    This class compiles and executes test files written in NQP
+*/
+class Rosella.Harness.TestFile.NQP : Rosella.Harness.TestFile
 {
-    /* NQP Compiler class
-        This class compiles and executes test files written in NQP
-    */
-    class NQP : Rosella.Harness.TestFile
+    function NQP(var p [slurpy]) { self.TestFile(p:[flat]); }
+
+    function compile_test()
     {
-        function NQP(var p [slurpy]) { self.TestFile(p:[flat]); }
-
-        function compile_test()
-        {
-            var file = new Rosella.FileSystem.File(string(self));
-            string code = file.read_all_text();
-            var compiler = compreg('NQP-rx');
-            var result = compiler.compile(code);
-            return result[0];
-        }
-
-        function get_spawn_command(string filename)
-        {
-            // TODO: be more generic
-            return "parrot-nqp " + filename;
-        }
+        var file = new Rosella.FileSystem.File(string(self));
+        string code = file.read_all_text();
+        var compiler = compreg('NQP-rx');
+        var result = compiler.compile(code);
+        return result[0];
     }
-}}}
+
+    function get_spawn_command(string filename)
+    {
+        // TODO: be more generic
+        return "parrot-nqp " + filename;
+    }
+}
