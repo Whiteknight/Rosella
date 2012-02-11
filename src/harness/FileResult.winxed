@@ -1,149 +1,149 @@
-namespace Rosella.Harness
+/* Test File Execution Result
+    The FileResult object contains information from the test execution.
+*/
+class Rosella.Harness.FileResult
 {
-    /* Test File Execution Result
-        The FileResult object contains information from the test execution.
-    */
-    class FileResult
+    var file;
+    var errdetails;
+    var failures;
+    var todo_passed;
+    var num_tests;
+    var passed_tests;
+    var status;
+    var exit_status;
+    var start_time;
+    var end_time;
+
+    // Constructor. Take the TestFile object and initialize
+    function FileResult(var file)
     {
-        var file;
-        var errdetails;
-        var failures;
-        var todo_passed;
-        var num_tests;
-        var passed_tests;
-        var status;
-        var exit_status;
-        var start_time;
-        var end_time;
+        self.file = file;
+        file.set_result(self);
+        self.num_tests    = 0;
+        self.failures     = [];
+        self.todo_passed  = [];
+        self.passed_tests = [];
+        self.errdetails = null;
+        self.status = null;
+    }
 
-        // Constructor. Take the TestFile object and initialize
-        function FileResult(var file)
-        {
-            self.file = file;
-            file.set_result(self);
-            self.num_tests    = 0;
-            self.failures     = [];
-            self.todo_passed  = [];
-            self.passed_tests = [];
-            self.errdetails = null;
-            self.status = null;
-        }
+    /* Public Accessors
+    */
 
-        /* Public Accessors
-        */
+    // A total count of tests
+    function total_tests() { return self.num_tests; }
 
-        // A total count of tests
-        function total_tests() { return self.num_tests; }
+    // The list of result strings for passed tests
+    function passed_tests() { return self.passed_tests; }
 
-        // The list of result strings for passed tests
-        function passed_tests() { return self.passed_tests; }
+    // The list of result strings for failed tests
+    function list_of_failures() { return self.failures; }
 
-        // The list of result strings for failed tests
-        function list_of_failures() { return self.failures; }
+    // The list of to-do test result strings which passed unexpectedly
+    function list_of_todo_passed() { return self.todo_passed; }
 
-        // The list of to-do test result strings which passed unexpectedly
-        function list_of_todo_passed() { return self.todo_passed; }
+    function num_subtest_failures() { return elements(self.failures); }
 
-        function num_subtest_failures() { return elements(self.failures); }
+    // A string representing status. Can be one of "PASSED", "FAILED",
+    // "ABORTED", or "EMPTY"
+    function status()
+    {
+        if (self.status != null)
+            return self.status;
+        if (elements(self.failures) > 0)
+            return "FAILED";
+        return "PASSED";
+    }
 
-        // A string representing status. Can be one of "PASSED", "FAILED",
-        // "ABORTED", or "EMPTY"
-        function status()
-        {
-            if (self.status != null)
-                return self.status;
-            if (elements(self.failures) > 0)
-                return "FAILED";
-            return "PASSED";
-        }
+    // On abort, return an error object which contains error details.
+    function error_details() { return self.errdetails; }
 
-        // On abort, return an error object which contains error details.
-        function error_details() { return self.errdetails; }
+    // Get the filename of the associated TestFile
+    function get_string[vtable]() { return string(self.file); }
 
-        // Get the filename of the associated TestFile
-        function get_string[vtable]() { return string(self.file); }
+    /* Helper and Status routines
+    */
 
-        /* Helper and Status routines
-        */
+    // Mark the test as having been aborted, with error info
+    function mark_test_abort(var err)
+    {
+        self.errdetails = err;
+        self.status = "ABORTED";
+    }
 
-        // Mark the test as having been aborted, with error info
-        function mark_test_abort(var err)
-        {
-            self.errdetails = err;
-            self.status = "ABORTED";
-        }
+    // Mark the test as having produced no usable TAP output
+    function mark_test_empty()
+    {
+        self.status = "EMPTY";
+    }
 
-        // Mark the test as having produced no usable TAP output
-        function mark_test_empty()
-        {
-            self.status = "EMPTY";
-        }
+    // Add a test pass. Include the name and number, and whether the test
+    // was marked to-do
+    function add_pass(string name, int num, int todo)
+    {
+        string msg = Rosella.String.sprintf("test %d: %s", num, name);
+        if (todo == 1)
+            push(self.todo_passed, msg);
+        else
+            push(self.passed_tests, msg);
+    }
 
-        // Add a test pass. Include the name and number, and whether the test
-        // was marked to-do
-        function add_pass(string name, int num, int todo)
-        {
-            string msg = Rosella.String.sprintf("test %d: %s", num, name);
-            if (todo == 1)
-                push(self.todo_passed, msg);
-            else
-                push(self.passed_tests, msg);
-        }
+    // Add a test failure. Include the name and number, and whether the
+    // test was marked to-do
+    function add_fail(string name, int num, int todo)
+    {
+        string msg;
+        if (name == null || name == "")
+            msg = Rosella.String.sprintf("subtest %d", num);
+        else
+            msg = Rosella.String.sprintf("subtest %d: %s", num, name);
+        if (todo == 1)
+            push(self.passed_tests, msg);
+        else
+            push(self.failures, msg);
+    }
 
-        // Add a test failure. Include the name and number, and whether the
-        // test was marked to-do
-        function add_fail(string name, int num, int todo)
-        {
-            string msg;
-            if (name == null || name == "")
-                msg = Rosella.String.sprintf("subtest %d", num);
-            else
-                msg = Rosella.String.sprintf("subtest %d: %s", num, name);
-            if (todo == 1)
-                push(self.passed_tests, msg);
-            else
-                push(self.failures, msg);
-        }
+    // Set the expected number of tests
+    function set_plan(int num)
+    {
+        // TODO: Check bounds. Make sure we run this many tests
+        self.num_tests = num;
+    }
 
-        // Set the expected number of tests
-        function set_plan(int num)
-        {
-            // TODO: Check bounds. Make sure we run this many tests
-            self.num_tests = num;
-        }
+    function ran_tests()
+    {
+        return elements(self.passed_tests) + elements(self.failures) + elements(self.todo_passed);
+    }
 
-        function ran_tests()
-        {
-            return elements(self.passed_tests) + elements(self.failures) + elements(self.todo_passed);
-        }
+    function mark_complete()
+    {
+        int ran_tests = elements(self.passed_tests) + elements(self.failures) + elements(self.todo_passed);
+        if (ran_tests != int(self.num_tests) && (self.status == null || self.status == "PASSED"))
+            self.status = "BADPLAN";
+    }
 
-        function mark_complete()
-        {
-            int ran_tests = elements(self.passed_tests) + elements(self.failures) + elements(self.todo_passed);
-            if (ran_tests != int(self.num_tests) && (self.status == null || self.status == "PASSED"))
-                self.status = "BADPLAN";
-        }
+    function start_test(float start_time)
+    {
+        self.start_time = start_time;
+    }
 
-        function start_test(float start_time)
-        {
-            self.start_time = start_time;
-        }
+    function end_test(float end_time, int exit_status)
+    {
+        self.end_time = end_time;
+        self.exit_status = exit_status;
+        if (exit_status != 0 || (self.status != null && self.status == "ABORTED"))
+            self.mark_test_abort("Test aborted with exit code " + string(exit_status));
+    }
 
-        function end_test(float end_time, int exit_status)
-        {
-            self.end_time = end_time;
-            self.exit_status = exit_status;
-        }
+    function run_time()
+    {
+        float t = float(self.end_time) - float(self.start_time);
+        return t;
+    }
 
-        function run_time()
-        {
-            float t = float(self.end_time) - float(self.start_time);
-            return t;
-        }
-
-        function exit_code()
-        {
-            return self.exit_status;
-        }
+    function exit_code()
+    {
+        return self.exit_status;
     }
 }
+

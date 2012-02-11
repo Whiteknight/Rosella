@@ -17,25 +17,16 @@ class Rosella.Harness.TestFile
         self.filename = filename;
     }
 
-    // get_String vtable. Get the filename string
-    function get_string[vtable]()
-    {
-        return string(self.filename);
-    }
+    // get_string vtable. Get the filename string
+    function get_string[vtable]() { return string(self.filename); }
 
     /* Compile and execute routines
     */
 
     // Set the FileResult object for this file
-    function set_result(var result)
-    {
-        self.result = result;
-    }
+    function set_result(var result) { self.result = result; }
 
-    function get_result()
-    {
-        return self.result;
-    }
+    function get_result() { return self.result; }
 
     // Compile the contents of the file inline, in this process. Do not
     // spawn a separate interpreter to execute it. Compile the file and

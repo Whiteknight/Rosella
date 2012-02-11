@@ -10,12 +10,11 @@ class Rosella.Harness.TapParser
     // Constructor
     function TapParser()
     {
-        using Rosella.String.get_character_class;
         self.tokenizer = new Rosella.String.Tokenizer.CClass([
-            get_character_class("punctuation"),
-            get_character_class("numeric"),
-            get_character_class("word"),
-            get_character_class("whitespace")
+            Rosella.String.get_character_class("punctuation"),
+            Rosella.String.get_character_class("numeric"),
+            Rosella.String.get_character_class("word"),
+            Rosella.String.get_character_class("whitespace")
         ]);
     }
 

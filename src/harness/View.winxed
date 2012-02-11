@@ -47,12 +47,12 @@ class Rosella.Harness.View
         self.line_length = maxlength;
     }
 
+    const int MIN_NUM_ELLIPSES = 3;
+
     // Start an individual test
     function start_test(string name)
     {
-        int len = length(name);
-        int line_length = self.line_length;
-        int diff = line_length - len + 3;
+        int diff = int(self.line_length) - length(name) + MIN_NUM_ELLIPSES;
         string elipses = repeat(".", diff);
         self.printf("%s %s ", name, elipses);
     }
@@ -63,7 +63,7 @@ class Rosella.Harness.View
         if (self.need_backspaces > 0) {
             int num_b = int(self.need_backspaces);
             string b = repeat("\b", num_b);
-            print(b + " ");
+            self.printf(b + " ");
             self.need_backspaces = 0;
         }
         string p = Rosella.String.sprintf("%d/%d", done, total);
@@ -77,7 +77,7 @@ class Rosella.Harness.View
         if (self.need_backspaces > 0) {
             int num_b = int(self.need_backspaces);
             string b = repeat("\b", num_b);
-            print(b + " ");
+            self.printf(b + " ");
             self.need_backspaces = 0;
         }
         string msg;
@@ -187,7 +187,6 @@ class Rosella.Harness.View
             num_runs == 1 ? "" : "s",
             self.get_total_test_time()
         );
-        // TODO: Show total runtime information
         self.sayf("Result: %s", result);
     }
 
