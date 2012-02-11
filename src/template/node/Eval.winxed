@@ -1,43 +1,40 @@
-namespace Rosella { namespace Template { namespace Node
+/* Code Evaluation
+    Compile and execute an arbitrary snippet of code. By default, it uses
+    the Winxed compiler.
+*/
+class Rosella.Template.Node.Eval : Rosella.Template.Node
 {
-    /* Code Evaluation
-        Compile and execute an arbitrary snippet of code. By default, it uses
-        the Winxed compiler.
-    */
-    class Eval : Rosella.Template.Node
+    var func;
+    const string EVAL_BASE_NAME = "Template_Node_Eval";
+
+    // Constructor
+    function Eval(string contents, string type)
     {
-        var func;
-        const string EVAL_BASE_NAME = "Template_Node_Eval";
-
-        // Constructor
-        function Eval(string contents, string type)
-        {
-            self.Node(contents, type);
-            self.func = null;
-        }
-
-        // Render the node. Compile and execute the code, and put any output
-        // into the output stream
-        function render(var engine, var context, var builder)
-        {
-            if (self.func == null) {
-                string code = self.contents;
-                self.func = self.compile_func(code);
-            }
-            var func = self.func;
-            var results;
-            :(results [slurpy]) = func(engine, builder, context);
-            for (string result in results)
-                push(builder, result);
-        }
-
-        // Compile the code snippet. By default it uses the Winxed compiler
-        // if available. Subclass this to get different behavior.
-        function compile_func(string code)
-        {
-            string code_s = Rosella.String.sprintf("function __%s__EVAL[anon](var engine, var output, var context) { %s; }", EVAL_BASE_NAME, code);
-            var winxed = Rosella.get_winxed_compiler();
-            return winxed.compile(code_s);
-        }
+        self.Node(contents, type);
+        self.func = null;
     }
-}}}
+
+    // Render the node. Compile and execute the code, and put any output
+    // into the output stream
+    function render(var engine, var context, var builder)
+    {
+        if (self.func == null) {
+            string code = self.contents;
+            self.func = self.compile_func(code);
+        }
+        var func = self.func;
+        var results;
+        :(results [slurpy]) = func(engine, builder, context);
+        for (string result in results)
+            push(builder, result);
+    }
+
+    // Compile the code snippet. By default it uses the Winxed compiler
+    // if available. Subclass this to get different behavior.
+    function compile_func(string code)
+    {
+        string code_s = Rosella.String.sprintf("function __%s__EVAL[anon](var engine, var output, var context) { %s; }", EVAL_BASE_NAME, code);
+        var winxed = Rosella.get_winxed_compiler();
+        return winxed.compile(code_s);
+    }
+}

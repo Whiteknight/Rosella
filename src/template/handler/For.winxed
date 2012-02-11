@@ -1,99 +1,96 @@
-namespace Rosella { namespace Template { namespace Handler
+/* For loop Handler
+    Logic of the For loop construct. Can be used to loop over arrays or
+    hash objects from the context
+*/
+class Rosella.Template.Handler.For : Rosella.Template.Handler.Children
 {
-    /* For loop Handler
-        Logic of the For loop construct. Can be used to loop over arrays or
-        hash objects from the context
-    */
-    class For : Rosella.Template.Handler.Children
+    const string KEY_VARNAME = "__KEY__";
+    const string FIRST_VARNAME = "__FIRST__";
+    const string LAST_VARNAME = "__LAST__";
+    var varname;
+    var srcname;
+
+    // Constructor. Quick syntax sanity checks.
+    function For(var tokens)
     {
-        const string KEY_VARNAME = "__KEY__";
-        const string FIRST_VARNAME = "__FIRST__";
-        const string LAST_VARNAME = "__LAST__";
-        var varname;
-        var srcname;
+        self.Children();
+        if (elements(tokens) != 3 || string(tokens[1]) != "in")
+            Rosella.Error.invalid(__FUNCTION__, "Syntax of for loop is 'for <var> in <src>'");
+        string varname = tokens[0];
+        self.varname = varname;
+        if (substr(varname, 0, 2) == "__" && substr(varname, length(varname) - 2, 2) == "__")
+            Rosella.Error.invalid(__FUNCTION__, "Variable names starting and ending with double underscores are reserved");
+        self.srcname = tokens[2];
+    }
 
-        // Constructor. Quick syntax sanity checks.
-        function For(var tokens)
-        {
-            self.Children();
-            if (elements(tokens) != 3 || string(tokens[1]) != "in")
-                Rosella.Error.invalid(__FUNCTION__, "Syntax of for loop is 'for <var> in <src>'");
-            string varname = tokens[0];
-            self.varname = varname;
-            if (substr(varname, 0, 2) == "__" && substr(varname, length(varname) - 2, 2) == "__")
-                Rosella.Error.invalid(__FUNCTION__, "Variable names starting and ending with double underscores are reserved");
-            self.srcname = tokens[2];
-        }
+    // Render. Loop over data and render children for each
+    function render(var engine, var ctx, var sb)
+    {
+        var values = ctx.get_value(self.srcname);
+        if (values == null)
+            Rosella.Error.invalid(__FUNCTION__, "no value at '%s'", self.srcname);
 
-        // Render. Loop over data and render children for each
-        function render(var engine, var ctx, var sb)
-        {
-            var values = ctx.get_value(self.srcname);
-            if (values == null)
-                Rosella.Error.invalid(__FUNCTION__, "no value at '%s'", self.srcname);
-
-            self.__save_ctx_values(function() {
-                if (does(values, "hash"))
-                    self.__render_hash(engine, ctx, sb, values);
-                else {
-                    if (does(values, "array"))
-                        self.__render_array(engine, ctx, sb, values);
-                    else
-                        self.__render_scalar(engine, ctx, sb, values);
-                }
-            }, ctx, KEY_VARNAME, FIRST_VARNAME, LAST_VARNAME);
-        }
-
-        /* Internal Helper Routines
-            These methods are used to render for particular input types
-        */
-
-        // Render when the input data is a hash.
-        function __render_hash(var engine, var ctx, var sb, var values)
-        {
-            int is_first = 1;
-            int num_items = elements(values);
-            int is_last = num_items == 1;
-            for (string key in values) {
-                var value = values[key];
-                ctx.set_temporary(self.varname, value);
-                ctx.set_temporary(KEY_VARNAME, key);
-                ctx.set_temporary(FIRST_VARNAME, is_first);
-                ctx.set_temporary(LAST_VARNAME, is_last);
-                self.__render_children(engine, ctx, sb);
-                is_first = 0;
-                num_items--;
-                is_last = num_items == 1;
+        self.__save_ctx_values(function() {
+            if (does(values, "hash"))
+                self.__render_hash(engine, ctx, sb, values);
+            else {
+                if (does(values, "array"))
+                    self.__render_array(engine, ctx, sb, values);
+                else
+                    self.__render_scalar(engine, ctx, sb, values);
             }
-        }
+        }, ctx, KEY_VARNAME, FIRST_VARNAME, LAST_VARNAME);
+    }
 
-        // Render when the input data is an array
-        function __render_array(var engine, var ctx, var sb, var values)
-        {
-            int is_first = 1;
-            int num_items = elements(values);
-            int is_last = num_items == 1;
-            int idx = 0;
-            for (var value in values) {
-                ctx.set_temporary(self.varname, value);
-                ctx.set_temporary(KEY_VARNAME, idx);
-                ctx.set_temporary(FIRST_VARNAME, is_first);
-                ctx.set_temporary(LAST_VARNAME, is_last);
-                self.__render_children(engine, ctx, sb);
-                num_items--;
-                is_last = num_items == 1;
-                is_first = 0;
-                idx++;
-            }
-        }
+    /* Internal Helper Routines
+        These methods are used to render for particular input types
+    */
 
-        // Render when the input data is a scalar
-        function __render_scalar(var engine, var ctx, var sb, var value)
-        {
-            ctx.set_temporary(FIRST_VARNAME, 1);
-            ctx.set_temporary(LAST_VARNAME, 1);
+    // Render when the input data is a hash.
+    function __render_hash(var engine, var ctx, var sb, var values)
+    {
+        int is_first = 1;
+        int num_items = elements(values);
+        int is_last = num_items == 1;
+        for (string key in values) {
+            var value = values[key];
             ctx.set_temporary(self.varname, value);
+            ctx.set_temporary(KEY_VARNAME, key);
+            ctx.set_temporary(FIRST_VARNAME, is_first);
+            ctx.set_temporary(LAST_VARNAME, is_last);
             self.__render_children(engine, ctx, sb);
+            is_first = 0;
+            num_items--;
+            is_last = num_items == 1;
         }
     }
-}}}
+
+    // Render when the input data is an array
+    function __render_array(var engine, var ctx, var sb, var values)
+    {
+        int is_first = 1;
+        int num_items = elements(values);
+        int is_last = num_items == 1;
+        int idx = 0;
+        for (var value in values) {
+            ctx.set_temporary(self.varname, value);
+            ctx.set_temporary(KEY_VARNAME, idx);
+            ctx.set_temporary(FIRST_VARNAME, is_first);
+            ctx.set_temporary(LAST_VARNAME, is_last);
+            self.__render_children(engine, ctx, sb);
+            num_items--;
+            is_last = num_items == 1;
+            is_first = 0;
+            idx++;
+        }
+    }
+
+    // Render when the input data is a scalar
+    function __render_scalar(var engine, var ctx, var sb, var value)
+    {
+        ctx.set_temporary(FIRST_VARNAME, 1);
+        ctx.set_temporary(LAST_VARNAME, 1);
+        ctx.set_temporary(self.varname, value);
+        self.__render_children(engine, ctx, sb);
+    }
+}

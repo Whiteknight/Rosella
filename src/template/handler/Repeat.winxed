@@ -1,60 +1,57 @@
-namespace Rosella { namespace Template { namespace Handler
+/* Fixed Integer Repeating
+    Repeat the contents of the node a certain number of times defined by
+    an integer range
+*/
+class Rosella.Template.Handler.Repeat : Rosella.Template.Handler.Children
 {
-    /* Fixed Integer Repeating
-        Repeat the contents of the node a certain number of times defined by
-        an integer range
-    */
-    class Repeat : Rosella.Template.Handler.Children
+    var start;
+    var end;
+    const string IDX_VARNAME = "__INDEX__";
+    const string FIRST_VARNAME = "__FIRST__";
+    const string LAST_VARNAME = "__LAST__";
+
+    // Constructor
+    function Repeat(var tokens)
     {
-        var start;
-        var end;
-        const string IDX_VARNAME = "__INDEX__";
-        const string FIRST_VARNAME = "__FIRST__";
-        const string LAST_VARNAME = "__LAST__";
-
-        // Constructor
-        function Repeat(var tokens)
-        {
-            if (elements(tokens) != 3 || tokens[1] != "to")
-                Rosella.Error.invalid(__FUNCTION__, "Syntax of repeat loop is 'repeat <start> to <stop>'");
-            self.start = tokens[0];
-            self.end = tokens[2];
-            self.Children();
-        }
-
-        // Render. Loop over data and render children for each
-        function render(var engine, var ctx, var sb)
-        {
-            int start = int(self.__get_value(self.start, ctx));
-            int end = int(self.__get_value(self.end, ctx));
-            int direction = 1;
-            self.__save_ctx_values(function() {
-                if (start == end) {
-                    ctx.set_temporary(IDX_VARNAME, start);
-                    ctx.set_temporary(FIRST_VARNAME, 1);
-                    ctx.set_temporary(LAST_VARNAME, 1);
-                    self.__render_children(engine, ctx, sb);
-                    return;
-                }
-                if (end < start)
-                    direction = -1;
-
-                for (int i = start; i - direction != end; i += direction) {
-                    ctx.set_temporary(FIRST_VARNAME, i == start);
-                    ctx.set_temporary(LAST_VARNAME, i == end);
-                    ctx.set_temporary(IDX_VARNAME, i);
-                    self.__render_children(engine, ctx, sb);
-                }
-            }, ctx, IDX_VARNAME, FIRST_VARNAME, LAST_VARNAME);
-        }
-
-        // Get a value from one of the operands.
-        function __get_value(string key, var ctx)
-        {
-            int numeric = Rosella.String.get_character_class("numeric");
-            if (Rosella.String.first_not_cclass(key, numeric) == -1)
-                return int(key);
-            return int(ctx.get_value(key));
-        }
+        if (elements(tokens) != 3 || tokens[1] != "to")
+            Rosella.Error.invalid(__FUNCTION__, "Syntax of repeat loop is 'repeat <start> to <stop>'");
+        self.start = tokens[0];
+        self.end = tokens[2];
+        self.Children();
     }
-}}}
+
+    // Render. Loop over data and render children for each
+    function render(var engine, var ctx, var sb)
+    {
+        int start = int(self.__get_value(self.start, ctx));
+        int end = int(self.__get_value(self.end, ctx));
+        int direction = 1;
+        self.__save_ctx_values(function() {
+            if (start == end) {
+                ctx.set_temporary(IDX_VARNAME, start);
+                ctx.set_temporary(FIRST_VARNAME, 1);
+                ctx.set_temporary(LAST_VARNAME, 1);
+                self.__render_children(engine, ctx, sb);
+                return;
+            }
+            if (end < start)
+                direction = -1;
+
+            for (int i = start; i - direction != end; i += direction) {
+                ctx.set_temporary(FIRST_VARNAME, i == start);
+                ctx.set_temporary(LAST_VARNAME, i == end);
+                ctx.set_temporary(IDX_VARNAME, i);
+                self.__render_children(engine, ctx, sb);
+            }
+        }, ctx, IDX_VARNAME, FIRST_VARNAME, LAST_VARNAME);
+    }
+
+    // Get a value from one of the operands.
+    function __get_value(string key, var ctx)
+    {
+        int numeric = Rosella.String.get_character_class("numeric");
+        if (Rosella.String.first_not_cclass(key, numeric) == -1)
+            return int(key);
+        return int(ctx.get_value(key));
+    }
+}

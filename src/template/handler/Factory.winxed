@@ -1,32 +1,29 @@
-namespace Rosella { namespace Template { namespace Handler
+/* Handler Factory
+    Get a new Handler object by name.
+*/
+class Rosella.Template.Handler.Factory : Rosella.ObjectFactory
 {
-    /* Handler Factory
-        Get a new Handler object by name.
-    */
-    class Factory : Rosella.ObjectFactory
+    var handler_types;
+
+    // Constructor. Take a hash of handler_name->handler_class
+    function Factory(var type_hash)
     {
-        var handler_types;
-
-        // Constructor. Take a hash of handler_name->handler_class
-        function Factory(var type_hash)
-        {
-            self.handler_types = type_hash;
-        }
-
-        // Create and initialize a new Template.Handler object with the given
-        // type.
-        function create(string type, var tokens)
-        {
-            var handler = null;
-            if (length(type) > 3 && substr(type, 0, 3) == "end") {
-                string start_name = substr(type, 3);
-                if (exists self.handler_types[start_name])
-                    return null;
-                Rosella.Error.invalid(__FUNCTION__, "End for unknown logic type %s (%s)", start_name, type);
-            }
-            if (exists self.handler_types[type])
-                return Rosella.construct(self.handler_types[type], tokens);
-            Rosella.Error.invalid(__FUNCTION__, "Unknown logic type %s", type);
-        }
+        self.handler_types = type_hash;
     }
-}}}
+
+    // Create and initialize a new Template.Handler object with the given
+    // type.
+    function create(string type, var tokens)
+    {
+        var handler = null;
+        if (length(type) > 3 && substr(type, 0, 3) == "end") {
+            string start_name = substr(type, 3);
+            if (exists self.handler_types[start_name])
+                return null;
+            Rosella.Error.invalid(__FUNCTION__, "End for unknown logic type %s (%s)", start_name, type);
+        }
+        if (exists self.handler_types[type])
+            return Rosella.construct(self.handler_types[type], tokens);
+        Rosella.Error.invalid(__FUNCTION__, "Unknown logic type %s", type);
+    }
+}

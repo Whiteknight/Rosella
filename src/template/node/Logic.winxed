@@ -1,95 +1,92 @@
-namespace Rosella { namespace Template { namespace Node
+/* Logic Node
+    Logic nodes provide logical constructs such as loops and conditionals.
+    Logic nodes keep track of certain information, and pass logical
+    rendering to Handler objects.
+*/
+class Rosella.Template.Node.Logic : Rosella.Template.Node
 {
-    /* Logic Node
-        Logic nodes provide logical constructs such as loops and conditionals.
-        Logic nodes keep track of certain information, and pass logical
-        rendering to Handler objects.
-    */
-    class Logic : Rosella.Template.Node
+    var handler;
+    var logic_name;
+
+    // Constructor
+    function Logic(string contents, string type, var handler_factory)
     {
-        var handler;
-        var logic_name;
-
-        // Constructor
-        function Logic(string contents, string type, var handler_factory)
-        {
-            self.Node(contents, type);
-            var tokens = self.parse(contents);
-            self.logic_name = tokens.shift();
-            self.handler = handler_factory.create(self.logic_name, tokens);
-        }
-
-        // Parse the tag contents. Return an array of string arguments
-        function parse(string text)
-        {
-            var cclasses = [
-                Rosella.String.get_character_class("graphical"),
-                Rosella.String.get_character_class("whitespace")
-            ];
-            var tokenizer = new Rosella.String.Tokenizer.CClass(cclasses);
-            tokenizer.add_data(text);
-            var tokens = [];
-            for (var token in tokenizer) {
-                if (int(token.metadata()) != CCLASS_WHITESPACE)
-                    push(tokens, token.data());
-            }
-            return tokens;
-        }
-
-        // The logic name of this tag
-        function logic_name()
-        {
-            return self.logic_name;
-        }
-
-        // The name of the coresponding end tag
-        function logic_end_name()
-        {
-            return Winxed_Builtins.sprintf("end%s", [self.logic_name]);
-        }
-
-        // Assemble the node by pushing child nodes into it.
-        function assemble(var parent_nodes, var current_node)
-        {
-            if (self.handler != null && !self.handler.can_have_children())
-                current_node.add_child(self);
-            else if (self.is_logic_end() &&
-                string(self.logic_name) == string(current_node.logic_end_name()))
-                current_node = pop_p(parent_nodes);
-            else {
-                current_node.add_child(self);
-                push(parent_nodes, current_node);
-                current_node = self;
-            }
-            return current_node;
-        }
-
-        // True if this node is an end node for a child-bearing node. False
-        // otherwise.
-        function is_logic_end()
-        {
-            string name = self.logic_name;
-            if (substr(name, 0, 3) == "end")
-                return 1;
-            return 0;
-        }
-
-        // Add a child node to this one, if the handler takes children.
-        function add_child(var node)
-        {
-            if (self.handler == null)
-                Rosella.Error.invalid(__FUNCTION__, "Cannot add child, no handler (%s)", self.logic_name);
-            if (!self.handler.can_have_children())
-                Rosella.Error.invalid(__FUNCTION__, "Cannot add child");
-            self.handler.add_child(node);
-        }
-
-        // Render this node. Rendering requires a Handler
-        function render(var engine, var context, var builder)
-        {
-            if (self.handler == null)
-                Rosella.Error.invalid(__FUNCTION__, "Cannot render '%s', no handler", self.logic_name);
-            self.handler.render(engine, context, builder);
-        }
+        self.Node(contents, type);
+        var tokens = self.parse(contents);
+        self.logic_name = tokens.shift();
+        self.handler = handler_factory.create(self.logic_name, tokens);
     }
-}}}
+
+    // Parse the tag contents. Return an array of string arguments
+    function parse(string text)
+    {
+        var cclasses = [
+            Rosella.String.get_character_class("graphical"),
+            Rosella.String.get_character_class("whitespace")
+        ];
+        var tokenizer = new Rosella.String.Tokenizer.CClass(cclasses);
+        tokenizer.add_data(text);
+        var tokens = [];
+        for (var token in tokenizer) {
+            if (int(token.metadata()) != CCLASS_WHITESPACE)
+                push(tokens, token.data());
+        }
+        return tokens;
+    }
+
+    // The logic name of this tag
+    function logic_name()
+    {
+        return self.logic_name;
+    }
+
+    // The name of the coresponding end tag
+    function logic_end_name()
+    {
+        return Winxed_Builtins.sprintf("end%s", [self.logic_name]);
+    }
+
+    // Assemble the node by pushing child nodes into it.
+    function assemble(var parent_nodes, var current_node)
+    {
+        if (self.handler != null && !self.handler.can_have_children())
+            current_node.add_child(self);
+        else if (self.is_logic_end() &&
+            string(self.logic_name) == string(current_node.logic_end_name()))
+            current_node = pop_p(parent_nodes);
+        else {
+            current_node.add_child(self);
+            push(parent_nodes, current_node);
+            current_node = self;
+        }
+        return current_node;
+    }
+
+    // True if this node is an end node for a child-bearing node. False
+    // otherwise.
+    function is_logic_end()
+    {
+        string name = self.logic_name;
+        if (substr(name, 0, 3) == "end")
+            return 1;
+        return 0;
+    }
+
+    // Add a child node to this one, if the handler takes children.
+    function add_child(var node)
+    {
+        if (self.handler == null)
+            Rosella.Error.invalid(__FUNCTION__, "Cannot add child, no handler (%s)", self.logic_name);
+        if (!self.handler.can_have_children())
+            Rosella.Error.invalid(__FUNCTION__, "Cannot add child");
+        self.handler.add_child(node);
+    }
+
+    // Render this node. Rendering requires a Handler
+    function render(var engine, var context, var builder)
+    {
+        if (self.handler == null)
+            Rosella.Error.invalid(__FUNCTION__, "Cannot render '%s', no handler", self.logic_name);
+        self.handler.render(engine, context, builder);
+    }
+}

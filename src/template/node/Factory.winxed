@@ -1,54 +1,51 @@
-namespace Rosella { namespace Template { namespace Node
+/* Node Factory
+    Create a node by key name. Keys are the names provided to regions in
+    the Engine.
+*/
+class Rosella.Template.Node.Factory : Rosella.ObjectFactory
 {
-    /* Node Factory
-        Create a node by key name. Keys are the names provided to regions in
-        the Engine.
-    */
-    class Factory : Rosella.ObjectFactory
+    var types;
+    var handler_factories;
+
+    // Constructor.
+    function Factory()
     {
-        var types;
-        var handler_factories;
-
-        // Constructor.
-        function Factory()
-        {
-            self.types = {};
-            self.handler_factories = {};
-        }
-
-        // Register a new node type, with a key and optionally a list of the
-        // kinds of handlers that node can use.
-        function register_type(string key, var type,
-                var handlers [optional], int has_handlers [opt_flag])
-        {
-            self.types[key] = Rosella.get_type_class(type);
-            if (has_handlers)
-                self.handler_factories[key] = new Rosella.Template.Handler.Factory(handlers);
-        }
-
-        // Create a new Node for the given token. The token metadata string
-        // is the key for creating the node by type.
-        function create(var token)
-        {
-            string key = token.metadata();
-            if (!(exists self.types[key]))
-                Rosella.Error.invalid(__FUNCTION__, "type %s not registered", key);
-            var type_class = self.types[key];
-            if (exists self.handler_factories[key])
-                return self.create_typed(type_class, token, self.handler_factories[key]);
-            return self.create_typed(type_class, token);
-        }
-
-        // Create a Node given the type.
-        function create_typed(var type_class, var token,
-                var handler_factory [optional], int has_factory [opt_flag])
-        {
-            var node;
-            if (has_factory)
-                node = Rosella.construct(type_class, token.data(), token.metadata(), handler_factory);
-            else
-                node = Rosella.construct(type_class, token.data(), token.metadata());
-            return node;
-        }
+        self.types = {};
+        self.handler_factories = {};
     }
-}}}
+
+    // Register a new node type, with a key and optionally a list of the
+    // kinds of handlers that node can use.
+    function register_type(string key, var type,
+            var handlers [optional], int has_handlers [opt_flag])
+    {
+        self.types[key] = Rosella.get_type_class(type);
+        if (has_handlers)
+            self.handler_factories[key] = new Rosella.Template.Handler.Factory(handlers);
+    }
+
+    // Create a new Node for the given token. The token metadata string
+    // is the key for creating the node by type.
+    function create(var token)
+    {
+        string key = token.metadata();
+        if (!(exists self.types[key]))
+            Rosella.Error.invalid(__FUNCTION__, "type %s not registered", key);
+        var type_class = self.types[key];
+        if (exists self.handler_factories[key])
+            return self.create_typed(type_class, token, self.handler_factories[key]);
+        return self.create_typed(type_class, token);
+    }
+
+    // Create a Node given the type.
+    function create_typed(var type_class, var token,
+            var handler_factory [optional], int has_factory [opt_flag])
+    {
+        var node;
+        if (has_factory)
+            node = Rosella.construct(type_class, token.data(), token.metadata(), handler_factory);
+        else
+            node = Rosella.construct(type_class, token.data(), token.metadata());
+        return node;
+    }
+}

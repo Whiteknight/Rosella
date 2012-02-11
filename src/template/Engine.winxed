@@ -1,9 +1,7 @@
-namespace Rosella { namespace Template
-{
     /* Template Engine
         This is the main driver type for generating output from templates
     */
-    class Engine
+    class Rosella.Template.Engine
     {
         const string DEFAULT_REGION_NAME = "!!!LiteralRegion!!!";
         const int DEFAULT_RECURSE_LIMIT = 10;
@@ -180,4 +178,3 @@ namespace Rosella { namespace Template
             return string(builder);
         }
     }
-}}

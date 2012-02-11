@@ -1,37 +1,34 @@
-namespace Rosella { namespace Template
+/* Abstract parent type for Nodes.
+    Do not use this class directly. Use a subclass
+*/
+class Rosella.Template.Node
 {
-    /* Abstract parent type for Nodes.
-        Do not use this class directly. Use a subclass
-    */
-    class Node
+    var contents;
+    var type;
+
+    // Constructor
+    function Node(string contents, string type)
     {
-        var contents;
-        var type;
-
-        // Constructor
-        function Node(string contents, string type)
-        {
-            self.contents = contents;
-            self.type = type;
-        }
-
-        // Get the token type
-        function type()
-        {
-            return self.type;
-        }
-
-        // Render contents. Must be subclassed
-        function render(var engine, var context, var builder)
-        {
-            Rosella.Error.must_subclass(__CLASS__);
-        }
-
-        // assemble this node.
-        function assemble(var parent_nodes, var current_node)
-        {
-            current_node.add_child(self);
-            return current_node;
-        }
+        self.contents = contents;
+        self.type = type;
     }
-}}
+
+    // Get the token type
+    function type()
+    {
+        return self.type;
+    }
+
+    // Render contents. Must be subclassed
+    function render(var engine, var context, var builder)
+    {
+        Rosella.Error.must_subclass(__CLASS__);
+    }
+
+    // assemble this node.
+    function assemble(var parent_nodes, var current_node)
+    {
+        current_node.add_child(self);
+        return current_node;
+    }
+}

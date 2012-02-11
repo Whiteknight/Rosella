@@ -25,7 +25,7 @@ class Rosella.FileSystem.Visitor.Function : Rosella.FileSystem.Visitor
             push(self.values, arg);
     }
 
-    // Return the lits of results, if any
+    // Return the list of results, if any
     function result()
     {
         return self.values;

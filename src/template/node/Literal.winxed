@@ -1,18 +1,15 @@
-namespace Rosella { namespace Template { namespace Node
+/* Literal Node Type
+    This is the default node type to use for literal text snippets. It
+    outputs the text verbatim.
+*/
+class Rosella.Template.Node.Literal : Rosella.Template.Node
 {
-    /* Literal Node Type
-        This is the default node type to use for literal text snippets. It
-        outputs the text verbatim.
-    */
-    class Literal : Rosella.Template.Node
-    {
-        // Constructor.
-        function Literal(string contents, string type) { self.Node(contents, type); }
+    // Constructor.
+    function Literal(string contents, string type) { self.Node(contents, type); }
 
-        // Render, push the text to the output
-        function render(var engine, var context, var builder)
-        {
-            push(builder, self.contents);
-        }
+    // Render, push the text to the output
+    function render(var engine, var context, var builder)
+    {
+        push(builder, self.contents);
     }
-}}}
+}

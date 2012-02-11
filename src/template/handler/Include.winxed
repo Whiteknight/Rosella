@@ -1,26 +1,23 @@
-namespace Rosella { namespace Template { namespace Handler
+/* Sub-Template including
+    Include template text from another file.
+*/
+class Rosella.Template.Handler.Include : Rosella.Template.Handler
 {
-    /* Sub-Template including
-        Include template text from another file.
-    */
-    class Include : Rosella.Template.Handler
+    var filename;
+
+    // Constructor
+    function Include(var tokens)
     {
-        var filename;
-
-        // Constructor
-        function Include(var tokens)
-        {
-            if (elements(tokens) != 1)
-                Rosella.Error.invalid(__FUNCTION__, "Include requires exactly 1 argument");
-            self.filename = tokens[0];
-        }
-
-        // Get template text from the file and pass it to the template
-        // engine
-        function render(var engine, var ctx, var sb)
-        {
-            string output = engine.generate_from_file(self.filename, ctx);
-            push(sb, output);
-        }
+        if (elements(tokens) != 1)
+            Rosella.Error.invalid(__FUNCTION__, "Include requires exactly 1 argument");
+        self.filename = tokens[0];
     }
-}}}
+
+    // Get template text from the file and pass it to the template
+    // engine
+    function render(var engine, var ctx, var sb)
+    {
+        string output = engine.generate_from_file(self.filename, ctx);
+        push(sb, output);
+    }
+}
