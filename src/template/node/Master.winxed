@@ -40,6 +40,9 @@ function __TMPL_%d[anon](var __CONTEXT_RAW__)
         string coda = <<:
     return string(__BUILDER__);
 }
+$include "src/include/Builtins.winxed";
+$include "src/include/Core.winxed";
+$include "src/include/Template.winxed";
 :>>
 ;
         push(builder, coda);

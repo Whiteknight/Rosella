@@ -150,7 +150,7 @@
         {
             var wx = Rosella.get_winxed_compiler();
             string wx_code = self.compile_to_winxed(tmpl);
-            return wx.compile(wx_code);
+            return wx.compile(wx_code)[0];
         }
 
         /* Private Helper Methods
