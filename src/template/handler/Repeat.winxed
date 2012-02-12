@@ -55,7 +55,7 @@ class Rosella.Template.Handler.Repeat : Rosella.Template.Handler.Children
         var __SAVED_%d__ = {
             "%s" : __CONTEXT__.get_value("%s"),
             "%s" : __CONTEXT__.get_value("%s"),
-            "%s" : __CONTEXT__.get_value("%s");
+            "%s" : __CONTEXT__.get_value("%s")
         };
         int __numeric = Rosella.String.get_character_class("numeric");
         int __start = (Rosella.String.first_not_cclass("%s", __numeric) == -1) ? int(%s) : int(__CONTEXT__.get_value("%s"));
@@ -66,7 +66,7 @@ class Rosella.Template.Handler.Repeat : Rosella.Template.Handler.Children
         push(builder, preamble);
 
         string code = <<:
-        if (start == end) {
+        if (__start == __end) {
             __CONTEXT__.set_temporary("%s", __start);
             __CONTEXT__.set_temporary("%s", 1);
             __CONTEXT__.set_temporary("%s", 1);
@@ -77,8 +77,8 @@ class Rosella.Template.Handler.Repeat : Rosella.Template.Handler.Children
         self.__to_winxed_children(engine, builder);
         code = <<:
         } else {
-            int __direction = (end < start) ? -1 : 1;
-            for (int i = __start; i - __direction != __end i += __direction) {
+            int __direction = (__end < __start) ? -1 : 1;
+            for (int i = __start; i - __direction != __end; i += __direction) {
                 __CONTEXT__.set_temporary("%s", i == __start);
                 __CONTEXT__.set_temporary("%s", i == __end);
                 __CONTEXT__.set_temporary("%s", i);
@@ -87,14 +87,15 @@ class Rosella.Template.Handler.Repeat : Rosella.Template.Handler.Children
         code = Rosella.String.sprintf(code, FIRST_VARNAME, LAST_VARNAME, IDX_VARNAME);
         push(builder, code);
         self.__to_winxed_children(engine, builder);
-        push(builder, "        }\n");
+        push(builder, "            }\n        }\n");
         string coda = <<:
 
-        for (string __s in __SAVED__)
-            __CONTEXT__.set_temporary(__s, __SAVED__[__s]);
+        for (string __s in __SAVED_%d__)
+            __CONTEXT__.set_temporary(__s, __SAVED_%d__[__s]);
     }
 :>>
 ;
+        coda = Rosella.String.sprintf(coda, gen_idx, gen_idx);
         push(builder, coda);
     }
 
