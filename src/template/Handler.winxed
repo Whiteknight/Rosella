@@ -40,42 +40,53 @@ class Rosella.Template.Handler
         for (string key in keys)
             ctx.set_temporary(key, saved[key]);
     }
+
+    function __save_ctx_values_to_winxed(var builder, var func, var keys [slurpy])
+    {
+        int gen_idx = Rosella.get_unique_count();
+        push(builder, Rosella.String.sprintf("    {\n        var __SAVED_%d__ = {};\n", gen_idx));
+        for (string key in keys)
+            push(builder, Rosella.String.sprintf("        __SAVED_%d__['%s'] = __CONTEXT__.get_value('%s');\n", gen_idx, key, key));
+
+        func();
+
+        for (string key in keys)
+            push(builder, Rosella.String.sprintf("        __CONTEXT__.set_temporary('%s', __SAVED_%d__['%s']);\n", key, gen_idx, key));
+        push(builder, "    }\n");
+    }
 }
 
-namespace Rosella.Template.Handler
+/* Handler type that is able to contain child nodes
+*/
+class Rosella.Template.Handler.Children : Rosella.Template.Handler
 {
-    /* Handler type that is able to contain child nodes
-    */
-    class Children : Rosella.Template.Handler
+    var children;
+
+    // Constructor.
+    function Children(var tokens [optional])
     {
-        var children;
+        self.children = [];
+    }
 
-        // Constructor.
-        function Children(var tokens [optional])
-        {
-            self.children = [];
-        }
+    // This handler does have child nodes
+    function can_have_children() { return 1; }
 
-        // This handler does have child nodes
-        function can_have_children() { return 1; }
+    // Add a child node.
+    function add_child(var node)
+    {
+        push(self.children, node);
+    }
 
-        // Add a child node.
-        function add_child(var node)
-        {
-            push(self.children, node);
-        }
+    // Render the contents of all children
+    function __render_children(var engine, var ctx, var sb)
+    {
+        for (var child in self.children)
+            child.render(engine, ctx, sb);
+    }
 
-        // Render the contents of all children
-        function __render_children(var engine, var ctx, var sb)
-        {
-            for (var child in self.children)
-                child.render(engine, ctx, sb);
-        }
-
-        function __to_winxed_children(var engine, var builder)
-        {
-            for (var child in self.children)
-                child.to_winxed(engine, builder);
-        }
+    function __to_winxed_children(var engine, var builder)
+    {
+        for (var child in self.children)
+            child.to_winxed(engine, builder);
     }
 }
