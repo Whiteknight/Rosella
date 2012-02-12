@@ -112,10 +112,12 @@
             return self.__generate_internal(tmpl, context);
         }
 
-        function compile_to_winxed(string tmpl)
+        function compile_to_winxed(string tmpl, var builder [optional], int has_builder [opt_flag], int recurse [named,optional], int has_recurse [opt_flag])
         {
             if (int(self.recurse_level) == 0)
                 return;
+            if (!has_recurse)
+                recurse = 0;
             self.recurse_level--;
 
             var tokenizer = new Rosella.String.Tokenizer.DelimiterRegion(DEFAULT_REGION_NAME);
@@ -123,17 +125,25 @@
             self.setup_region_types(tokenizer, node_factory);
             var nodes_array = self.__get_nodes_array(tokenizer, node_factory, tmpl);
             var node = self.__create_node_tree(nodes_array);
-            var builder = new ['StringBuilder'];
-            node.to_winxed(self, builder);
+            if (!has_builder)
+                builder = new ['StringBuilder'];
+            if (recurse)
+                node.to_winxed_recurse(self, builder);
+            else
+                node.to_winxed(self, builder);
 
             self.recurse_level++;
             return string(builder);
         }
 
-        function compile_to_winxed_from_file(string filename, var builder)
+        function compile_to_winxed_from_file(string filename, var builder [optional], int has_builder [opt_flag], int recurse [named,optional], int has_recurse [opt_flag])
         {
             string tmpl = self.__get_template_from_file(filename);
-            // TODO: Figure this out
+            if (!has_builder)
+                builder = new ['StringBuilder'];
+            if (!has_recurse)
+                recurse = 0;
+            return self.compile_to_winxed(tmpl, builder, recurse:[named("recurse")]);
         }
 
         function compile(string tmpl)

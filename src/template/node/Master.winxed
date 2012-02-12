@@ -45,6 +45,24 @@ function __TMPL_%d[anon](var __CONTEXT_RAW__)
         push(builder, coda);
     }
 
+    function to_winxed_recurse(var engine, var builder)
+    {
+        int master_idx = Rosella.get_unique_count();
+        string preamble = <<:
+    {
+:>>
+;
+        preamble = Rosella.String.sprintf(preamble, master_idx);
+        push(builder, preamble);
+        for (var child in self.children)
+            child.to_winxed(engine, builder);
+        string coda = <<:
+    }
+:>>
+;
+        push(builder, coda);
+    }
+
     // Add a new child to the list of nodes
     function add_child(var node)
     {

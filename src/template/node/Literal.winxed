@@ -16,6 +16,8 @@ class Rosella.Template.Node.Literal : Rosella.Template.Node
     function to_winxed(var engine, var builder)
     {
         // TODO: Need to escape quotes in self.contents
-        push(builder, "    push(__BUILDER__, '" + string(self.contents) + "');\n");
+        string contents = string(self.contents);
+        contents = Rosella.String.replace_all(contents, "\n", "\\n");
+        push(builder, "    push(__BUILDER__, \"" + contents + "\"); // Literal\n");
     }
 }
