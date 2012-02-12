@@ -62,7 +62,33 @@ class Rosella.Template.Handler.If : Rosella.Template.Handler
 
     function to_winxed(var engine, var builder)
     {
-        Rosella.Error.unimplemented(__FUNCTION__);
+        string op = self.op == null ? "" : string(self.op);
+        string name_a = self.name_a;
+        string name_b = (self.name_b == null) ? "" : string(self.name_b);
+
+        string code = <<:
+    {
+        int __numeric = Rosella.String.get_character_class("numeric");
+        var __a = (Rosella.String.first_not_cclass("%s", __numeric) == -1) ? int("%s") : __CONTEXT__.get_value("%s");
+        var __b = (Rosella.String.first_not_cclass("%s", __numeric) == -1) ? int("%s") : __CONTEXT__.get_value("%s");
+:>>
+;
+        code = Rosella.String.sprintf(code, name_a, name_a, name_a, name_b, name_b, name_b);
+        push(builder, code);
+        if (op == "" || op == "?") {
+            code = "        if (%s) {\n";
+            code = Rosella.String.sprintf(code, name_a);
+        } else {
+            code = "        if (%s %s %s) {\n";
+            code = Rosella.String.sprintf(code, name_a, op, name_b);
+        }
+        push(builder, code);
+        for (var child in self.then_children)
+            child.to_winxed(engine, builder);
+        push(builder, "        } else {\n");
+        for (var child in self.else_children)
+            child.to_winxed(engine, builder);
+        push(builder, "        }\n    }\n");
     }
 
     /* Internal Helper Methods
@@ -129,6 +155,32 @@ class Rosella.Template.Handler.Unless : Rosella.Template.Handler.If
 
     function to_winxed(var engine, var builder)
     {
-        Rosella.Error.unimplemented(__FUNCTION__);
+        string op = self.op == null ? "" : string(self.op);
+        string name_a = self.name_a;
+        string name_b = (self.name_b == null) ? "" : string(self.name_b);
+
+        string code = <<:
+    {
+        int __numeric = Rosella.String.get_character_class("numeric");
+        var __a = (Rosella.String.first_not_cclass("%s", __numeric) == -1) ? int("%s") : __CONTEXT__.get_value("%s");
+        var __b = (Rosella.String.first_not_cclass("%s", __numeric) == -1) ? int("%s") : __CONTEXT__.get_value("%s");
+:>>
+;
+        code = Rosella.String.sprintf(code, name_a, name_a, name_a, name_b, name_b, name_b);
+        push(builder, code);
+        if (op == "" || op == "?") {
+            code = "        if (%s) {\n";
+            code = Rosella.String.sprintf(code, name_a);
+        } else {
+            code = "        if (%s %s %s) {\n";
+            code = Rosella.String.sprintf(code, name_a, op, name_b);
+        }
+        push(builder, code);
+        for (var child in self.else_children)
+            child.to_winxed(engine, builder);
+        push(builder, "        } else {\n");
+        for (var child in self.then_children)
+            child.to_winxed(engine, builder);
+        push(builder, "        }\n    }\n");
     }
 }
