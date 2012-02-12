@@ -21,6 +21,30 @@ class Rosella.Template.Node.Master : Rosella.Template.Node
             child.render(engine, context, builder);
     }
 
+    function to_winxed(var engine, var builder)
+    {
+        int master_idx = Rosella.get_unique_count();
+        string preamble = <<:
+function __TMPL_%d[anon](var __CONTEXT_RAW__)
+{
+    var __CONTEXT__ = new Rosella.Template.Context(__CONTEXT_RAW__);
+    var __BUILDER__ = new 'StringBuilder';
+    var __BUILDER_STACK__ = [];
+    var __RESULTS__ = null;
+:>>
+;
+        preamble = Rosella.String.sprintf(preamble, master_idx);
+        push(builder, preamble);
+        for (var child in self.children)
+            child.to_winxed(engine, builder);
+        string coda = <<:
+    return string(__BUILDER__);
+}
+:>>
+;
+        push(builder, coda);
+    }
+
     // Add a new child to the list of nodes
     function add_child(var node)
     {

@@ -29,6 +29,20 @@ class Rosella.Template.Node.Eval : Rosella.Template.Node
             push(builder, result);
     }
 
+    function to_winxed(var engine, var builder)
+    {
+        int func_idx = Rosella.get_unique_count();
+        string code = <<:
+    var __f_%d = function (engine, output, context) { %s; };
+    :(__RESULTS__ [slurpy]) = __f_%d(null, __BUILDER__, __CONTEXT__);
+    for (string __r in __RESULTS__)
+        push(__BUILDER__, __r);
+:>>
+;
+        code = Rosella.String.sprintf(code, func_idx, self.contents, func_idx);
+        push(builder, code);
+    }
+
     // Compile the code snippet. By default it uses the Winxed compiler
     // if available. Subclass this to get different behavior.
     function compile_func(string code)

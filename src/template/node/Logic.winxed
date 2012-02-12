@@ -89,4 +89,11 @@ class Rosella.Template.Node.Logic : Rosella.Template.Node
             Rosella.Error.invalid(__FUNCTION__, "Cannot render '%s', no handler", self.logic_name);
         self.handler.render(engine, context, builder);
     }
+
+    function to_winxed(var engine, var builder)
+    {
+        if (self.handler == null)
+            Rosella.Error.invalid(__FUNCTION__, "Cannot convert '%s' to winxed, no handler", self.logic_name);
+        self.handler.to_winxed(engine, builder);
+    }
 }

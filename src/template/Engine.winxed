@@ -112,6 +112,37 @@
             return self.__generate_internal(tmpl, context);
         }
 
+        function compile_to_winxed(string tmpl)
+        {
+            if (int(self.recurse_level) == 0)
+                return;
+            self.recurse_level--;
+
+            var tokenizer = new Rosella.String.Tokenizer.DelimiterRegion(DEFAULT_REGION_NAME);
+            var node_factory = new Rosella.Template.Node.Factory();
+            self.setup_region_types(tokenizer, node_factory);
+            var nodes_array = self.__get_nodes_array(tokenizer, node_factory, tmpl);
+            var node = self.__create_node_tree(nodes_array);
+            var builder = new ['StringBuilder'];
+            node.to_winxed(self, builder);
+
+            self.recurse_level++;
+            return string(builder);
+        }
+
+        function compile_to_winxed_from_file(string filename, var builder)
+        {
+            string tmpl = self.__get_template_from_file(filename);
+            // TODO: Figure this out
+        }
+
+        function compile(string tmpl)
+        {
+            var wx = Rosella.get_winxed_compiler();
+            string wx_code = self.compile_to_winxed(tmpl);
+            return wx.compile(wx_code);
+        }
+
         /* Private Helper Methods
         */
 

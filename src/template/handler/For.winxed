@@ -42,6 +42,11 @@ class Rosella.Template.Handler.For : Rosella.Template.Handler.Children
         }, ctx, KEY_VARNAME, FIRST_VARNAME, LAST_VARNAME);
     }
 
+    function to_winxed(var engine, var builder)
+    {
+        Rosella.Error.unimplemented(__FUNCTION__);
+    }
+
     /* Internal Helper Routines
         These methods are used to render for particular input types
     */

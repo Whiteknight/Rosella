@@ -50,4 +50,28 @@ class Rosella.Template.Handler.Set : Rosella.Template.Handler.Children
             ctx.set_temporary(self.varname, value);
         }
     }
+
+    function to_winxed(var engine, var builder)
+    {
+        if (self.sourcename == null && self.children != null) {
+            string code = <<:
+    {
+    push(__BUILDER_STACK__, __BUILDER__);
+    __BUILDER__ = new 'StringBuilder';
+:>>
+;
+            push(builder, code);
+            self.__to_winxed_children(engine, builder);
+            code = <<:
+    __CONTEXT__.set_temporary('%s', string(__BUILDER__));
+    __BUILDER__ = __BUILDER_STACK__.pop();
+    }
+:>>
+;
+            push(builder, code);
+        } else if (self.sourcename != null) {
+            string code = "\t__CONTEXT__.set_temporary('" + string(self.varname) + "', __CONTEXT__.get_value('" + string(self.sourcename) + "'));\n";
+            push(builder, code);
+        }
+    }
 }

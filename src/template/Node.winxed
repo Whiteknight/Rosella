@@ -25,6 +25,11 @@ class Rosella.Template.Node
         Rosella.Error.must_subclass(__CLASS__);
     }
 
+    function to_winxed(var engine, var builder)
+    {
+        Rosella.Error.must_subclass(__CLASS__);
+    }
+
     // assemble this node.
     function assemble(var parent_nodes, var current_node)
     {

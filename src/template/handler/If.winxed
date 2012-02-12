@@ -60,6 +60,11 @@ class Rosella.Template.Handler.If : Rosella.Template.Handler
         }
     }
 
+    function to_winxed(var engine, var builder)
+    {
+        Rosella.Error.unimplemented(__FUNCTION__);
+    }
+
     /* Internal Helper Methods
     */
 
@@ -120,5 +125,10 @@ class Rosella.Template.Handler.Unless : Rosella.Template.Handler.If
             for (var child in self.else_children)
                 child.render(engine, ctx, sb);
         }
+    }
+
+    function to_winxed(var engine, var builder)
+    {
+        Rosella.Error.unimplemented(__FUNCTION__);
     }
 }

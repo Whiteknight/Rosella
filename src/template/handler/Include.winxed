@@ -20,4 +20,9 @@ class Rosella.Template.Handler.Include : Rosella.Template.Handler
         string output = engine.generate_from_file(self.filename, ctx);
         push(sb, output);
     }
+
+    function to_winxed(var engine, var builder)
+    {
+        Rosella.Error.unimplemented(__FUNCTION__);
+    }
 }

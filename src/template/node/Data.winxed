@@ -14,4 +14,15 @@ class Rosella.Template.Node.Data : Rosella.Template.Node
         string value = context.get_value(key);
         push(builder, value);
     }
+
+    function to_winxed(var engine, var builder)
+    {
+        string key = Rosella.String.trim(self.contents);
+        string code = <<:
+    push(__BUILDER__, __CONTEXT__.get_value('%s'));
+:>>
+;
+        code = Rosella.String.sprintf(code, key);
+        push(builder, code);
+    }
 }

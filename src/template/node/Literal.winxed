@@ -12,4 +12,10 @@ class Rosella.Template.Node.Literal : Rosella.Template.Node
     {
         push(builder, self.contents);
     }
+
+    function to_winxed(var engine, var builder)
+    {
+        // TODO: Need to escape quotes in self.contents
+        push(builder, "    push(__BUILDER__, '" + string(self.contents) + "');\n");
+    }
 }
