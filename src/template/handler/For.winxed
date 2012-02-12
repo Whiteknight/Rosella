@@ -44,7 +44,57 @@ class Rosella.Template.Handler.For : Rosella.Template.Handler.Children
 
     function to_winxed(var engine, var builder)
     {
-        Rosella.Error.unimplemented(__FUNCTION__);
+        self.__save_ctx_values_to_winxed(builder, function() {
+            int gen_idx = Rosella.get_unique_count();
+            push(builder, Rosella.String.sprintf("        var __f_%d = function() {\n", gen_idx));
+            self.__to_winxed_children(engine, builder);
+            push(builder, "        };\n");
+            string code = <<:
+        __RESULTS__ = __CONTEXT__.get_value("%s");
+        int is_first = 1;
+        if (does(__RESULTS__, "hash")) {
+            int num_items = elements(__RESULTS__);
+            int is_last = num_items == 1;
+            for (string key in __RESULTS__) {
+                var value = __RESULTS__[key];
+                __CONTEXT__.set_temporary("%s", value);
+                __CONTEXT__.set_temporary("%s", key);
+                __CONTEXT__.set_temporary("%s", is_first);
+                __CONTEXT__.set_temporary("%s", is_last);
+                __f_%d();
+                is_first = 0;
+                num_items--;
+                is_last = num_items == 1;
+            }
+        } else if (does(__RESULTS__, "array")) {
+            int num_items = elements(__RESULTS__);
+            int is_last = num_items == 1;
+            int idx = 0;
+            for (var value in __RESULTS__) {
+                __CONTEXT__.set_temporary("%s", value);
+                __CONTEXT__.set_temporary("%s", idx);
+                __CONTEXT__.set_temporary("%s", is_first);
+                __CONTEXT__.set_temporary("%s", is_last);
+                __f_%d();
+                num_items--;
+                is_last = num_items == 1;
+                is_first = 0;
+                idx++;
+            }
+        } else {
+            __CONTEXT__.set_temporary("%s", __RESULTS__);
+            __CONTEXT__.set_temporary("%s", 1);
+            __CONTEXT__.set_temporary("%s", 1);
+            __f_%d();
+        }
+:>>
+;
+            code = Rosella.String.sprintf(code, self.srcname,
+                self.varname, KEY_VARNAME, FIRST_VARNAME, LAST_VARNAME, gen_idx,
+                self.varname, KEY_VARNAME, FIRST_VARNAME, LAST_VARNAME, gen_idx,
+                self.varname, FIRST_VARNAME, LAST_VARNAME, gen_idx);
+            push(builder, code);
+        }, KEY_VARNAME, FIRST_VARNAME, LAST_VARNAME);
     }
 
     /* Internal Helper Routines
