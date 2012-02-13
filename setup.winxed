@@ -397,6 +397,10 @@ function setup_utilities(var rosella)
         "parrot_release" : {
             "install_name" : "parrot_release",
             "includes" : ["Core", "FileSystem", "Template", "String", "Query", "Date"]
+        },
+        "templatecc" : {
+            "install_name" : "rosella_templatecc",
+            "includes" : ["Core", "CommandLine", "Template"]
         }
     };
     string src_prefix = "src/utilities/";

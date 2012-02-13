@@ -18,6 +18,7 @@ class Rosella.Template.Node.Literal : Rosella.Template.Node
         // TODO: Need to escape quotes in self.contents
         string contents = string(self.contents);
         contents = Rosella.String.replace_all(contents, "\n", "\\n");
+        contents = Rosella.String.replace_all(contents, '"', '\"');
         push(builder, "    push(__BUILDER__, \"" + contents + "\"); // Literal\n");
     }
 }

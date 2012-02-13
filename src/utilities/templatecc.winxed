@@ -1,0 +1,39 @@
+function main[main](var args)
+{
+    say("starting");
+    var p = new Rosella.CommandLine.Program(args.shift());
+    p.default_mode().set_function(template_cc_main)
+        .require_positional("template", 0)
+        .optional_args({"--output" : "s"});
+    p.add_mode("help").set_flag("--help").set_function(usage_and_exit);
+    p.on_error(usage_and_exit);
+    p.run(args);
+}
+
+function usage_and_exit(var args)
+{
+    string msg = <<:
+usage: rosella_templatecc <template_file> [--output=<output_pbc>]
+Compiles the template file. If <output_pbc> is provided, the template is compiled
+to .pbc and saved to file. Otherwise the template is compiled to Winxed code
+and output to stdout.
+:>>
+;
+    say(msg);
+}
+
+function template_cc_main(var args)
+{
+    string template = args["template"];
+    string output = args["--output"];
+
+    var engine = new Rosella.Template.Engine();
+    if (output == null || output == "") {
+        string wx_code = engine.compile_to_winxed_from_file(template);
+        say(wx_code);
+    } else {
+        //var code = engine.compile_from_file(template);
+        // TODO: Currently this is an Eval PMC. When it's a PackfileView we can
+        // save it to file.
+    }
+}
