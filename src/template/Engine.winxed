@@ -153,6 +153,12 @@
             return wx.compile(wx_code)[0];
         }
 
+        function compile_from_file(string filename, var builder [optional], int has_builder [opt_flag], int recurse [named,optional], int has_recurse [opt_flag])
+        {
+            string tmpl = self.__get_template_from_file(filename);
+            return self.compile(tmpl);
+        }
+
         /* Private Helper Methods
         */
 
