@@ -12,11 +12,9 @@ class Rosella.Query.Queryable
     // Constructor. Store the data and get a suitable provider. It is
     // probably better to use Rosella.Query.as_queryable instead of
     // creating this directly.
-    function Queryable(var data, var factory [optional], int has_f [opt_flag])
+    function Queryable(var data, var factory = Rosella.Query.default_provider_factory())
     {
         self.data = data;
-        if (!has_f)
-            factory = Rosella.Query.default_provider_factory();
         self.factory = factory;
         self.provider = factory.create(data);
     }
@@ -91,10 +89,8 @@ class Rosella.Query.Queryable
 
     // Combine elements from the aggregate into a single value and
     // return that.
-    function fold(var func, var seed [optional], int has_seed [opt_flag])
+    function fold(var func, var seed = null)
     {
-        if (!has_seed)
-            seed = null;
         var value = self.provider.fold(seed, self.data, func);
         return self.as_queryable(value);
     }
@@ -102,7 +98,7 @@ class Rosella.Query.Queryable
     // Sort the data using a given comparison routine. The data is not sorted
     // in place, but instead a new array is created for the data and the new
     // array is sorted (the old one is left as it was)
-    function sort(var func [optional], int has_func [opt_flag])
+    function sort(var func = Rosella.Query.get_default_comparer())
     {
         if (!has_func)
             func = Rosella.Query.get_default_comparer();
@@ -111,10 +107,8 @@ class Rosella.Query.Queryable
     }
 
     // Sort the data in place. Do not create a copy.
-    function sort_self(var func [optional], int has_func [opt_flag])
+    function sort_self(var func Rosella.Query.get_default_comparer())
     {
-        if (!has_func)
-            func = Rosella.Query.get_default_comparer();
         self.provider.sort_self(self.data, func);
         return self;
     }
@@ -122,10 +116,8 @@ class Rosella.Query.Queryable
     // Schwartzian transform. Sort complex data using a derived key for each
     // element. Cache the computed key values so we aren't recreating them for
     // each comparison
-    function cache_sort(var get_key, var compare_key [optional], int has_comparer [opt_flag])
+    function cache_sort(var get_key, var compare_key Rosella.Query.get_default_comparer())
     {
-        if (!has_comparer)
-            compare_key = Rosella.Query.get_default_comparer();
         var d = self
             .map(function(x) { return [get_key(x), x]; })
             .sort_self(function(x, y) { return compare_key(x[0], y[0]); })
@@ -144,57 +136,56 @@ class Rosella.Query.Queryable
     }
 
     // Return a count of elements
-    function count(var func [optional], int has_func [opt_flag])
+    function count(var func = null)
     {
-        return self.provider.count(self.data, has_func ? func : null);
+        return self.provider.count(self.data, func);
     }
 
     // Return true if any element in the aggregate satisfies the predicate
     // false otherwise. Short-circuits
-    function any(var func [optional], int has_func [opt_flag])
+    function any(var func = null)
     {
-        return self.provider.any(self.data, has_func ? func : null);
+        return self.provider.any(self.data, func);
     }
 
     // Return the first item in the aggregate if the aggregate contains
     // only one item. If it contains more items, throw an exception
-    function single(var func [optional], int has_func [opt_flag])
+    function single(var func = null)
     {
-        var data = self.provider.single(self.data, has_func ? func : null);
+        var data = self.provider.single(self.data, null);
         return self.as_queryable(data);
     }
 
     // Return the first item in the aggregate, throwing an exception if
     // it is empty.
-    function first(var func [optional], int has_func [opt_flag])
+    function first(var func = null)
     {
-        var data = self.provider.first(self.data, has_func ? func : null);
+        var data = self.provider.first(self.data, func);
         return self.as_queryable(data);
     }
 
     // Return the first item in the aggregate, returning a default value
     // if empty
-    function first_or_default(var func [optional], int has_func [opt_flag],
-            var def [optional], int has_def [opt_flag])
+    function first_or_default(var func = null, var def = null)
     {
-        var data = self.provider.first_or_default(self.data, has_func ? func : null, has_def ? def : null);
+        var data = self.provider.first_or_default(self.data, func, def);
         return self.as_queryable(data);
     }
 
     // Return an aggregate of the first N elements in the data. If a
     // predicate is provided, return the first N which satisfy the
     // prediate
-    function take(int count, var func [optional], int has_func [opt_flag])
+    function take(int count, var func = null)
     {
-        var data = self.provider.take(self.data, count, has_func ? func : null);
+        var data = self.provider.take(self.data, count, func);
         return self.as_queryable(data);
     }
 
     // Return all but the first N elements. If a predicate is provided,
     // return all by the first N elements which satisfy the predicate.
-    function skip(int count, var func [optional], int has_func [opt_flag])
+    function skip(int count, var func = null)
     {
-        var data = self.provider.skip(self.data, count, has_func ? func : null);
+        var data = self.provider.skip(self.data, count, func);
         return self.as_queryable(data);
     }
 

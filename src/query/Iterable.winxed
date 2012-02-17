@@ -234,27 +234,21 @@ class Rosella.Query.Iterable : Rosella.IteratorBase
 
     // Take only the first N items in the sequence, or the first N items which
     // satisfy the optional predicate
-    function take(int count, var f [optional], int has_f [opt_flag])
+    function take(int count, var f = null)
     {
-        if (!has_f)
-            f = null;
         return new Rosella.Query.Iterable.TakeSkip(self, f, count, 0);
     }
 
     // Skip the first N items in the sequence, or the first N items which
     // satisfy the optional predicate
-    function skip(int count, var f [optional], int has_f [opt_flag])
+    function skip(int count, var f = null)
     {
-        if (!has_f)
-            f = null;
         return new Rosella.Query.Iterable.TakeSkip(self, f, -1, count);
     }
 
     // Flatten the data source completely
-    function flatten(int levels [optional], int has_levels [opt_flag])
+    function flatten(int levels = -1)
     {
-        if (!has_levels)
-            levels = -1;
         return new Rosella.Query.Iterable.Flatten(self, -1);
     }
 
@@ -272,22 +266,15 @@ class Rosella.Query.Iterable : Rosella.IteratorBase
 
     // Read all the data into an array, sort the array, and return a new
     // iterator for it.
-    function sort(var f [optional], int has_f [opt_flag],
-            int is_sorted [optional], int has_is [opt_flag])
+    function sort(var f = Rosella.Query.Sort.get_default_comparer(), int is_sorted = false)
     {
-        if (!has_is)
-            is_sorted = false;
-        if (!has_f)
-            f = Rosella.Query.Sort.get_default_comparer();
         return new Rosella.Query.Iterable.Sort(self, f, is_sorted);
     }
 
     // Read all the data into an array and perform a schwartzian transform sort
     // on the array. Return a new iterator for the result.
-    function cache_sort(var get_key, var compare_key [optional], int has_comparer [opt_flag])
+    function cache_sort(var get_key, var compare_key = Rosella.Query.get_default_comparer())
     {
-        if (!has_comparer)
-            compare_key = Rosella.Query.get_default_comparer();
         return self
             .map(function(i) { return [get_key(i), i]; })
             .sort(function(a, b) { return compare_key(a[0], b[0]); })
@@ -314,13 +301,13 @@ class Rosella.Query.Iterable : Rosella.IteratorBase
 
     // Read all the data, counting items. If provided, only data items matching
     // the optional predicate are counted.
-    function count(var f [optional], int has_f [opt_flag])
+    function count(var f = null)
     {
         if (!self.has_more())
             return 0;
 
         int i = 0;
-        if (has_f) {
+        if (f != null) {
             :(var v, int m) = self.next_and_more();
             if (f(v))
                 i++;
@@ -343,12 +330,12 @@ class Rosella.Query.Iterable : Rosella.IteratorBase
 
     // Return true if the iterator contains any items, false otherwise. If
     // provided, return true only if any data items match the given predicate.
-    function any(var f [optional], int has_f [opt_flag])
+    function any(var f = null)
     {
         if (!self.has_more())
             return false;
         :(var v, int m) = self.next_and_more();
-        if (has_f) {
+        if (f != null) {
             if (f(v))
                 return true;
             while (m == true) {
@@ -365,7 +352,7 @@ class Rosella.Query.Iterable : Rosella.IteratorBase
     // Expect the iterator to contain exactly one item, and return that. If
     // given, expect the iterator to contain exactly one item matching the
     // optional predicate and return that item.
-    function single(var f [optional], int has_f [opt_flag])
+    function single()
     {
         if (!self.has_more())
             self.__empty();
@@ -378,11 +365,11 @@ class Rosella.Query.Iterable : Rosella.IteratorBase
     // Return the first item in the iterator (or the first item matching the
     // optional predicate). Throw an error if the iterator contains no suitable
     // items to return.
-    function first(var f [optional], int has_f [opt_flag])
+    function first(var f = null)
     {
         if (!self.has_more())
             self.__empty();
-        if (has_f) {
+        if (f != null) {
             :(var d, int m) = self.next_and_more();
             if (f(d))
                 return d;
@@ -400,14 +387,14 @@ class Rosella.Query.Iterable : Rosella.IteratorBase
     // Return the first item in the iterator or the first item matching the
     // optional predicate. Return a default value (null, usually) if no matching
     // items are found.
-    function first_or_default(var f [optional], int has_f [opt_flag],
+    function first_or_default(var f = null,
             var def [named("default"),optional], int has_def [opt_flag])
     {
         if (!has_def)
             def = null;
         if (!self.has_more())
             return def;
-        if (has_f) {
+        if (f ! null) {
             :(var d, int m) = self.next_and_more();
             if (f(d))
                 return d;

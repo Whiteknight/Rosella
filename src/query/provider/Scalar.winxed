@@ -24,7 +24,7 @@ class Rosella.Query.Provider.Scalar : Rosella.Query.Provider
 
     // Return the scalar if it matches, null otherwise
     function filter(var data, var func,
-        int limit [optional], int has_limit [opt_flag])
+        int limit = 1)
     {
         if (func(data))
             return data;

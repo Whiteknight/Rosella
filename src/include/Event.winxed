@@ -1,25 +1,25 @@
 namespace Rosella.Event {
-	class Dispatcher;
-	class Manager;
-	class Payload;
-	class Subscriber;
-	extern function default_subscriber_factory;
-	extern function payload_factory;
+    class Dispatcher;
+    class Manager;
+    class Payload;
+    class Subscriber;
+    extern function default_subscriber_factory;
+    extern function payload_factory;
 }
 
 namespace Rosella {
-	class Event;
+    class Event;
 }
 
 namespace Rosella.Event.Dispatcher {
-	class Immediate;
-	class Task;
-	class Thread;
-	class Factory;
+    class Immediate;
+    class Task;
+    class Thread;
+    class Factory;
 }
 
 namespace Rosella.Event.Subscriber {
-	class Factory;
+    class Factory;
 }
 
 function __include_event [anon] ()

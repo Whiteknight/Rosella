@@ -23,10 +23,8 @@ namespace Rosella
         // Create a simple memoizer. In the simple case, the user cannot get
         // access to the cache or the memoized function after the memoizer has
         // been created
-        function memoize(var func, var cache [optional], int has_cache [opt_flag])
+        function memoize(var func, var cache = new Rosella.Memoize.Cache.SimpleString())
         {
-            if (!has_cache)
-                cache = new Rosella.Memoize.Cache.SimpleString();
             var _cache = cache;
             var f = func;
 

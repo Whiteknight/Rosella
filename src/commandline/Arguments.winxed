@@ -235,10 +235,10 @@ class Rosella.CommandLine.Arguments
     }
 
     // Fetch a positional argument, which may be a flag or anything else.
-    function fetch_positional(string name, int keep, int idx [optional], int has_idx [opt_flag])
+    function fetch_positional(string name, int keep, int idx = -1)
     {
         string arg = "";
-        if (has_idx) {
+        if (idx >= 0) {
             if (idx >= elements(self.args)) {
                 self.cache[name] = "";
                 return "";

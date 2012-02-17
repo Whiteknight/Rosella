@@ -12,12 +12,10 @@ class Rosella.String.Tokenizer.DelimiterRegion : Rosella.String.Tokenizer
     var default_key;    // The key to use for tokens which are not in a region
 
     // Constructor
-    function DelimiterRegion(var default_key [optional], int has_key [opt_flag])
+    function DelimiterRegion(var default_key = null)
     {
         self.Tokenizer();
         self.regions = [];
-        if (!has_key)
-            default_key = null;
         self.default_key = default_key;
     }
 

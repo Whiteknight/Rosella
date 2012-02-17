@@ -28,10 +28,8 @@ class Rosella.Query.Provider.Hash : Rosella.Query.Provider
     // Return a new hash with the key/value pairs that satisfy the
     // predicate
     function filter(var data, var func,
-            int limit [optional], int has_limit [opt_flag])
+            int limit = elements(data))
     {
-        if (!has_limit)
-            limit = elements(data);
         var new_data = {};
         int count = 0;
         if (limit == 0)
@@ -105,19 +103,17 @@ class Rosella.Query.Provider.Hash : Rosella.Query.Provider
     }
 
     // Combine
-    function combine(var a, var b,
-            var filter [optional], int has_filter [opt_flag],
-            var key_func [optional], int has_key_func [opt_flag],
+    function combine(var a, var b, var filter = null, var key_func = null,
             var dispute [optional], int has_dispute [opt_flag])
     {
-        if (has_filter) {
+        if (filter != null) {
             a = self.filter(a, filter);
             b = self.filter(b, filter);
         }
         if (!has_dispute)
             dispute = function(key, data_a, data_b) { return data_a; };
-        if (has_key_func)
-            die("Query::Provider::Hash: Cannot combine hashes by keys");
+        if (key_func = null)
+            Rosella.Error.invalid(__FUNCTION__, "Cannot combine hashes by keys");
 
         var new_data = {};
         var conflict = 0;

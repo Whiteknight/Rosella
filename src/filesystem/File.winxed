@@ -33,20 +33,20 @@ namespace Rosella.FileSystem.File
 class Rosella.FileSystem.File : Rosella.FileSystem.Entry
 {
     // Constructor
-    function File(string filepath, var parent_dir [optional], int has_dir [opt_flag])
+    function File(string filepath, var parent_dir = null)
     {
-        if (has_dir)
+        if (parent_dir != null)
             filepath = string(parent_dir) + filepath;
         self.Entry(filepath);
     }
 
     // Open the file for reading, returning the open FileHandle. The user
     // must close the filehandle themselves.
-    function open_read(string encoding [optional], int has_e [opt_flag])
+    function open_read(string encoding = null)
     {
         int is_binary = 0;
         var filehandle = get_filehandle();
-        if (has_e) {
+        if (encoding != null) {
             string mode = (encoding == "binary") ? "rb" : "r";
             filehandle.open(self.path, mode);
             filehandle.encoding(encoding);
@@ -57,10 +57,10 @@ class Rosella.FileSystem.File : Rosella.FileSystem.Entry
 
     // Open the file for writing, returning the open FileHandle. The user
     // must close the FileHandle themselves.
-    function open_write(string encoding [optional], int has_e [opt_flag])
+    function open_write(string encoding = null)
     {
         var filehandle = get_filehandle();
-        if (has_e) {
+        if (encoding != null) {
             string mode = (encoding == "binary") ? "wb" : "w";
             filehandle.open(self.path, mode);
             filehandle.encoding(encoding);
@@ -78,10 +78,10 @@ class Rosella.FileSystem.File : Rosella.FileSystem.Entry
     }
 
     // Return all text from the file in a single string.
-    function read_all_text(string encoding [optional], int has_e [opt_flag])
+    function read_all_text(string encoding = null)
     {
         var filehandle;
-        if (has_e && encoding != null)
+        if (encoding != null)
             filehandle = self.open_read(encoding);
         else
             filehandle = self.open_read();

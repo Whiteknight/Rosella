@@ -17,10 +17,8 @@ namespace Rosella.String.Tokenizer.CClass
 
     // From the provided list, determine the first character class that
     // matches the first character in the string
-    function __get_first_cclass(string str, var cclasses [optional], int has_cclasses [opt_flag])
+    function __get_first_cclass(string str, var cclasses = __get_default_cclasses())
     {
-        if (!has_cclasses || cclasses == null)
-            cclasses = __get_default_cclasses();
         int num_classes = elements(cclasses);
         for (int i = 0; i < num_classes; i++) {
             int cclass = cclasses[i];
@@ -39,15 +37,12 @@ class Rosella.String.Tokenizer.CClass : Rosella.String.Tokenizer
     var cclasses; // Array of CCLASS identifiers to search for.
 
     // Constructor
-    function CClass(var cclasses [optional], int has_cclasses [opt_flag])
+    function CClass(var cclasses = __get_default_cclasses())
     {
         self.Tokenizer();
         self.tokens = [];
         self.data = null;
-        if (has_cclasses)
-            self.cclasses = cclasses;
-        else
-            self.cclasses = __get_default_cclasses();
+        self.cclasses = cclasses;
     }
 
     // Lex a new token

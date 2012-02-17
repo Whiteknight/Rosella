@@ -58,11 +58,8 @@ namespace Rosella.String
 
     // Trim items off the start of the string that match the given cclass.
     // defaults to CCLASS_WHITESPACE
-    function trim_start(string str, int cclass [optional], int has_cclass [opt_flag])
+    function trim_start(string str, int cclass = CCLASS_WHITESPACE)
     {
-        if (!has_cclass)
-            cclass = CCLASS_WHITESPACE;
-
         int idx = first_not_cclass(str, cclass);
         if (idx == -1)
             return "";
@@ -88,11 +85,8 @@ namespace Rosella.String
 
     // Trim items off the end of the string which match the given cclass.
     // defaults to CCLASS_WHITESPACE
-    function trim_end(string str, int cclass [optional], int has_cclass [opt_flag])
+    function trim_end(string str, int cclass = CCLASS_WHITESPACE)
     {
-        if (!has_cclass)
-            cclass = CCLASS_WHITESPACE;
-
         int len = length(str);
         int idx = last_not_cclass(str, cclass);
 
@@ -111,10 +105,8 @@ namespace Rosella.String
 
     // Trim characters from both the start and end of the string which
     // match the given character class. Defaults to CCLASS_WHITESPACE
-    function trim(string str, int cclass [optional], int has_cclass [opt_flag])
+    function trim(string str, int cclass = CCLASS_WHITESPACE)
     {
-        if (!has_cclass)
-            cclass = CCLASS_WHITESPACE;
         int start_idx = first_not_cclass(str, cclass);
         if (start_idx == -1)
             return "";
@@ -147,11 +139,8 @@ namespace Rosella.String
 
     // Pad the start of the string with the given substring. Default
     // pad is " "
-    function pad_start(string str, int total_width,
-            string char [optional], int has_char [opt_flag])
+    function pad_start(string str, int total_width, string char = " ")
     {
-        if (!has_char)
-            char = " ";
         string pad = __create_pad(str, total_width, char);
         return pad + str;
     }
@@ -159,10 +148,8 @@ namespace Rosella.String
     // Pad the end of the string with the given substring. Default
     // pad is " "
     function pad_end(string str, int total_width,
-            string char [optional], int has_char [opt_flag])
+            string char = " ")
     {
-        if (!has_char)
-            char = " ";
         string pad = __create_pad(str, total_width, char);
         return str + pad;
     }

@@ -67,8 +67,7 @@ class Rosella.Query.Provider
     }
 
     // Filter the data
-    function filter(var data, var func,
-            int limit [optional], int has_limit [opt_flag])
+    function filter(var data, var func, int limit = 0)
     {
         Rosella.Error.must_subclass(__CLASS__);
     }
@@ -141,10 +140,7 @@ class Rosella.Query.Provider
     }
 
     // Combine two aggregates
-    function combine(var a, var b,
-            var filter [optional], int has_filter [opt_flag],
-            var key_func [optional], int has_key_func [opt_flag],
-            var dispute [optional], int has_dispute [opt_flag])
+    function combine(var a, var b, var filter = null, var key_func = null, var dispute = null)
     {
         Rosella.Error.must_subclass(__CLASS__);
     }
