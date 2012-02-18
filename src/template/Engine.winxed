@@ -150,7 +150,7 @@
         {
             var wx = Rosella.get_winxed_compiler();
             string wx_code = self.compile_to_winxed(tmpl);
-            return wx.compile(wx_code)[0];
+            return wx.compile(wx_code);
         }
 
         function compile_from_file(string filename, var builder [optional], int has_builder [opt_flag], int recurse [named,optional], int has_recurse [opt_flag])
