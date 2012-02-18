@@ -10,6 +10,12 @@ class Rosella.String.Trie.Node
         self.children = {};
     }
 
+    function add_values(var values)
+    {
+        for (string seq in values)
+            self.add_value(seq, seq, values[seq]);
+    }
+
     function add_value(string remainder, string seq, var value)
     {
         if (remainder == null || remainder == "") {
