@@ -35,13 +35,13 @@ class Rosella.String.Trie.Node
     function get_value(string seq)
     {
         if (seq == null || seq == "")
-            return true, self.value, "";
+            return "", self.value, "";
         string prefix = substr(seq, 0, 1);
         string remainder = substr(seq, 1);
         if (!(exists self.children[prefix]))
-            return false, null, seq;
-        :(int has_value, var value, remainder) = self.children[prefix].get_value(remainder);
-        return has_value, value, remainder;
+            return "", self.value, seq;
+        :(string child_seq, var value, remainder) = self.children[prefix].get_value(remainder);
+        return prefix + child_seq, value, remainder;
     }
 }
 

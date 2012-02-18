@@ -33,14 +33,17 @@ class Rosella.String.Tokenizer.SimpleCode : Rosella.String.Tokenizer
 
         int next_idx = find_not_cclass(curr_cclass, str, 0, len);
         string chars = self.__get_chars(next_idx);
+        if (curr_cclass == CCLASS_WHITESPACE)
+            return new Rosella.String.Tokenizer.Token("whitespace", chars, null);
         if (curr_cclass == CCLASS_PUNCTUATION) {
-            :(int has_value, var value, string remainder) = self.operators.get_value(chars);
-            if (!has_value)
-                return new Rosella.String.Tokenzer.Token("unknown operator", chars, null);
-            if (remainder != null && remainder != "") {
-                // TODO: Create additional tokens, unget them
+            :(string seq, var value, string remainder) = self.operators.get_value(chars);
+            while(remainder != null && remainder != "") {
+                :(string this_seq, var this_value, string rem) = self.operators.get_value(remainder);
+                var temp = new Rosella.String.Tokenizer.Token("operator", this_seq, this_value);
+                self.unget_token(temp);
+                remainder = rem;
             }
-            return new Rosella.String.Tokenizer.Token("operator", chars, value);
+            return new Rosella.String.Tokenizer.Token("operator", seq, value);
         }
         if (exists self.keywords[chars])
             return new Rosella.String.Tokenizer.Token("keyword", chars, self.keywords[chars]);
