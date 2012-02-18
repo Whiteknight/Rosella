@@ -1,0 +1,13 @@
+inline dlfunc_native(var lib, string func, string sig) return var
+{
+    var nci_func;
+    ${ dlfunc nci_func, lib, func, sig };
+    return nci_func;
+}
+
+inline loadlib_native(string name) return var
+{
+    var lib;
+    ${ loadlib lib, name };
+    return lib;
+}

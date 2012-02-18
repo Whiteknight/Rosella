@@ -1,0 +1,46 @@
+class Rosella.Native.Library
+{
+    var funcs;
+    var lib;
+
+    function Library(string name)
+    {
+        var lib = loadlib_native(name);
+        if (lib == null || !defined(lib))
+            Rosella.Error.invalid(__FUNCTION__, "Cannot load library '%s'", name);
+        self.funcs = {};
+        self.lib = lib;
+    }
+
+    function __load_function(string name, string sig)
+    {
+        var func = dlfunc_native(self.lib, name, sig);
+        if (func == null || !defined(func))
+            return null;
+        return func;
+    }
+
+    function get_function(string name, string sig)
+    {
+        if (exists self.funcs[name])
+            return self.funcs[name];
+        var func = self.__load_function(name, sig);
+        self.funcs[name] = func;
+        return func;
+    }
+
+    function load_functions(var funcs)
+    {
+        for (string name in funcs)
+        {
+            var func = self.__load_function(name, funcs[name]);
+            self.funcs[name] = func;
+        }
+        return self;
+    }
+
+    function load_from_file(string filename)
+    {
+        // TODO: Load in the nci definitions from a .nci file. Do we want Rosella.FileSystem for this?
+    }
+}
