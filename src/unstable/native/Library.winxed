@@ -1,3 +1,28 @@
+namespace Rosella.Native.Library
+{
+    function load_library(string name)
+    {
+        var lib = loadlib_native(name);
+        return new Rosella.Native.Library(lib);
+    }
+
+
+    function try_load_priority(var names, var prefixes = [""])
+    {
+        for (string prefix in prefixes)
+        {
+            for (string name in names)
+            {
+                string libname = (prefix == "") ? name : prefix + "/" + name;
+                var lib = loadlib_native(libname);
+                if (lib != null && defined(lib))
+                    return new Rosella.Native.Library(lib);
+            }
+        }
+        return null;
+    }
+}
+
 class Rosella.Native.Library
 {
     var funcs;
@@ -6,6 +31,14 @@ class Rosella.Native.Library
     function Library(string name)
     {
         var lib = loadlib_native(name);
+        if (lib == null || !defined(lib))
+            Rosella.Error.invalid(__FUNCTION__, "Cannot load library '%s'", name);
+        self.funcs = {};
+        self.lib = lib;
+    }
+
+    function Library(var lib)
+    {
         if (lib == null || !defined(lib))
             Rosella.Error.invalid(__FUNCTION__, "Cannot load library '%s'", name);
         self.funcs = {};
