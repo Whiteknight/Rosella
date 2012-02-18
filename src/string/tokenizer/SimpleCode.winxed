@@ -1,0 +1,49 @@
+class Rosella.String.Tokenizer.SimpleCode : Rosella.String.Tokenizer
+{
+    var operators;
+    var cclasses;
+    var keywords;
+
+    function SimpleCode()
+    {
+        self.Tokenizer();
+        self.operators = new Rosella.String.Trie();
+        int cclasses[] = [CCLASS_WORD, CCLASS_NUMERIC, CCLASS_WHITESPACE, CCLASS_PUNCTUATION];
+        self.cclasses = cclasses;
+        self.keywords = {};
+    }
+
+    function add_keyword(string keyword, var value)
+    {
+        self.keywords[keyword] = value;
+    }
+
+    function add_operator(string operator, var value)
+    {
+        self.operators.add(operator, value);
+    }
+
+    function lex_next_token()
+    {
+        string str = self.data;
+        int len = length(str);
+        int curr_cclass = Rosella.String.Tokenizer.CClass.__get_first_cclass(str, self.cclasses);
+        if (curr_cclass == 0)
+            return new Rosella.String.Tokenizer.Token("unknown sequence", self.__get_chars(1), null);
+
+        int next_idx = find_not_cclass(curr_cclass, str, 0, len);
+        string chars = self.__get_chars(next_idx);
+        if (curr_cclass == CCLASS_PUNCTUATION) {
+            :(int has_value, var value, string remainder) = self.operators.get_value(chars);
+            if (!has_value)
+                return new Rosella.String.Tokenzer.Token("unknown operator", chars, null);
+            if (remainder != null && remainder != "") {
+                // TODO: Create additional tokens, unget them
+            }
+            return new Rosella.String.Tokenizer.Token("operator", chars, value);
+        }
+        if (exists self.keywords[chars])
+            return new Rosella.String.Tokenizer.Token("keyword", chars, self.keywords[chars]);
+        return new Rosella.String.Tokenizer.Token("identifier", chars, null);
+    }
+}

@@ -6,6 +6,7 @@
     This class is the abstract parent type of various tokenizers. Do not
     use this type directly, use a subclass instead.
 */
+// TODO: Include line-number/filename information in tokens, if possible
 class Rosella.String.Tokenizer
 {
     var tokens; // An array of available tokens

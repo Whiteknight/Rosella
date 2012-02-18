@@ -6,11 +6,7 @@ namespace Rosella.String.Tokenizer.CClass
     // Get a default list of character classes, if none are provided
     function __get_default_cclasses()
     {
-        var cclasses = new 'ResizableIntegerArray';
-        cclasses[0] = CCLASS_WORD;
-        cclasses[1] = CCLASS_NUMERIC;
-        cclasses[2] = CCLASS_WHITESPACE;
-        //cclasses[3] = CCLASS_PUNCTUATION;
+        int cclasses[] = [CCLASS_WORD, CCLASS_NUMERIC, CCLASS_WHITESPACE];
         while(1)
             yield(cclasses);
     }
@@ -58,7 +54,6 @@ class Rosella.String.Tokenizer.CClass : Rosella.String.Tokenizer
         int curr_cclass = __get_first_cclass(str, self.cclasses);
         if (curr_cclass == 0)
             return self.__new_token(self.__get_chars(1), curr_cclass);
-        var token = null;
         int next_idx = find_not_cclass(curr_cclass, str, 0, len);
         string chars = self.__get_chars(next_idx);
         return self.__new_token(chars, curr_cclass);
