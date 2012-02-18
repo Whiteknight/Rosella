@@ -240,7 +240,8 @@ function setup_stable_libraries(var rosella)
         "string/tokenizer/Delimiter",
         "string/tokenizer/DelimiterRegion",
         "string/tokenizer/Iterator",
-        "string/tokenizer/Token"
+        "string/tokenizer/Token",
+        "string/Trie"
     );
 
     // Templating and formatting text

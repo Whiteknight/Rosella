@@ -1,0 +1,61 @@
+class Rosella.String.Trie.Node
+{
+    var sequence;
+    var children;
+    var value;
+
+    function Node(string name)
+    {
+        self.sequence = name;
+        self.children = {};
+    }
+
+    function add_value(string remainder, string seq, var value)
+    {
+        if (remainder == null || remainder == "") {
+            if (seq == string(self.sequence))
+                self.value = value;
+            else
+                Rosella.Error.invalid(__FUNCTION__, "Bad sequence '%s' in Trie", seq);
+        } else {
+            string prefix = substr(remainder, 0, 1);
+            remainder = substr(remainder, 1);
+            if (!(exists self.children[prefix]))
+                self.children[prefix] = new Rosella.String.Trie.Node(string(self.sequence) + prefix);
+            self.children[prefix].add_value(remainder, seq, value);
+        }
+    }
+
+    function get_value(string seq)
+    {
+        if (seq == null || seq == "")
+            return true, self.value, "";
+        string prefix = substr(seq, 0, 1);
+        string remainder = substr(seq, 1);
+        if (!(exists self.children[prefix]))
+            return false, null, seq;
+        :(int has_value, var value, remainder) = self.children[prefix].get_value(remainder);
+        return has_value, value, remainder;
+    }
+}
+
+
+class Rosella.String.Trie : Rosella.String.Trie.Node
+{
+    function Trie()
+    {
+        self.Node("");
+    }
+
+    function add(string seq, var value)
+    {
+        self.add_value(seq, seq, value);
+    }
+
+    function get(string seq)
+    {
+        :(int has_value, var value, string remainder) = self.get_value(seq);
+        return value;
+    }
+}
+
