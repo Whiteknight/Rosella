@@ -84,6 +84,7 @@ class Rosella.Template.Handler.Children : Rosella.Template.Handler
             child.render(engine, ctx, sb);
     }
 
+    // Render the contents of all children to winxed
     function __to_winxed_children(var engine, var builder)
     {
         for (var child in self.children)

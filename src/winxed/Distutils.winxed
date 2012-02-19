@@ -160,7 +160,7 @@ namespace Rosella.Winxed.Distutils
     {
         make_path_for(pasm_file);
         string cmd = sprintf("winxed --nowarn -o %s --target=include %s",
-                [pasm_file, winxed_file]
+            [pasm_file, winxed_file]
         );
         int result;
         say(cmd);

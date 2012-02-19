@@ -42,10 +42,12 @@ class Rosella.Template.Handler.For : Rosella.Template.Handler.Children
         }, ctx, KEY_VARNAME, FIRST_VARNAME, LAST_VARNAME);
     }
 
+    // Compile to Winxed
     function to_winxed(var engine, var builder)
     {
         self.__save_ctx_values_to_winxed(builder, function() {
             int gen_idx = Rosella.get_unique_count();
+            push(builder, Rosella.String.sprintf("        // for %s in %s", self.varname, self.srcname));
             push(builder, Rosella.String.sprintf("        var __f_%d = function() {\n", gen_idx));
             self.__to_winxed_children(engine, builder);
             push(builder, "        };\n");
@@ -87,6 +89,7 @@ class Rosella.Template.Handler.For : Rosella.Template.Handler.Children
             __CONTEXT__.set_temporary("%s", 1);
             __f_%d();
         }
+        // end for
 :>>
 ;
             code = Rosella.String.sprintf(code, self.srcname,

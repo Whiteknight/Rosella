@@ -15,6 +15,7 @@ class Rosella.Template.Node.Data : Rosella.Template.Node
         push(builder, value);
     }
 
+    // Compile to Winxed code
     function to_winxed(var engine, var builder)
     {
         string key = Rosella.String.trim(self.contents);

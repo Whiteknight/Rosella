@@ -29,17 +29,22 @@ class Rosella.Template.Node.Eval : Rosella.Template.Node
             push(builder, result);
     }
 
+    // Compile to winxed
+    // TODO: We are passing in null for the engine parameter. We should find a
+    // way to support that.
     function to_winxed(var engine, var builder)
     {
         int func_idx = Rosella.get_unique_count();
         string code = <<:
-    var __f_%d = function (engine, output, context) { %s; };
+    var __f_%d = function (engine, output, context) {
+        %s;
+    };
     :(__RESULTS__ [slurpy]) = __f_%d(null, __BUILDER__, __CONTEXT__);
-    for (string __r in __RESULTS__)
-        push(__BUILDER__, __r);
+    for (string __r%d in __RESULTS__)
+        push(__BUILDER__, __r%d);
 :>>
 ;
-        code = Rosella.String.sprintf(code, func_idx, self.contents, func_idx);
+        code = Rosella.String.sprintf(code, func_idx, self.contents, func_idx, func_idx, func_idx);
         push(builder, code);
     }
 
@@ -47,8 +52,15 @@ class Rosella.Template.Node.Eval : Rosella.Template.Node
     // if available. Subclass this to get different behavior.
     function compile_func(string code)
     {
-        string code_s = Rosella.String.sprintf("function __%s__EVAL[anon](var engine, var output, var context) { %s; }", EVAL_BASE_NAME, code);
+        int gen_idx = Rosella.get_unique_count();
+        string func_name = Rosella.String.sprintf("__%s_%d_EVAL", EVAL_BASE_NAME, gen_idx);
+        string code_s = Rosella.String.sprintf("function %s[anon](var engine, var output, var context) { %s; }", func_name, code);
         var winxed = Rosella.get_winxed_compiler();
-        return winxed.compile(code_s);
+        var pf = winxed.compile(code_s);
+        for (var sub in pf.all_subs()) {
+            if (string(sub) == func_name)
+                return sub;
+        }
+        return null;
     }
 }

@@ -21,6 +21,7 @@ class Rosella.Template.Handler.Include : Rosella.Template.Handler
         push(sb, output);
     }
 
+    // Compile to winxed
     function to_winxed(var engine, var builder)
     {
         push(builder, "\n    // Begin template from '" + string(self.filename) + "'\n");

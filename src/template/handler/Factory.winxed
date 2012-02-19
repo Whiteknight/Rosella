@@ -16,7 +16,7 @@ class Rosella.Template.Handler.Factory : Rosella.ObjectFactory
     function create(string type, var tokens)
     {
         var handler = null;
-        if (length(type) > 3 && substr(type, 0, 3) == "end") {
+        if (string_has_prefix(type, "end")) {
             string start_name = substr(type, 3);
             if (exists self.handler_types[start_name])
                 return null;

@@ -52,33 +52,33 @@ class Rosella.Template.Handler.Repeat : Rosella.Template.Handler.Children
 
         self.__save_ctx_values_to_winxed(builder, function() {
             string preamble = <<:
-        int __numeric = Rosella.String.get_character_class("numeric");
-        int __start = (Rosella.String.first_not_cclass("%s", __numeric) == -1) ? int("%s") : int(__CONTEXT__.get_value("%s"));
-        int __end = (Rosella.String.first_not_cclass("%s", __numeric) == -1) ? int("%s") : int(__CONTEXT__.get_value("%s"));
+        int __numeric%d = Rosella.String.get_character_class("numeric");
+        int __start%d   = (Rosella.String.first_not_cclass("%s", __numeric%d) == -1) ? int("%s") : int(__CONTEXT__.get_value("%s"));
+        int __end%d     = (Rosella.String.first_not_cclass("%s", __numeric%d) == -1) ? int("%s") : int(__CONTEXT__.get_value("%s"));
 :>>
 ;
-            preamble = Rosella.String.sprintf(preamble, self.start, self.start, self.start, self.end, self.end, self.end);
+            preamble = Rosella.String.sprintf(preamble, gen_idx, gen_idx, self.start, gen_idx, self.start, self.start, gen_idx, self.end, gen_idx, self.end, self.end);
             push(builder, preamble);
             string code = <<:
-        if (__start == __end) {
-            __CONTEXT__.set_temporary("%s", __start);
+        if (__start%d == __end%d) {
+            __CONTEXT__.set_temporary("%s", __start%d);
             __CONTEXT__.set_temporary("%s", 1);
             __CONTEXT__.set_temporary("%s", 1);
 :>>
 ;
-            code = Rosella.String.sprintf(code, IDX_VARNAME, FIRST_VARNAME, LAST_VARNAME);
+            code = Rosella.String.sprintf(code, gen_idx, gen_idx, IDX_VARNAME, gen_idx, FIRST_VARNAME, LAST_VARNAME);
             push(builder, code);
             self.__to_winxed_children(engine, builder);
             code = <<:
         } else {
-            int __direction = (__end < __start) ? -1 : 1;
-            for (int i = __start; i - __direction != __end; i += __direction) {
-                __CONTEXT__.set_temporary("%s", i == __start);
-                __CONTEXT__.set_temporary("%s", i == __end);
-                __CONTEXT__.set_temporary("%s", i);
+            int __direction%d = (__end%d < __start%d) ? -1 : 1;
+            for (int __i%d = __start%d; __i%d - __direction%d != __end%d; __i%d += __direction%d) {
+                __CONTEXT__.set_temporary("%s", __i%d == __start%d);
+                __CONTEXT__.set_temporary("%s", __i%d == __end%d);
+                __CONTEXT__.set_temporary("%s", __i%d);
 :>>
 ;
-            code = Rosella.String.sprintf(code, FIRST_VARNAME, LAST_VARNAME, IDX_VARNAME);
+            code = Rosella.String.sprintf(code, gen_idx, gen_idx, gen_idx, gen_idx, gen_idx, gen_idx, gen_idx, gen_idx, gen_idx, gen_idx, FIRST_VARNAME, gen_idx, gen_idx, LAST_VARNAME, gen_idx, gen_idx, IDX_VARNAME);
             push(builder, code);
             self.__to_winxed_children(engine, builder);
             push(builder, "            }\n        }\n");

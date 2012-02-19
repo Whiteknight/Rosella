@@ -199,6 +199,12 @@ inline format(string f, var v) return string
     return sprintf(f, [v]);
 }
 
+inline string_has_prefix(string f, string p) return int
+{
+    int len_p = length(p);
+    return length(f) > len_p && substr(f, 0, len_p) == p;
+}
+
 /* Namespaces
 */
 

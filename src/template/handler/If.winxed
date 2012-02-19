@@ -18,7 +18,7 @@ class Rosella.Template.Handler.If : Rosella.Template.Handler
     {
         int num_tokens = elements(tokens);
         if (num_tokens != 1 && num_tokens != 3)
-            Rosella.Error.invalid(__FUNCTION__, "Syntax of IF node is 'if <var>' or 'if <var> <op> <var>'");
+            Rosella.Error.invalid(__FUNCTION__, "Syntax of IF/UNLESS node is 'if <var>' or 'if <var> <op> <var>'");
         self.then_children = [];
         self.else_children = [];
         self.mode = THEN_MODE;
@@ -35,7 +35,7 @@ class Rosella.Template.Handler.If : Rosella.Template.Handler
     {
         if (can(node, "logic_name") && node.logic_name() == "else") {
             if (int(self.mode) == ELSE_MODE)
-                Rosella.Error.invalid(__FUNCTION__, "Can only have one ELSE node in an IF block");
+                Rosella.Error.invalid(__FUNCTION__, "Can only have one ELSE node in an IF/UNLESS block");
             self.mode = ELSE_MODE;
         } else {
             if (int(self.mode) == THEN_MODE)
@@ -62,33 +62,26 @@ class Rosella.Template.Handler.If : Rosella.Template.Handler
 
     function to_winxed(var engine, var builder)
     {
+        int id = Rosella.get_unique_count();
         string op = self.op == null ? "" : string(self.op);
-        string name_a = self.name_a;
-        string name_b = (self.name_b == null) ? "" : string(self.name_b);
+        string name_a = self.__get_winxed_accessor(self.name_a);
+        string name_b = (self.name_b == null) ? "" : self.__get_winxed_accessor(self.name_b);
 
-        string code = <<:
-    {
-        int __numeric = Rosella.String.get_character_class("numeric");
-        var __a = (Rosella.String.first_not_cclass("%s", __numeric) == -1) ? int("%s") : __CONTEXT__.get_value("%s");
-        var __b = (Rosella.String.first_not_cclass("%s", __numeric) == -1) ? int("%s") : __CONTEXT__.get_value("%s");
-:>>
-;
-        code = Rosella.String.sprintf(code, name_a, name_a, name_a, name_b, name_b, name_b);
-        push(builder, code);
-        if (op == "" || op == "?") {
-            code = "        if (%s) {\n";
+        string code;
+        if (op == "" || op == "?" || name_b == "") {
+            code = "    if (%s) {\n";
             code = Rosella.String.sprintf(code, name_a);
         } else {
-            code = "        if (%s %s %s) {\n";
+            code = "    if (%s %s %s) {\n";
             code = Rosella.String.sprintf(code, name_a, op, name_b);
         }
         push(builder, code);
         for (var child in self.then_children)
             child.to_winxed(engine, builder);
-        push(builder, "        } else {\n");
+        push(builder, "    } else {\n");
         for (var child in self.else_children)
             child.to_winxed(engine, builder);
-        push(builder, "        }\n    }\n");
+        push(builder, "    }\n");
     }
 
     /* Internal Helper Methods
@@ -133,6 +126,18 @@ class Rosella.Template.Handler.If : Rosella.Template.Handler
             return substr(key, 1, length(key) - 2);
         return ctx.get_value(key);
     }
+
+    function __get_winxed_accessor(string key)
+    {
+        int numeric = Rosella.String.get_character_class("numeric");
+        if (Rosella.String.first_not_cclass(key, numeric) == -1)
+            return key;
+        string first_char = substr(key, 0, 1);
+        string last_char = substr(key, length(key) - 1, 1);
+        if ((first_char == '"' && last_char == '"') || (first_char == "'" && last_char == "'"))
+            return key;
+        return "__CONTEXT__.get_value('" + key + "')";
+    }
 }
 
 /* Inverse Conditional
@@ -140,47 +145,11 @@ class Rosella.Template.Handler.If : Rosella.Template.Handler
 */
 class Rosella.Template.Handler.Unless : Rosella.Template.Handler.If
 {
-    function Unless(var tokens) { self.If(tokens); }
-
-    function render(var engine, var ctx, var sb)
+    function Unless(var tokens)
     {
-        if (!self.__satisfied(ctx)) {
-            for (var child in self.then_children)
-                child.render(engine, ctx, sb);
-        } else {
-            for (var child in self.else_children)
-                child.render(engine, ctx, sb);
-        }
-    }
-
-    function to_winxed(var engine, var builder)
-    {
-        string op = self.op == null ? "" : string(self.op);
-        string name_a = self.name_a;
-        string name_b = (self.name_b == null) ? "" : string(self.name_b);
-
-        string code = <<:
-    {
-        int __numeric = Rosella.String.get_character_class("numeric");
-        var __a = (Rosella.String.first_not_cclass("%s", __numeric) == -1) ? int("%s") : __CONTEXT__.get_value("%s");
-        var __b = (Rosella.String.first_not_cclass("%s", __numeric) == -1) ? int("%s") : __CONTEXT__.get_value("%s");
-:>>
-;
-        code = Rosella.String.sprintf(code, name_a, name_a, name_a, name_b, name_b, name_b);
-        push(builder, code);
-        if (op == "" || op == "?") {
-            code = "        if (%s) {\n";
-            code = Rosella.String.sprintf(code, name_a);
-        } else {
-            code = "        if (%s %s %s) {\n";
-            code = Rosella.String.sprintf(code, name_a, op, name_b);
-        }
-        push(builder, code);
-        for (var child in self.else_children)
-            child.to_winxed(engine, builder);
-        push(builder, "        } else {\n");
-        for (var child in self.then_children)
-            child.to_winxed(engine, builder);
-        push(builder, "        }\n    }\n");
+        self.If(tokens);
+        var temp = self.then_children;
+        self.then_children = self.else_children;
+        self.else_children = temp;
     }
 }

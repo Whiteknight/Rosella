@@ -127,11 +127,7 @@
             var node = self.__create_node_tree(nodes_array);
             if (!has_builder)
                 builder = new ['StringBuilder'];
-            if (recurse)
-                node.to_winxed_recurse(self, builder);
-            else
-                node.to_winxed(self, builder);
-
+            node.*(recurse ? "to_winxed_recurse" : "to_winxed")(self, builder);
             self.recurse_level++;
             return string(builder);
         }
@@ -150,7 +146,7 @@
         {
             var wx = Rosella.get_winxed_compiler();
             string wx_code = self.compile_to_winxed(tmpl);
-            return wx.compile(wx_code)[0];
+            return wx.compile(wx_code);
         }
 
         function compile_from_file(string filename, var builder [optional], int has_builder [opt_flag], int recurse [named,optional], int has_recurse [opt_flag])

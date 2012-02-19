@@ -25,6 +25,7 @@ class Rosella.Template.Node
         Rosella.Error.must_subclass(__CLASS__);
     }
 
+    // Compile to winxed code
     function to_winxed(var engine, var builder)
     {
         Rosella.Error.must_subclass(__CLASS__);
