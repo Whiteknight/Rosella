@@ -32,10 +32,25 @@ class Rosella.Reflect.Deserializer
     function get_bytecode_raw(var bc_seg, int start_offs, int end_offs)
     {
         int bc[] = [];
-        for (int i = start_offs; i < elements(bc_seg) && i < end_offs; i++) {
-            int val = bc_seg[i];
-            bc[i - start_offs] = val;
+
+        if (start_offs > end_offs ||
+            (start_offs == end_offs && start_offs != 0) ||
+            start_offs > elements(bc_seg) || end_offs > elements(bc_seg) ||
+            start_offs < 0 || end_offs < 0)
+            Rosella.Error.invalid(__FUNCTION__, "Cannot get bytecode from offset range [%d, %d]", start_offs, end_offs);
+
+        if (start_offs == 0 && end_offs == 0) {
+            for (int i = start_offs; i < elements(bc_seg); i++) {
+                int val = bc_seg[i];
+                bc[i - start_offs] = val;
+            }
+        } else if (start_offs != end_offs) {
+            for (int i = start_offs; i < elements(bc_seg) && i < end_offs; i++) {
+                int val = bc_seg[i];
+                bc[i - start_offs] = val;
+            }
         }
+
         return bc;
     }
 

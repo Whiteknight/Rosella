@@ -31,6 +31,7 @@ class Rosella.Reflect.Module
     var classes;            // A list of all classes defined at compile-time
     var namespaces;         // A list of all namespaces defined at compile-time
     var functions_by_ns;    // A hash of functions arranged by namespace
+    var instructions;       // A listing of disassembled opcodes
 
     // Constructor. Take an existing PackfileView
     function Module(var pf)
@@ -152,5 +153,11 @@ class Rosella.Reflect.Module
         self.classes = all_classes;
         self.functions = functions;
         self.functions_by_ns = functions_by_ns;
+    }
+
+    function get_instructions()
+    {
+        var d = new Rosella.Reflect.Deserializer();
+        return d.get_instructions(self.pf, 0, 0);
     }
 }
