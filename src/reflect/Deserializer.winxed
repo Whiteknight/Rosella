@@ -1,5 +1,7 @@
 class Rosella.Reflect.Deserializer
 {
+    function Deserializer() {}
+
     function get_instructions(var pf, int start_offs, int end_offs)
     {
         pf = self.__get_pf_builder(pf);
@@ -16,7 +18,7 @@ class Rosella.Reflect.Deserializer
         }
         opmap = map;
 
-        var bc = self.get_bytecode_raw(bc_seg);
+        var bc = self.get_bytecode_raw(bc_seg, start_offs, end_offs);
         var ins = [];
         for (int i = 0; i < elements(bc);) {
             :(var instr, int j) = self.__decode_op(const_table, opmap, oplibs, bc, i);

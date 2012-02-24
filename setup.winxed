@@ -315,6 +315,7 @@ function setup_stable_libraries(var rosella)
         "reflect/class/Member",
         "reflect/class/Attribute",
         "reflect/class/Method",
+        "reflect/Deserializer",
         "reflect/Function",
         "reflect/Instruction",
         "reflect/Module",
