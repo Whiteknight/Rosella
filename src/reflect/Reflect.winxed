@@ -14,6 +14,11 @@ namespace Rosella.Reflect
     {
         var cur_ctx = get_context();
         var pf = cur_ctx.caller_ctx.current_sub.get_packfile();
+        return get_module_from_packfile(pf);
+    }
+
+    function get_module_from_packfile(var pf)
+    {
         var m = __get_cached_reflector(pf, "module");
         if (m == null) {
             m = new Rosella.Reflect.Module(pf);

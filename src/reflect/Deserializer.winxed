@@ -5,7 +5,12 @@ class Rosella.Reflect.Deserializer
 
     function get_instructions(var pf, int start_offs, int end_offs)
     {
-        pf = self.__get_pf_builder(pf);
+        // TODO: Be smarter. Allow pf param to be a Packfile, PackfileView or
+        // Module.
+        var module = Rosella.Reflect.get_module_from_packfile(pf);
+        pf = module.get_packfile_builder();
+
+        // TODO: Try to break all this logic up into more usable sub-components
         var bc_seg = self.__get_pf_segment(pf, "PackfileBytecodeSegment");
         var const_seg = self.__get_pf_segment(pf, "PackfileConstantTable");
         var const_table = self.get_constants(const_seg);
@@ -53,14 +58,6 @@ class Rosella.Reflect.Deserializer
         }
 
         return bc;
-    }
-
-    function __get_pf_builder(var pfv)
-    {
-        var pf = new 'Packfile';
-        string raw = pfv.serialize();
-        pf.unpack(raw);
-        return pf;
     }
 
     function __get_pf_segment(var pf, string type)

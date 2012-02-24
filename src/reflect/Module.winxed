@@ -155,6 +155,20 @@ class Rosella.Reflect.Module
         self.functions_by_ns = functions_by_ns;
     }
 
+    function get_packfile()
+    {
+        return self.pf;
+    }
+
+    function get_packfile_builder()
+    {
+        // Do not cache this
+        var pf = new 'Packfile';
+        string raw = self.pf.serialize();
+        pf.unpack(raw);
+        return pf;
+    }
+
     function get_instructions()
     {
         // TODO: We should cache this.
@@ -169,4 +183,6 @@ class Rosella.Reflect.Module
 
     // TODO: Add accessors to read information about the bytecode such as the
     // list of oplibs, the opmap, and other details
+
+    // TODO: Add accessor to get the constant table, or it's entries.
 }
