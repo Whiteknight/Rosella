@@ -30,6 +30,15 @@ namespace Rosella.Reflect
         return sub;
     }
 
+    function get_current_function()
+    {
+        // TODO: Cache the Function as a prop on the Sub for easy lookup
+        var cur_ctx = get_context();
+        var sub = cur_ctx.caller_ctx.current_sub;
+        var f = new Rosella.Reflect.Function(sub);
+        return f;
+    }
+
     // Get the current CallContext PMC
     function get_current_context()
     {

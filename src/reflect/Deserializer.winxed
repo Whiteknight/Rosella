@@ -1,5 +1,6 @@
 class Rosella.Reflect.Deserializer
 {
+    // TODO: Do we need this to be a class or can it be a utility namespace?
     function Deserializer() {}
 
     function get_instructions(var pf, int start_offs, int end_offs)
@@ -147,16 +148,12 @@ class Rosella.Reflect.Deserializer
             switch (type) {
                 case TYPE_INT:
                     return new Rosella.Reflect.OpArg.IntegerConst(arg);
-
                 case TYPE_STR:
                     return new Rosella.Reflect.OpArg.StringConst(const_seg, arg);
-
                 case TYPE_PMC:
                     return new Rosella.Reflect.OpArg.PMCConst(const_seg, arg);
-
                 case TYPE_NUM:
                     return new Rosella.Reflect.OpArg.NumberConst(const_seg, arg);
-
                 default:
                     Rosella.Error.invalid(__FUNCTION__, "Unknown argument type %d at PC %d", type, pc);
             }
@@ -179,6 +176,7 @@ class Rosella.Reflect.Deserializer
     }
 }
 
+// TODO: Do we need this or can we access from the const_seg directly?
 class Rosella.Reflect.Constants
 {
     var pmcs;

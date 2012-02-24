@@ -16,6 +16,8 @@ class Rosella.Reflect.Instruction
         return self.opcode.family_name();
     }
 
+    // TODO: Add an accessor to get the long name
+
     function get_string()
     {
         string parts[] = [string(self.name())];
@@ -23,4 +25,11 @@ class Rosella.Reflect.Instruction
             parts[i + 1] = self.args[i].get_string();
         return join(" ", parts);
     }
+
+    // TODO: Add either a subclass or additional accessors to read information
+    // from set_args, get_params and family.
+
+    // TODO: Add an accessor to re-compile the op back into an array of integer
+    // values (possibly using a new opmap)
 }
+

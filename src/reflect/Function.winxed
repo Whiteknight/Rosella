@@ -6,16 +6,20 @@ class Rosella.Reflect.Function
     function Function(var sub)
     {
         self.sub = sub;
+        // TODO: Should we attach the Function as a prop on the Sub?
     }
 
     function get_packfile()
     {
+        // TODO: Should we cache this?
         var pf = self.sub.get_packfile();
         return self.sub.get_packfile();
     }
 
     function get_instructions()
     {
+        // TODO: If the invokable is not a Sub, return the instruction listing
+        // for it's vtable invoke.
         // TODO: This can become a very large collection of PMCs very quickly.
         // Instead return an iterable or some kind of lazy array to load ops
         // on demand.
@@ -30,6 +34,13 @@ class Rosella.Reflect.Function
         self.instructions = ins;
         return ins;
     }
+
+    // TODO: Add a method to read the get_params declaration if any and try to
+    // determine the expected arguments
+
+    // TODO: Add methods to determine if the invokable is a continuation, a
+    // coroutine, a closure or a user-defined type (non-sub). Add accessors to
+    // get necessary information from each of those types.
 }
 
 

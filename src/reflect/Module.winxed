@@ -157,7 +157,16 @@ class Rosella.Reflect.Module
 
     function get_instructions()
     {
+        // TODO: We should cache this.
+        // TODO: Use a lazy list type to load instructions on demand instead of
+        // loading them all at once
+        // TODO: We should find a way to share, so if we load instructions for a
+        // packfile and a child sub we aren't loading them twice.
+        // TODO: Should we return a raw stream here or break it up by Function?
         var d = new Rosella.Reflect.Deserializer();
         return d.get_instructions(self.pf, 0, 0);
     }
+
+    // TODO: Add accessors to read information about the bytecode such as the
+    // list of oplibs, the opmap, and other details
 }
