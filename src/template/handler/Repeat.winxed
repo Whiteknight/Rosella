@@ -11,13 +11,14 @@ class Rosella.Template.Handler.Repeat : Rosella.Template.Handler.Children
     const string LAST_VARNAME = "__LAST__";
 
     // Constructor
-    function Repeat(var tokens)
+    function Repeat(var tokens) { self.Children(tokens); }
+
+    function parse(var tokens)
     {
         if (elements(tokens) != 3 || tokens[1] != "to")
             Rosella.Error.invalid(__FUNCTION__, "Syntax of repeat loop is 'repeat <start> to <stop>'");
         self.start = tokens[0];
         self.end = tokens[2];
-        self.Children();
     }
 
     // Render. Loop over data and render children for each

@@ -16,12 +16,17 @@ class Rosella.Template.Handler.If : Rosella.Template.Handler
     // Constructor. Basic syntax check
     function If(var tokens)
     {
+        self.Handler(tokens);
+        self.mode = THEN_MODE;
+        self.then_children = [];
+        self.else_children = [];
+    }
+
+    function parse(var tokens)
+    {
         int num_tokens = elements(tokens);
         if (num_tokens != 1 && num_tokens != 3)
             Rosella.Error.invalid(__FUNCTION__, "Syntax of IF/UNLESS node is 'if <var>' or 'if <var> <op> <var>'");
-        self.then_children = [];
-        self.else_children = [];
-        self.mode = THEN_MODE;
         self.name_a = tokens[0];
         if (num_tokens == 3) {
             self.op = tokens[1];

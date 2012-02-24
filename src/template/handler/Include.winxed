@@ -6,7 +6,9 @@ class Rosella.Template.Handler.Include : Rosella.Template.Handler
     var filename;
 
     // Constructor
-    function Include(var tokens)
+    function Include(var tokens) { self.Handler(tokens); }
+
+    function parse(var tokens)
     {
         if (elements(tokens) != 1)
             Rosella.Error.invalid(__FUNCTION__, "Include requires exactly 1 argument");

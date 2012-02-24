@@ -315,7 +315,10 @@ function setup_stable_libraries(var rosella)
         "reflect/class/Member",
         "reflect/class/Attribute",
         "reflect/class/Method",
-        "reflect/Module"
+        "reflect/Function",
+        "reflect/Instruction",
+        "reflect/Module",
+        "reflect/OpArg"
     );
 }
 

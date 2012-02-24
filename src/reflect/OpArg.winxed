@@ -1,0 +1,126 @@
+class Rosella.Reflect.OpArg
+{
+    var value;
+    var const_seg;
+    var idx;
+
+    function OpArg(var const_seg, int i)
+    {
+        self.const_seg = const_seg;
+        self.idx = i;
+    }
+
+    function get_value()
+    {
+        return self.value;
+    }
+
+    function get_string()
+    {
+        return "UNKNOWN_ARG";
+    }
+}
+
+class Rosella.Reflect.OpArg.StringConst : Rosella.Reflect.OpArg
+{
+    function StringConst(var const_seg, int i) { self.OpArg(const_seg, i); }
+
+    function get_value()
+    {
+        if (self.value == null)
+            self.value = self.const_seg.strings[int(self.idx)];
+        return self.value;
+    }
+
+    function get_string()
+    {
+        return sprintf("CONST_STRING(%d)", [self.idx]);
+    }
+}
+
+class Rosella.Reflect.OpArg.StringReg : Rosella.Reflect.OpArg
+{
+    function StringReg(int idx) { self.idx = idx; }
+
+    function get_string()
+    {
+        return "$S" + string(self.idx);
+    }
+}
+
+class Rosella.Reflect.OpArg.IntegerConst : Rosella.Reflect.OpArg
+{
+    function IntegerConst(int value)
+    {
+        self.value = value;
+    }
+
+    function get_string()
+    {
+        return string(self.value);
+    }
+}
+
+class Rosella.Reflect.OpArg.IntegerReg : Rosella.Reflect.OpArg
+{
+    function IntegerReg(int idx) { self.idx = idx; }
+
+    function get_string()
+    {
+        return "$I" + string(self.idx);
+    }
+}
+
+class Rosella.Reflect.OpArg.PMCConst : Rosella.Reflect.OpArg
+{
+    function PMCConst(var const_seg, int i) { self.OpArg(const_seg, i); }
+
+    function get_value()
+    {
+        if (self.value == null)
+            self.value = self.const_seg.pmcs[int(self.idx)];
+        return self.value;
+    }
+
+    function get_string()
+    {
+        return sprintf("CONST_PMC(%d)", [self.idx]);
+    }
+}
+
+class Rosella.Reflect.OpArg.PMCReg : Rosella.Reflect.OpArg
+{
+    function PMCReg(int idx) { self.idx = idx; }
+
+    function get_string()
+    {
+        return "$P" + string(self.idx);
+    }
+}
+
+class Rosella.Reflect.OpArg.NumberConst : Rosella.Reflect.OpArg
+{
+    function NumberConst(var const_seg, int i) { self.OpArg(const_seg, i); }
+
+    function get_value()
+    {
+        if (self.value == null)
+            self.value = self.const_seg.pmcs[int(self.idx)];
+        return self.value;
+    }
+
+    function get_string()
+    {
+        return sprintf("CONST_NUMBER(%d)", [self.idx]);
+    }
+}
+
+class Rosella.Reflect.OpArg.NumberReg : Rosella.Reflect.OpArg
+{
+    function NumberReg(int idx) { self.idx = idx; }
+
+    function get_string()
+    {
+        return "$N" + string(self.idx);
+    }
+}

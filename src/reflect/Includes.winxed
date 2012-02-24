@@ -1,8 +1,26 @@
-// Constants.
+/* Constants
+*/
+
+// Sub-related constants
 const int SUB_FLAG_METHOD = 0x04;
 const int SUB_FLAG_INIT = 0x400;
 const int PF_FLAG_ANON = 0x08;
 const int PF_FLAG_LOAD = 0x20;
+
+// Opcodes and Args constants
+const int TYPE_INT       = 0;
+const int TYPE_STR       = 1;
+const int TYPE_PMC       = 2;
+const int TYPE_NUM       = 3;
+const int TYPE_MASK      = 0x0F;
+const int TYPE_CONST     = 0x0010;
+const int TYPE_KEYED     = 0x0020; // :flatten or :slurpy
+const int TYPE_OPTIONAL  = 0x0080;
+const int TYPE_OPT_FLAG  = 0x0100;
+const int TYPE_NAME      = 0x0200;
+const int TYPE_LOOKAHEAD = 0x0400;
+const int TYPE_INVOCANT  = 0x0800;
+const int TYPE_CALL_SIG  = 0x1000;
 
 /* Caching Routines
     Reflectors are cached on their target object using properties. These

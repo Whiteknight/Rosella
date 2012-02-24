@@ -1,0 +1,204 @@
+class Rosella.Reflect.Function
+{
+    var sub;
+    var instructions;
+
+    function Function(var sub)
+    {
+        self.sub = sub;
+    }
+
+    function get_packfileview()
+    {
+        var pf = self.sub.get_packfile();
+        return self.sub.get_packfile();
+    }
+
+    function get_packfile()
+    {
+        var pf = new 'Packfile';
+        string raw = self.get_packfileview().serialize();
+        pf.unpack(raw);
+        return pf;
+    }
+
+    function __get_pf_segment(var pf, string type)
+    {
+        var dir = pf.get_directory();
+        for (string name in dir) {
+            var seg = dir[name];
+            if (typeof(seg) == type)
+                return seg;
+        }
+        return null;
+    }
+
+    function get_bytecode_raw(var bc_seg [optional], int has_bcseg [opt_flag])
+    {
+        if (!has_bcseg || bc_seg == null)
+            bc_seg = self.__get_pf_segment(self.get_packfile(), "PackfileBytecodeSegment");
+
+        int start_offs = self.sub.start_offs();
+        int end_offs = self.sub.end_offs();
+        int bc[] = [];
+        for (int i = start_offs; i < elements(bc_seg) && i < end_offs; i++) {
+            int val = bc_seg[i];
+            bc[i - start_offs] = val;
+        }
+        return bc;
+    }
+
+    function get_constants(var const_seg)
+    {
+        var c = new Rosella.Reflect.Constants();
+        int size = const_seg.pmc_count();
+        var p = c.pmcs;
+        for (int i = 0; i < size; i++) {
+            var pc = var(const_seg[i]);
+            //Rosella.IO.sayf("CONST_PMC(%d): %s", i, typeof(pc));
+            p[i] = pc;
+        }
+
+        size = const_seg.str_count();
+        var s = c.strings;
+        for (int i = 0; i < size; i++) {
+            string sc = string(const_seg[i]);
+            //Rosella.IO.sayf("CONST_STR(%d): '%s'", i, sc);
+            s[i] = sc;
+        }
+
+        size  = const_seg.num_count();
+        var n = c.nums;
+        for (int i = 0; i < size; i++)
+            n[i] = float(const_seg[i]);
+        return c;
+    }
+
+    function get_instructions()
+    {
+        // TODO: This can become a very large collection of PMCs very quickly.
+        // Instead return an iterable or some kind of lazy array to load ops
+        // on demand.
+        if (self.instructions != null)
+            return self.instructions;
+
+        var pf = self.get_packfile();
+        var bc_seg = self.__get_pf_segment(pf, "PackfileBytecodeSegment");
+        var const_seg = self.__get_pf_segment(pf, "PackfileConstantTable");
+        var const_table = self.get_constants(const_seg);
+        var opmap = bc_seg.opmap();
+        var oplibs = opmap.oplibs();
+        int size = int(opmap);
+        var map = [];
+        for (int i = 0; i < size; ++i) {
+            string name = opmap[i];
+            map[i] = opmap[name];
+        }
+        opmap = map;
+
+        var bc = self.get_bytecode_raw(bc_seg);
+        var ins = [];
+        for (int i = 0; i < elements(bc);) {
+            :(var instr, int j) = self.__decode_op(const_table, opmap, oplibs, bc, i);
+            push(ins, instr);
+            //Rosella.IO.sayf("Adding %d to i", j);
+            i += j;
+        }
+        return ins;
+    }
+
+    function __decode_op(var const_seg, var opmap, var oplibs, var bc, int i)
+    {
+        var op = opmap[bc[i]];
+        string name = op.family_name();
+        int nargs = elements(op);
+        int j = 1;
+        var args = [];
+        switch (name) {
+            case 'set_args':
+            case 'get_results':
+            case 'get_params':
+            case 'set_returns':
+                int sig_idx = bc[i + 1];
+                var arg_types = const_seg.pmcs[sig_idx];
+                args[0] = new Rosella.Reflect.OpArg.PMCConst(const_seg, sig_idx);
+                int narg_types = elements(arg_types);
+
+                for (j = 0; j < narg_types; ++j ) {
+                    var arg = self.__decode_arg(const_seg, int(arg_types[j]), int(bc[i + j + 2]), i + j + 2);
+                    args[j + 1] = arg;
+                }
+                j += 2;
+                break;
+            default:
+                for (j = 0; j < nargs; j++) {
+                    var arg = self.__decode_arg(const_seg, int(op[j]), int(bc[i + j + 1]), i + j + 1);
+                    args[j] = arg;
+                }
+                j += 1;
+                break;
+        }
+        var ins = new Rosella.Reflect.Instruction(i, op, args);
+        return ins, j;
+    }
+
+    function __decode_arg(var const_seg, int type, int arg, int pc)
+    {
+        int cons = type & TYPE_CONST;
+        int keyd = type & TYPE_KEYED;
+        int named = type & TYPE_NAME;
+        int is_optional = type & TYPE_OPTIONAL;
+        int is_opt_flag = type & TYPE_OPT_FLAG;
+        type = type & TYPE_MASK;
+
+        if (cons) {
+            switch (type) {
+                case TYPE_INT:
+                    return new Rosella.Reflect.OpArg.IntegerConst(arg);
+
+                case TYPE_STR:
+                    return new Rosella.Reflect.OpArg.StringConst(const_seg, arg);
+
+                case TYPE_PMC:
+                    return new Rosella.Reflect.OpArg.PMCConst(const_seg, arg);
+
+                case TYPE_NUM:
+                    return new Rosella.Reflect.OpArg.NumberConst(const_seg, arg);
+
+                default:
+                    Rosella.Error.invalid(__FUNCTION__, "Unknown argument type %d at PC %d", type, pc);
+            }
+        } else {
+            switch (type) {
+                case TYPE_INT:
+                    return new Rosella.Reflect.OpArg.IntegerReg(arg);
+                case TYPE_STR:
+                    return new Rosella.Reflect.OpArg.StringReg(arg);
+                case TYPE_PMC:
+                    return new Rosella.Reflect.OpArg.PMCReg(arg);
+                case TYPE_NUM:
+                    return new Rosella.Reflect.OpArg.StringReg(arg);
+                default:
+                    Rosella.Error.invalid(__FUNCTION__, "Unknow argument type %d at PC %d", type, pc);
+            }
+        }
+        Rosella.Error.invalid("SOMETHING BAD HAPPENED %d %d %d", type, arg, pc);
+        return null;
+    }
+}
+
+class Rosella.Reflect.Constants
+{
+    var pmcs;
+    var strings;
+    var nums;
+
+    function Constants()
+    {
+        self.pmcs = [];
+        string strings[] = [];
+        self.strings = [];
+        float floats[] = [];
+        self.nums = floats;
+    }
+}

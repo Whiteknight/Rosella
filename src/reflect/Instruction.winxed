@@ -1,0 +1,26 @@
+class Rosella.Reflect.Instruction
+{
+    var pc;
+    var opcode;
+    var args;
+
+    function Instruction(int pc, var opcode, var args)
+    {
+        self.pc = pc;
+        self.opcode = opcode;
+        self.args = args;
+    }
+
+    function name()
+    {
+        return self.opcode.family_name();
+    }
+
+    function get_string()
+    {
+        string parts[] = [string(self.name())];
+        for (int i = 0; i < elements(self.args); i++)
+            parts[i + 1] = self.args[i].get_string();
+        return join(" ", parts);
+    }
+}

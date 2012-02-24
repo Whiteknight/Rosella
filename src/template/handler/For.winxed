@@ -11,9 +11,10 @@ class Rosella.Template.Handler.For : Rosella.Template.Handler.Children
     var srcname;
 
     // Constructor. Quick syntax sanity checks.
-    function For(var tokens)
+    function For(var tokens) { self.Children(tokens); }
+
+    function parse(var tokens)
     {
-        self.Children();
         if (elements(tokens) != 3 || string(tokens[1]) != "in")
             Rosella.Error.invalid(__FUNCTION__, "Syntax of for loop is 'for <var> in <src>'");
         string varname = tokens[0];

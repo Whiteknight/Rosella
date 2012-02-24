@@ -1,1 +1,6 @@
 $include_const "cclass.pasm";
+
+inline is_reserved_varname(string varname) return int
+{
+    return substr(varname, 0, 2) == "__" && substr(varname, length(varname) - 2, 2) == "__";
+}

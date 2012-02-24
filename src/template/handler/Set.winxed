@@ -8,18 +8,19 @@ class Rosella.Template.Handler.Set : Rosella.Template.Handler.Children
     var children;
 
     // Constructor. Check syntax.
-    function Set(var tokens)
+    function Set(var tokens) { self.Children(tokens); }
+
+    function parse(var tokens)
     {
-        int numtks = elements(tokens);
         string varname = tokens[0];
         self.varname = varname;
-        if (substr(varname, 0, 2) == "__" && substr(varname, length(varname) - 2, 2) == "__")
+
+        int numtks = elements(tokens);
+        if (is_reserved_varname(varname))
             Rosella.Error.invalid(__FUNCTION__, "Variable names starting and ending with double underscores are reserved");
 
-        if (numtks == 1) {
+        if (numtks == 1)
             self.sourcename = null;
-            self.Children();
-        }
         else if (numtks == 3 && tokens[1] == "as")
             self.sourcename = tokens[2];
         else

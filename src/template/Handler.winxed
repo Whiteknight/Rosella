@@ -5,7 +5,15 @@
 class Rosella.Template.Handler
 {
     // Empty constructor.
-    function Handler(var tokens [optional]) { }
+    function Handler(var tokens)
+    {
+        self.parse(tokens);
+    }
+
+    function parse(var tokens)
+    {
+        Rosella.Error.must_subclass(__CLASS__);
+    }
 
     // Add a child node
     function add_child(var node)
@@ -63,9 +71,10 @@ class Rosella.Template.Handler.Children : Rosella.Template.Handler
     var children;
 
     // Constructor.
-    function Children(var tokens [optional])
+    function Children(var tokens)
     {
         self.children = [];
+        self.parse(tokens);
     }
 
     // This handler does have child nodes
