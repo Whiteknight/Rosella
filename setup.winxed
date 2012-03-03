@@ -304,7 +304,9 @@ function setup_stable_libraries(var rosella)
         "date/Date",
         "date/DateFormatter",
         "date/Doomsday",
-        "date/SpecialDate"
+        "date/SpecialDate",
+        "date/TimeSpan",
+        "date/TimeSpanFormatter"
     );
 
     // Library for reflection and introspection

@@ -150,6 +150,17 @@ namespace Rosella.Date
         return temp;
     }
 
+    const string DEFAULT_TIMESPAN_FORMATTER = "Rosella.Date.default_timespan_formatter";
+    function default_timespan_formatter()
+    {
+        var temp = Rosella.Globals.get_global(DEFAULT_TIMESPAN_FORMATTER);
+        if (temp == null) {
+            temp = new Rosella.Date.TimeSpanFormatter();
+            Rosella.Globals.register_global(DEFAULT_TIMESPAN_FORMATTER, temp);
+        }
+        return temp;
+    }
+
     // Get a calculator object for calculating day-of-week
     const string DEFAULT_DAY_CALCULATOR = "Rosella.Date.default_day_calculator";
     function default_day_calculator()
@@ -173,6 +184,7 @@ namespace Rosella.Date
 */
 // TODO: Need vtables for operating overloading (subtract other Date objects, etc)
 // TODO: Probably need a class for timespans (start/stop date pairs)
+// TODO: Handle negative (BC) years
 class Rosella.Date
 {
     var time_array;
@@ -232,6 +244,12 @@ class Rosella.Date
         self.Date(int(year), int(month), int(day), int(hour), int(min), int(s));
     }
 
+    function copy()
+    {
+        return new Rosella.Date(int(self.year()), int(self.month()), int(self.day()),
+                                int(self.hours()), int(self.minutes()), int(self.seconds()));
+    }
+
     /* Seconds
     */
 
@@ -261,6 +279,32 @@ class Rosella.Date
         self.time_array[TM_SEC] = s;
         if (m != 0)
             self.__add_minutes(m);
+    }
+
+    function to_total_seconds()
+    {
+        int time_s = self.seconds() +
+            60 * (self.minutes() +
+                60 * self.hours()
+            );
+
+        int year = self.year();
+        var month_day_counts = Rosella.Date.month_day_counts(year);
+        int day_of_year = self.day() - 1;
+        int month = self.month();
+        for (int i = 0; i < month; i++)
+            day_of_year += int(month_day_counts[i]);
+        int day_s = day_of_year * 24 * 60 * 60;
+        int base_year = year - (year % 4);
+
+        // TODO: We can probably loop by 100-year or 400-year blocks instead
+        int year_s = 0;
+        for (int i = 4; i < base_year; i += 4) {
+            year_s += (4 * 365 * 24 * 60 * 60);
+            if ((i % 100 != 0) || (i % 400 == 0))
+             year_s += (24 * 60 * 60);
+         }
+         return time_s + day_s + year_s;
     }
 
     /* Minutes
@@ -480,15 +524,18 @@ class Rosella.Date
     function time()
     {
         return new Rosella.Date(1, 1, 1,
-                                int(self.hours()), int(self.minutes()), int(self.seconds()));
+            int(self.hours()), int(self.minutes()), int(self.seconds()));
     }
+
+    /* String-Related Methods
+    */
 
     // Format the Date into a string
     function format_string(string f)
     {
         if (f == null || f == "")
             return string(self);
-        return Rosella.Date.default_date_formatter().format(self, f);
+        return self.get_string_converter().format(self, f);
     }
 
     // Get the string converter to use
@@ -497,24 +544,46 @@ class Rosella.Date
         return Rosella.Date.default_date_formatter();
     }
 
-    /* Vtables
-    */
-
-    // Clone the date object
-    function clone[vtable]()
-    {
-        return new Rosella.Date(int(self.year()), int(self.month()), int(self.day()),
-                                int(self.hours()), int(self.minutes()), int(self.seconds()));
-    }
-
-    // Get a string representation using a default format "yyyy-MM-dd hh:mm:ss"
-    function get_string[vtable]()
+    function to_string()
     {
         return sprintf("%04d/%02d/%02d %02d:%02d:%02d", [self.year(), self.month(), self.day(), self.hours(), self.minutes(), self.seconds()]);
     }
 
-    // Determine equality between Dates
-    function is_equal[vtable](var d)
+    /* Operations and TimeSpans
+    */
+
+    // Subtract. If it's a Date return a TimeSpan. If it's a TimeSpan, return a
+    // Date.
+    function subtract(var d)
+    {
+        if (d instanceof Rosella.Date)
+            return new Rosella.Date.TimeSpan(d, self);
+        if (d instanceof Rosella.Date.TimeSpan) {
+            var next = clone(self);
+            next.__add_seconds(-ts.seconds());
+            next.__add_minutes(-ts.minutes());
+            next.__add_hours(-ts.hours());
+            next.__add_days(-ts.days());
+            return next;
+        }
+        Rosella.Error.invalid(__FUNCTION__, "Unknown type in Date.substract: %s", typeof(d));
+    }
+
+    // Add a TimeSpan
+    function add(var ts)
+    {
+        if (ts instanceof Rosella.Date.TimeSpan) {
+            var next = clone(self);
+            next.__add_seconds(ts.seconds());
+            next.__add_minutes(ts.minutes());
+            next.__add_hours(ts.hours());
+            next.__add_days(ts.days());
+            return next;
+        }
+        Rosella.Error.invalid(__FUNCTION__, "Unknown type in Date.add: %s", typeof(ts));
+    }
+
+    function equals(var d)
     {
         if (!(d instanceof Rosella.Date))
             return false;
@@ -527,13 +596,12 @@ class Rosella.Date
         return true;
     }
 
-    // Compare two Dates
-    function cmp[vtable](var d)
+    function compare_to(var d)
     {
         if (!(d instanceof Rosella.Date))
             Rosella.Error.invalid("Cannot compare Date and non-Date PMC");
         if (d instanceof Rosella.Date.SpecialDate)
-            return cmp_p(d, self);
+            return -d.compare_to(self);
         var a = self.time_array;
         var b = d.time_array;
         for (int i = 5; i >= 0; i--) {
@@ -544,4 +612,23 @@ class Rosella.Date
         }
         return 0;
     }
+
+    /* Vtables
+    */
+
+    // Clone the date object
+    function clone[vtable]() { return self.copy(); }
+
+    // Get a string representation using a default format "yyyy-MM-dd hh:mm:ss"
+    function get_string[vtable]() { return self.to_string(); }
+
+    // Determine equality between Dates
+    function is_equal[vtable](var d) { return self.equals(d); }
+
+    // Compare two Dates
+    function cmp[vtable](var d) { return self.compare_to(d); }
+
+    //function add[vtable](var d) { return self.add(d); }
+
+    //function subtract[vtable](var d) { return self.subtract(d); }
 }

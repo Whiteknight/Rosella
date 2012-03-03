@@ -1,3 +1,9 @@
+inline abs_i(int value) return int
+{
+    ${ abs value };
+    return value;
+}
+
 inline abs_f(float value) return float
 {
     ${ abs value };

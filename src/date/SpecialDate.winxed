@@ -23,6 +23,11 @@ class Rosella.Date.SpecialDate : Rosella.Date
         Rosella.Error.invalid(__FUNCTION__, "Cannot modify SpecialDate");
     }
 
+    function to_total_seconds()
+    {
+        Rosella.Error.invalid(__FUNCTION__, "SpecialDate does not have total seconds");
+    }
+
     function add_minutes(int x)
     {
         Rosella.Error.invalid(__FUNCTION__, "Cannot modify SpecialDate");
@@ -74,12 +79,12 @@ class Rosella.Date.SpecialDate : Rosella.Date
         return string(self.name);
     }
 
-    function is_equal[vtable](var d)
+    function equals(var d)
     {
         return (d instanceof Rosella.Date.SpecialDate) && d === self;
     }
 
-    function cmp[vtable](var d)
+    function compare_to(var d)
     {
         Rosella.Error.must_subclass(__CLASS__);
     }
@@ -96,7 +101,7 @@ class Rosella.Date.SpecialDate.Minimum : Rosella.Date.SpecialDate
         self.SpecialDate("DATE_MINIMUM", 0, 0, 0, 0, 0, 0);
     }
 
-    function cmp[vtable](var d)
+    function compare_to(var d)
     {
         if (d === self)
             return 0;
@@ -115,7 +120,7 @@ class Rosella.Date.SpecialDate.Maximum : Rosella.Date.SpecialDate
         self.SpecialDate("DATE_MAXIMUM", 9999, 0, 0, 0, 0, 0);
     }
 
-    function cmp[vtable](var d)
+    function compare_to(var d)
     {
         if (d === self)
             return 0;
