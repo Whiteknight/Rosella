@@ -581,10 +581,13 @@ class Rosella.Date
         Rosella.Error.invalid(__FUNCTION__, "Unknown type in Date.add: %s", typeof(ts));
     }
 
+    // Determine if two Date objects are equal
     function equals(var d)
     {
         if (!(d instanceof Rosella.Date))
             return false;
+        if (d instanceof Rosella.Date.SpecialDate)
+            return d.equals(self);
         var a = self.time_array;
         var b = d.time_array;
         for (int i = 0; i < 6; i++) {
@@ -596,6 +599,7 @@ class Rosella.Date
 
     function compare_to(var d)
     {
+        // TODO: Can we attempt to coerce to a Date and compare in a sane way?
         if (!(d instanceof Rosella.Date))
             Rosella.Error.invalid("Cannot compare Date and non-Date PMC");
         if (d instanceof Rosella.Date.SpecialDate)

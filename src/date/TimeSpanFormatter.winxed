@@ -8,8 +8,6 @@ class Rosella.Date.TimeSpanFormatter : Rosella.StringFormatter
     function TimeSpanFormatter() { }
 
     // Format the TimeSpan object
-    // TODO: Support additional codes
-    // TODO: Find an algorithm which isn't so slow and wasteful
     function format(var obj, string f)
     {
         if (contains(f, "dd")) f = f.replace("dd", format("%02d", obj.days()));

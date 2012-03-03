@@ -1,3 +1,19 @@
+namespace Rosella.Date.Doomsday
+{
+    // doomsdays[N] is the day of month N that falls on a doomsday.
+    const string GET_DOOMSDAY_ARRAY = "Rosella.Date.Doomsday.get_doomsday_array";
+    function get_doomsday_array()
+    {
+        var temp = Rosella.Globals.get_global(GET_DOOMSDAY_ARRAY);
+        if (temp == null) {
+            int doomsdays[] = [ 3, 28, 7, 4, 9, 6, 11, 8, 5, 10, 7, 12 ];
+            temp = doomsdays;
+            Rosella.Globals.register_global(GET_DOOMSDAY_ARRAY, temp);
+        }
+        return temp;
+    }
+}
+
 /* Doomsday Algorithm
     This class implements the Doomsday Algorithm, a fast, computationally-simple
     method
@@ -5,14 +21,8 @@
 */
 class Rosella.Date.Doomsday
 {
-    var doomsdays;
-
     // Constructor
-    function Doomsday()
-    {
-        // doomsdays[N] is the day of month N that falls on a doomsday.
-        self.doomsdays = [ 3, 28, 7, 4, 9, 6, 11, 8, 5, 10, 7, 12 ];
-    }
+    function Doomsday() { }
 
     // Get the day of the week for the give Date. Return an integer
     function get_day(int year, int month, int day)
@@ -24,11 +34,13 @@ class Rosella.Date.Doomsday
         if (day < 1 || day > 31)
             Rosella.Error.invalid(__FUNCTION__, "Bad day");
 
+        var doomsdays = Rosella.Date.Doomsday.get_doomsday_array();
+
         // Determine the doomsday for this year.
         int dday = self.__get_dday(year);
 
         int leap = Rosella.Date.is_leap_year(year);
-        int anchor = self.doomsdays[month - 1];
+        int anchor = doomsdays[month - 1];
         if (leap && month <= 2)
             anchor += 1; // the anchor date for jan/feb is +1 for leap years.
 

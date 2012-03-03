@@ -1,3 +1,7 @@
+/* Time Span Class
+    These objects represent a length of time without defined start and end
+    times
+*/
 class Rosella.Date.TimeSpan
 {
     const int IDX_SECONDS = 0;
@@ -6,6 +10,8 @@ class Rosella.Date.TimeSpan
     const int IDX_DAYS = 3;
     var parts;
 
+    // 2-date Constructor. Take two Date objects and calculate the length of
+    // time between them
     function TimeSpan(var start, var end)
     {
         if (!(start instanceof Rosella.Date && end instanceof Rosella.Date))
@@ -19,6 +25,7 @@ class Rosella.Date.TimeSpan
         self.TimeSpan(diff);
     }
 
+    // Constructor taking a number of seconds
     function TimeSpan(int diff)
     {
         int secs = diff % 60;
@@ -32,25 +39,32 @@ class Rosella.Date.TimeSpan
         self.TimeSpan(days, hours, mins, secs);
     }
 
+    // Constructor taking day, hour, minute and second
     function TimeSpan(int days, int hours, int min, int sec)
     {
         int parts[] = [sec, min, hours, days];
         self.parts = parts;
     }
 
+    // Create a new TimeSpan the same as this one
     function copy()
     {
         return new Rosella.Date.TimeSpan(int(self.days()), int(self.hours()), int(self.minutes()), int(self.seconds()));
     }
 
+    // Get the number of seconds
     function seconds() { return self.parts[IDX_SECONDS]; }
 
+    // Get the number of minutes
     function minutes() { return self.parts[IDX_MINUTES]; }
 
+    // Get the number of hours
     function hours() { return self.parts[IDX_HOURS]; }
 
+    // Get the number of days
     function days() { return self.parts[IDX_DAYS]; }
 
+    // Get the length as a total number of seconds
     function to_total_seconds()
     {
         return self.seconds() +
@@ -61,15 +75,18 @@ class Rosella.Date.TimeSpan
             );
     }
 
+    // Add a second TimeSpan and get a new one
     function add(var ts)
     {
         if (ts instanceof Rosella.Date.TimeSpan) {
             int diff = self.to_total_seconds() + ts.to_total_seconds();
-            return new TimeSpan(diff);
+            return new Rosella.Date.TimeSpan(diff);
         }
         Rosella.Error.invalid(__FUNCTION__, "Cannot add %s to TimeSpan", typeof(ts));
     }
 
+    // Subtract a timespan from this one, return the absolute difference as a
+    // new TimeSpan
     function subtract(var ts)
     {
         if (ts instanceof Rosella.Date.TimeSpan) {
@@ -94,10 +111,14 @@ class Rosella.Date.TimeSpan
         return Rosella.Date.default_timespan_formatter();
     }
 
+    // Get a string represetation
     function to_string()
     {
         return sprintf("%d days, %02d:%02d:%02d", [self.days(), self.hours(), self.minutes(), self.seconds()]);
     }
+
+    /* Vtables
+    */
 
     function get_string[vtable]() { return self.to_string(); }
 
