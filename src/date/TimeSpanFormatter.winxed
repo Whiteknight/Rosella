@@ -1,0 +1,21 @@
+/* TimeSpan String Formatter
+    Formats a TimeSpan object into a string according to the given formatting
+    string
+*/
+class Rosella.Date.TimeSpanFormatter : Rosella.StringFormatter
+{
+    // Constructor.
+    function TimeSpanFormatter() { }
+
+    // Format the TimeSpan object
+    // TODO: Support additional codes
+    // TODO: Find an algorithm which isn't so slow and wasteful
+    function format(var obj, string f)
+    {
+        if (contains(f, "dd")) f = f.replace("dd", format("%02d", obj.days()));
+        if (contains(f, "hh")) f = f.replace("hh", format("%02d", obj.hours()));
+        if (contains(f, "mm")) f = f.replace("mm", format("%02d", obj.minutes()));
+        if (contains(f, "ss")) f = f.replace("ss", format("%02d", obj.seconds()));
+        return f;
+    }
+}

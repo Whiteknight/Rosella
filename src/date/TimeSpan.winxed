@@ -1,0 +1,105 @@
+class Rosella.Date.TimeSpan
+{
+    const int IDX_SECONDS = 0;
+    const int IDX_MINUTES = 1;
+    const int IDX_HOURS = 2;
+    const int IDX_DAYS = 3;
+    var parts;
+
+    function TimeSpan(var start, var end)
+    {
+        if (!(start instanceof Rosella.Date && end instanceof Rosella.Date))
+            Rosella.Error.invalid(__FUNCTION__, "Arguments must be Date objects. Have %s and %s", typeof(start), typeof(end));
+        if (start instanceof Rosella.Date.SpecialDate || end instanceof Rosella.Date.SpecialDate)
+            Rosella.Error.invalid(__FUNCTION__, "Arguments may not be SpecialDate objects. Have %s and %s", typeof(start), typeof(end));
+        if (start >= end)
+            Rosella.Error.invalid(__FUNCTION__, "Start Date must be before End Date (%s >= %s)", start, end);
+
+        int diff = end.to_total_seconds() - start.to_total_seconds();
+        self.TimeSpan(diff);
+    }
+
+    function TimeSpan(int diff)
+    {
+        int secs = diff % 60;
+        diff = diff / 60;
+        int mins = diff % 60;
+        diff = diff / 60;
+        int hours = diff % 24;
+        diff = diff / 24;
+        int days = diff;
+
+        self.TimeSpan(days, hours, mins, secs);
+    }
+
+    function TimeSpan(int days, int hours, int min, int sec)
+    {
+        int parts[] = [sec, min, hours, days];
+        self.parts = parts;
+    }
+
+    function copy()
+    {
+        return new Rosella.Date.TimeSpan(int(self.days()), int(self.hours()), int(self.minutes()), int(self.seconds()));
+    }
+
+    function seconds() { return self.parts[IDX_SECONDS]; }
+
+    function minutes() { return self.parts[IDX_MINUTES]; }
+
+    function hours() { return self.parts[IDX_HOURS]; }
+
+    function days() { return self.parts[IDX_DAYS]; }
+
+    function to_total_seconds()
+    {
+        return self.seconds() +
+            60 * (self.minutes() +
+                60 * (self.hours() +
+                    24 * self.days()
+                )
+            );
+    }
+
+    function add(var ts)
+    {
+        if (ts instanceof Rosella.Date.TimeSpan) {
+            int diff = self.to_total_seconds() + ts.to_total_seconds();
+            return new TimeSpan(diff);
+        }
+        Rosella.Error.invalid(__FUNCTION__, "Cannot add %s to TimeSpan", typeof(ts));
+    }
+
+    function subtract(var ts)
+    {
+        if (ts instanceof Rosella.Date.TimeSpan) {
+            int a = self.to_total_seconds();
+            int b = ts.to_total_seconds();
+            return new TimeSpan(abs_i(a - b));
+        }
+        Rosella.Error.invalid(__FUNCTION__, "Cannot subtract %s from TimeSpan", typeof(ts));
+    }
+
+    // Format the Date into a string
+    function format_string(string f)
+    {
+        if (f == null || f == "")
+            return string(self);
+        return self.get_string_converter().format(self, f);
+    }
+
+    // Get the string converter to use
+    function get_string_converter()
+    {
+        return Rosella.Date.default_timespan_formatter();
+    }
+
+    function to_string()
+    {
+        return sprintf("%d days, %02d:%02d:%02d", [self.days(), self.hours(), self.minutes(), self.seconds()]);
+    }
+
+    function get_string[vtable]() { return self.to_string(); }
+
+    function clone[vtable]() { return self.copy(); }
+}
