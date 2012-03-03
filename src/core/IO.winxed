@@ -30,6 +30,7 @@ namespace Rosella.IO
         return save_handles;
     }
 
+    // Execute a callback, capturing all output to the standard output handles
     function capture_output(int together, var func,
             var err_func [optional], int has_err [opt_flag])
     {
@@ -59,6 +60,8 @@ namespace Rosella.IO
             return stdout, stderr;
     }
 
+    // Execute a commandline command, returning the output text. If the command
+    // fails, optionally execute an error handling callback.
     function execute_pipe(string cmd,
             var on_err [optional], int has_err [opt_flag])
     {
@@ -70,6 +73,7 @@ namespace Rosella.IO
         return output;
     }
 
+    // Open a pipe to execute a child program. Return the pipe
     function open_pipe(string cmd)
     {
         var pipe = new "FileHandle";
@@ -88,6 +92,8 @@ namespace Rosella.IO
         return exit_status;
     }
 
+    // Spawn and execute a child program, as an array of strings. Return the
+    // return value.
     function spawn(var cmd)
     {
         int retval;
@@ -95,6 +101,8 @@ namespace Rosella.IO
         return (retval >> 8) & 0xFF;
     }
 
+    // Spawn and execute a child program as a single string with all arguments.
+    // Return the return value.
     function spawn(string cmd)
     {
         int retval;

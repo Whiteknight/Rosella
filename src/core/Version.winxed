@@ -1,9 +1,8 @@
 namespace Rosella.Version
 {
-    const string VERSION_HASH_NAME = "Rosella.version_hash";
-
     // Private routine to provide a persistant global variable to store
     // version numbers in
+    const string VERSION_HASH_NAME = "Rosella.Version.version_hash";
     function get_version_hash()
     {
         var temp = Rosella.Globals.get_global(VERSION_HASH_NAME);
@@ -25,7 +24,9 @@ namespace Rosella.Version
     }
 }
 
-/* Version object. Stores information about a library version */
+/* Version object.
+    Stores information about a library version
+*/
 class Rosella.Version
 {
     var name;
@@ -39,7 +40,7 @@ class Rosella.Version
         self.state = s;
     }
 
-    function library_name() { return self.name; }
+    function library_name()    { return self.name; }
     function library_version() { return self.version_number; }
-    function library_state() { return self.state; }
+    function library_state()   { return self.state; }
 }
