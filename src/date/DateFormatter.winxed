@@ -16,12 +16,12 @@ class Rosella.Date.DateFormatter : Rosella.StringFormatter
         if (contains(f, "MMM"))  f = f.replace("MMM", substr(obj.month_name(), 0, 3));
         if (contains(f, "MM"))   f = f.replace("MM", format("%02d", obj.month()));
         if (contains(f, "dd"))   f = f.replace("dd", format("%02d", obj.day()));
-        if (contains(f, "HHHH")) {
+        if (contains(f, "AA")) {
             int hours = obj.hours();
             if (hours > 12)
-                f = f.replace("HHHH", "PM");
+                f = f.replace("AA", "PM");
             else
-                f = f.replace("HHHH", "AM");
+                f = f.replace("AA", "AM");
         }
         if (contains(f, "HHH")) {
             int hours = obj.hours();
