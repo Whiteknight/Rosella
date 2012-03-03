@@ -284,6 +284,32 @@ class Test_Rosella_Date
         result = obj.cmp(arg_0);
         self.assert.equal(result, 1);
     }
+
+    function add()
+    {
+        self.status.verify("Test Rosella.Date.add()");
+        var obj = create_new(2012, 03, 04, 10, 13, 10);
+        var arg_0 = new Rosella.Date.TimeSpan(1, 2, 3, 4);
+        var result = obj.add(arg_0);
+        self.assert.instance_of(result, class Rosella.Date);
+        self.assert.equal(result.seconds(), 14);
+        self.assert.equal(result.minutes(), 16);
+        self.assert.equal(result.hours(), 12);
+        self.assert.equal(result.day(), 5);
+    }
+
+    function subtract()
+    {
+        self.status.verify("Test Rosella.Date.subtract()");
+        var arg_0 = create_new(2012, 03, 04, 10, 13, 10);
+        var obj = arg_0.add_seconds(400);
+        var result = obj.subtract(arg_0);
+        self.assert.instance_of(result, class Rosella.Date.TimeSpan);
+        self.assert.equal(result.seconds(), 40);
+        self.assert.equal(result.minutes(), 6);
+        self.assert.equal(result.hours(), 0);
+        self.assert.equal(result.days(), 0);
+    }
 }
 
 function main[main]()
