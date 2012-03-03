@@ -78,9 +78,11 @@ namespace Rosella.IO
         return pipe;
     }
 
+    // Close the pipe. Don't worry about flushing the buffer or checking
+    // if we have unread data. The user should be aware of that before
+    // calling this.
     function close_pipe(var pipe)
     {
-        // TODO: See if we have any more data and empty the buffer
         pipe.close();
         int exit_status = pipe.exit_status();
         return exit_status;
