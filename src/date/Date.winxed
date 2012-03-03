@@ -182,8 +182,6 @@ namespace Rosella.Date
     Date objects are immutable. Once created, you cannot alter the date/time
     it represents.
 */
-// TODO: Need vtables for operating overloading (subtract other Date objects, etc)
-// TODO: Probably need a class for timespans (start/stop date pairs)
 // TODO: Handle negative (BC) years
 class Rosella.Date
 {

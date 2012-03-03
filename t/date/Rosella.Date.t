@@ -64,6 +64,9 @@ class Test_Rosella_Date
         self.status.verify("Test Rosella.Date.all_months()");
         using Rosella.Date.all_months;
         var result = all_months();
+        self.assert.equal(elements(result), 12);
+        self.assert.equal(result[0], "January");
+        self.assert.equal(result[11], "December");
     }
 
     function all_months_short()
@@ -71,6 +74,9 @@ class Test_Rosella_Date
         self.status.verify("Test Rosella.Date.all_months_short()");
         using Rosella.Date.all_months_short;
         var result = all_months_short();
+        self.assert.equal(elements(result), 12);
+        self.assert.equal(result[0], "Jan");
+        self.assert.equal(result[11], "Dec");
     }
 
     function all_week_days()
@@ -78,6 +84,9 @@ class Test_Rosella_Date
         self.status.verify("Test Rosella.Date.all_week_days()");
         using Rosella.Date.all_week_days;
         var result = all_week_days();
+        self.assert.equal(elements(result), 7);
+        self.assert.equal(result[0], "Sunday");
+        self.assert.equal(result[6], "Saturday");
     }
 
     function month_day_counts()
@@ -87,6 +96,13 @@ class Test_Rosella_Date
 
         int arg_0 = 2012;
         var result = month_day_counts(arg_0);
+        self.assert.equal(result[0], 31);
+        self.assert.equal(result[1], 29);
+
+        arg_0 = 2011;
+        result = month_day_counts(arg_0);
+        self.assert.equal(result[0], 31);
+        self.assert.equal(result[1], 28);
     }
 
     function is_leap_year()
@@ -101,6 +117,14 @@ class Test_Rosella_Date
         arg_0 = 2011;
         result = is_leap_year(arg_0);
         self.assert.is_false(result);
+
+        arg_0 = 2000;
+        result = is_leap_year(arg_0);
+        self.assert.is_true(result);
+
+        arg_0 = 2100;
+        result = is_leap_year(arg_0);
+        self.assert.is_false(result);
     }
 
     function default_date_formatter()
@@ -109,6 +133,14 @@ class Test_Rosella_Date
         using Rosella.Date.default_date_formatter;
         var result = default_date_formatter();
         self.assert.instance_of(result, class Rosella.Date.DateFormatter);
+    }
+
+    function default_timespan_formatter()
+    {
+        self.status.verify("Test Rosella.Date.default_timespan_formatter()");
+        using Rosella.Date.default_timespan_formatter;
+        var result = default_timespan_formatter();
+        self.assert.instance_of(result, class Rosella.Date.TimeSpanFormatter);
     }
 
     function default_day_calculator()
