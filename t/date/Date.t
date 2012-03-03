@@ -1,11 +1,24 @@
 // Automatically generated test for Class Rosella.Date
 function create_new(var p_args [slurpy], var n_args [slurpy,named])
 {
+    if (elements(p_args) == 0)
+        return Rosella.Date.now();
     return new Rosella.Date(p_args:[flat], n_args:[flat,named]);
 }
 
 class Test_Rosella_Date
 {
+    function copy()
+    {
+        self.status.verify("Test Rosella.Date.copy()");
+        var obj = create_new();
+
+        var result = obj.clone();
+        self.assert.instance_of(result, class Rosella.Date);
+        self.assert.not_same(obj, result);
+        self.assert.equal(obj, result);
+    }
+
     function seconds()
     {
         self.status.verify("Test Rosella.Date.seconds()");
@@ -52,130 +65,143 @@ class Test_Rosella_Date
     function add_minutes()
     {
         self.status.verify("Test Rosella.Date.add_minutes()");
-        self.status.unimplemented("TODO");
-        var obj = create_new();
+        var obj = create_new(2012, 03, 04, 10, 13, 10);
 
-        var arg_0 = null;
+        int arg_0 = 5;
         var result = obj.add_minutes(arg_0);
+        self.assert.instance_of(result, class Rosella.Date);
+        self.assert.not_same(result, obj);
+        self.assert.equal(result.minutes(), 18);
     }
 
     function hours()
     {
         self.status.verify("Test Rosella.Date.hours()");
-        self.status.unimplemented("TODO");
-        var obj = create_new();
+        var obj = create_new(2012, 03, 04, 10, 13, 10);
 
-        var result = obj.hours();
+        int result = obj.hours();
+        self.assert.equal(result, 10);
     }
 
     function add_hours()
     {
         self.status.verify("Test Rosella.Date.add_hours()");
-        self.status.unimplemented("TODO");
-        var obj = create_new();
+        var obj = create_new(2012, 03, 04, 10, 13, 10);
 
-        var arg_0 = null;
+        var arg_0 = 5;
         var result = obj.add_hours(arg_0);
+        self.assert.instance_of(result, class Rosella.Date);
+        self.assert.not_same(result, obj);
+        self.assert.equal(result.hours(), 15);
     }
 
     function day()
     {
         self.status.verify("Test Rosella.Date.day()");
-        self.status.unimplemented("TODO");
-        var obj = create_new();
+        var obj = create_new(2012, 03, 04, 10, 13, 10);
 
-        var result = obj.day();
+        int result = obj.day();
+        self.assert.equal(result, 4);
     }
 
     function add_days()
     {
         self.status.verify("Test Rosella.Date.add_days()");
-        self.status.unimplemented("TODO");
-        var obj = create_new();
+        var obj = create_new(2012, 03, 04, 10, 13, 10);
 
-        var arg_0 = null;
+        var arg_0 = 5;
         var result = obj.add_days(arg_0);
+        self.assert.instance_of(result, class Rosella.Date);
+        self.assert.not_same(result, obj);
+        self.assert.equal(result.day(), 9);
     }
 
     function week_day()
     {
         self.status.verify("Test Rosella.Date.week_day()");
-        self.status.unimplemented("TODO");
-        var obj = create_new();
+        var obj = create_new(2012, 03, 04, 10, 13, 10);
 
-        var result = obj.week_day();
+        int result = obj.week_day();
+        self.assert.equal(result, 0);
     }
 
     function week_day_name()
     {
         self.status.verify("Test Rosella.Date.week_day_name()");
-        self.status.unimplemented("TODO");
-        var obj = create_new();
+        var obj = create_new(2012, 03, 04, 10, 13, 10);
 
         var result = obj.week_day_name();
+        self.assert.equal(result, "Sunday");
     }
 
     function month()
     {
         self.status.verify("Test Rosella.Date.month()");
-        self.status.unimplemented("TODO");
-        var obj = create_new();
+        var obj = create_new(2012, 03, 04, 10, 13, 10);
 
-        var result = obj.month();
+        int result = obj.month();
+        self.assert.equal(result, 3);
     }
 
     function add_months()
     {
         self.status.verify("Test Rosella.Date.add_months()");
-        self.status.unimplemented("TODO");
-        var obj = create_new();
+        var obj = create_new(2012, 03, 04, 10, 13, 10);
 
-        var arg_0 = null;
+        var arg_0 = 5;
         var result = obj.add_months(arg_0);
+        self.assert.instance_of(result, class Rosella.Date);
+        self.assert.not_same(result, obj);
+        self.assert.equal(result.month(), 8);
     }
 
     function month_name()
     {
         self.status.verify("Test Rosella.Date.month_name()");
-        self.status.unimplemented("TODO");
-        var obj = create_new();
+        var obj = create_new(2012, 03, 04, 10, 13, 10);
 
-        var result = obj.month_name();
+        string result = obj.month_name();
+        self.assert.equal(result, "March");
     }
 
     function year()
     {
         self.status.verify("Test Rosella.Date.year()");
-        self.status.unimplemented("TODO");
-        var obj = create_new();
+        var obj = create_new(2012, 03, 04, 10, 13, 10);
 
-        var result = obj.year();
+        int result = obj.year();
+        self.assert.equal(result, 2012);
     }
 
     function add_years()
     {
         self.status.verify("Test Rosella.Date.add_years()");
-        self.status.unimplemented("TODO");
-        var obj = create_new();
+        var obj = create_new(2012, 03, 04, 10, 13, 10);
 
-        var arg_0 = null;
+        var arg_0 = 5;
         var result = obj.add_years(arg_0);
+        self.assert.instance_of(result, class Rosella.Date);
+        self.assert.not_same(result, obj);
+        self.assert.equal(result.year(), 2017);
     }
 
     function raw_time()
     {
         self.status.verify("Test Rosella.Date.raw_time()");
-        self.status.unimplemented("TODO");
-        var obj = create_new();
+        var obj = create_new(2012, 03, 04, 10, 13, 10);
 
         var result = obj.raw_time();
+        self.assert.equal(result, -1);
+
+        obj = create_new();
+        result = obj.raw_time();
+        self.assert.instance_of(result, 'Integer');
     }
 
     function date()
     {
         self.status.verify("Test Rosella.Date.date()");
-        self.status.unimplemented("TODO");
-        var obj = create_new();
+        var obj = create_new(2012, 03, 04, 10, 13, 10);
 
         var result = obj.date();
     }
@@ -183,8 +209,7 @@ class Test_Rosella_Date
     function time()
     {
         self.status.verify("Test Rosella.Date.time()");
-        self.status.unimplemented("TODO");
-        var obj = create_new();
+        var obj = create_new(2012, 03, 04, 10, 13, 10);
 
         var result = obj.time();
     }
@@ -192,58 +217,72 @@ class Test_Rosella_Date
     function format_string()
     {
         self.status.verify("Test Rosella.Date.format_string()");
-        self.status.unimplemented("TODO");
-        var obj = create_new();
+        var obj = create_new(2012, 03, 04, 10, 13, 10);
 
-        var arg_0 = null;
-        var result = obj.format_string(arg_0);
+        var arg_0 = "yyyy MM dd hh mm ss";
+        string result = obj.format_string(arg_0);
+        self.assert.equal(result, "2012 03 04 10 13 10");
     }
 
     function get_string_converter()
     {
         self.status.verify("Test Rosella.Date.get_string_converter()");
-        self.status.unimplemented("TODO");
         var obj = create_new();
 
         var result = obj.get_string_converter();
+        self.assert.instance_of(result, class Rosella.Date.DateFormatter);
     }
 
     function clone()
     {
         self.status.verify("Test Rosella.Date.clone()");
-        self.status.unimplemented("TODO");
         var obj = create_new();
 
         var result = obj.clone();
+        self.assert.instance_of(result, class Rosella.Date);
+        self.assert.not_same(obj, result);
+        self.assert.equal(obj, result);
     }
 
     function get_string()
     {
         self.status.verify("Test Rosella.Date.get_string()");
-        self.status.unimplemented("TODO");
         var obj = create_new();
 
-        var result = obj.get_string();
+        string result = obj.get_string();
+        self.assert.equal(length(result), 19);
     }
 
-    function is_equal()
+    function equals()
     {
-        self.status.verify("Test Rosella.Date.is_equal()");
-        self.status.unimplemented("TODO");
+        self.status.verify("Test Rosella.Date.equals()");
         var obj = create_new();
 
-        var arg_0 = null;
-        var result = obj.is_equal(arg_0);
+        var arg_0 = obj.add_seconds(5);
+        int result = obj.equals(arg_0);
+        self.assert.is_false(result);
+
+        arg_0 = obj;
+        result = obj.equals(arg_0);
+        self.assert.is_true(result);
     }
 
-    function cmp()
+    function compare_to()
     {
-        self.status.verify("Test Rosella.Date.cmp()");
-        self.status.unimplemented("TODO");
+        self.status.verify("Test Rosella.Date.compare_to()");
         var obj = create_new();
 
-        var arg_0 = null;
-        var result = obj.cmp(arg_0);
+        var arg_0 = obj.add_seconds(50);
+        int result = obj.cmp(arg_0);
+        self.assert.equal(result, -1);
+
+        arg_0 = obj;
+        result = obj.cmp(arg_0);
+        self.assert.equal(result, 0);
+
+        arg_0 = obj.add_seconds(-50);
+        result = obj.cmp(arg_0);
+        self.assert.equal(result, 1);
     }
 }
 
