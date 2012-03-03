@@ -1,6 +1,13 @@
 /* Common error routines */
 namespace Rosella.Error
 {
+    // Throw an error.
+    function error(string msg, var args [slurpy])
+    {
+        string real_msg = sprintf(msg, args);
+        die(real_msg);
+    }
+
     // Error that we are using an abstract parent method or class when we
     // are expected to be using a subclass
     function must_subclass(string caller)
@@ -15,7 +22,9 @@ namespace Rosella.Error
         throw_error("(%s) : Not implemented", func);
     }
 
-    // Error when we are attempting an invalid operation
+    // Error when we are attempting an invalid operation. This is used to throw
+    // errors from inside Rosella only. Use "error" for client programs instead
+    // if possible.
     function invalid(string caller, string msg, var args [slurpy])
     {
         msg = sprintf(msg, args);
