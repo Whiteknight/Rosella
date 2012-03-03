@@ -90,7 +90,7 @@ class Rosella.String.FormatPrinter
         if (exists cache[key])
             return cache[key];
         var obj = args[idx];
-        var converter = Rosella.StringFormatter.get_converter(obj);
+        var converter = Rosella.StringFormatter.get_formatter(obj);
         if (converter == null)
             converter = self.default_formatter;
         string value = converter.format(obj, fmt);

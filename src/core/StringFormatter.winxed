@@ -1,7 +1,14 @@
+/* Rosella String Formatting
+    The routines in this namespace are used with string formatters.
+*/
 namespace Rosella.StringFormatter
 {
+    /* Type-Specific Formatters
+    */
+
     const string TYPE_FORMATTERS = "Rosella.StringFormatter.type_formatters";
 
+    // Get a hash of type-specific formatters
     function type_formatters()
     {
         var temp = Rosella.Globals.get_global(TYPE_FORMATTERS);
@@ -12,15 +19,21 @@ namespace Rosella.StringFormatter
         return temp;
     }
 
+    // Register a new formatter object for a specific type
     function register_type_formatter(var type, var fmt)
     {
+        Rosella.StringFormatter.__verify_formatter(fmt);
         var f = Rosella.StringFormatter.type_formatters();
         var type_c = Rosella.get_type_class(type);
         f[type_c] = fmt;
     }
 
+    /* Role-Specific Formatters
+    */
+
     const string ROLE_FORMATTERS = "Rosella.StringFormatter.role_formatters";
 
+    // Get a hash of role-specific formatters
     function role_formatters()
     {
         var temp = Rosella.Globals.get_global(ROLE_FORMATTERS);
@@ -31,18 +44,23 @@ namespace Rosella.StringFormatter
         return temp;
     }
 
+    // Register a new formatter object for a named role
     function register_role_formatter(string role, var fmt)
     {
+        Rosella.StringFormatter.__verify_formatter(fmt);
         var f = Rosella.StringFormatter.role_formatters();
         f[role] = fmt;
     }
 
-    // Get a suitable converter for the given object
+    /* Get Formatter
+    */
+
+    // Get a suitable StringFormatter for the given object
     // Check from most specific first to least specific last
-    function get_converter(var obj)
+    function get_formatter(var obj)
     {
-        if (can(obj, "get_string_converter"))
-            return obj.get_string_converter();
+        if (can(obj, "get_string_formatter"))
+            return obj.get_string_formatter();
         var obj_c = typeof(obj);
 
         var type_converters = Rosella.StringFormatter.type_formatters();
@@ -56,13 +74,26 @@ namespace Rosella.StringFormatter
         }
         return null;
     }
+
+    /* Private Helper Routines
+    */
+
+    // Verify that the given object is an acceptable StringFormatter or
+    // look-alike
+    function __verify_formatter(var f)
+    {
+        if ((f instanceof Rosella.StringFormatter) || can(f, "format"))
+            return;
+        Rosella.Error.invalid(__FUNCTION__, "Cannot register string formatter of type %s", typeof(f));
+    }
 }
 
+/* Default StringFormatter
+    A default StringFormatter which uses sprintf
+*/
 class Rosella.StringFormatter
 {
-    function StringFormatter()
-    {
-    }
+    function StringFormatter() { }
 
     function format(var obj, string fmt)
     {

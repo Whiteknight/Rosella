@@ -85,7 +85,7 @@ namespace Rosella {
         extern function register_type_formatter;
         extern function role_formatters;
         extern function register_role_formatter;
-        extern function get_converter;
+        extern function get_formatter;
     }
     class StringFormatter;
 }
