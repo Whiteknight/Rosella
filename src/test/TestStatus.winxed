@@ -60,7 +60,7 @@ class Rosella.Test.TestStatus
         return self.suite;
     }
 
-    // Mark the currently-executing test as TODOd
+    // Mark the currently-executing test as to-do.
     function todo(string msg)
     {
         self.test_todo = msg;
