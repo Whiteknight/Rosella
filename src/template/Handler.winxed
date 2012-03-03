@@ -100,3 +100,14 @@ class Rosella.Template.Handler.Children : Rosella.Template.Handler
             child.to_winxed(engine, builder);
     }
 }
+
+class Rosella.Template.Handler.Empty : Rosella.Template.Handler
+{
+    function Empty(var tokens) { }
+
+    function can_have_children() { return false; }
+
+    function render(var engine, var ctx, var sb) { }
+
+    function to_winxed(var engine, var builder) { }
+}

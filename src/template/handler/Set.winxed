@@ -31,9 +31,9 @@ class Rosella.Template.Handler.Set : Rosella.Template.Handler.Children
     // 3-argument set cannot
     function can_have_children()
     {
-        if (self.children == null)
-            return 0;
-        return 1;
+        if (self.sourcename == null)
+            return true;
+        return false;
     }
 
     // Render. This node type doesn't have any output. Rendering it

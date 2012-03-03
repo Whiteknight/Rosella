@@ -33,7 +33,7 @@
                         "repeat":  class Rosella.Template.Handler.Repeat,
                         "if":      class Rosella.Template.Handler.If,
                         "unless":  class Rosella.Template.Handler.Unless,
-                        "else":    class Rosella.Template.Handler,
+                        "else":    class Rosella.Template.Handler.Empty,
                         "include": class Rosella.Template.Handler.Include,
                         "set":     class Rosella.Template.Handler.Set
                     }
@@ -146,7 +146,7 @@
         {
             var wx = Rosella.get_winxed_compiler();
             string wx_code = self.compile_to_winxed(tmpl);
-            return wx.compile(wx_code);
+            return wx.compile(wx_code)[0];
         }
 
         function compile_from_file(string filename, var builder [optional], int has_builder [opt_flag], int recurse [named,optional], int has_recurse [opt_flag])

@@ -42,12 +42,8 @@ class Rosella.Template.Handler.If : Rosella.Template.Handler
             if (int(self.mode) == ELSE_MODE)
                 Rosella.Error.invalid(__FUNCTION__, "Can only have one ELSE node in an IF/UNLESS block");
             self.mode = ELSE_MODE;
-        } else {
-            if (int(self.mode) == THEN_MODE)
-                push(self.then_children, node);
-            else
-                push(self.else_children, node);
-        }
+        } else
+            self.__add_child(node);
     }
 
     // Can have children
@@ -91,6 +87,14 @@ class Rosella.Template.Handler.If : Rosella.Template.Handler
 
     /* Internal Helper Methods
     */
+
+    function __add_child(var node)
+    {
+        if (int(self.mode) == THEN_MODE)
+            push(self.then_children, node);
+        else
+            push(self.else_children, node);
+    }
 
     // Determine if the condition is satisfied
     function __satisfied(var ctx)
@@ -150,11 +154,16 @@ class Rosella.Template.Handler.If : Rosella.Template.Handler
 */
 class Rosella.Template.Handler.Unless : Rosella.Template.Handler.If
 {
-    function Unless(var tokens)
+    const int THEN_MODE = 0;
+    const int ELSE_MODE = 1;
+
+    function Unless(var tokens) { self.If(tokens); }
+
+    function __add_child(var node)
     {
-        self.If(tokens);
-        var temp = self.then_children;
-        self.then_children = self.else_children;
-        self.else_children = temp;
+        if (int(self.mode) == THEN_MODE)
+            push(self.else_children, node);
+        else
+            push(self.then_children, node);
     }
 }

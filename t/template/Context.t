@@ -76,8 +76,6 @@ function main[main]()
     load_bytecode("rosella/test.pbc");
     load_bytecode("rosella/template.pbc");
     using Rosella.Test.test;
-    say(class Test_Rosella_Template_Context);
-    var(Rosella.Parrot.try_report)(function() {
-        test(class Test_Rosella_Template_Context);
-    });
+
+    test(class Test_Rosella_Template_Context);
 }
