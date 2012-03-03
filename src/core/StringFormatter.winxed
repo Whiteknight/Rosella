@@ -82,7 +82,7 @@ namespace Rosella.StringFormatter
     // look-alike
     function __verify_formatter(var f)
     {
-        if ((f instanceof Rosella.StringFormatter) || can(f, "format"))
+        if ((f instanceof Rosella.StringFormatter) || (can(f, "format") && can(f, "format_default")))
             return;
         Rosella.Error.invalid(__FUNCTION__, "Cannot register string formatter of type %s", typeof(f));
     }
@@ -95,6 +95,7 @@ class Rosella.StringFormatter
 {
     function StringFormatter() { }
 
+    // Create a string from an object and a format string
     function format(var obj, string fmt)
     {
         if (fmt == null || fmt == "")
@@ -102,6 +103,12 @@ class Rosella.StringFormatter
         fmt = "%" + fmt;
         string r = sprintf(fmt, [obj]);
         return r;
+    }
+
+    // Create a string from the object using a default formatting rule
+    function format_default(var obj)
+    {
+        return string(obj);
     }
 }
 

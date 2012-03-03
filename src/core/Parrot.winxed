@@ -12,11 +12,13 @@ namespace Rosella.Parrot
             return config;
     }
 
+    // Return true if this is a Linux machine
     function is_linux()
     {
         return Rosella.Parrot.get_config_hash()["osname"] == "linux";
     }
 
+    // Return true if this is a Windows machine
     function is_windows()
     {
         return Rosella.Parrot.get_config_hash()["osname"] == "windows";
@@ -55,6 +57,7 @@ namespace Rosella.Parrot
         }
     }
 
+    // Format a single frame from a backtrace for printing
     function format_frame(var frame)
     {
         var sub = frame["sub"];
@@ -70,6 +73,7 @@ namespace Rosella.Parrot
 
     // private routine. Format backtrace information into an array of
     // human-readable strings
+    // TODO: Use a StringFormatter
     function format_backtrace(var bt)
     {
         var bts = [];

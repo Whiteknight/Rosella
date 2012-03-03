@@ -219,6 +219,7 @@ namespace Rosella
         }
     }
 
+    // Get a PMC-keyed hash
     function get_pmc_keyed_hash()
     {
         var h = {};

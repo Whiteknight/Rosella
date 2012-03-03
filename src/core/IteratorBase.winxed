@@ -6,26 +6,31 @@ class Rosella.IteratorBase
 {
     var data;
 
+    // Determine if the iterator has more data.
     function get_bool[vtable]()
     {
         return self.data != null && elements(self.data) > 0;
     }
 
+    // Get a string from the iterator
     function shift_string[vtable]()
     {
         Rosella.Error.must_subclass(__CLASS__);
     }
 
+    // Get a PMC from the iterator
     function shift_pmc[vtable]()
     {
         Rosella.Error.must_subclass(__CLASS__);
     }
 
+    // Get an integer from the iterator
     function shift_integer[vtable]()
     {
         Rosella.Error.must_subclass(__CLASS__);
     }
 
+    // IteratorBase does "iterator"
     function does[vtable](string role)
     {
         if (role == "iterator")
@@ -33,5 +38,6 @@ class Rosella.IteratorBase
         return false;
     }
 
+    // do nothing. IteratorBase does not do reversing
     function set_integer_native[vtable](int dummy) { }
 }

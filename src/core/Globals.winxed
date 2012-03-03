@@ -10,6 +10,8 @@ namespace Rosella.Globals
 
     // Get the hash of globals. Private routine. Should not be called
     // externally
+    // TODO: Can we jam this instance into a NameSpace instead of using a
+    // coroutine?
     function __get_globals[anon]()
     {
         var globals = {
