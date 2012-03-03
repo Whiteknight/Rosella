@@ -28,6 +28,16 @@ namespace Rosella.StringFormatter
         f[type_c] = fmt;
     }
 
+    // Search for a formatter for the given type. Return null if none are found.
+    function get_type_formatter(var type)
+    {
+        var type_c = Rosella.get_type_class(type);
+        var f = Rosella.StringFormatter.type_formatters();
+        if (exists f[type_c])
+            return f[type_c];
+        return null;
+    }
+
     /* Role-Specific Formatters
     */
 

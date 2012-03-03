@@ -139,24 +139,25 @@ namespace Rosella.Date
     }
 
     // Get the default Date formatter object
-    const string DEFAULT_DATE_FORMATTER = "Rosella.Date.default_date_formatter";
     function default_date_formatter()
     {
-        var temp = Rosella.Globals.get_global(DEFAULT_DATE_FORMATTER);
+        var date_c = class Rosella.Date;
+        var temp = Rosella.StringFormatter.get_type_formatter(date_c);
         if (temp == null) {
             temp = new Rosella.Date.DateFormatter();
-            Rosella.Globals.register_global(DEFAULT_DATE_FORMATTER, temp);
+            Rosella.StringFormatter.register_type_formatter(date_c, temp);
         }
         return temp;
     }
 
-    const string DEFAULT_TIMESPAN_FORMATTER = "Rosella.Date.default_timespan_formatter";
+    // Get the default TimeSpan formatter object
     function default_timespan_formatter()
     {
-        var temp = Rosella.Globals.get_global(DEFAULT_TIMESPAN_FORMATTER);
+        var ts_c = class Rosella.Date.TimeSpan;
+        var temp = Rosella.StringFormatter.get_type_formatter(ts_c);
         if (temp == null) {
             temp = new Rosella.Date.TimeSpanFormatter();
-            Rosella.Globals.register_global(DEFAULT_TIMESPAN_FORMATTER, temp);
+            Rosella.StringFormatter.register_type_formatter(ts_c, temp);
         }
         return temp;
     }
@@ -533,18 +534,18 @@ class Rosella.Date
     {
         if (f == null || f == "")
             return string(self);
-        return self.get_string_converter().format(self, f);
+        return self.get_string_formatter().format(self, f);
     }
 
-    // Get the string converter to use
-    function get_string_converter()
+    // Get the string formatter to use
+    function get_string_formatter()
     {
         return Rosella.Date.default_date_formatter();
     }
 
     function to_string()
     {
-        return sprintf("%04d/%02d/%02d %02d:%02d:%02d", [self.year(), self.month(), self.day(), self.hours(), self.minutes(), self.seconds()]);
+        return self.get_string_formatter().format_default(self);
     }
 
     /* Operations and TimeSpans

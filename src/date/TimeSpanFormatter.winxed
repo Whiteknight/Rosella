@@ -16,4 +16,11 @@ class Rosella.Date.TimeSpanFormatter : Rosella.StringFormatter
         if (contains(f, "ss")) f = f.replace("ss", format("%02d", obj.seconds()));
         return f;
     }
+
+    function format_default(var obj)
+    {
+        return sprintf("%d days, %02d:%02d:%02d",
+            [obj.days(), obj.hours(), obj.minutes(), obj.seconds()]
+        );
+    }
 }

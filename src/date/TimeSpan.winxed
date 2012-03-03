@@ -102,11 +102,12 @@ class Rosella.Date.TimeSpan
     {
         if (f == null || f == "")
             return string(self);
-        return self.get_string_converter().format(self, f);
+        return self.get_string_formatter().format(self, f);
     }
 
-    // Get the string converter to use
-    function get_string_converter()
+    // Get the string formatter to use. Use the default formatter. Subclasses
+    // can use something else
+    function get_string_formatter()
     {
         return Rosella.Date.default_timespan_formatter();
     }
@@ -114,7 +115,7 @@ class Rosella.Date.TimeSpan
     // Get a string represetation
     function to_string()
     {
-        return sprintf("%d days, %02d:%02d:%02d", [self.days(), self.hours(), self.minutes(), self.seconds()]);
+        return self.get_string_formatter().format_default(self);
     }
 
     /* Vtables

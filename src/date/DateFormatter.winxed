@@ -40,4 +40,11 @@ class Rosella.Date.DateFormatter : Rosella.StringFormatter
         if (contains(f, "ss"))   f = f.replace("ss", format("%02d", obj.seconds()));
         return f;
     }
+
+    function format_default(var obj)
+    {
+        return sprintf("%04d/%02d/%02d %02d:%02d:%02d",
+            [obj.year(), obj.month(), obj.day(), obj.hours(), obj.minutes(), obj.seconds()]
+        );
+    }
 }
