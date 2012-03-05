@@ -224,12 +224,12 @@ class Test_Rosella_Date
         self.assert.equal(result, "2012 03 04 10 13 10");
     }
 
-    function get_string_converter()
+    function get_string_formatter()
     {
-        self.status.verify("Test Rosella.Date.get_string_converter()");
+        self.status.verify("Test Rosella.Date.get_string_formatter()");
         var obj = create_new();
 
-        var result = obj.get_string_converter();
+        var result = obj.get_string_formatter();
         self.assert.instance_of(result, class Rosella.Date.DateFormatter);
     }
 
