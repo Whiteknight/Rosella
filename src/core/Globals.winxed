@@ -7,18 +7,25 @@
 namespace Rosella.Globals
 {
     const string DEFAULT_FACTORY_GLOBAL = "Rosella.default_factory";
+    const string ROSELLA_GLOBALS = "Rosella.globals";
+
+    function __setup_globals[anon, load, init]()
+    {
+        var globals;
+        ${ get_global globals, ROSELLA_GLOBALS };
+        if (globals == null) {
+            globals = {};
+            ${ set_global ROSELLA_GLOBALS, globals };
+        }
+    }
 
     // Get the hash of globals. Private routine. Should not be called
     // externally
-    // TODO: Can we jam this instance into a NameSpace instead of using a
-    // coroutine?
-    function __get_globals[anon]()
+    inline __get_globals() return var
     {
-        var globals = {
-            DEFAULT_FACTORY_GLOBAL : new Rosella.ObjectFactory()
-        };
-        while (1)
-            yield globals;
+        var globals;
+        ${ get_global globals, ROSELLA_GLOBALS };
+        return globals;
     }
 
     // Get a global by name
@@ -40,6 +47,11 @@ namespace Rosella.Globals
     // Helper method to retrieve a global ObjectFactory instance
     function get_default_factory()
     {
-        return __get_globals()[DEFAULT_FACTORY_GLOBAL];
+        var globals = __get_globals();
+        if (exists globals[DEFAULT_FACTORY_GLOBAL])
+            return globals[DEFAULT_FACTORY_GLOBAL];
+        var factory = new Rosella.ObjectFactory();
+        globals[DEFAULT_FACTORY_GLOBAL] = factory;
+        return factory;
     }
 }
