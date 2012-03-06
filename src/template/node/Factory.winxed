@@ -30,7 +30,7 @@ class Rosella.Template.Node.Factory : Rosella.ObjectFactory
     {
         string key = token.metadata();
         if (!(exists self.types[key]))
-            Rosella.Error.invalid(__FUNCTION__, "type %s not registered", key);
+            Rosella.Error.error("type %s not registered", key);
         var type_class = self.types[key];
         if (exists self.handler_factories[key])
             return self.create_typed(type_class, token, self.handler_factories[key]);

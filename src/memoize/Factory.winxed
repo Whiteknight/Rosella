@@ -1,39 +1,36 @@
-namespace Rosella { namespace Memoize
+/* Memoize Factory
+    Create a new Factory for creating memoizing proxies. This uses
+    Proxy.Factory internally to create proxies over the Sub type.
+*/
+class Rosella.Memoize.Factory : Rosella.ObjectFactory
 {
-    /* Memoize Factory
-        Create a new Factory for creating memoizing proxies. This uses
-        Proxy.Factory internally to create proxies over the Sub type.
-    */
-    class Factory : Rosella.ObjectFactory
+    var proxy_factory;
+    var controller;
+
+    // Constructor
+    function Factory()
     {
-        var proxy_factory;
-        var controller;
-
-        // Constructor
-        function Factory()
-        {
-            self.proxy_factory = new Rosella.Proxy.Factory("Sub", [
-                new Rosella.Proxy.Builder.InvokeIntercept,
-                new Rosella.Proxy.Builder.ProxyData("memoize_cache")
-            ]);
-            self.controller = new Rosella.Memoize.Controller;
-        }
-
-        // Create a new proxy, taking an optional cache to use.
-        function create(var func,
-                var cache [named,optional], int has_cache [opt_flag])
-        {
-            if (!has_cache)
-                cache = new Rosella.Memoize.Cache.SimpleString();
-            var proxy = self.proxy_factory.create(self.controller, func);
-            Rosella.Proxy.set_proxy_private_attr(proxy, "memoize_cache", cache);
-            return proxy;
-        }
-
-        // Cannot create_typed. All memoizing proxies are Subs
-        function create_typed(var type, var p [slurpy], var n [slurpy,named])
-        {
-            Rosella.Error.invalid(__FUNCTION__, "Cannot create_typed with Memoize.Factory");
-        }
+        self.proxy_factory = new Rosella.Proxy.Factory("Sub", [
+            new Rosella.Proxy.Builder.InvokeIntercept,
+            new Rosella.Proxy.Builder.ProxyData("memoize_cache")
+        ]);
+        self.controller = new Rosella.Memoize.Controller;
     }
-}}
+
+    // Create a new proxy, taking an optional cache to use.
+    function create(var func,
+            var cache [named,optional], int has_cache [opt_flag])
+    {
+        if (!has_cache)
+            cache = new Rosella.Memoize.Cache.SimpleString();
+        var proxy = self.proxy_factory.create(self.controller, func);
+        Rosella.Proxy.set_proxy_private_attr(proxy, "memoize_cache", cache);
+        return proxy;
+    }
+
+    // Cannot create_typed. All memoizing proxies are Subs
+    function create_typed(var type, var p [slurpy], var n [slurpy,named])
+    {
+        Rosella.Error.error("Cannot create_typed with Memoize.Factory");
+    }
+}

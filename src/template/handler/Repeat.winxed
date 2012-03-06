@@ -16,7 +16,7 @@ class Rosella.Template.Handler.Repeat : Rosella.Template.Handler.Children
     function parse(var tokens)
     {
         if (elements(tokens) != 3 || tokens[1] != "to")
-            Rosella.Error.invalid(__FUNCTION__, "Syntax of repeat loop is 'repeat <start> to <stop>'");
+            Rosella.Error.error("Syntax of repeat loop is 'repeat <start> to <stop>'");
         self.start = tokens[0];
         self.end = tokens[2];
     }

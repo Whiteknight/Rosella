@@ -14,7 +14,7 @@ namespace Rosella.Template
         filepath = Rosella.FileSystem.join_path_parts(config["datadir"], filepath);
         if (Rosella.FileSystem.is_file(filepath))
             return filepath;
-        Rosella.Error.invalid(__FUNCTION__, "Cannot find standard template '%s'", shortname);
+        Rosella.Error.error("Cannot find standard template '%s'", shortname);
     }
 
     // Get the text of a standard template

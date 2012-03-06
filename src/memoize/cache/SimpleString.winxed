@@ -1,59 +1,56 @@
-namespace Rosella { namespace Memoize { namespace Cache
+/* Stingifying Memoization Cache
+    This is a simple cache implementation which stringifies arguments to
+    create a key, and looks up entries in a hash using that key. This is
+    the default cache type, but is not very good for most uses. A custom
+    cache type is probably preferred for many tasks.
+*/
+class Rosella.Memoize.Cache.SimpleString : Rosella.Memoize.Cache
 {
-    /* Stingifying Memoization Cache
-        This is a simple cache implementation which stringifies arguments to
-        create a key, and looks up entries in a hash using that key. This is
-        the default cache type, but is not very good for most uses. A custom
-        cache type is probably preferred for many tasks.
-    */
-    class SimpleString : Rosella.Memoize.Cache
+    var cache;
+
+    // Constructor
+    function SimpleString()
     {
-        var cache;
-
-        // Constructor
-        function SimpleString()
-        {
-            self.cache = {};
-        }
-
-        // Get an item from the cache. If we have an existing item, return
-        // that. Otherwise, create a new empty item
-        function get_item(var p, var n)
-        {
-            string key = self.key(p, n);
-            if (exists self.cache[key])
-                return self.cache[key];
-            var item = new Rosella.Memoize.Cache.Item(key);
-            self.cache[key] = item;
-            return item;
-        }
-
-        // Remove an entry from the cache
-        function remove_item(var p, var n)
-        {
-            string key = self.key(p, n);
-            if (exists self.cache[key])
-                delete self.cache[key];
-        }
-
-        // Clear the cache
-        function clear()
-        {
-            self.cache = {};
-        }
-
-        // Create a string key from the argument array and hash.
-        function key(var p, var n)
-        {
-            var sb = new "StringBuilder";
-            for (string ip in p)
-                push(sb, ip);
-            for (string key in n) {
-                push(sb, key);
-                string val = n[key];
-                push(sb, key);
-            }
-            return string(sb);
-        }
+        self.cache = {};
     }
-}}}
+
+    // Get an item from the cache. If we have an existing item, return
+    // that. Otherwise, create a new empty item
+    function get_item(var p, var n)
+    {
+        string key = self.key(p, n);
+        if (exists self.cache[key])
+            return self.cache[key];
+        var item = new Rosella.Memoize.Cache.Item(key);
+        self.cache[key] = item;
+        return item;
+    }
+
+    // Remove an entry from the cache
+    function remove_item(var p, var n)
+    {
+        string key = self.key(p, n);
+        if (exists self.cache[key])
+            delete self.cache[key];
+    }
+
+    // Clear the cache
+    function clear()
+    {
+        self.cache = {};
+    }
+
+    // Create a string key from the argument array and hash.
+    function key(var p, var n)
+    {
+        var sb = new "StringBuilder";
+        for (string ip in p)
+            push(sb, ip);
+        for (string key in n) {
+            push(sb, key);
+            string val = n[key];
+            push(sb, key);
+        }
+        return string(sb);
+    }
+}

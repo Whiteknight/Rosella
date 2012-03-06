@@ -1,40 +1,37 @@
-namespace Rosella { namespace Memoize { namespace Cache
+/* Memoize Cache Item
+    An entry item for the cache. The entry contains the value and metadata
+    about the entry.
+*/
+class Rosella.Memoize.Cache.Item
 {
-    /* Memoize Cache Item
-        An entry item for the cache. The entry contains the value and metadata
-        about the entry.
-    */
-    class Item
+    var value;
+    var valid;
+    var key;
+
+    // Constructor. Create a new item with an optional value
+    function Item(var key, var value [optional], int has_value [opt_flag])
     {
-        var value;
-        var valid;
-        var key;
-
-        // Constructor. Create a new item with an optional value
-        function Item(var key, var value [optional], int has_value [opt_flag])
-        {
-            self.key = key;
-            self.value = value;
-            self.valid = has_value;
-        }
-
-        // Determine if we have a value
-        function has_value()
-        {
-            return self.valid;
-        }
-
-        // Set a new value
-        function update_value(var value)
-        {
-            self.value = value;
-            self.valid = 1;
-        }
-
-        // Get the value
-        function get_value()
-        {
-            return self.value;
-        }
+        self.key = key;
+        self.value = value;
+        self.valid = has_value;
     }
-}}}
+
+    // Determine if we have a value
+    function has_value()
+    {
+        return self.valid;
+    }
+
+    // Set a new value
+    function update_value(var value)
+    {
+        self.value = value;
+        self.valid = 1;
+    }
+
+    // Get the value
+    function get_value()
+    {
+        return self.value;
+    }
+}

@@ -10,12 +10,9 @@ namespace Rosella.Random
     // Get a default PRNG for a uniform number distribution
     function default_uniform_random()
     {
-        var temp = Rosella.Globals.get_global(RANDOM_UNIFORM_GENERATOR);
-        if (temp == null) {
-            temp = new Rosella.Random.RandomNumber.MersenneTwister();
-            Rosella.Globals.register_global(RANDOM_UNIFORM_GENERATOR, temp);
-        }
-        return temp;
+        return Rosella.Globals.autoget_global(RANDOM_UNIFORM_GENERATOR,
+            function() { new Rosella.Random.RandomNumber.MersenneTwister(); }
+        );
     }
 
     // Get a default PRNG for a normal number distribution

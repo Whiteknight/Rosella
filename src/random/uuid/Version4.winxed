@@ -15,7 +15,7 @@ class Rosella.Random.UUID.Version4 : Rosella.Random.UUID
     function Version4(string uuid)
     {
         if (!Rosella.Random.UUID.is_uuid(uuid))
-            Rosella.Error.invalid(__FUNCTION__, "UUID must be in format xxxxxxxx-xxxx-xxxx-xxxx-xxxxxxxxxxxx");
+            Rosella.Error.error("UUID must be in format xxxxxxxx-xxxx-xxxx-xxxx-xxxxxxxxxxxx");
         self.value = uuid;
     }
 

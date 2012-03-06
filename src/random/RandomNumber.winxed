@@ -35,7 +35,7 @@ class Rosella.Random.RandomNumber
     function get_range(int low, int high)
     {
         if (low >= high)
-            Rosella.Error.invalid(__FUNCTION__, "Bad range: [%d, %d]", low, high);
+            Rosella.Error.error("Bad range: [%d, %d]", low, high);
 
         int i;
         int count = 0;
@@ -44,7 +44,7 @@ class Rosella.Random.RandomNumber
             i = f * (high - low) + low;
             count++;
             if (count >= MAX_TRIES)
-                Rosella.Error.invalid(__FUNCTION__, "Cannot get a number in the specified range in several tries");
+                Rosella.Error.error("Cannot get a number in the specified range in several tries");
         } while (i < low || i > high);
         return i;
     }

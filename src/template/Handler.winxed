@@ -18,7 +18,7 @@ class Rosella.Template.Handler
     // Add a child node
     function add_child(var node)
     {
-        Rosella.Error.invalid(__FUNCTION__, "Default Template.Handler does not allow child nodes");
+        Rosella.Error.error("Default Template.Handler does not allow child nodes");
     }
 
     // Render contents

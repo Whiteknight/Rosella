@@ -1,223 +1,223 @@
-    /* Template Engine
-        This is the main driver type for generating output from templates
-    */
-    class Rosella.Template.Engine
+/* Template Engine
+    This is the main driver type for generating output from templates
+*/
+class Rosella.Template.Engine
+{
+    const string DEFAULT_REGION_NAME = "!!!LiteralRegion!!!";
+    const int DEFAULT_RECURSE_LIMIT = 10;
+    var default_nodeclass;
+    var regions;
+    var recurse_level;
+
+    // constructor
+    function Engine()
     {
-        const string DEFAULT_REGION_NAME = "!!!LiteralRegion!!!";
-        const int DEFAULT_RECURSE_LIMIT = 10;
-        var default_nodeclass;
-        var regions;
-        var recurse_level;
+        self.default_nodeclass = class Rosella.Template.Node.Literal;
+        self.regions = self.setup_default_regions();
+        self.recurse_level = DEFAULT_RECURSE_LIMIT;
+    }
 
-        // constructor
-        function Engine()
-        {
-            self.default_nodeclass = class Rosella.Template.Node.Literal;
-            self.regions = self.setup_default_regions();
-            self.recurse_level = DEFAULT_RECURSE_LIMIT;
-        }
+    /* Helper Routines.
+        Subclass these to get different behavior
+    */
 
-        /* Helper Routines.
-            Subclass these to get different behavior
-        */
+    // Set up the default region definitions
+    function setup_default_regions()
+    {
+        return {
+            "Eval" : ["<%", "%>", class Rosella.Template.Node.Eval],
+            "Data" : ["<#", "#>", class Rosella.Template.Node.Data],
+            "Logic" : ["<$", "$>", class Rosella.Template.Node.Logic,
+                {
+                    "for":     class Rosella.Template.Handler.For,
+                    "repeat":  class Rosella.Template.Handler.Repeat,
+                    "if":      class Rosella.Template.Handler.If,
+                    "unless":  class Rosella.Template.Handler.Unless,
+                    "else":    class Rosella.Template.Handler.Empty,
+                    "include": class Rosella.Template.Handler.Include,
+                    "set":     class Rosella.Template.Handler.Set
+                }
+            ]
+        };
+    }
 
-        // Set up the default region definitions
-        function setup_default_regions()
-        {
-            return {
-                "Eval" : ["<%", "%>", class Rosella.Template.Node.Eval],
-                "Data" : ["<#", "#>", class Rosella.Template.Node.Data],
-                "Logic" : ["<$", "$>", class Rosella.Template.Node.Logic,
-                    {
-                        "for":     class Rosella.Template.Handler.For,
-                        "repeat":  class Rosella.Template.Handler.Repeat,
-                        "if":      class Rosella.Template.Handler.If,
-                        "unless":  class Rosella.Template.Handler.Unless,
-                        "else":    class Rosella.Template.Handler.Empty,
-                        "include": class Rosella.Template.Handler.Include,
-                        "set":     class Rosella.Template.Handler.Set
-                    }
-                ]
-            };
-        }
+    // Take the region definitions and setup a tokenizer and node
+    // factory
+    function setup_region_types(var tokenizer, var node_factory)
+    {
+        node_factory.register_type(DEFAULT_REGION_NAME, self.default_nodeclass);
 
-        // Take the region definitions and setup a tokenizer and node
-        // factory
-        function setup_region_types(var tokenizer, var node_factory)
-        {
-            node_factory.register_type(DEFAULT_REGION_NAME, self.default_nodeclass);
-
-            for (string region in self.regions) {
-                var region_data = self.regions[region];
-                tokenizer.add_region(region_data[0], region_data[1], region);
-                if (elements(region_data) == 4)
-                    node_factory.register_type(region, region_data[2], region_data[3]);
-                else
-                    node_factory.register_type(region, region_data[2]);
-            }
-        }
-
-        /* Setup / Configuration Routines
-            These set up the details of the engine
-        */
-
-        // Add a new region by name
-        function add_region(string name, string start, string end, var node_class)
-        {
-            self.regions[name] = [start, end, node_class];
-        }
-
-        // Remove a region type by name
-        function remove_region(string name)
-        {
-            if (exists self.regions[name])
-                delete self.regions[name];
-        }
-
-        // Set new delimiters for an existing region
-        function set_region_delimiters(string name, string start, string end)
-        {
-            if (!(exists self.regions[name]))
-                Rosella.Error.invalid(__FUNCTION__, "Region " + name + " not found");
-            var region = self.regions[name];
-            region[0] = start;
-            region[1] = end;
-        }
-
-        // Set a new node type for an existing region
-        function set_region_nodeclass(string name, var node_class)
-        {
-            if (!(exists self.regions[name]))
-                Rosella.Error.invalid(__FUNCTION__, "Region " + name + " not found");
-            var region = self.regions[name];
-            region[2] = node_class;
-        }
-
-        /* Text Generation Methods
-            These are the main driver methods of the Engine.
-        */
-
-        // Generate output from a template text string
-        function generate(string tmpl, var user_data)
-        {
-            var context = self.__get_context_object(user_data);
-            return self.__generate_internal(tmpl, context);
-        }
-
-        // Generate output from a filename containing a template
-        function generate_from_file(string tmpl_filename, var user_data)
-        {
-            var context = self.__get_context_object(user_data);
-            string tmpl = self.__get_template_from_file(tmpl_filename);
-            return self.__generate_internal(tmpl, context);
-        }
-
-        function compile_to_winxed(string tmpl, var builder [optional], int has_builder [opt_flag], int recurse [named,optional], int has_recurse [opt_flag])
-        {
-            if (int(self.recurse_level) == 0)
-                return;
-            if (!has_recurse)
-                recurse = 0;
-            self.recurse_level--;
-
-            var tokenizer = new Rosella.String.Tokenizer.DelimiterRegion(DEFAULT_REGION_NAME);
-            var node_factory = new Rosella.Template.Node.Factory();
-            self.setup_region_types(tokenizer, node_factory);
-            var nodes_array = self.__get_nodes_array(tokenizer, node_factory, tmpl);
-            var node = self.__create_node_tree(nodes_array);
-            if (!has_builder)
-                builder = new ['StringBuilder'];
-            node.*(recurse ? "to_winxed_recurse" : "to_winxed")(self, builder);
-            self.recurse_level++;
-            return string(builder);
-        }
-
-        function compile_to_winxed_from_file(string filename, var builder [optional], int has_builder [opt_flag], int recurse [named,optional], int has_recurse [opt_flag])
-        {
-            string tmpl = self.__get_template_from_file(filename);
-            if (!has_builder)
-                builder = new ['StringBuilder'];
-            if (!has_recurse)
-                recurse = 0;
-            return self.compile_to_winxed(tmpl, builder, recurse:[named("recurse")]);
-        }
-
-        function compile(string tmpl)
-        {
-            var wx = Rosella.get_winxed_compiler();
-            string wx_code = self.compile_to_winxed(tmpl);
-            return wx.compile(wx_code)[0];
-        }
-
-        function compile_from_file(string filename, var builder [optional], int has_builder [opt_flag], int recurse [named,optional], int has_recurse [opt_flag])
-        {
-            string tmpl = self.__get_template_from_file(filename);
-            return self.compile(tmpl);
-        }
-
-        /* Private Helper Methods
-        */
-
-        // Get a context object. If the data is already a context object, we
-        // are probably recursing, so return it directly. Otherwise create a
-        // new Template.Context.
-        function __get_context_object(var data)
-        {
-            var context_class = class Rosella.Template.Context;
-            if (isa(data, context_class))
-                return data;
-            return new Rosella.Template.Context(data);
-        }
-
-        // Tokenize the template and create a stream of nodes
-        function __get_nodes_array(var tokenizer, var node_factory, string tmpl)
-        {
-            var nodes_array = [];
-            tokenizer.add_data(tmpl);
-            for (var t in tokenizer) {
-                var node = node_factory.create(t);
-                push(nodes_array, node);
-            }
-            return nodes_array;
-        }
-
-        // Compose an array of nodes into a parse tree
-        function __create_node_tree(var nodes_array)
-        {
-            var first_node = new Rosella.Template.Node.Master();
-            var current_node = first_node;
-            var parent_nodes = [];
-            for (var node in nodes_array)
-                current_node = node.assemble(parent_nodes, current_node);
-            return first_node;
-        }
-
-        // Get the text of a template from a file given by file name
-        function __get_template_from_file(string filename)
-        {
-            var file = new Rosella.FileSystem.File(filename);
-            if (!file.exists())
-                Rosella.Error.invalid(__FUNCTION__, "Template file '%s' does not exist", filename);
-            return file.read_all_text();
-        }
-
-        // Generate the output given the template text and the Context object
-        // Performs automatic recursion depth checking.
-        function __generate_internal(string tmpl, var context)
-        {
-            if (int(self.recurse_level) == 0)
-                return;
-            self.recurse_level--;
-
-            var tokenizer = new Rosella.String.Tokenizer.DelimiterRegion(DEFAULT_REGION_NAME);
-            var node_factory = new Rosella.Template.Node.Factory();
-            self.setup_region_types(tokenizer, node_factory);
-            var nodes_array = self.__get_nodes_array(tokenizer, node_factory, tmpl);
-            var node = self.__create_node_tree(nodes_array);
-            var builder = new ['StringBuilder'];
-            node.render(self, context, builder);
-
-            self.recurse_level++;
-            return string(builder);
+        for (string region in self.regions) {
+            var region_data = self.regions[region];
+            tokenizer.add_region(region_data[0], region_data[1], region);
+            if (elements(region_data) == 4)
+                node_factory.register_type(region, region_data[2], region_data[3]);
+            else
+                node_factory.register_type(region, region_data[2]);
         }
     }
+
+    /* Setup / Configuration Routines
+        These set up the details of the engine
+    */
+
+    // Add a new region by name
+    function add_region(string name, string start, string end, var node_class)
+    {
+        self.regions[name] = [start, end, node_class];
+    }
+
+    // Remove a region type by name
+    function remove_region(string name)
+    {
+        if (exists self.regions[name])
+            delete self.regions[name];
+    }
+
+    // Set new delimiters for an existing region
+    function set_region_delimiters(string name, string start, string end)
+    {
+        if (!(exists self.regions[name]))
+            Rosella.Error.error("Region " + name + " not found");
+        var region = self.regions[name];
+        region[0] = start;
+        region[1] = end;
+    }
+
+    // Set a new node type for an existing region
+    function set_region_nodeclass(string name, var node_class)
+    {
+        if (!(exists self.regions[name]))
+            Rosella.Error.error("Region " + name + " not found");
+        var region = self.regions[name];
+        region[2] = node_class;
+    }
+
+    /* Text Generation Methods
+        These are the main driver methods of the Engine.
+    */
+
+    // Generate output from a template text string
+    function generate(string tmpl, var user_data)
+    {
+        var context = self.__get_context_object(user_data);
+        return self.__generate_internal(tmpl, context);
+    }
+
+    // Generate output from a filename containing a template
+    function generate_from_file(string tmpl_filename, var user_data)
+    {
+        var context = self.__get_context_object(user_data);
+        string tmpl = self.__get_template_from_file(tmpl_filename);
+        return self.__generate_internal(tmpl, context);
+    }
+
+    function compile_to_winxed(string tmpl, var builder [optional], int has_builder [opt_flag], int recurse [named,optional], int has_recurse [opt_flag])
+    {
+        if (int(self.recurse_level) == 0)
+            return;
+        if (!has_recurse)
+            recurse = 0;
+        self.recurse_level--;
+
+        var tokenizer = new Rosella.String.Tokenizer.DelimiterRegion(DEFAULT_REGION_NAME);
+        var node_factory = new Rosella.Template.Node.Factory();
+        self.setup_region_types(tokenizer, node_factory);
+        var nodes_array = self.__get_nodes_array(tokenizer, node_factory, tmpl);
+        var node = self.__create_node_tree(nodes_array);
+        if (!has_builder)
+            builder = new ['StringBuilder'];
+        node.*(recurse ? "to_winxed_recurse" : "to_winxed")(self, builder);
+        self.recurse_level++;
+        return string(builder);
+    }
+
+    function compile_to_winxed_from_file(string filename, var builder [optional], int has_builder [opt_flag], int recurse [named,optional], int has_recurse [opt_flag])
+    {
+        string tmpl = self.__get_template_from_file(filename);
+        if (!has_builder)
+            builder = new ['StringBuilder'];
+        if (!has_recurse)
+            recurse = 0;
+        return self.compile_to_winxed(tmpl, builder, recurse:[named("recurse")]);
+    }
+
+    function compile(string tmpl)
+    {
+        var wx = Rosella.get_winxed_compiler();
+        string wx_code = self.compile_to_winxed(tmpl);
+        return wx.compile(wx_code)[0];
+    }
+
+    function compile_from_file(string filename, var builder [optional], int has_builder [opt_flag], int recurse [named,optional], int has_recurse [opt_flag])
+    {
+        string tmpl = self.__get_template_from_file(filename);
+        return self.compile(tmpl);
+    }
+
+    /* Private Helper Methods
+    */
+
+    // Get a context object. If the data is already a context object, we
+    // are probably recursing, so return it directly. Otherwise create a
+    // new Template.Context.
+    function __get_context_object(var data)
+    {
+        var context_class = class Rosella.Template.Context;
+        if (isa(data, context_class))
+            return data;
+        return new Rosella.Template.Context(data);
+    }
+
+    // Tokenize the template and create a stream of nodes
+    function __get_nodes_array(var tokenizer, var node_factory, string tmpl)
+    {
+        var nodes_array = [];
+        tokenizer.add_data(tmpl);
+        for (var t in tokenizer) {
+            var node = node_factory.create(t);
+            push(nodes_array, node);
+        }
+        return nodes_array;
+    }
+
+    // Compose an array of nodes into a parse tree
+    function __create_node_tree(var nodes_array)
+    {
+        var first_node = new Rosella.Template.Node.Master();
+        var current_node = first_node;
+        var parent_nodes = [];
+        for (var node in nodes_array)
+            current_node = node.assemble(parent_nodes, current_node);
+        return first_node;
+    }
+
+    // Get the text of a template from a file given by file name
+    function __get_template_from_file(string filename)
+    {
+        var file = new Rosella.FileSystem.File(filename);
+        if (!file.exists())
+            Rosella.Error.error("Template file '%s' does not exist", filename);
+        return file.read_all_text();
+    }
+
+    // Generate the output given the template text and the Context object
+    // Performs automatic recursion depth checking.
+    function __generate_internal(string tmpl, var context)
+    {
+        if (int(self.recurse_level) == 0)
+            return;
+        self.recurse_level--;
+
+        var tokenizer = new Rosella.String.Tokenizer.DelimiterRegion(DEFAULT_REGION_NAME);
+        var node_factory = new Rosella.Template.Node.Factory();
+        self.setup_region_types(tokenizer, node_factory);
+        var nodes_array = self.__get_nodes_array(tokenizer, node_factory, tmpl);
+        var node = self.__create_node_tree(nodes_array);
+        var builder = new ['StringBuilder'];
+        node.render(self, context, builder);
+
+        self.recurse_level++;
+        return string(builder);
+    }
+}

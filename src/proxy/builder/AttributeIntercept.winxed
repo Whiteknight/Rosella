@@ -48,7 +48,7 @@ class Rosella.Proxy.Builder.AttributeIntercept : Rosella.Proxy.Builder
     function intercept_set_attr_str_proxy[nsentry](string name, value)
     {
         if (name == "proxy")
-            Rosella.Error.invalid(__FUNCTION__, "ProxyAttributeIntercept: Can't handle setting an attribute named 'proxy'");
+            Rosella.Error.error("ProxyAttributeIntercept: Can't handle setting an attribute named 'proxy'");
         using Rosella.Proxy.Builder.AttributeIntercept.intercept_set_attr_str;
         self.*intercept_set_attr_str(name, value);
     }

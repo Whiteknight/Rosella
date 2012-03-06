@@ -45,8 +45,7 @@ class Rosella.Random.RandomNumber.BoxMullerNormal : Rosella.Random.RandomNumber
     // Get the next random number
     function __get_next(float center, float stddev)
     {
-        if (self.spare != null)
-        {
+        if (self.spare != null) {
             float spare = float(self.spare);
             self.spare = null;
             return spare;

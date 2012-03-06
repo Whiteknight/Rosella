@@ -4,21 +4,21 @@ class Rosella.MockObject.Expectation.Set : Rosella.MockObject.Expectation
 
     function will_return(var value)
     {
-        Rosella.Error.invalid(__FUNCTION__, "set attribute does not return a value");
+        Rosella.Error.error("set attribute does not return a value");
     }
 
     function with_args(var pos [slurpy], var named [named,slurpy])
     {
         self.__verify_can_set_args();
         if (int(pos) != 1 || int(named) != 0)
-            Rosella.Error.invalid(__FUNCTION__, "set_attribute takes exactly 1 positional and 0 named args");
+            Rosella.Error.error("set_attribute takes exactly 1 positional and 0 named args");
         self.with = new Rosella.MockObject.Expectation.With.Args(pos, named);
         return self;
     }
 
     function with_no_args()
     {
-        Rosella.Error.invalid(__FUNCTION__, "set_attribute must have 1 argument");
+        Rosella.Error.error("set_attribute must have 1 argument");
     }
 
     // True if this expectation can match the specified set_attribute

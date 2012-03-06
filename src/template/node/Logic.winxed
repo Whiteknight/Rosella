@@ -74,9 +74,9 @@ class Rosella.Template.Node.Logic : Rosella.Template.Node
     function add_child(var node)
     {
         if (self.handler == null)
-            Rosella.Error.invalid(__FUNCTION__, "Cannot add child, no handler (%s)", self.logic_name);
+            Rosella.Error.error("Cannot add child, no handler (%s)", self.logic_name);
         if (!self.handler.can_have_children())
-            Rosella.Error.invalid(__FUNCTION__, "Cannot add child");
+            Rosella.Error.error("Cannot add child");
         self.handler.add_child(node);
     }
 
@@ -84,7 +84,7 @@ class Rosella.Template.Node.Logic : Rosella.Template.Node
     function render(var engine, var context, var builder)
     {
         if (self.handler == null)
-            Rosella.Error.invalid(__FUNCTION__, "Cannot render '%s', no handler", self.logic_name);
+            Rosella.Error.error("Cannot render '%s', no handler", self.logic_name);
         self.handler.render(engine, context, builder);
     }
 
@@ -92,7 +92,7 @@ class Rosella.Template.Node.Logic : Rosella.Template.Node
     function to_winxed(var engine, var builder)
     {
         if (self.handler == null)
-            Rosella.Error.invalid(__FUNCTION__, "Cannot convert '%s' to winxed, no handler", self.logic_name);
+            Rosella.Error.error("Cannot convert '%s' to winxed, no handler", self.logic_name);
         self.handler.to_winxed(engine, builder);
     }
 }

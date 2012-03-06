@@ -10,9 +10,12 @@ namespace Rosella.Random.UUID
     }
 
     // Get an empty (default) UUID
+    const string EMPTY_GUID = "Rosella.Random.UUID.empty";
     function empty()
     {
-        return new Rosella.Random.UUID.Version4("00000000-0000-0000-0000-000000000000");
+        return Rosella.Globals.autoget_global(EMPTY_GUID,
+            function() { return new Rosella.Random.UUID.Version4("00000000-0000-0000-0000-000000000000"); }
+        );
     }
 
     // Determine if the given string is a valid UUID

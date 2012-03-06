@@ -17,14 +17,14 @@ class Rosella.Template.Handler.Set : Rosella.Template.Handler.Children
 
         int numtks = elements(tokens);
         if (is_reserved_varname(varname))
-            Rosella.Error.invalid(__FUNCTION__, "Variable names starting and ending with double underscores are reserved");
+            Rosella.Error.error("Variable names starting and ending with double underscores are reserved");
 
         if (numtks == 1)
             self.sourcename = null;
         else if (numtks == 3 && tokens[1] == "as")
             self.sourcename = tokens[2];
         else
-            Rosella.Error.invalid(__FUNCTION__, "Syntax of set is 'set <var>' or 'set <var> as <value>'");
+            Rosella.Error.error("Syntax of set is 'set <var>' or 'set <var> as <value>'");
     }
 
     // There are two forms of set. 1-argument set can have children,

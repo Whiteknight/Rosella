@@ -26,7 +26,7 @@ class Rosella.Template.Handler.If : Rosella.Template.Handler
     {
         int num_tokens = elements(tokens);
         if (num_tokens != 1 && num_tokens != 3)
-            Rosella.Error.invalid(__FUNCTION__, "Syntax of IF/UNLESS node is 'if <var>' or 'if <var> <op> <var>'");
+            Rosella.Error.error("Syntax of IF/UNLESS node is 'if <var>' or 'if <var> <op> <var>'");
         self.name_a = tokens[0];
         if (num_tokens == 3) {
             self.op = tokens[1];
@@ -40,7 +40,7 @@ class Rosella.Template.Handler.If : Rosella.Template.Handler
     {
         if (can(node, "logic_name") && node.logic_name() == "else") {
             if (int(self.mode) == ELSE_MODE)
-                Rosella.Error.invalid(__FUNCTION__, "Can only have one ELSE node in an IF/UNLESS block");
+                Rosella.Error.error("Can only have one ELSE node in an IF/UNLESS block");
             self.mode = ELSE_MODE;
         } else
             self.__add_child(node);
@@ -119,7 +119,7 @@ class Rosella.Template.Handler.If : Rosella.Template.Handler
             case ">" : return val_a > val_b;
             case "<" : return val_a < val_b;
             default:
-                Rosella.Error.invalid(__FUNCTION__, "Unknown operator '%s'", op);
+                Rosella.Error.error("Unknown operator '%s'", op);
         }
     }
 

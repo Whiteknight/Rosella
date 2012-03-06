@@ -11,7 +11,7 @@ class Rosella.Template.Handler.Include : Rosella.Template.Handler
     function parse(var tokens)
     {
         if (elements(tokens) != 1)
-            Rosella.Error.invalid(__FUNCTION__, "Include requires exactly 1 argument");
+            Rosella.Error.error("Include requires exactly 1 argument");
         self.filename = tokens[0];
     }
 

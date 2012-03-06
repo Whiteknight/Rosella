@@ -93,7 +93,7 @@ class Rosella.MockObject.Expectation
     function __can_set_will()
     {
         if (self.will != null)
-            Rosella.Error.invalid(__FUNCTION__, "Cannot set Will behavior twice");
+            Rosella.Error.error("Cannot set Will behavior twice");
     }
 
     /* Arguments
@@ -138,7 +138,7 @@ class Rosella.MockObject.Expectation
     function __verify_can_set_args()
     {
         if (self.with != null)
-            Rosella.Error.invalid(__FUNCTION__, "You cannot specify arguments twice");
+            Rosella.Error.error("You cannot specify arguments twice");
     }
 
     /* Internal Methods

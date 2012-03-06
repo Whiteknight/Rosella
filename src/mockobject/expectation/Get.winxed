@@ -4,7 +4,7 @@ class Rosella.MockObject.Expectation.Get : Rosella.MockObject.Expectation
 
     function __verify_can_set_args()
     {
-        Rosella.Error.invalid(__FUNCTION__, "get attribute does not take any args");
+        Rosella.Error.error("get attribute does not take any args");
     }
 
     // True if this expectation can match the specified get_attribute
@@ -12,7 +12,7 @@ class Rosella.MockObject.Expectation.Get : Rosella.MockObject.Expectation
     function __can_match_internal(string type, string name, var pos, var named)
     {
         if (type != "get")
-            return 0;
-        return 1;
+            return false;
+        return true;
     }
 }

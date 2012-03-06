@@ -9,12 +9,9 @@ namespace Rosella.Dumper
 
     function default_dumper()
     {
-        var temp = Rosella.Globals.get_global(DEFAULT_DUMPER_GLOBAL);
-        if (temp == null) {
-            temp = new Rosella.Dumper();
-            Rosella.Globals.register_global(DEFAULT_DUMPER_GLOBAL, temp);
-        }
-        return temp;
+        return Rosella.Globals.autoget_global(DEFAULT_DUMPER_GLOBAL,
+            function() { new Rosella.Dumper(); }
+        );
     }
 
     function set_default_dumper(var dumper)

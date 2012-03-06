@@ -14,12 +14,9 @@ namespace Rosella.MockObject
     // instance can typically be used without causing too many problems.
     function default_mock_factory()
     {
-        var temp = Rosella.Globals.get_global(DEFAULT_MOCK_FACTORY_KEY);
-        if (temp == null) {
-            temp = new Rosella.MockObject.Factory();
-            Rosella.Globals.register_global(DEFAULT_MOCK_FACTORY_KEY, temp);
-        }
-        return temp;
+        return Rosella.Globals.autoget_global(DEFAULT_MOCK_FACTORY_KEY,
+            function() { new Rosella.MockObject.Factory(); }
+        );
     }
 
     // Set a new MockObject instance in the global instance registry.
@@ -34,8 +31,7 @@ namespace Rosella.MockObject
     // mock controller for the given type.
     function get_controller(var type)
     {
-        var factory = default_mock_factory();
-        return factory.create_typed(type);
+        return default_mock_factory().create_typed(type);
     }
 }
 

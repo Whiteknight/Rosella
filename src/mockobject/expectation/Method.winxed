@@ -5,9 +5,9 @@ class Rosella.MockObject.Expectation.Method : Rosella.MockObject.Expectation
     function __can_match_internal(string type, string name, var pos, var named)
     {
         if (type != "method")
-            return 0;
+            return false;
         if (!self.__match_args(pos, named))
-            return 0;
-        return 1;
+            return false;
+        return true;
     }
 }

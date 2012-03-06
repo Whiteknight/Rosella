@@ -20,10 +20,10 @@ class Rosella.Template.Handler.Factory : Rosella.ObjectFactory
             string start_name = substr(type, 3);
             if (exists self.handler_types[start_name])
                 return null;
-            Rosella.Error.invalid(__FUNCTION__, "End for unknown logic type %s (%s)", start_name, type);
+            Rosella.Error.error("End for unknown logic type %s (%s)", start_name, type);
         }
         if (exists self.handler_types[type])
             return Rosella.construct(self.handler_types[type], tokens);
-        Rosella.Error.invalid(__FUNCTION__, "Unknown logic type %s", type);
+        Rosella.Error.error("Unknown logic type %s", type);
     }
 }
