@@ -19,7 +19,7 @@ namespace Rosella
         c = compreg("winxed");
         if (c != null)
             return c;
-        Rosella.Error.invalid(__FUNCTION__, "Cannot get Winxed compiler object");
+        Rosella.Error.error("Cannot get Winxed compiler object");
     }
 
     /* Allocation / Construction Functions
@@ -34,7 +34,7 @@ namespace Rosella
     function alloc(var proto)
     {
         if (proto == null)
-            Rosella.Error.invalid(__FUNCTION__, "type may not be null");
+            Rosella.Error.error("type may not be null");
         var object;
         if (proto instanceof 'P6protoobject')
             object = proto.new();
@@ -78,7 +78,7 @@ namespace Rosella
     function get_type_name(var type)
     {
         if (type == null)
-            Rosella.Error.invalid(__FUNCTION__, "type may not be null");
+            Rosella.Error.error("type may not be null");
         if (type instanceof "String")
             return type;
 
@@ -103,7 +103,7 @@ namespace Rosella
     function get_type_class(var type)
     {
         if (type == null)
-            Rosella.Error.invalid(__FUNCTION__, "type may not be null");
+            Rosella.Error.error("type may not be null");
 
         if (type instanceof "P6metaclass")
             return type.get_parrotclass(type);
@@ -121,7 +121,7 @@ namespace Rosella
     function isa_type(var type, var object)
     {
         if (type == null)
-            Rosella.Error.invalid(__FUNCTION__, "type may not be null");
+            Rosella.Error.error("type may not be null");
 
         var class_test = get_type_class(type);
         return isa(object, class_test);
@@ -145,7 +145,7 @@ namespace Rosella
     }
 
     // Load an array of rosella libraries
-    function __load_rosella_libraries[anon](var libs)
+    inline __load_rosella_libraries(var libs)
     {
         for (string lib in libs) {
             string lib_name = sprintf("rosella/%s.pbc", [lib]);
@@ -187,7 +187,7 @@ namespace Rosella
     function find_named_method(var object, string meth_name)
     {
         if (object == null || meth_name == null)
-            Rosella.Error.invalid(__FUNCTION__, "object and meth_name may not be null");
+            Rosella.Error.error("object and meth_name may not be null");
 
         if (!can(object, meth_name))
             return null;
@@ -202,7 +202,7 @@ namespace Rosella
         if (method instanceof 'String') {
             var real_method = find_named_method(obj, method);
             if (real_method == null)
-                Rosella.Error.invalid(__FUNCTION__, "Cannot find method '%s'", method);
+                Rosella.Error.error("Cannot find method '%s'", method);
             method = real_method;
         }
         return obj.*method(p:[flat], n:[flat,named]);
