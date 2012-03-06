@@ -11,12 +11,8 @@ namespace Rosella.StringFormatter
     // Get a hash of type-specific formatters
     function type_formatters()
     {
-        var temp = Rosella.Globals.get_global(TYPE_FORMATTERS);
-        if (temp == null) {
-            temp = Rosella.get_pmc_keyed_hash();
-            Rosella.Globals.register_global(TYPE_FORMATTERS, temp);
-        }
-        return temp;
+        using Rosella.get_pmc_keyed_hash;
+        return Rosella.Globals.autoget_global(TYPE_FORMATTERS, get_pmc_keyed_hash);
     }
 
     // Register a new formatter object for a specific type
@@ -46,12 +42,7 @@ namespace Rosella.StringFormatter
     // Get a hash of role-specific formatters
     function role_formatters()
     {
-        var temp = Rosella.Globals.get_global(ROLE_FORMATTERS);
-        if (temp == null) {
-            temp = {};
-            Rosella.Globals.register_global(ROLE_FORMATTERS, temp);
-        }
-        return temp;
+        return Rosella.Globals.autoget_global(ROLE_FORMATTERS, function() { return {}; });
     }
 
     // Register a new formatter object for a named role

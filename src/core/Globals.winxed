@@ -37,6 +37,16 @@ namespace Rosella.Globals
         return null;
     }
 
+    function autoget_global(string name, var gen)
+    {
+        var globals = __get_globals();
+        if (exists globals[name])
+            return globals[name];
+        var value = gen();
+        globals[name] = value;
+        return value;
+    }
+
     // Register a new global by name
     function register_global(string name, var value)
     {
@@ -47,11 +57,7 @@ namespace Rosella.Globals
     // Helper method to retrieve a global ObjectFactory instance
     function get_default_factory()
     {
-        var globals = __get_globals();
-        if (exists globals[DEFAULT_FACTORY_GLOBAL])
-            return globals[DEFAULT_FACTORY_GLOBAL];
-        var factory = new Rosella.ObjectFactory();
-        globals[DEFAULT_FACTORY_GLOBAL] = factory;
-        return factory;
+        var gen = function() { return new Rosella.ObjectFactory(); };
+        return Rosella.Globals.autoget_global(DEFAULT_FACTORY_GLOBAL, gen);
     }
 }

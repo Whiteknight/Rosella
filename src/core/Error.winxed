@@ -4,8 +4,13 @@ namespace Rosella.Error
     // Throw an error.
     function error(string msg, var args [slurpy])
     {
+        var caller_ctx = get_context().caller_ctx;
+        var caller_sub = caller_ctx.current_sub;
+        var caller_namespace = caller_ctx.current_namespace;
+
         string real_msg = sprintf(msg, args);
-        die(real_msg);
+        string err = sprintf("Rosella Error in %s.%s: %s", [caller_namespace, caller_sub, real_msg]);
+        die(err);
     }
 
     // Error that we are using an abstract parent method or class when we

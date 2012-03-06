@@ -4,24 +4,27 @@ $include_const "iglobals.pasm";
 */
 namespace Rosella.Parrot
 {
+    inline __get_config_hash() return var
+    {
+        return getinterp()[IGLOBALS_CONFIG_HASH];
+    }
+
     // Get the Config hash
     function get_config_hash()
     {
-        var config = getinterp()[IGLOBALS_CONFIG_HASH];
-        while(1)
-            return config;
+        return __get_config_hash();
     }
 
     // Return true if this is a Linux machine
     function is_linux()
     {
-        return Rosella.Parrot.get_config_hash()["osname"] == "linux";
+        return __get_config_hash()["osname"] == "linux";
     }
 
     // Return true if this is a Windows machine
     function is_windows()
     {
-        return Rosella.Parrot.get_config_hash()["osname"] == "windows";
+        return __get_config_hash()["osname"] == "windows";
     }
 
     // Get an array of strings representing a backtrace from the caller

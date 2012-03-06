@@ -19,6 +19,7 @@ namespace Rosella {
     // src/core/Error.winxed
     namespace Error
     {
+        extern function error;
         extern function must_subclass;
         extern function not_implemented;
         extern function invalid;
@@ -41,6 +42,7 @@ namespace Rosella {
     namespace Globals
     {
         extern function get_global;
+        extern function autoget_global;
         extern function register_global;
         extern function get_default_factory;
     }
