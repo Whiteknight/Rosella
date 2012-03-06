@@ -12,36 +12,36 @@ namespace Rosella.String
     {
         switch (name) {
             // Generic classes
-            case "any": return CCLASS_ANY;
-            case "none": return CCLASS_NONE;
+            case "any":          return CCLASS_ANY;
+            case "none":         return CCLASS_NONE;
 
             // Word-like characters
-            case "alphabetic": return CCLASS_ALPHABETIC;
-            case "uppercase": return CCLASS_UPPERCASE;
-            case "lowercase": return CCLASS_LOWERCASE;
-            case "word": return CCLASS_WORD;
+            case "alphabetic":   return CCLASS_ALPHABETIC;
+            case "uppercase":    return CCLASS_UPPERCASE;
+            case "lowercase":    return CCLASS_LOWERCASE;
+            case "word":         return CCLASS_WORD;
 
             // Numbers
-            case "numeric": return CCLASS_NUMERIC;
-            case "hexadecimal": return CCLASS_HEXADECIMAL;
+            case "numeric":      return CCLASS_NUMERIC;
+            case "hexadecimal":  return CCLASS_HEXADECIMAL;
 
             case "alphanumeric": return CCLASS_ALPHANUMERIC;
 
             // Other
-            case "punctuation": return CCLASS_PUNCTUATION;
-            case "printing": return CCLASS_PRINTING;
-            case "graphical": return CCLASS_GRAPHICAL;
+            case "punctuation":  return CCLASS_PUNCTUATION;
+            case "printing":     return CCLASS_PRINTING;
+            case "graphical":    return CCLASS_GRAPHICAL;
 
             // Whitespace
-            case "whitespace": return CCLASS_WHITESPACE;
-            case "blank": return CCLASS_BLANK;
-            case "newline": return CCLASS_NEWLINE;
+            case "whitespace":   return CCLASS_WHITESPACE;
+            case "blank":        return CCLASS_BLANK;
+            case "newline":      return CCLASS_NEWLINE;
 
             // Control characters
-            case "control": return CCLASS_CONTROL;
+            case "control":      return CCLASS_CONTROL;
 
             default:
-                Rosella.Error.invalid(__FUNCTION__, "Could not find character class '" + name + "'");
+                Rosella.Error.error("Could not find character class '" + name + "'");
         }
     }
 
@@ -171,7 +171,7 @@ namespace Rosella.String
     function remove_start(string str, int start)
     {
         if (start < 0 || start > length(str))
-            Rosella.Error.invalid(__FUNCTION__, "Start index outside the bounds of the string");
+            Rosella.Error.error("Start index outside the bounds of the string");
         return substr(str, start);
     }
 
@@ -179,7 +179,7 @@ namespace Rosella.String
     function remove_end(string str, int count)
     {
         if (count < 0 || count > length(str))
-            Rosella.Error.invalid(__FUNCTION__, "Length is outside the bounds of the string");
+            Rosella.Error.error("Length is outside the bounds of the string");
         return substr(str, 0, count);
     }
 
@@ -188,7 +188,7 @@ namespace Rosella.String
     {
         int len = length(str);
         if (start < 0 || count < 0 || start + count > len)
-            Rosella.Error.invalid(__FUNCTION__, "Cannot substr outside the bounds of the string");
+            Rosella.Error.error("Cannot substr outside the bounds of the string");
         string first_half = substr(str, 0, start);
         string second_half = substr(str, start + count);
         return first_half + second_half;

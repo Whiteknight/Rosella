@@ -22,7 +22,7 @@ class Rosella.String.Trie.Node
             if (seq == string(self.sequence))
                 self.value = value;
             else
-                Rosella.Error.invalid(__FUNCTION__, "Bad sequence '%s' in Trie", seq);
+                Rosella.Error.error("Bad sequence '%s' in Trie", seq);
         } else {
             string prefix = substr(remainder, 0, 1);
             remainder = substr(remainder, 1);

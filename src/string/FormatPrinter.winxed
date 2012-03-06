@@ -75,7 +75,7 @@ class Rosella.String.FormatPrinter
         var p = split(":", f);
         int num_p = elements(p);
         if (p == 0 || p > 2)
-            Rosella.Error.invalid(__FUNCTION__, "Invalid format '%s'", f);
+            Rosella.Error.error("Invalid format '%s'", f);
         if (p == 1)
             return int(p[0]), "s";
         if (p == 2)

@@ -59,10 +59,8 @@ class Rosella.String.Tokenizer.DelimiterRegion : Rosella.String.Tokenizer
         string end = region[END_IDX];
         int start_idx = min;
         int end_idx = indexof(data, end);
-        if (end_idx == -1) {
-            using Rosella.Error.invalid;
-            invalid(__FUNCTION__, sprintf("Unclosed region '%s'. Expected '%s'", region));
-        }
+        if (end_idx == -1)
+            Rosella.Error.error("Unclosed region '%s'. Expected '%s'", region:[flat]);
 
         // Extract substrings for the data leading up to the region, which
         // will be default text, and the data inside the region itself.

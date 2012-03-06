@@ -4,11 +4,15 @@
 namespace Rosella.String.Tokenizer.CClass
 {
     // Get a default list of character classes, if none are provided
+    const string DEFAULT_CCLASSES = "Rosella.String.Tokenizer.CClass.default_cclasses";
     function __get_default_cclasses()
     {
-        int cclasses[] = [CCLASS_WORD, CCLASS_NUMERIC, CCLASS_WHITESPACE];
-        while(1)
-            yield(cclasses);
+        return Rosella.Globals.autoget_global(DEFAULT_CCLASSES,
+            function() {
+                int cclasses[] = [CCLASS_WORD, CCLASS_NUMERIC, CCLASS_WHITESPACE];
+                return cclasses;
+            }
+        );
     }
 
     // From the provided list, determine the first character class that
