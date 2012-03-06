@@ -4,13 +4,12 @@ namespace Rosella.Date.Doomsday
     const string GET_DOOMSDAY_ARRAY = "Rosella.Date.Doomsday.get_doomsday_array";
     function get_doomsday_array()
     {
-        var temp = Rosella.Globals.get_global(GET_DOOMSDAY_ARRAY);
-        if (temp == null) {
-            int doomsdays[] = [ 3, 28, 7, 4, 9, 6, 11, 8, 5, 10, 7, 12 ];
-            temp = doomsdays;
-            Rosella.Globals.register_global(GET_DOOMSDAY_ARRAY, temp);
-        }
-        return temp;
+        return Rosella.Globals.autoget_global(GET_DOOMSDAY_ARRAY,
+            function() {
+                int doomsdays[] = [ 3, 28, 7, 4, 9, 6, 11, 8, 5, 10, 7, 12 ];
+                return doomsdays;
+            }
+        );
     }
 }
 
@@ -28,11 +27,11 @@ class Rosella.Date.Doomsday
     function get_day(int year, int month, int day)
     {
         if (year < 1)
-            Rosella.Error.invalid(__FUNCTION__, "Bad year");
+            Rosella.Error.error("Bad year");
         if (month < 1 || month > 12)
-            Rosella.Error.invalid(__FUNCTION__, "Bad month");
+            Rosella.Error.error("Bad month");
         if (day < 1 || day > 31)
-            Rosella.Error.invalid(__FUNCTION__, "Bad day");
+            Rosella.Error.error("Bad day");
 
         var doomsdays = Rosella.Date.Doomsday.get_doomsday_array();
 

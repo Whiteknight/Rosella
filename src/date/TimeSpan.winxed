@@ -15,11 +15,11 @@ class Rosella.Date.TimeSpan
     function TimeSpan(var start, var end)
     {
         if (!(start instanceof Rosella.Date && end instanceof Rosella.Date))
-            Rosella.Error.invalid(__FUNCTION__, "Arguments must be Date objects. Have %s and %s", typeof(start), typeof(end));
+            Rosella.Error.error("Arguments must be Date objects. Have %s and %s", typeof(start), typeof(end));
         if (start instanceof Rosella.Date.SpecialDate || end instanceof Rosella.Date.SpecialDate)
-            Rosella.Error.invalid(__FUNCTION__, "Arguments may not be SpecialDate objects. Have %s and %s", typeof(start), typeof(end));
+            Rosella.Error.error("Arguments may not be SpecialDate objects. Have %s and %s", typeof(start), typeof(end));
         if (start >= end)
-            Rosella.Error.invalid(__FUNCTION__, "Start Date must be before End Date (%s >= %s)", start, end);
+            Rosella.Error.error("Start Date must be before End Date (%s >= %s)", start, end);
 
         int diff = end.to_total_seconds() - start.to_total_seconds();
         self.TimeSpan(diff);
@@ -82,7 +82,7 @@ class Rosella.Date.TimeSpan
             int diff = self.to_total_seconds() + ts.to_total_seconds();
             return new Rosella.Date.TimeSpan(diff);
         }
-        Rosella.Error.invalid(__FUNCTION__, "Cannot add %s to TimeSpan", typeof(ts));
+        Rosella.Error.error("Cannot add %s to TimeSpan", typeof(ts));
     }
 
     // Subtract a timespan from this one, return the absolute difference as a
@@ -94,7 +94,7 @@ class Rosella.Date.TimeSpan
             int b = ts.to_total_seconds();
             return new TimeSpan(abs_i(a - b));
         }
-        Rosella.Error.invalid(__FUNCTION__, "Cannot subtract %s from TimeSpan", typeof(ts));
+        Rosella.Error.error("Cannot subtract %s from TimeSpan", typeof(ts));
     }
 
     // Format the Date into a string

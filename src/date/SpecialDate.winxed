@@ -20,57 +20,57 @@ class Rosella.Date.SpecialDate : Rosella.Date
 
     function add_seconds(int x)
     {
-        Rosella.Error.invalid(__FUNCTION__, "Cannot modify SpecialDate");
+        Rosella.Error.error("Cannot modify SpecialDate");
     }
 
     function to_total_seconds()
     {
-        Rosella.Error.invalid(__FUNCTION__, "SpecialDate does not have total seconds");
+        Rosella.Error.error("SpecialDate does not have total seconds");
     }
 
     function add_minutes(int x)
     {
-        Rosella.Error.invalid(__FUNCTION__, "Cannot modify SpecialDate");
+        Rosella.Error.error("Cannot modify SpecialDate");
     }
 
     function add_hours(int x)
     {
-        Rosella.Error.invalid(__FUNCTION__, "Cannot modify SpecialDate");
+        Rosella.Error.error("Cannot modify SpecialDate");
     }
 
     function add_days(int x)
     {
-        Rosella.Error.invalid(__FUNCTION__, "Cannot modify SpecialDate");
+        Rosella.Error.error("Cannot modify SpecialDate");
     }
 
     function add_months(int x)
     {
-        Rosella.Error.invalid(__FUNCTION__, "Cannot modify SpecialDate");
+        Rosella.Error.error("Cannot modify SpecialDate");
     }
 
     function add_years(int x)
     {
-        Rosella.Error.invalid(__FUNCTION__, "Cannot modify SpecialDate");
+        Rosella.Error.error("Cannot modify SpecialDate");
     }
 
     function week_day()
     {
-        Rosella.Error.invalid(__FUNCTION__, "SpecialDate does not have day-of-week");
+        Rosella.Error.error("SpecialDate does not have day-of-week");
     }
 
     function week_day_name()
     {
-        Rosella.Error.invalid(__FUNCTION__, "SpecialDate does not have day-of-week");
+        Rosella.Error.error("SpecialDate does not have day-of-week");
     }
 
     function date()
     {
-        Rosella.Error.invalid(__FUNCTION__, "SpecialDate cannot be disected");
+        Rosella.Error.error("SpecialDate cannot be disected");
     }
 
     function time()
     {
-        Rosella.Error.invalid(__FUNCTION__, "SpecialDate cannot be disected");
+        Rosella.Error.error("SpecialDate cannot be disected");
     }
 
     // Get the name of the SpecialDate

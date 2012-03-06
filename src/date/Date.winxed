@@ -29,7 +29,7 @@ namespace Rosella.Date
     function get_day_of_week_name(int day)
     {
         if (day < 0 || day > 6)
-            Rosella.Error.invalid(__FUNCTION__, "Bad day %d. Must be 0 (Sunday) to 6 (Saturday)", day);
+            Rosella.Error.error("Bad day %d. Must be 0 (Sunday) to 6 (Saturday)", day);
 
         return all_week_days()[day];
     }
@@ -45,12 +45,9 @@ namespace Rosella.Date
     const string DATE_MINIMUM = "Rosella.Date.min";
     function min()
     {
-        var temp = Rosella.Globals.get_global(DATE_MINIMUM);
-        if (temp == null) {
-            temp = new Rosella.Date.SpecialDate.Minimum();
-            Rosella.Globals.register_global(DATE_MINIMUM, temp);
-        }
-        return temp;
+        return Rosella.Globals.autoget_global(DATE_MINIMUM,
+            function() { return new Rosella.Date.SpecialDate.Minimum(); }
+        );
     }
 
     // Get a Date object representing the maximum representable date. This
@@ -58,55 +55,49 @@ namespace Rosella.Date
     const string DATE_MAXIMUM = "Rosella.Date.max";
     function max()
     {
-        var temp = Rosella.Globals.get_global(DATE_MAXIMUM);
-        if (temp == null) {
-            temp = new Rosella.Date.SpecialDate.Maximum();
-            Rosella.Globals.register_global(DATE_MAXIMUM, temp);
-        }
-        return temp;
+        return Rosella.Globals.autoget_global(DATE_MAXIMUM,
+            function() { return new Rosella.Date.SpecialDate.Maximum(); }
+        );
     }
 
     // Get an array with the names of all months in the calendar year
     const string ALL_MONTHS_KEY = "Rosella.Date.all_months";
     function all_months()
     {
-        var temp = Rosella.Globals.get_global(ALL_MONTHS_KEY);
-        if (temp == null) {
-            string months[] =  ["January", "February", "March", "April", "May", "June",
-                     "July", "August", "September", "October", "November",
-                     "December"];
-            temp = months;
-            Rosella.Globals.register_global(ALL_MONTHS_KEY, temp);
-        }
-        return temp;
+        return Rosella.Globals.autoget_global(ALL_MONTHS_KEY,
+            function() {
+                string months[] =  ["January", "February", "March", "April", "May", "June",
+                         "July", "August", "September", "October", "November",
+                         "December"];
+                return months;
+            }
+        );
     }
 
     // Get an array with the abbreviated names of all months in the calendar year
     const string ALL_MONTHS_SHORT_KEY = "Rosella.Date.all_months_short";
     function all_months_short()
     {
-        var temp = Rosella.Globals.get_global(ALL_MONTHS_SHORT_KEY);
-        if (temp == null) {
-            string months[] = ["Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep",
-                    "Oct", "Nov", "Dec"];
-            temp = months;
-            Rosella.Globals.register_global(ALL_MONTHS_SHORT_KEY, temp);
-        }
-        return temp;
+        return Rosella.Globals.autoget_global(ALL_MONTHS_SHORT_KEY,
+            function() {
+                string months[] = ["Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep",
+                        "Oct", "Nov", "Dec"];
+                return months;
+            }
+        );
     }
 
     // Get an array containing the names of all days of the week
     const string ALL_WEEK_DAYS_KEY = "Rosella.Date.all_week_days";
     function all_week_days()
     {
-        var temp = Rosella.Globals.get_global(ALL_WEEK_DAYS_KEY);
-        if (temp == null) {
-            string days[] = ["Sunday", "Monday", "Tuesday", "Wednesday", "Thursday",
-                    "Friday", "Saturday"];
-            temp = days;
-            Rosella.Globals.register_global(ALL_WEEK_DAYS_KEY, temp);
-        }
-        return temp;
+        return Rosella.Globals.autoget_global(ALL_WEEK_DAYS_KEY,
+            function() {
+                string days[] = ["Sunday", "Monday", "Tuesday", "Wednesday", "Thursday",
+                        "Friday", "Saturday"];
+                return days;
+            }
+        );
     }
 
     // Get an array containing counts of the number of days in each month of the
@@ -166,12 +157,9 @@ namespace Rosella.Date
     const string DEFAULT_DAY_CALCULATOR = "Rosella.Date.default_day_calculator";
     function default_day_calculator()
     {
-        var temp = Rosella.Globals.get_global(DEFAULT_DAY_CALCULATOR);
-        if (temp == null) {
-            temp = new Rosella.Date.Doomsday();
-            Rosella.Globals.register_global(DEFAULT_DAY_CALCULATOR, temp);
-        }
-        return temp;
+        return Rosella.Globals.autoget_global(DEFAULT_DAY_CALCULATOR,
+            function() { return new Rosella.Date.Doomsday(); }
+        );
     }
 }
 
@@ -201,11 +189,11 @@ class Rosella.Date
     function Date(int year, int month, int day)
     {
         if (month < 1 || month > 12)
-            Rosella.Error.invalid(__FUNCTION__, "Bad month %d. Must be in the range [1, 12]", month);
+            Rosella.Error.error("Bad month %d. Must be in the range [1, 12]", month);
         var month_day_counts = Rosella.Date.month_day_counts(year);
         int days_in_month = month_day_counts[month - 1];
         if (day < 1 || day > days_in_month)
-            Rosella.Error.invalid(__FUNCTION__, "Bad day of month %d. For month %d must be in range [1, %d]", day, month, days_in_month);
+            Rosella.Error.error("Bad day of month %d. For month %d must be in range [1, %d]", day, month, days_in_month);
         int day_of_year = day - 1;
         for (int i = 0; i < month; i++)
             day_of_year += int(month_day_counts[i]);
@@ -225,11 +213,11 @@ class Rosella.Date
     function Date(int year, int month, int day, int hour, int min, int s)
     {
         if (s < 0 || s > 59)
-            Rosella.Error.invalid(__FUNCTION__, "Invalid number of seconds %d", s);
+            Rosella.Error.error("Invalid number of seconds %d", s);
         if (min < 0 || min > 59)
-            Rosella.Error.invalid(__FUNCTION__, "Invalid number of minutes %d", min);
+            Rosella.Error.error("Invalid number of minutes %d", min);
         if (hour < 0 || hour > 23)
-            Rosella.Error.invalid(__FUNCTION__, "Invalid number of hours %d", hour);
+            Rosella.Error.error("Invalid number of hours %d", hour);
 
         self.Date(year, month, day);
         var time = self.time_array;
@@ -565,7 +553,7 @@ class Rosella.Date
             next.__add_days(-ts.days());
             return next;
         }
-        Rosella.Error.invalid(__FUNCTION__, "Unknown type in Date.substract: %s", typeof(d));
+        Rosella.Error.error("Unknown type in Date.substract: %s", typeof(d));
     }
 
     // Add a TimeSpan
@@ -579,7 +567,7 @@ class Rosella.Date
             next.__add_days(ts.days());
             return next;
         }
-        Rosella.Error.invalid(__FUNCTION__, "Unknown type in Date.add: %s", typeof(ts));
+        Rosella.Error.error("Unknown type in Date.add: %s", typeof(ts));
     }
 
     // Determine if two Date objects are equal
