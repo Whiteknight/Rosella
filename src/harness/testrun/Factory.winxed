@@ -78,7 +78,7 @@ class Rosella.Harness.TestRun.Factory : Rosella.ObjectFactory
         if (name == null && name == "")
             return null;
         if (!(exists self.testfile_types[name]))
-            Rosella.Error.invalid(__FUNCTION__, "Cannot find test file type %s", name);
+            Rosella.Error.error("Cannot find test file type %s", name);
         return self.testfile_types[name];
     }
 

@@ -38,7 +38,7 @@ class Rosella.Test.TestCase
     // Lock attribute access to be read-only
     function set_attr_str[vtable](string attr, var value)
     {
-        Rosella.Error.invalid(__FUNCTION__, "Cannot modify the details of the TestCase. Use TestContext instead.");
+        Rosella.Error.error("Cannot modify the details of the TestCase. Use TestContext instead.");
     }
 
     // Translate attribute names, so we can use TestCase in a language
@@ -51,7 +51,7 @@ class Rosella.Test.TestCase
         try {
             return getattribute_private(self, class Rosella.Test.TestCase, "test_" + attr);
         } catch(e) {
-            Rosella.Error.invalid(__FUNCTION__, "TestCase does not have an attribute '" + attr_raw + "'");
+            Rosella.Error.error("TestCase does not have an attribute '" + attr_raw + "'");
         }
         return null;
     }

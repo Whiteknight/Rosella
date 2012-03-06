@@ -7,12 +7,9 @@ namespace Rosella.Harness
     // Get a factory for creating FileResults
     function default_fileresult_factory()
     {
-        var temp = Rosella.Globals.get_global(DEFAULT_FILERESULT_FACTORY);
-        if (temp == null) {
-            temp = new Rosella.ObjectFactory(class Rosella.Harness.FileResult);
-            Rosella.Globals.register_global(DEFAULT_FILERESULT_FACTORY, temp);
-        }
-        return temp;
+        return Rosella.Globals.autoget_global(DEFAULT_FILERESULT_FACTORY,
+            function() { return new Rosella.ObjectFactory(class Rosella.Harness.FileResult); }
+        );
     }
 
     // Set the global default FileResult factory
@@ -80,8 +77,7 @@ class Rosella.Harness
     function add_test_dirs(string testfile_type_s, var dirs [slurpy],
         var options [slurpy,named])
     {
-        self.testrun_factory.add_test_dirs(testfile_type_s, dirs:[flat],
-            options:[flat,named]);
+        self.testrun_factory.add_test_dirs(testfile_type_s, dirs:[flat], options:[flat,named]);
         return self;
     }
 
@@ -89,8 +85,7 @@ class Rosella.Harness
     function add_test_files(string testfile_type_s, var files [slurpy],
         var options [slurpy,named])
     {
-        self.testrun_factory.add_test_files(testfile_type_s, files:[flat],
-            options:[flat,named]);
+        self.testrun_factory.add_test_files(testfile_type_s, files:[flat], options:[flat,named]);
         return self;
     }
 

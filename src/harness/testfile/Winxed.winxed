@@ -13,6 +13,7 @@ class Rosella.Harness.TestFile.Winxed : Rosella.Harness.TestFile
 
     function get_spawn_command(string filename)
     {
+        // TODO: Be more general
         return "winxed --nowarn " + filename;
     }
 }

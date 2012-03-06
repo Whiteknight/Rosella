@@ -12,6 +12,6 @@ class Rosella.Harness.TestFile.Automatic : Rosella.Harness.TestFile
         if (substr(line, 0, 2) == "#!")
             return Rosella.String.sprintf("%s %s", Rosella.String.trim(substr(line, 2)), filename);
         else
-            Rosella.Error.invalid(__FUNCTION__, "Cannot determine how to run test file %s", filename);
+            Rosella.Error.error("Cannot determine how to run test file %s", filename);
     }
 }

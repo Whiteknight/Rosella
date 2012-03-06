@@ -65,7 +65,7 @@ class Rosella.Harness.TapParser
                     i += 2;
                     result = 0;
                 } else
-                    Rosella.Error.invalid(__FUNCTION__, "Unknown TAP sequence: '%s'", join(" ", l));
+                    Rosella.Error.error("Unknown TAP sequence: '%s'", join(" ", l));
                 i += 2;
                 int num = int(l[i++]);
                 if (i >= elements(l))

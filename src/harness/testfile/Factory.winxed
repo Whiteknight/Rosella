@@ -46,7 +46,7 @@ class Rosella.Harness.TestFile.Factory : Rosella.ObjectFactory
         return Rosella.Query.iterable(filenames)
             .tap(function(filename) {
                 if (!Rosella.FileSystem.is_file(filename))
-                    Rosella.Error.invalid(__FUNCTION__, "file '%s' does not exist or is not a file", filename);
+                    Rosella.Error.error("file '%s' does not exist or is not a file", filename);
             })
             .map(function(filename) { return self.create_typed(test_type, filename); });
     }

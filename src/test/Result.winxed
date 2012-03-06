@@ -34,7 +34,7 @@ class Rosella.Test.Result
     function plan_tests(int num_tests)
     {
         if (num_tests < 0)
-            Rosella.Error.invalid(__FUNCTION__, "Invalid plan");
+            Rosella.Error.error("Invalid plan");
         self.expected_tests = num_tests;
         for (var listener in self.listeners)
             listener.plan_tests(num_tests);

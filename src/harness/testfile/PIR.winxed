@@ -14,6 +14,7 @@ class Rosella.Harness.TestFile.PIR : Rosella.Harness.TestFile
 
     function get_spawn_command(string filename)
     {
+        // TODO: Be more general
         return Rosella.String.sprintf("parrot %s", filename);
     }
 }
