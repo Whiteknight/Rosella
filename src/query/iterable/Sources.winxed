@@ -96,7 +96,7 @@ class Rosella.Query.Iterable.Iterator : Rosella.Query.Iterable.Source
 
     function reset()
     {
-        Rosella.Error.invalid(__FUNCTION__, "Cannot reset an Iterator");
+        Rosella.Error.error("Cannot reset an Iterator");
     }
 }
 

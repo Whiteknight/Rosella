@@ -117,7 +117,7 @@ class Rosella.Query.Provider.Hash : Rosella.Query.Provider
         if (!has_dispute)
             dispute = function(key, data_a, data_b) { return data_a; };
         if (has_key_func)
-            die("Query::Provider::Hash: Cannot combine hashes by keys");
+            Rosella.Error.error("Cannot combine hashes by keys");
 
         var new_data = {};
         var conflict = 0;

@@ -71,7 +71,7 @@ class Rosella.Query.Provider.Scalar : Rosella.Query.Provider
             var key_func [optional], int has_key_func [opt_flag],
             var dispute [optional], int has_dispute [opt_flag])
     {
-        Rosella.Error.invalid(__FUNCTION__, "Cannot combine scalars");
+        Rosella.Error.error("Cannot combine scalars");
     }
 
     // Project each item into a sequence of zero or more items, and flatten all

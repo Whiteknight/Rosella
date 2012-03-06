@@ -12,34 +12,25 @@ namespace Rosella.Query.Provider
     // Get the Array provider
     function get_array_provider()
     {
-        var provider = Rosella.Globals.get_global(DEFAULT_ARRAY_PROVIDER);
-        if (provider == null) {
-            provider = new Rosella.Query.Provider.Array();
-            Rosella.Globals.register_global(DEFAULT_ARRAY_PROVIDER, provider);
-        }
-        return provider;
+        return Rosella.Globals.autoget_global(DEFAULT_ARRAY_PROVIDER,
+            function() { return new Rosella.Query.Provider.Array(); }
+        );
     }
 
     // Get the Hash Provider
     function get_hash_provider()
     {
-        var provider = Rosella.Globals.get_global(DEFAULT_HASH_PROVIDER);
-        if (provider == null) {
-            provider = new Rosella.Query.Provider.Hash();
-            Rosella.Globals.register_global(DEFAULT_HASH_PROVIDER, provider);
-        }
-        return provider;
+        return Rosella.Globals.autoget_global(DEFAULT_HASH_PROVIDER,
+            function() { return new Rosella.Query.Provider.Hash(); }
+        );
     }
 
     // Get the Scalar Provider
     function get_scalar_provider()
     {
-        var provider = Rosella.Globals.get_global(DEFAULT_SCALAR_PROVIDER);
-        if (provider == null) {
-            provider = new Rosella.Query.Provider.Scalar();
-            Rosella.Globals.register_global(DEFAULT_SCALAR_PROVIDER, provider);
-        }
-        return provider;
+        return Rosella.Globals.autoget_global(DEFAULT_SCALAR_PROVIDER,
+            function() { return new Rosella.Query.Provider.Scalar(); }
+        );
     }
 }
 
@@ -103,7 +94,7 @@ class Rosella.Query.Provider
         if (func != null)
             data = self.filter(data, func);
         if (self.count(data, null) != 1)
-            Rosella.Error.invalid(__FUNCTION__, "Aggregate has more than one entry");
+            Rosella.Error.error("Aggregate has more than one entry");
         return self.unwrap_first(data);
     }
 
@@ -113,7 +104,7 @@ class Rosella.Query.Provider
     {
         data = self.take(data, 1, func);
         if (self.count(data, null) < 1)
-            Rosella.Error.invalid(__FUNCTION__, "Aggregate does not have at least one entry");
+            Rosella.Error.error("Aggregate does not have at least one entry");
         return self.unwrap_first(data);
     }
 
@@ -185,7 +176,7 @@ class Rosella.Query.Provider
     // Sort the data in-place without creating a copy
     function sort_self(var data, var func)
     {
-        Rosella.Error.invalid(__FUNCTION__, "Provider %s does not support .sort_self()", self.name());
+        Rosella.Error.error("Provider %s does not support .sort_self()", self.name());
     }
 
     // Shuffle the data, return the shuffled copy
@@ -199,13 +190,13 @@ class Rosella.Query.Provider
     // Shuffle the data in place.
     function shuffle_self(var data)
     {
-        Rosella.Error.invalid(__FUNCTION__, "Provider %s does not support .shuffle_self()", self.name());
+        Rosella.Error.error("Provider %s does not support .shuffle_self()", self.name());
     }
 
     // Return the list of keys of the aggregate
     function keys(var data)
     {
-        Rosella.Error.invalid(__FUNCTION__, "Provider %s does not support .keys()", self.name());
+        Rosella.Error.error("Provider %s does not support .keys()", self.name());
     }
 
     // Flatten a nested structure into a single flat array.
@@ -244,6 +235,6 @@ class Rosella.Query.Provider
     // Group the data according to similar keys.
     function group_by(var target, var f)
     {
-        Rosella.Error.invalid(__FUNCTION__, "Provider %s does not support .group_by()", self.name());
+        Rosella.Error.error("Provider %s does not support .group_by()", self.name());
     }
 }

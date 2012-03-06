@@ -371,7 +371,7 @@ class Rosella.Query.Iterable : Rosella.IteratorBase
             self.__empty();
         :(var d, int m) = self.next_and_more();
         if (m == true)
-            Rosella.Error.invalid(__FUNCTION__, ".single() expects a sequence with exactly one element");
+            Rosella.Error.error(".single() expects a sequence with exactly one element");
         return d;
     }
 
@@ -391,7 +391,7 @@ class Rosella.Query.Iterable : Rosella.IteratorBase
                 if (int(f(d)) == true)
                     return d;
             }
-            Rosella.Error.invalid(__FUNCTION__, ".first() expects at least one matching item");
+            Rosella.Error.error(".first() expects at least one matching item");
         } else {
             return self.next();
         }
@@ -429,7 +429,7 @@ class Rosella.Query.Iterable : Rosella.IteratorBase
     // attempt is made to read it anyway
     function __empty()
     {
-        Rosella.Error.invalid(__FUNCTION__, "Attempt to read from empty iterator of type '%s'", string(typeof(self)));
+        Rosella.Error.error("Attempt to read from empty iterator of type '%s'", string(typeof(self)));
     }
 }
 

@@ -98,16 +98,15 @@ namespace Rosella.Query
     // Get the global default provider factory
     function default_provider_factory()
     {
-        var temp = Rosella.Globals.get_global(DEFAULT_PROVIDER_FACTORY);
-        if (temp == null) {
-            temp = new Rosella.Query.Provider.Factory(
+        return Rosella.Globals.autoget_global(DEFAULT_PROVIDER_FACTORY,
+            function() {
+                return new Rosella.Query.Provider.Factory(
                 new Rosella.Query.Provider.Scalar(), {
                     "array" : new Rosella.Query.Provider.Array(),
                     "hash"  : new Rosella.Query.Provider.Hash()
                 }, null);
-            Rosella.Globals.register_global(DEFAULT_PROVIDER_FACTORY, temp);
-        }
-        return temp;
+            }
+        );
     }
 
     // Set a customer global provider factory
@@ -123,11 +122,8 @@ namespace Rosella.Query
 
     function default_iterable_factory()
     {
-        var temp = Rosella.Globals.get_global(DEFAULT_ITERABLE_FACTORY);
-        if (temp == null) {
-            temp = new Rosella.Query.Iterable.Factory();
-            Rosella.Globals.register_global(DEFAULT_ITERABLE_FACTORY, temp);
-        }
-        return temp;
+        return Rosella.Globals.autoget_global(DEFAULT_ITERABLE_FACTORY,
+            function() { return new Rosella.Query.Iterable.Factory(); }
+        );
     }
 }
