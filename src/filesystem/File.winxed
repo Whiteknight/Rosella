@@ -11,11 +11,9 @@ namespace Rosella.FileSystem.File
     // Get a FileHandle object from a filehandle factory.
     function get_filehandle()
     {
-        var factory = Rosella.Globals.get_global(FILEHANDLE_FACTORY_GLOBAL);
-        if (factory == null) {
-            factory = new Rosella.ObjectFactory("FileHandle");
-            set_filehandle_factory(factory);
-        }
+        var factory = Rosella.Globals.autoget_global(FILEHANDLE_FACTORY_GLOBAL,
+            function() { return new Rosella.ObjectFactory("FileHandle"); }
+        );
         return factory.create();
     }
 

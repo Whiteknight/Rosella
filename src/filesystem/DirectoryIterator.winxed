@@ -25,8 +25,7 @@ class Rosella.FileSystem.DirectoryIterator : Rosella.IteratorBase
     // Get the name of the next entry
     function shift_string[vtable]()
     {
-        string entry_str = self.data.shift();
-        return entry_str;
+        return string(self.data.shift());
     }
 
     // Get an Entry object for the next entry

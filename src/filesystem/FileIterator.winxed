@@ -15,10 +15,10 @@ class Rosella.FileSystem.FileIterator : Rosella.IteratorBase
             self.file = file;
         else if (file instanceof "Handle") {
             if (file.is_closed())
-                Rosella.Error.invalid(__FUNCTION__, "Handle object must be open in FileIterator");
+                Rosella.Error.error("Handle object must be open in FileIterator");
             self.handle = file;
         } else
-            Rosella.Error.invalid(__FUNCTION__, "Unknown object '%s'. Expected Rosella.FileSystem.File or parrot.Handle");
+            Rosella.Error.error("Unknown object '%s'. Expected Rosella.FileSystem.File or parrot.Handle");
     }
 
     // Constructor. Take the string name of the file to read.

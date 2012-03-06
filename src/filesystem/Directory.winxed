@@ -20,7 +20,7 @@ class Rosella.FileSystem.Directory : Rosella.FileSystem.Entry
     function Directory(string path, var parent_dir [optional], int has_parent [opt_flag])
     {
         if (path == null || path == "")
-            Rosella.Error.invalid(__FUNCTION__, "Directory needs a valid path");
+            Rosella.Error.error("Directory needs a valid path");
 
         string path_sep = Rosella.FileSystem.path_separator();
         int len = length(path);
@@ -38,7 +38,7 @@ class Rosella.FileSystem.Directory : Rosella.FileSystem.Entry
     function delete_recursive()
     {
         if (!self.exists())
-            Rosella.Error.invalid(__FUNCTION__, "Cannot delete a Directory that does not exist");
+            Rosella.Error.error("Cannot delete a Directory that does not exist");
         var deleter = new Rosella.FileSystem.Visitor.Delete();
         return self.walk(deleter);
     }

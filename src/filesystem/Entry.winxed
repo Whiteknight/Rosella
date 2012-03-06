@@ -7,13 +7,13 @@ namespace Rosella.FileSystem.Entry
     {
         int exist = Rosella.FileSystem.get_os_pmc().exists(name);
         if (!exist)
-            Rosella.Error.invalid(__FUNCTION__, "Path '%s' does not exist", name);
+            Rosella.Error.error("Path '%s' does not exist", name);
 
         if (Rosella.FileSystem.is_directory(name))
             return new Rosella.FileSystem.Directory(name);
         else if (Rosella.FileSystem.is_file(name))
             return new Rosella.FileSystem.File(name);
-        Rosella.Error.invalid(__FUNCTION__, "Path '%s' is not a file or a directory", name);
+        Rosella.Error.error("Path '%s' is not a file or a directory", name);
     }
 }
 
@@ -44,7 +44,7 @@ class Rosella.FileSystem.Entry
     {
         var os = Rosella.FileSystem.get_os_pmc();
         if (!os.exists(self.path))
-            Rosella.Error.invalid(__FUNCTION__, "Cannot delete an Entry that does not exist");
+            Rosella.Error.error("Cannot delete an Entry that does not exist");
         os.rm(self.path);
     }
 

@@ -25,10 +25,7 @@ class Rosella.FileSystem.Visitor
 
     // Return the result of the walk, if any. By default there is nothing
     // to report.
-    function result()
-    {
-        return null;
-    }
+    function result() { return null; }
 
     /* Implementation-Specific Routines
         These routines are used by the default Visitor implementation for
@@ -39,10 +36,7 @@ class Rosella.FileSystem.Visitor
     // Determine if we should visit the entry. This is a helper method
     // called by .visit(). If a subclass overrides .visit(), this method
     // might not be needed
-    function should_visit(var file)
-    {
-        return 1;
-    }
+    function should_visit(var file) { return true; }
 
     // Process an entry. This is only called from .visit(). If a subclass
     // overrides .visit(), this method might be unnecessary

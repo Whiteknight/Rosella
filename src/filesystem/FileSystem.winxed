@@ -11,13 +11,12 @@ namespace Rosella.FileSystem
     // Get an OS PMC from the Parrot distribution. Register it as a global
     function get_os_pmc()
     {
-        var os = Rosella.Globals.get_global(OS_PMC_GLOBAL);
-        if (os == null) {
-            loadlib("os");
-            os = new OS;
-            set_os_pmc(os);
-        }
-        return os;
+        return Rosella.Globals.autoget_global(OS_PMC_GLOBAL,
+            function() {
+                loadlib("os");
+                return new OS;
+            }
+        );
     }
 
     // Set the OS PMC instance that should be used by low-level
@@ -33,7 +32,7 @@ namespace Rosella.FileSystem
     {
         var os = get_os_pmc();
         if (!os.exists(path))
-            return 0;
+            return false;
         var stat = os.stat(path);
         int mode = stat[2];
         return band(mode, STAT_ISREG);
@@ -45,7 +44,7 @@ namespace Rosella.FileSystem
     {
         var os = get_os_pmc();
         if (!os.exists(path))
-            return 0;
+            return false;
         var stat = os.stat(path);
         int mode = stat[2];
         return band(mode, STAT_ISDIR);
@@ -54,11 +53,7 @@ namespace Rosella.FileSystem
     // Get the path separator for this system
     function path_separator()
     {
-        using Rosella.Parrot.get_config_hash;
-        var config = get_config_hash();
-        string sep = config["slash"];
-        while(1)
-            return sep;
+        return Rosella.Parrot.get_config_hash()["slash"];
     }
 
     // Combine strings together with the platform-specific path separator.
@@ -73,6 +68,6 @@ namespace Rosella.FileSystem
     {
         if (handle instanceof "Handle")
             return new Rosella.FileSystem.IterableHandle(handle);
-        Rosella.Error.invalid(__FUNCTION__, "handle_iterator expects a Handle object");
+        Rosella.Error.error("handle_iterator expects a Handle object");
     }
 }
