@@ -15,7 +15,7 @@ namespace Rosella.MockObject
     function default_mock_factory()
     {
         return Rosella.Globals.autoget_global(DEFAULT_MOCK_FACTORY_KEY,
-            function() { new Rosella.MockObject.Factory(); }
+            function() { return new Rosella.MockObject.Factory(); }
         );
     }
 

@@ -11,7 +11,7 @@ namespace Rosella.Random
     function default_uniform_random()
     {
         return Rosella.Globals.autoget_global(RANDOM_UNIFORM_GENERATOR,
-            function() { new Rosella.Random.RandomNumber.MersenneTwister(); }
+            function() { return new Rosella.Random.RandomNumber.MersenneTwister(); }
         );
     }
 
