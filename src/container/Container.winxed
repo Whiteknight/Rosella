@@ -9,7 +9,7 @@ namespace Rosella.Container
     // only a convenience to help bootstrap dependency injection.
     function default_container()
     {
-        return Rosella.autoget_global(DEFAULT_CONTAINER_GLOBAL,
+        return Rosella.Globals.autoget_global(DEFAULT_CONTAINER_GLOBAL,
             function() { return new Rosella.Container(); }
         );
     }
