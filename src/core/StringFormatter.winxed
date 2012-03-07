@@ -34,6 +34,18 @@ namespace Rosella.StringFormatter
         return null;
     }
 
+    function autoget_type_formatter(var type, var gen)
+    {
+        var type_c = Rosella.get_type_class(type);
+        var formatters = Rosella.StringFormatter.type_formatters();
+        if (exists formatters[type_c])
+            return formatters[type_c];
+        var f = gen();
+        Rosella.StringFormatter.__verify_formatter(f);
+        formatters[type_c] = f;
+        return f;
+    }
+
     /* Role-Specific Formatters
     */
 

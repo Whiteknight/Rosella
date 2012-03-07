@@ -109,7 +109,7 @@ namespace Rosella.Date
             const string DAY_COUNTS_LEAP = "Rosella.Date.month_day_counts_leap";
             return Rosella.Globals.autoget_global(DAY_COUNTS_LEAP,
                 function() {
-                    int[] days = [31, 29, 31, 30, 30, 31, 31, 31, 30, 31, 30, 31];
+                    int days[] = [31, 29, 31, 30, 30, 31, 31, 31, 30, 31, 30, 31];
                     return days;
                 }
             );
@@ -117,7 +117,7 @@ namespace Rosella.Date
             const string DAY_COUNTS_NORMAL = "Rosella.Date.month_day_counts";
             return Rosella.Globals.autoget_global(DAY_COUNTS_NORMAL,
                 function() {
-                    int[] days = [31, 28, 31, 30, 30, 31, 31, 31, 30, 31, 30, 31];
+                    int days[] = [31, 28, 31, 30, 30, 31, 31, 31, 30, 31, 30, 31];
                     return days;
                 }
             );
@@ -139,25 +139,17 @@ namespace Rosella.Date
     // Get the default Date formatter object
     function default_date_formatter()
     {
-        var date_c = class Rosella.Date;
-        var temp = Rosella.StringFormatter.get_type_formatter(date_c);
-        if (temp == null) {
-            temp = new Rosella.Date.DateFormatter();
-            Rosella.StringFormatter.register_type_formatter(date_c, temp);
-        }
-        return temp;
+        return Rosella.StringFormatter.autoget_type_formatter(class Rosella.Date,
+            function() { return new Rosella.Date.DateFormatter(); }
+        );
     }
 
     // Get the default TimeSpan formatter object
     function default_timespan_formatter()
     {
-        var ts_c = class Rosella.Date.TimeSpan;
-        var temp = Rosella.StringFormatter.get_type_formatter(ts_c);
-        if (temp == null) {
-            temp = new Rosella.Date.TimeSpanFormatter();
-            Rosella.StringFormatter.register_type_formatter(ts_c, temp);
-        }
-        return temp;
+        return Rosella.StringFormatter.autoget_type_formatter(class Rosella.Date.TimeSpan,
+            function() { return new Rosella.Date.TimeSpanFormatter(); }
+        );
     }
 
     // Get a calculator object for calculating day-of-week
