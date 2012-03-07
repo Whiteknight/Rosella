@@ -11,6 +11,8 @@ class Rosella.Random.RandomNumber.MersenneTwister : Rosella.Random.RandomNumber
     const int UPPER_MASK = 0x80000000; // most significant bit
     const int LOWER_MASK = 0x7FFFFFFF; // the rest
 
+    const int INT_MAX = 0xFFFFFFFF;
+
     // Tempering parameters
     const int TEMPERING_MASK_B = 0x9D2C5680;
     const int TEMPERING_MASK_C = 0xEFC60000;
@@ -23,17 +25,16 @@ class Rosella.Random.RandomNumber.MersenneTwister : Rosella.Random.RandomNumber
     // constructor
     function MersenneTwister()
     {
-        self.mt = [];
-        self.mag01 = [];
+        int mt[] = [];
+        self.mt = mt;
+        int mag01[] = [];
+        self.mag01 = mag01;
 
         self.initialize(time_i());
     }
 
     // Return the name of the distribution
-    function distribution()
-    {
-        return "uniform";
-    }
+    function distribution() { return "uniform"; }
 
     // Initialize the twister with the given seed. The seed should be something
     // that's random, because identical seeds will produce identical random
@@ -43,7 +44,7 @@ class Rosella.Random.RandomNumber.MersenneTwister : Rosella.Random.RandomNumber
         self.mag01[0] = 0;
         self.mag01[1] = MATRIX_A;
 
-        self.mt[0] = seed & 0xFFFFFFFF;
+        self.mt[0] = seed & INT_MAX;
         int mti = 1;
         for (mti = 1; mti < N; mti++)
         {
@@ -51,7 +52,7 @@ class Rosella.Random.RandomNumber.MersenneTwister : Rosella.Random.RandomNumber
             int z = logical_shift_right(y, 30);
 
             self.mt[mti] = 1812433253 * (self.mt[mti - 1] ^ z) + mti;
-            self.mt[mti] = self.mt[mti] & 0xFFFFFFFF;
+            self.mt[mti] = self.mt[mti] & INT_MAX;
         }
         self.mti = mti;
     }
@@ -100,14 +101,14 @@ class Rosella.Random.RandomNumber.MersenneTwister : Rosella.Random.RandomNumber
         z = logical_shift_right(y, 18);
         y = y ^ z;                                  // TEMPERING_SHIFT_T(y)
 
-        return y & 0xFFFFFFFF;
+        return y & INT_MAX;
     }
 
     // Get a random float
     function get_float()
     {
         int y = self.get_int();
-        float z = y / 0xFFFFFFFF;
+        float z = y / INT_MAX;
         return z;
     }
 }

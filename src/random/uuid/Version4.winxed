@@ -22,11 +22,22 @@ class Rosella.Random.UUID.Version4 : Rosella.Random.UUID
     // These are "Version 4" UUIDs
     function type_name() { return "UUID Version 4"; }
 
+    function __get_hexchar_array()
+    {
+        const string HEX_STRING_ARRAY = "Rosella.Random.hexchar_array";
+        return Rosella.Globals.autoget_global(HEX_STRING_ARRAY,
+            function() {
+                string hex[] = ["0", "1", "2", "3", "4", "5", "6", "7", "8", "9", "A", "B", "C", "D", "E", "F"];
+                return hex;
+            }
+        );
+    }
+
     // Get a new UUID using the default PRNG
     function __get()
     {
         var rand = Rosella.Random.default_uniform_random();
-        string hex[] = ["0", "1", "2", "3", "4", "5", "6", "7", "8", "9", "A", "B", "C", "D", "E", "F"];
+        var hex = Rosella.Random.UUID.Version4.__get_hexchar_array();
         string s[] = [];
         for (int i = 0; i < 36; i++)
             s[i] = hex[int(rand.get_range(0, 16))];
