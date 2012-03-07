@@ -35,7 +35,7 @@ class Rosella.Container.Option.Method : Rosella.Container.Option
         var n = {};
         var method = Rosella.find_named_method(instance, string(self.method));
         if (method == null)
-            Rosella.Error.invalid(__FUNCTION__, "Cannot find method %s", self.method);
+            Rosella.Error.error("Cannot find method %s", self.method);
         for (int i = 0; i < elements(self.positional); i++) {
             var positional = self.positional[i];
             if (positional instanceof Rosella.Container.Argument)

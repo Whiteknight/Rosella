@@ -42,9 +42,9 @@ namespace Rosella.Date
 
     // Get a Date object representing the minimum representable date. This
     // object is guaranteed to always compare lower than all other dates.
-    const string DATE_MINIMUM = "Rosella.Date.min";
     function min()
     {
+        const string DATE_MINIMUM = "Rosella.Date.min";
         return Rosella.Globals.autoget_global(DATE_MINIMUM,
             function() { return new Rosella.Date.SpecialDate.Minimum(); }
         );
@@ -52,49 +52,48 @@ namespace Rosella.Date
 
     // Get a Date object representing the maximum representable date. This
     // object is guaranteed to always compare higher than all other dates.
-    const string DATE_MAXIMUM = "Rosella.Date.max";
     function max()
     {
+        const string DATE_MAXIMUM = "Rosella.Date.max";
         return Rosella.Globals.autoget_global(DATE_MAXIMUM,
             function() { return new Rosella.Date.SpecialDate.Maximum(); }
         );
     }
 
     // Get an array with the names of all months in the calendar year
-    const string ALL_MONTHS_KEY = "Rosella.Date.all_months";
     function all_months()
     {
+        const string ALL_MONTHS_KEY = "Rosella.Date.all_months";
         return Rosella.Globals.autoget_global(ALL_MONTHS_KEY,
             function() {
-                string months[] =  ["January", "February", "March", "April", "May", "June",
-                         "July", "August", "September", "October", "November",
-                         "December"];
+                string months[] = ["January", "February", "March", "April", "May", "June",
+                                   "July", "August", "September", "October", "November",
+                                   "December"];
                 return months;
             }
         );
     }
 
     // Get an array with the abbreviated names of all months in the calendar year
-    const string ALL_MONTHS_SHORT_KEY = "Rosella.Date.all_months_short";
     function all_months_short()
     {
+        const string ALL_MONTHS_SHORT_KEY = "Rosella.Date.all_months_short";
         return Rosella.Globals.autoget_global(ALL_MONTHS_SHORT_KEY,
             function() {
                 string months[] = ["Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep",
-                        "Oct", "Nov", "Dec"];
+                                   "Oct", "Nov", "Dec"];
                 return months;
             }
         );
     }
 
     // Get an array containing the names of all days of the week
-    const string ALL_WEEK_DAYS_KEY = "Rosella.Date.all_week_days";
     function all_week_days()
     {
+        const string ALL_WEEK_DAYS_KEY = "Rosella.Date.all_week_days";
         return Rosella.Globals.autoget_global(ALL_WEEK_DAYS_KEY,
             function() {
-                string days[] = ["Sunday", "Monday", "Tuesday", "Wednesday", "Thursday",
-                        "Friday", "Saturday"];
+                string days[] = ["Sunday", "Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday"];
                 return days;
             }
         );
@@ -103,18 +102,26 @@ namespace Rosella.Date
     // Get an array containing counts of the number of days in each month of the
     // given year. This changes depending on whether the given year is a leap
     // year or not.
-    const string DAY_COUNTS_NORMAL = "Rosella.Date.month_day_counts";
-    const string DAY_COUNTS_LEAP = "Rosella.Date.month_day_counts_leap";
     function month_day_counts(int year)
     {
         int leap_year = Rosella.Date.is_leap_year(year);
-        string key = leap_year == true ? DAY_COUNTS_LEAP : DAY_COUNTS_NORMAL;
-        var temp = Rosella.Globals.get_global(key);
-        if (temp == null) {
-            temp = [31, 28 + (leap_year ? 1 : 0), 31, 30, 30, 31, 31, 31, 30, 31, 30, 31];
-            Rosella.Globals.register_global(key, temp);
+        if (leap_year) {
+            const string DAY_COUNTS_LEAP = "Rosella.Date.month_day_counts_leap";
+            return Rosella.Globals.autoget_global(DAY_COUNTS_LEAP,
+                function() {
+                    int[] days = [31, 29, 31, 30, 30, 31, 31, 31, 30, 31, 30, 31];
+                    return days;
+                }
+            );
+        } else {
+            const string DAY_COUNTS_NORMAL = "Rosella.Date.month_day_counts";
+            return Rosella.Globals.autoget_global(DAY_COUNTS_NORMAL,
+                function() {
+                    int[] days = [31, 28, 31, 30, 30, 31, 31, 31, 30, 31, 30, 31];
+                    return days;
+                }
+            );
         }
-        return temp;
     }
 
     // Determine if the given year is a leap year
@@ -160,6 +167,11 @@ namespace Rosella.Date
         return Rosella.Globals.autoget_global(DEFAULT_DAY_CALCULATOR,
             function() { return new Rosella.Date.Doomsday(); }
         );
+    }
+
+    function set_day_calculator(var calc)
+    {
+        Rosella.Globals.register_global(DEFAULT_DAY_CALCULATOR, calc);
     }
 }
 
@@ -539,12 +551,9 @@ class Rosella.Date
     /* Operations and TimeSpans
     */
 
-    // Subtract. If it's a Date return a TimeSpan. If it's a TimeSpan, return a
-    // Date.
-    function subtract(var d)
+    // Subtract a TimeSpan from this date, to get a new Date.
+    function subtract_span(var d)
     {
-        if (d instanceof Rosella.Date)
-            return new Rosella.Date.TimeSpan(d, self);
         if (d instanceof Rosella.Date.TimeSpan) {
             var next = clone(self);
             next.__add_seconds(-ts.seconds());
@@ -553,11 +562,22 @@ class Rosella.Date
             next.__add_days(-ts.days());
             return next;
         }
-        Rosella.Error.error("Unknown type in Date.substract: %s", typeof(d));
+        Rosella.Error.error("Unknown type in Date.substract_span: %s", typeof(d));
+    }
+
+    function diff(var d)
+    {
+        if (d instanceof Rosella.Date) {
+            if (self > d)
+                return new Rosella.Date.TimeSpan(d, self);
+            else
+                return new Rosella.Date.TimeSpan(self, d);
+        }
+        Rosella.Error.error("Unknown type in Date.diff: %s", typeof(d));
     }
 
     // Add a TimeSpan
-    function add(var ts)
+    function add_span(var ts)
     {
         if (ts instanceof Rosella.Date.TimeSpan) {
             var next = clone(self);
@@ -619,7 +639,7 @@ class Rosella.Date
     // Compare two Dates
     function cmp[vtable](var d) { return self.compare_to(d); }
 
-    //function add[vtable](var d) { return self.add(d); }
+    function add[vtable](var d) { return self.add_span(d); }
 
-    //function subtract[vtable](var d) { return self.subtract(d); }
+    function subtract[vtable](var d) { return self.subtract_span(d); }
 }

@@ -9,12 +9,9 @@ namespace Rosella.Container
     // only a convenience to help bootstrap dependency injection.
     function default_container()
     {
-        var temp = Rosella.Globals.get_global(DEFAULT_CONTAINER_GLOBAL);
-        if (temp == null) {
-            temp = new Rosella.Container();
-            Rosella.Globals.register_global(DEFAULT_CONTAINER_GLOBAL, temp);
-        }
-        return temp;
+        return Rosella.autoget_global(DEFAULT_CONTAINER_GLOBAL,
+            function() { return new Rosella.Container(); }
+        );
     }
 
     // Set the globally registered Container instance to something besides
@@ -56,7 +53,7 @@ class Rosella.Container
     {
         var type_class = self.__get_type_class(type);
         if (type_class == null)
-            Rosella.Error.invalid(__FUNCTION__, "Attempt to register invalid or null type");
+            Rosella.Error.error("Attempt to register invalid or null type");
         :(var resolver, var build_options) = self.__sort_options_register(type_class, options);
         if (resolver == null)
             resolver = new Rosella.Container.Resolver.Type(type);
@@ -100,7 +97,7 @@ class Rosella.Container
     {
         var type_class = self.__get_type_class(type);
         if (type_class == null)
-            Rosella.Error.invalid(__FUNCTION__, "Cannot check registration status of unknown type");
+            Rosella.Error.error("Cannot check registration status of unknown type");
         if (exists self.type_registry[type_class])
             return true;
         return false;
@@ -111,7 +108,7 @@ class Rosella.Container
     {
         var type_class = self.__get_type_class(type);
         if (type_class == null)
-            Rosella.Error.invalid(__FUNCTION__, "Cannot setup alias '%s' for unknown class", name);
+            Rosella.Error.error("Cannot setup alias '%s' for unknown class", name);
         self.aliases[name] = type_class;
         return self;
     }
@@ -123,7 +120,7 @@ class Rosella.Container
     {
         var type_class = self.__get_type_class(type);
         if (type_class == null)
-            Rosella.Error.invalid(__FUNCTION__, "Cannot resolve unknown class");
+            Rosella.Error.error("Cannot resolve unknown class");
         return self.__resolve_internal(type_class, options);
     }
 
@@ -168,7 +165,7 @@ class Rosella.Container
                 resolver = new Rosella.Container.Resolver.Instance(option);
                 continue;
             }
-            Rosella.Error.invalid(__FUNCTION__, "Invalid option at registration: %s", typeof(option));
+            Rosella.Error.error("Invalid option at registration: %s", typeof(option));
         }
         return resolver, build_options;
     }
@@ -191,7 +188,7 @@ class Rosella.Container
                 push(build_options, option);
                 continue;
             }
-            Rosella.Error.invalid(__FUNCTION__, "Invalid option at type resolution: %s", typeof(option));
+            Rosella.Error.error("Invalid option at type resolution: %s", typeof(option));
         }
         return resolver, build_options;
     }
@@ -218,6 +215,6 @@ class Rosella.Container
     // type
     function __multiple_resolvers_error(var type)
     {
-        Rosella.Error.invalid(__FUNCTION__, "Multiple resolvers specified for type registration %s", Rosella.get_type_name(type));
+        Rosella.Error.error("Multiple resolvers specified for type registration %s", Rosella.get_type_name(type));
     }
 }

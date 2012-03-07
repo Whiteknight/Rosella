@@ -140,7 +140,7 @@ class Rosella.Container.Resolver.TypeConstructor : Rosella.Container.Resolver
         var obj = Rosella.alloc(self.data);
         var constructor = Rosella.find_named_method(obj, string(self.constructor));
         if (constructor == null)
-            Rosella.Error.invalid(__FUNCTION__, "Cannot find method '%s' in type %s", self.constructor, self.data);
+            Rosella.Error.error("Cannot find method '%s' in type %s", self.constructor, self.data);
         :(var p, var n) = self.get_arguments(container, self.positionals, self.named);
         obj.*constructor(p:[flat], n:[flat,named]);
         return obj;
@@ -167,7 +167,7 @@ class Rosella.Container.Resolver.Factory : Rosella.Container.Resolver
         var factory = self.data;
         var method = Rosella.find_named_method(factory, string(self.method));
         if (method == null)
-            Rosella.Error.invalid(__FUNCTION__, "Cannot find method '%s' on factory type %s", self.method, typeof(self.data));
+            Rosella.Error.error("Cannot find method '%s' on factory type %s", self.method, typeof(self.data));
         :(var p, var n) = self.get_arguments(container, self.positionals, self.named);
         var obj = factory.*method(p:[flat], n:[flat,named]);
         return obj;
