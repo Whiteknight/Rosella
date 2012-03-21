@@ -11,12 +11,9 @@ class Rosella.ObjectFactory
 {
     var target_type;
 
-    function ObjectFactory(var target_type [optional], int has_type [opt_flag])
+    function ObjectFactory(var target_type = null)
     {
-        if (has_type)
-            self.target_type = target_type;
-        else
-            self.target_type = null;
+        self.target_type = target_type;
     }
 
     // If the default target type is set, call .create_typed with it.

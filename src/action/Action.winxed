@@ -17,18 +17,13 @@ namespace Rosella
         /* Constructor
         */
 
-        function Action(var method,
-                var args [optional], int has_args [opt_flag])
+        function Action(var method, var args = [])
         {
             if (method == null)
                 Rosella.Error.invalid(__FUNCTION__, "Subroutine is null");
             self.method = method;
-            if (has_args) {
-                using Rosella.Action.Argument.verify_all_arguments;
-                verify_all_arguments(__FUNCTION__, args);
-                self.args = args;
-            } else
-                self.args = [];
+            Rosella.Action.Argument.verify_all_arguments(__FUNCTION__, args);
+            self.args = args;
         }
 
         /* Public Functions
@@ -38,14 +33,12 @@ namespace Rosella
         // arguments and a hash of named arguments. In addition to the
         // pre-defined Argument objects, take an optional list of Argument
         // overrides.
-        function prepare_args(var pos, var named,
-                var overrides [optional], int has_overrides [opt_flag])
+        function prepare_args(var pos, var named, var overrides = null)
         {
             for (var arg in self.args)
                 arg.resolve_to(pos, named);
-            if (has_overrides) {
-                using Rosella.Action.Argument.verify_all_arguments;
-                verify_all_arguments(__FUNCTION__, overrides);
+            if (overrides != null) {
+                Rosella.Action.Argument.verify_all_arguments(__FUNCTION__, overrides);
                 for (var override in overrides)
                     override.resolve_to(pos, named);
             }
@@ -54,12 +47,10 @@ namespace Rosella
         // Execute the action on the given object. Take an optional list of
         // Argument overrides to change the default behavior.
         function execute(var obj,
-                var overrides [optional], int has_overrides [opt_flag])
+                var overrides = [])
         {
             var pos = [];
             var named = {};
-            if (!has_overrides)
-                overrides = [];
             self.prepare_args(pos, named, overrides);
             self.execute_initializer(obj, pos, named);
         }

@@ -16,11 +16,10 @@ class Rosella.Template.Node.Factory : Rosella.ObjectFactory
 
     // Register a new node type, with a key and optionally a list of the
     // kinds of handlers that node can use.
-    function register_type(string key, var type,
-            var handlers [optional], int has_handlers [opt_flag])
+    function register_type(string key, var type, var handlers = null)
     {
         self.types[key] = Rosella.get_type_class(type);
-        if (has_handlers)
+        if (handlers != null)
             self.handler_factories[key] = new Rosella.Template.Handler.Factory(handlers);
     }
 
@@ -38,11 +37,10 @@ class Rosella.Template.Node.Factory : Rosella.ObjectFactory
     }
 
     // Create a Node given the type.
-    function create_typed(var type_class, var token,
-            var handler_factory [optional], int has_factory [opt_flag])
+    function create_typed(var type_class, var token, var handler_factory = null)
     {
         var node;
-        if (has_factory)
+        if (handler_factory != null)
             node = Rosella.construct(type_class, token.data(), token.metadata(), handler_factory);
         else
             node = Rosella.construct(type_class, token.data(), token.metadata());

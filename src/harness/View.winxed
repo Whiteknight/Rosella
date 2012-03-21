@@ -17,11 +17,9 @@ class Rosella.Harness.View
     var need_backspaces;
 
     // Constructor
-    function View(var handle [optional], int has_h [opt_flag])
+    function View(var handle = null)
     {
-        if (!has_h)
-            handle = getstdout();
-        self.handle = handle;
+        self.handle = handle == null ?  getstdout() : handle;
         self.test_runs = [];
         self.line_length = 0;
         self.total_files = 0;

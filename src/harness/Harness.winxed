@@ -60,11 +60,14 @@ class Rosella.Harness
         return self;
     }
 
-    // Set a view to use
-    function view(var view [optional], int has_view [opt_flag])
+    function set_view(var view)
     {
-        if (has_view)
-            self.view = view;
+        self.view = view;
+    }
+
+    // Set a view to use
+    function view()
+    {
         if (self.view == null)
             self.view = new Rosella.Harness.View();
         return self.view;
@@ -90,11 +93,8 @@ class Rosella.Harness
     }
 
     // Return the current test run
-    function setup_test_run(var view [optional], int has_view [opt_flag],
-            var options [named,slurpy])
+    function setup_test_run(var view = self.view(), var options [named,slurpy])
     {
-        if (!has_view || view == null)
-            view = self.view();
         var run = self.testrun_factory.create(options:[flat,named]);
         view.add_run(run, 0);
         push(self.saved_runs, run);
@@ -111,7 +111,7 @@ class Rosella.Harness
     */
 
     // Run the harness. Get argument values and pass them to run_internal
-    function run(var test_runs [optional], int has_runs [opt_flag],
+    function run(var test_runs = self.saved_runs,
             var test_executor [named,optional], int has_te [opt_flag],
             int debug [named,optional], int has_dbg [opt_flag])
     {
@@ -119,9 +119,7 @@ class Rosella.Harness
             test_executor = self.container.resolve(class Rosella.Harness.TestExecutor);
         if (!has_dbg)
             debug = 0;
-        if (has_runs == false || test_runs == null || elements(test_runs) == 0)
-            test_runs = self.saved_runs;
-        else if (has_runs == true && test_runs instanceof Rosella.Harness.TestRun)
+        if (test_runs instanceof Rosella.Harness.TestRun)
             test_runs = [test_runs];
 
         var fileresult_factory = self.container.resolve(class Rosella.Harness.FileResult.Factory);

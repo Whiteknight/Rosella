@@ -155,11 +155,10 @@ namespace Rosella
     }
 
     // Load in the bytecode library, executing the given trigger, if any.
-    function load_bytecode_file(string file,
-            string trigger [optional], int has_trigger [opt_flag])
+    function load_bytecode_file(string file, string trigger = null)
     {
         var pf = load_packfile(file);
-        if (has_trigger && trigger != "" && trigger != null)
+        if (trigger != "" && trigger != null)
             init_bytecode(pf, trigger);
         return pf;
     }

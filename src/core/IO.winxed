@@ -30,9 +30,7 @@ namespace Rosella.IO
         return save_handles;
     }
 
-    // Execute a callback, capturing all output to the standard output handles
-    function capture_output(int together, var func,
-            var err_func [optional], int has_err [opt_flag])
+    function capture_output(int together, var func, var err_func = null)
     {
         var stdout = new "StringHandle";
         stdout.open("blah", "rw");
@@ -52,7 +50,7 @@ namespace Rosella.IO
             exception = e;
         }
         swap_handles(save_handles);
-        if (exception != null && has_err && err_func != null)
+        if (exception != null && err_func != null)
             err_func(exception);
         if (together)
             return stdout;
@@ -60,15 +58,12 @@ namespace Rosella.IO
             return stdout, stderr;
     }
 
-    // Execute a commandline command, returning the output text. If the command
-    // fails, optionally execute an error handling callback.
-    function execute_pipe(string cmd,
-            var on_err [optional], int has_err [opt_flag])
+    function execute_pipe(string cmd, var on_err = null)
     {
         var pipe = open_pipe(cmd);
         string output = pipe.readall();
         int exit_status = close_pipe(pipe);
-        if (exit_status != 0 && has_err && on_err != null)
+        if (exit_status != 0 && on_err != null)
             on_err(exit_status);
         return output;
     }

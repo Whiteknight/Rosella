@@ -41,12 +41,8 @@ class Rosella.Proxy.Factory : Rosella.ObjectFactory
     // little bit of other metadata on it. Execute all the builders on it
     // for any per-instance settings that need to be changed, and then
     // tell the controller to initialize it. p and n are unused
-    function create(var controller,
-            var target [optional], int has_target [opt_flag],
-            var p [slurpy], var n [slurpy,named])
+    function create(var controller, var target = null, var p [slurpy], var n [slurpy,named])
     {
-        if (!has_target)
-            target = null;
         var proxy_class = self.get_proxy_class_for();
         return self.create_proxy_internal(proxy_class, controller, target);
     }
@@ -56,19 +52,14 @@ class Rosella.Proxy.Factory : Rosella.ObjectFactory
     // The same list of builders is executed on the new proxy class and
     // the new proxy.
     function create_typed(var target_type, var controller,
-            var target [optional], int has_target [opt_flag],
-            var p [slurpy], var n [slurpy,named])
+            var target = null, var p [slurpy], var n [slurpy,named])
     {
-        if (!has_target)
-            target = null;
         var proxy_class = self.get_proxy_class_for(target_type);
         return self.create_proxy_internal(proxy_class, controller, target);
     }
 
-    function get_proxy_class_for(var target_type [optional], int has_type [opt_flag])
+    function get_proxy_class_for(var target_type = self.target_type)
     {
-        if (!has_type)
-            target_type = self.target_type;
         var target_class = Rosella.get_type_class(target_type);
         string type_name = Rosella.get_type_name(target_type);
         if (exists self.proxy_classes[type_name])

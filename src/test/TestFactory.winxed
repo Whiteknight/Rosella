@@ -7,10 +7,8 @@ class Rosella.Test.TestFactory : Rosella.ObjectFactory
 {
     // Set up the factory with the type to create (TestCase or look-alike)
     // and the TestContext object to use.
-    function TestFactory(var testcase_type [optional], int has_type [opt_flag])
+    function TestFactory(var testcase_type = class Rosella.Test.TestCase)
     {
-        if (!has_type)
-            testcase_type = class Rosella.Test.TestCase;
         self.target_type = testcase_type;
     }
 

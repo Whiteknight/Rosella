@@ -30,10 +30,9 @@ class Rosella.Query.Provider.Array : Rosella.Query.Provider
 
     // Return a new array with only the elements from the original array
     // which satisfy the predicate. If provided, only return up to N items
-    function filter(var data, var func,
-        int limit [optional], int has_limit [opt_flag])
+    function filter(var data, var func, int limit = -1)
     {
-        if (!has_limit)
+        if (limit < 0)
             limit = elements(data);
         var new_data = [];
         if (limit <= 0)
@@ -87,15 +86,15 @@ class Rosella.Query.Provider.Array : Rosella.Query.Provider
 
     // Combine
     function combine(var a, var b,
-            var filter [optional], int has_filter [opt_flag],
-            var key_func [optional], int has_key_func [opt_flag],
+            var filter = null,
+            var key_func = null,
             var dispute [optional], int has_dispute [opt_flag])
     {
-        if (has_filter) {
+        if (filter != null) {
             a = self.filter(a, filter);
             b = self.filter(b, filter);
         }
-        if (has_key_func) {
+        if (key_func != null) {
             if (!has_dispute)
                 dispute = function (data_a, data_b) { return data_a; };
             return self.join_key(a, b, key_func, dispute);

@@ -1,80 +1,61 @@
-namespace Rosella { namespace Prototype
+class Rosella.Prototype.Manager
 {
-    class Manager
+    var library;
+    var cloner;
+
+    function Manager(var cloner = new Rosella.Prototype.Manager.ObjectCloner)
     {
-        var library;
-        var cloner;
-
-        function Manager(var cloner [optional], int has_c [opt_flag])
-        {
-            self.library = {};
-            if (has_c)
-                self.cloner = cloner;
-            else
-                self.cloner = new Rosella.Prototype.Manager.ObjectCloner;
-        }
-
-        function add_prototype(var type, var proto,
-                var sub [optional], int has_sub [opt_flag])
-        {
-            using Rosella.get_type_name;
-
-            string type_name = get_type_name(type);
-            if (!has_sub)
-                sub = null;
-            var entry = new Rosella.Prototype.Manager.Entry(proto, sub);
-            self.library[type_name] = entry;
-        }
-
-        // Get a fresh instance
-        function instance(var type, var pos [slurpy], var named [slurpy,named])
-        {
-            using Rosella.get_type_name;
-
-            string type_name = get_type_name(type);
-            if (exists self.library[type_name]) {
-                var entry = self.library[type_name];
-                var proto = entry.prototype;
-                var object = self.cloner.clone(proto);
-                entry.construct(object, pos, named);
-                return object;
-            }
-            return null;
-        }
-
-        // Get a fresh instance, and run it through a specified constructor
-        // instead of any already-registered constructors.
-        function instance_constructor(var type, var constructor,
-                var pos [slurpy], var named [slurpy,named])
-        {
-            using Rosella.get_type_name;
-
-            string type_name = get_type_name(type);
-            if (exists self.library[type_name]) {
-                var entry = self.library[type_name];
-                var proto = entry.prototype;
-                var object = self.cloner.clone(proto);
-                if (object != null && constructor != null)
-                    object.*constructor(pos:[flat], named:[flat,named]);
-                return object;
-            }
-            return null;
-        }
-
-        function get_prototype(var type)
-        {
-            using Rosella.get_type_name;
-
-            string type_name = get_type_name(type);
-            return self.library[type_name].prototype;
-        }
-
-        function get_constructor(var type)
-        {
-            using Rosella.get_type_name;
-
-            string type_name = get_type_name(type);
-            return self.library[type_name].constructor;
-        }
+        self.library = {};
+        self.cloner = cloner;
     }
-}}
+
+    function add_prototype(var type, var proto, var sub = null)
+    {
+        string type_name = Rosella.get_type_name(type);
+        var entry = new Rosella.Prototype.Manager.Entry(proto, sub);
+        self.library[type_name] = entry;
+    }
+
+    // Get a fresh instance
+    function instance(var type, var pos [slurpy], var named [slurpy,named])
+    {
+        string type_name = Rosella.get_type_name(type);
+        if (exists self.library[type_name]) {
+            var entry = self.library[type_name];
+            var proto = entry.prototype;
+            var object = self.cloner.clone(proto);
+            entry.construct(object, pos, named);
+            return object;
+        }
+        return null;
+    }
+
+    // Get a fresh instance, and run it through a specified constructor
+    // instead of any already-registered constructors.
+    function instance_constructor(var type, var constructor,
+            var pos [slurpy], var named [slurpy,named])
+    {
+        string type_name = Rosella.get_type_name(type);
+        if (exists self.library[type_name]) {
+            var entry = self.library[type_name];
+            var proto = entry.prototype;
+            var object = self.cloner.clone(proto);
+            if (object != null && constructor != null)
+                object.*constructor(pos:[flat], named:[flat,named]);
+            return object;
+        }
+        return null;
+    }
+
+    function get_prototype(var type)
+    {
+        string type_name = Rosella.get_type_name(type);
+        return self.library[type_name].prototype;
+    }
+
+    function get_constructor(var type)
+    {
+        string type_name = Rosella.get_type_name(type);
+        return self.library[type_name].constructor;
+    }
+}

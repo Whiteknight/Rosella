@@ -45,10 +45,9 @@ namespace Rosella.Parrot
     // Execute a function. Catch any exceptions and print the message and
     // backtrace out to a specified handle. If no handle is specified,
     // use stdout.
-    function try_report(var sub, var handle [optional],
-            int has_handle [opt_flag])
+    function try_report(var sub, var handle = null)
     {
-        if (!has_handle)
+        if (handle == null)
             handle = getstdout();
         try {
             sub();

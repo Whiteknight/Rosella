@@ -127,8 +127,7 @@ class Rosella.String.Tokenizer
 
     // Helper routine. Get the first n characters from the front of the
     // input data.
-    function __get_chars(int count,
-            int skip [optional], int has_skip [opt_flag])
+    function __get_chars(int count, int skip = 0)
     {
         string str = self.data;
         int len = length(str);
@@ -136,8 +135,6 @@ class Rosella.String.Tokenizer
             self.data = null;
             return str;
         }
-        if (!has_skip)
-            skip = 0;
         self.data = substr(str, count + skip);
         return substr(str, 0, count);
     }

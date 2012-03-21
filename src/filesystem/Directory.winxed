@@ -17,7 +17,7 @@ namespace Rosella.FileSystem.Directory
 class Rosella.FileSystem.Directory : Rosella.FileSystem.Entry
 {
     // Constructor. Build a directory with the given path name
-    function Directory(string path, var parent_dir [optional], int has_parent [opt_flag])
+    function Directory(string path, var parent_dir = null)
     {
         if (path == null || path == "")
             Rosella.Error.error("Directory needs a valid path");
@@ -27,7 +27,7 @@ class Rosella.FileSystem.Directory : Rosella.FileSystem.Entry
         string lastchar = substr(path, len - 1);
         if (lastchar != path_sep)
             path = path + path_sep;
-        if (has_parent)
+        if (parent_dir != null)
             path = string(parent_dir) + path;
         self.Entry(path);
     }
@@ -72,11 +72,8 @@ class Rosella.FileSystem.Directory : Rosella.FileSystem.Entry
     }
 
     // Walk this directory recursively using a Visitor object.
-    function walk(var visitor [optional], int has_v [opt_flag])
+    function walk(var visitor = new Rosella.FileSystem.Visitor.List())
     {
-        if (!has_v)
-            visitor = new Rosella.FileSystem.Visitor.List();
-
         visitor.begin_directory(self);
         var files = self.get_files();
         for (var file in files)
