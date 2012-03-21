@@ -57,11 +57,10 @@ class Rosella.Template.Node.Eval : Rosella.Template.Node
         string code_s = Rosella.String.sprintf("function %s[anon](var engine, var output, var context) { %s; }", func_name, code);
         var winxed = Rosella.get_winxed_compiler();
         var pf = winxed.compile(code_s);
-        //for (var sub in pf.all_subs()) {
-            //if (string(sub) == func_name)
-                //return sub;
-        //}
-        //return null;
-        return pf[0];
+        for (var sub in pf.all_subs()) {
+            if (string(sub) == func_name)
+                return sub;
+        }
+        return null;
     }
 }
