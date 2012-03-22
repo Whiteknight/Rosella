@@ -235,6 +235,38 @@ namespace Rosella.String
         return matrix[m][n];
     }
 
+    function to_integer(string s, int radix = 10, int pos = 0)
+    {
+        :(int i, int len) = parse_to_integer(s, radix, pos);
+        return i;
+    }
+
+    const string DIGITS = '0 1 2 3 4 5 6 7 8 9 aAbBcCdDeEfFgGhHiIjJkKlLmMnNoOpPqQrRsStTuUvVwWxXyYzZ';
+
+    function parse_to_integer(string source, int radix = 10, int pos = 0)
+    {
+        if (radix <= 1 || radix >= 36)
+            Rosella.Error.error("Invalid radix for integer parsing '%d'", radix);
+        if (pos < 0 || pos > length(source))
+            Rosella.Error.error("Invalid starting position for integer parsing '%d' (length: %d)", pos, length(source));
+
+        int result = 0;
+        int startpos = pos;
+        while(pos < length(source)) {
+            string s0 = substr(source, pos, 1);
+            int digitval = index(DIGITS, s0);
+            if (digitval < 0)
+                break;
+            digitval = digitval >> 1;
+            if (digitval >= radix)
+                break;
+            result *= radix;
+            result += digitval;
+            pos++;
+        }
+        return result, pos - startpos;
+    }
+
     /*
     function replace_first(string str, string target, string subst, int count)
     {
