@@ -265,7 +265,7 @@ class Rosella.Query.Iterable : Rosella.IteratorBase
 
     // Read all the data into an array, sort the array, and return a new
     // iterator for it.
-    function sort(var f = null, int is_sorted = false)
+    function sort(var f = null, int is_sorted = 0)
     {
         if (f == null)
             f = Rosella.Query.Sort.get_default_comparer();

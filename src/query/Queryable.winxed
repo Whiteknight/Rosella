@@ -14,8 +14,10 @@ class Rosella.Query.Queryable
     // creating this directly.
     function Queryable(var data, var factory = null)
     {
+        if (factory == null)
+            factory = Rosella.Query.default_provider_factory();
         self.data = data;
-        self.factory = factory == null ? Rosella.Query.default_provider_factory() : factory;
+        self.factory = factory;
         self.provider = factory.create(data);
     }
 

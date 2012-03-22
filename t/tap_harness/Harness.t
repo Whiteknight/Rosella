@@ -73,11 +73,9 @@ class Test_Rosella_Harness
         self.status.verify("Test Rosella.Harness.view()");
         var obj = new Rosella.Harness();
 
-        var arg_0 = "Test";
-        var result = obj.view(arg_0);
-        self.assert.equal(arg_0, result);
-        result = obj.view();
-        self.assert.equal(arg_0, result);
+        var result = obj.view();
+        self.assert.not_null(result);
+        self.assert.instance_of(result, class Rosella.Harness.View);
     }
 
     function add_test_dirs()
@@ -139,7 +137,7 @@ class Test_Rosella_Harness
         var obj = new Rosella.Harness();
 
         var c = Rosella.MockObject.default_mock_factory().create_typed(class Rosella.Harness.TestRun.Factory);
-        obj.view(c.mock());
+        obj.set_view(c.mock());
         c.expect_method("show_results").once().with_no_args().will_return(true);
 
         obj.show_results();

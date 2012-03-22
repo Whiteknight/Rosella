@@ -58,8 +58,10 @@ namespace Rosella.String
 
     // Trim items off the start of the string that match the given cclass.
     // defaults to CCLASS_WHITESPACE
-    function trim_start(string str, int cclass = CCLASS_WHITESPACE)
+    function trim_start(string str, int cclass = -1)
     {
+        if (cclass < 0)
+            cclass = CCLASS_WHITESPACE;
         int idx = first_not_cclass(str, cclass);
         if (idx == -1)
             return "";
@@ -85,8 +87,10 @@ namespace Rosella.String
 
     // Trim items off the end of the string which match the given cclass.
     // defaults to CCLASS_WHITESPACE
-    function trim_end(string str, int cclass = CCLASS_WHITESPACE)
+    function trim_end(string str, int cclass = -1)
     {
+        if (cclass < 0)
+            cclass = CCLASS_WHITESPACE;
         int len = length(str);
         int idx = last_not_cclass(str, cclass);
 
@@ -105,8 +109,10 @@ namespace Rosella.String
 
     // Trim characters from both the start and end of the string which
     // match the given character class. Defaults to CCLASS_WHITESPACE
-    function trim(string str, int cclass = CCLASS_WHITESPACE)
+    function trim(string str, int cclass = -1)
     {
+        if (cclass < 0)
+            cclass = CCLASS_WHITESPACE;
         int start_idx = first_not_cclass(str, cclass);
         if (start_idx == -1)
             return "";

@@ -93,8 +93,10 @@ class Rosella.Harness
     }
 
     // Return the current test run
-    function setup_test_run(var view = self.view(), var options [named,slurpy])
+    function setup_test_run(var view = null, var options [named,slurpy])
     {
+        if (view == null)
+            view = self.view();
         var run = self.testrun_factory.create(options:[flat,named]);
         view.add_run(run, 0);
         push(self.saved_runs, run);
