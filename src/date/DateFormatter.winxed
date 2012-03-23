@@ -35,6 +35,8 @@ class Rosella.Date.DateFormatter : Rosella.StringFormatter
                 hours = hours - 12;
             f = f.replace("HH", format("%d", hours));
         }
+        if (contains(f, "ww"))   f = f.replace("ww", format("%02d", obj.week_day()));
+        if (contains(f, "WW"))   f = f.replace("WW", obj.week_day_name());
         if (contains(f, "hh"))   f = f.replace("hh", format("%02d", obj.hours()));
         if (contains(f, "mm"))   f = f.replace("mm", format("%02d", obj.minutes()));
         if (contains(f, "ss"))   f = f.replace("ss", format("%02d", obj.seconds()));

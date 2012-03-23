@@ -67,6 +67,7 @@ class Rosella.Net.Http.Protocol.File : Rosella.Net.Http.Protocol
         var f = new Rosella.FileSystem.File(path);
         if (!f.exists)
             return __error_not_found(uri);
+        response.add_header("Last-Modified", f.modify_time().format_string(""));
     }
 }
 
