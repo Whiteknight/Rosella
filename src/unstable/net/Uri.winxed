@@ -16,6 +16,7 @@ namespace Rosella.Net.Uri
 class Rosella.Net.Uri
 {
     var uri;
+
     function Uri(string uri)
     {
         self.uri = uri;
@@ -29,5 +30,12 @@ class Rosella.Net.Uri
     function protocol()
     {
         return string(split(":", string(self.uri))[0]);
+    }
+
+    function path()
+    {
+        string uri = self.uri;
+        int idx = index(uri, "//");
+        return substring(uri, idx);
     }
 }

@@ -18,6 +18,10 @@ class Rosella.Net.Http.Request
         return self.proxy;
     }
 
+    function uri()
+    {
+    }
+
     function GET(string url, var msg)
     {
         return self.simple_request("GET", url, msg);

@@ -1,4 +1,0 @@
-class Rosella.Net.Protocol.Factory
-{
-    // TODO: Take a Uri or other object and generate the correct protocol object
-}

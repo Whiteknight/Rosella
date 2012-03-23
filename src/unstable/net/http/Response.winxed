@@ -4,4 +4,12 @@ class Rosella.Net.Http.Response
     var message;
     var previous;
     var request;
+
+    function Response(int code, string message, var previous = null, var request = null)
+    {
+        self.code = code;
+        self.message = message;
+        self.previous = previous;
+        self.request = request;
+    }
 }

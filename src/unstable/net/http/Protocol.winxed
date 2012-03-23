@@ -1,0 +1,133 @@
+class Rosella.Net.Http.Protocol
+{
+    var user_agent;
+
+    function Protocol()
+    {
+    }
+
+    function protocol_name()
+    {
+        Rosella.Error.must_subclass(__CLASS__);
+    }
+
+    function request(var request, var proxy)
+    {
+        Rosella.Error.must_subclass(__CLASS__);
+    }
+
+    function user_agent() { return self.user_agent; }
+
+    function __dispatch_request(string name, var request, var proxy)
+    {
+        var m = find_method(self, "request_" + name);
+        if (m == null)
+            return new Rosella.Net.Response(RC_INTERNAL_SERVER_ERROR, "Cannot dispatch request type '%s' for protocol '%s'", name, self.protocol_name());
+        self.*m(request, proxy);
+    }
+
+    function __error_bad_protocol(string protocol)
+    {
+        return new Rosella.Net.Response(RC_INTERNAL_SERVER_ERROR, "Bad protocol. Expected '%s' but have '%s'", self.protocol_name(), protocol);
+    }
+
+    function __error_not_found(var uri)
+    {
+        return new Rosella.Net.Response(RC_NOT_FOUND, "Could not find resource ", uri.path());
+    }
+}
+
+class Rosella.Net.Http.Protocol.File : Rosella.Net.Http.Protocol
+{
+    function File() { }
+
+    function protocol_name() { return "file"; }
+
+    function request(var request)
+    {
+        var proxy = request.proxy();
+        if (proxy != null)
+            return new Rosella.Net.Http.Response(RC_BAD_REQUEST, "Cannot access a file through a proxy");
+        var uri = request.uri();
+        string uri_protocol = uri.protocol();
+        if (uri_protocol != "file")
+            return self.__error_bad_protocol(uri_protocol);
+        return self.__dispatch_method(request.method(), request, proxy);
+    }
+
+    function request_HEAD(var request, var protocol)
+    {
+        return self.request_GET(request, protocol);
+    }
+
+    function request_GET(var request, var protocol)
+    {
+        var uri = request.uri();
+        string path = uri.path();
+        var f = new Rosella.FileSystem.File(path);
+        if (!f.exists)
+            return __error_not_found(uri);
+    }
+}
+
+class Rosella.Net.Http.Protocol.Http : Rosella.Net.Http.Protocol
+{
+    function Http() { }
+
+    function protocol_name() { return "HTTP"; }
+
+    function GET()
+    {
+        Rosella.Error.must_subclass(__CLASS__);
+    }
+
+    function PUT()
+    {
+        Rosella.Error.must_subclass(__CLASS__);
+    }
+
+    function HEAD()
+    {
+        Rosella.Error.must_subclass(__CLASS__);
+    }
+
+    function DELETE()
+    {
+        Rosella.Error.must_subclass(__CLASS__);
+    }
+
+    function POST()
+    {
+        Rosella.Error.must_subclass(__CLASS__);
+    }
+}
+
+class Rosella.Net.Http.Protocol.Factory : Rosella.ObjectFactory
+{
+    var types;
+
+    function Factory(var types = { })
+    {
+        self.types = self.__get_default_types();
+    }
+
+    function __get_default_types()
+    {
+        return {
+            "http": class Rosella.Net.Protocol.Http,
+            "file": class Rosella.Net.Protocol.File
+        };
+    }
+
+    function create(var uri)
+    {
+        string pname = uri.protocol();
+        var type = self.types[pname];
+        return self.create_typed(type);
+    }
+
+    function create_typed(var type)
+    {
+        return Rosella.construct(type);
+    }
+}
