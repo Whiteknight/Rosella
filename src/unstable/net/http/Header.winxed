@@ -1,0 +1,48 @@
+class Rosella.Net.Http.Header
+{
+    var values;
+
+    function Header()
+    {
+        self.values = values;
+        // TODO: Set hash value to be strings to avoid boxing
+    }
+
+    function add_value(string name, string value)
+    {
+        self.values[name] = value;
+    }
+
+    function contains(string name)
+    {
+        return exists self.values[name];
+    }
+
+    function remove_value(string name)
+    {
+        if (exists self.values[name])
+            delete self.values[name];
+    }
+
+    function get_value(string name)
+    {
+        if (exists self.values[name])
+            return self.values[name];
+        return "";
+    }
+
+    function clear()
+    {
+    }
+
+    function get_header_text(var sb = new 'StringBuilder')
+    {
+        foreach (string name in self.values) {
+            push(sb, name);
+            push(sb, ": ");
+            push(sb, self.values[name]);
+            push(sb, "\r\n");
+        }
+        return sb;
+    }
+}

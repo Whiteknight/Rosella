@@ -1,0 +1,10 @@
+namespace Rosella.Net.MimeBase64
+{
+    function encode(string plain)
+    {
+    }
+
+    function decode(string base64)
+    {
+    }
+}

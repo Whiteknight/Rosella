@@ -1,0 +1,33 @@
+namespace Rosella.Net.Uri
+{
+    function percent_encode_except()
+    {
+    }
+
+    function percent_encode()
+    {
+    }
+
+    function percent_encode_component()
+    {
+    }
+}
+
+class Rosella.Net.Uri
+{
+    var uri;
+    function Uri(string uri)
+    {
+        self.uri = uri;
+    }
+
+    function uri()
+    {
+        return string(self.uri);
+    }
+
+    function protocol()
+    {
+        return string(split(":", string(self.uri))[0]);
+    }
+}

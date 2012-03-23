@@ -1,0 +1,41 @@
+class Rosella.Net.Http.Request
+{
+    var method;
+    var uri;
+    var proxy;
+
+    function Request()
+    {
+    }
+
+    function set_proxy(var p)
+    {
+        self.proxy = p;
+    }
+
+    function proxy()
+    {
+        return self.proxy;
+    }
+
+    function GET(string url, var msg)
+    {
+        return self.simple_request("GET", url, msg);
+    }
+
+    function HEAD()
+    {
+    }
+
+    function POST()
+    {
+    }
+
+    function PUT()
+    {
+    }
+
+    function POST()
+    {
+    }
+}

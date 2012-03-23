@@ -1,0 +1,7 @@
+class Rosella.Net.Http.Response
+{
+    var code;
+    var message;
+    var previous;
+    var request;
+}
