@@ -24,4 +24,10 @@ namespace Rosella.Template
         var file = new Rosella.FileSystem.File(filename);
         return file.read_all_text();
     }
+
+    function get_template_text(string path)
+    {
+        var file = new Rosella.FileSystem.File(path);
+        return file.read_all_text();
+    }
 }
