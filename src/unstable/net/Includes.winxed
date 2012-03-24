@@ -1,0 +1,9 @@
+const int RC_OK = 200;
+const int RC_BAD_REQUEST = 400;
+const int RC_NOT_FOUND = 404;
+const int RC_INTERNAL_SERVER_ERROR = 500;
+
+$include_const "socket.pasm";
+$include_const "cclass.pasm";
+
+const string CRLF = "\r\n";

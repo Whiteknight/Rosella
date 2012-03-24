@@ -15,27 +15,56 @@ namespace Rosella.Net.Uri
 
 class Rosella.Net.Uri
 {
-    var uri;
+    var parts;
 
     function Uri(string uri)
     {
-        self.uri = uri;
+        self.parts = self.__parse(uri);
     }
 
-    function uri()
+    function __parse(string uri)
     {
-        return string(self.uri);
-    }
-
-    function protocol()
-    {
-        return string(split(":", string(self.uri))[0]);
-    }
-
-    function path()
-    {
-        string uri = self.uri;
+        var parts = {
+            "URI" : uri
+        };
         int idx = index(uri, "//");
-        return substr(uri, idx + 2);
+        string protocol = (idx > 2) ? substr(uri, 0, idx - 1) : "";
+        parts["Protocol"] = protocol;
+        uri = substr(uri, idx + 2);
+        parts["Path"] = uri;
+        idx = index(uri, "/");
+        parts["Path Query"] = (idx >= 0) ? substr(uri, idx) : "";
+        string port_authority = substr(uri, 0, idx);
+        idx = index(uri, ":");
+        if (idx < 0) {
+            parts["Authority"] = uri;
+            //parts["Port"] = "";
+            switch(protocol) {
+                case "http":
+                    parts["Port"] = "80";
+                    break;
+                default:
+                    parts["Port"] = "";
+                    break;
+            }
+        } else {
+            parts["Authority"] = substr(uri, 0, idx);
+            parts["Port"] = substr(uri, idx + 1);
+        }
+        return parts;
     }
+
+    function host() { return self.authority(); }
+
+    function uri() { return self.parts["URI"]; }
+
+    function protocol() { return self.parts["Protocol"]; }
+
+    function path() { return self.parts["Path"]; }
+
+    function authority() { return self.parts["Authority"]; }
+
+    function port() { return self.parts["Port"]; }
+
+    function path_query() { return self.parts["Path Query"]; }
 }

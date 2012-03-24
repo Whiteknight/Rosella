@@ -13,7 +13,7 @@ class Rosella.Net.Http.Header
         self.values[name] = value;
     }
 
-    function contains(string name)
+    function contains_value(string name)
     {
         return exists self.values[name];
     }
@@ -41,7 +41,7 @@ class Rosella.Net.Http.Header
             push(sb, name);
             push(sb, ": ");
             push(sb, self.values[name]);
-            push(sb, "\r\n");
+            push(sb, CRLF);
         }
         return sb;
     }

@@ -14,7 +14,7 @@ class Rosella.Net.Http.Request : Rosella.Net.Http.Message
         self.proxy = p;
     }
 
-    function proxy()
+    function get_proxy()
     {
         return self.proxy;
     }

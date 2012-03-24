@@ -378,7 +378,7 @@ function setup_experimental_libraries(var rosella)
         "genetic/mutator/Generic"
     );
 
-    setup_unstable_lib(rosella, "net", ["Core", "FileSystem", "Date"],
+    setup_unstable_lib(rosella, "net", ["Core", "String", "FileSystem", "Date"],
         "net/Includes",
         "net/Net",
         "net/Http",

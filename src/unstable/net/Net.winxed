@@ -1,0 +1,15 @@
+namespace Rosella.Net
+{
+    const string PROTOCOL_FACTORY_GLOBAL = "Rosella.Net.protocol_factory";
+    function default_protocol_factory()
+    {
+        return Rosella.Globals.autoget_global(PROTOCOL_FACTORY_GLOBAL,
+            function() { return new Rosella.Net.Protocol.Factory(); }
+        );
+    }
+
+    function get_protocol(var uri)
+    {
+        return Rosella.Net.Http.default_protocol_factory().create(uri);
+    }
+}

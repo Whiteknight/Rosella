@@ -180,6 +180,13 @@ inline index(string s, string n) return int
     return value;
 }
 
+inline index_issi(string s, string n, int i) return int
+{
+    int value;
+    ${ index value, s, n, i };
+    return value;
+}
+
 inline contains(string s, string n) return int
 {
     int value;

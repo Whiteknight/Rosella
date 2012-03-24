@@ -80,6 +80,16 @@ class Rosella.Net.Http.Message
 
     function get_content()
     {
+        if (self.content == null)
+            return "";
         return string(self.content);
+    }
+
+    function get_content_length_header()
+    {
+        string content_length = self.header.get_header("Content-Length");
+        if (content_length == null || content_length == "")
+            return 0;
+        return int(content_length);
     }
 }

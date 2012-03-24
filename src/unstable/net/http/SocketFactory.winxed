@@ -1,0 +1,13 @@
+class Rosella.Net.Http.SocketFactory : Rosella.ObjectFactory
+{
+    function SocketFactory() { self.ObjectFactory("Socket"); }
+
+    function create_typed(var type, string host, int port)
+    {
+        var socket = Rosella.construct(type);
+        socket.socket(PIO_PF_INET, PIO_SOCK_STREAM, PIO_PROTO_TCP);
+        var addr = socket.sockaddr(host, port);
+        socket.connect(addr);
+        return socket;
+    }
+}
