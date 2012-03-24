@@ -18,22 +18,22 @@ class Rosella.Net.Http.Protocol
 
     function user_agent() { return self.user_agent; }
 
-    function __dispatch_request(string name, var request, var proxy)
+    function __dispatch_request(string name, var request, string path, var proxy)
     {
         var m = find_method(self, "request_" + name);
         if (m == null)
-            return new Rosella.Net.Response(RC_INTERNAL_SERVER_ERROR, "Cannot dispatch request type '%s' for protocol '%s'", name, self.protocol_name());
-        self.*m(request, proxy);
+            return new Rosella.Net.Http.Response(RC_INTERNAL_SERVER_ERROR, "Cannot dispatch request type '%s' for protocol '%s'", name, self.protocol_name());
+        self.*m(request, path, proxy);
     }
 
     function __error_bad_protocol(string protocol)
     {
-        return new Rosella.Net.Response(RC_INTERNAL_SERVER_ERROR, "Bad protocol. Expected '%s' but have '%s'", self.protocol_name(), protocol);
+        return new Rosella.Net.Http.Response(RC_INTERNAL_SERVER_ERROR, "Bad protocol. Expected '%s' but have '%s'", self.protocol_name(), protocol);
     }
 
     function __error_not_found(var uri)
     {
-        return new Rosella.Net.Response(RC_NOT_FOUND, "Could not find resource ", uri.path());
+        return new Rosella.Net.Http.Response(RC_NOT_FOUND, "Could not find resource ", uri.path());
     }
 }
 
@@ -52,22 +52,46 @@ class Rosella.Net.Http.Protocol.File : Rosella.Net.Http.Protocol
         string uri_protocol = uri.protocol();
         if (uri_protocol != "file")
             return self.__error_bad_protocol(uri_protocol);
-        return self.__dispatch_method(request.method(), request, proxy);
+        return self.__dispatch_method(request.method(), request, uri.path(), proxy);
     }
 
-    function request_HEAD(var request, var protocol)
+    function request_HEAD(var request, string path, var proxy)
     {
-        return self.request_GET(request, protocol);
-    }
-
-    function request_GET(var request, var protocol)
-    {
-        var uri = request.uri();
-        string path = uri.path();
         var f = new Rosella.FileSystem.File(path);
-        if (!f.exists)
-            return __error_not_found(uri);
+        if (!f.exists())
+            return __error_not_found(request.uri());
+        var response = new Rosella.Net.Http.Response(RC_OK);
         response.add_header("Last-Modified", f.modify_time().format_string(""));
+        response.add_header("Content-Length", f.size());
+        return response;
+    }
+
+    function request_GET(var request, string path, var proxy)
+    {
+        var f = new Rosella.FileSystem.File(path);
+        if (!f.exists())
+            return __error_not_found(request.uri());
+        var response = new Rosella.Net.Http.Response(RC_OK);
+        response.add_header("Last-Modified", f.modify_time().format_string(""));
+        response.add_header("Content-Length", f.size());
+        response.set_content(f.read_all_text());
+        return response;
+    }
+
+    function request_PUT(var request, string path, var proxy)
+    {
+        var f = new Rosella.FileSystem.File(path);
+        f.write_all_text(request.get_content());
+        return new Rosella.Net.Http.Response(RC_OK);
+    }
+
+    function request_DELETE(var request, string path, var proxy)
+    {
+        var f = new Rosella.FileSystem.File(path);
+        if (!f.exists())
+            return __error_not_found(request.uri());
+        f.delete();
+        return new Rosella.Net.Http.Response(RC_OK);
     }
 }
 
@@ -115,8 +139,8 @@ class Rosella.Net.Http.Protocol.Factory : Rosella.ObjectFactory
     function __get_default_types()
     {
         return {
-            "http": class Rosella.Net.Protocol.Http,
-            "file": class Rosella.Net.Protocol.File
+            "http": class Rosella.Net.Http.Protocol.Http,
+            "file": class Rosella.Net.Http.Protocol.File
         };
     }
 

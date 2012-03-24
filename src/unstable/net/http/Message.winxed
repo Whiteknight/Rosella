@@ -1,8 +1,8 @@
 class Rosella.Net.Http.Message.Factory : Rosella.ObjectFactory
 {
     var header_type;
-    function Factory(var type = class Rosella.Http.Message,
-            var header_type = class Rosella.Http.Header)
+    function Factory(var type = class Rosella.Net.Http.Message,
+            var header_type = class Rosella.Net.Http.Header)
     {
         self.ObjectFactory(type);
         self.header_type = header_type;

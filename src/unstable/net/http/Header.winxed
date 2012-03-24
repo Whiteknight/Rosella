@@ -4,7 +4,7 @@ class Rosella.Net.Http.Header
 
     function Header()
     {
-        self.values = values;
+        self.values = {};
         // TODO: Set hash value to be strings to avoid boxing
     }
 
@@ -37,7 +37,7 @@ class Rosella.Net.Http.Header
 
     function get_header_text(var sb = new 'StringBuilder')
     {
-        foreach (string name in self.values) {
+        for (string name in self.values) {
             push(sb, name);
             push(sb, ": ");
             push(sb, self.values[name]);

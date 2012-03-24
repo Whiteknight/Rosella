@@ -4,8 +4,9 @@ class Rosella.Net.Http.Request
     var uri;
     var proxy;
 
-    function Request()
+    function Request(var header)
     {
+        self.Message(header);
     }
 
     function set_proxy(var p)

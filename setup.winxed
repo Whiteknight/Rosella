@@ -377,6 +377,20 @@ function setup_experimental_libraries(var rosella)
         "genetic/Mutator",
         "genetic/mutator/Generic"
     );
+
+    setup_unstable_lib(rosella, "net", ["Core", "FileSystem", "Date"],
+        "net/Includes",
+        "net/Http",
+        "net/MimeBase64",
+        "net/Uri",
+        "net/UserAgent",
+        "net/http/Header",
+        "net/http/Message",
+        "net/http/Protocol",
+        "net/http/Request",
+        "net/http/Response",
+        "net/http/SocketFactory"
+    );
 }
 
 function setup_utilities(var rosella)

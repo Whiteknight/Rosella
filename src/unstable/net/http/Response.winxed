@@ -1,11 +1,11 @@
-class Rosella.Net.Http.Response
+class Rosella.Net.Http.Response : Rosella.Net.Http.Message
 {
     var code;
     var message;
     var previous;
     var request;
 
-    function Response(int code, string message, var previous = null, var request = null)
+    function Response(int code, string message = "", var previous = null, var request = null)
     {
         self.code = code;
         self.message = message;
