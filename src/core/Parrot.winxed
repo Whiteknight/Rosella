@@ -53,9 +53,13 @@ namespace Rosella.Parrot
             sub();
         } catch (e) {
             handle.print(e["message"]);
+            handle.print(" at ");
             handle.print("\n");
-            for (string bt in get_backtrace_ex_strings(e))
-                handle.print(Winxed_Builtins.sprintf("%s\n", [bt]));
+            for (string bt in get_backtrace_ex_strings(e)) {
+                if (indexof(bt, "Called from") == 0)
+                    bt = substr(bt, 11);
+                handle.print(Winxed_Builtins.sprintf("\t%s\n", [bt]));
+            }
         }
     }
 
