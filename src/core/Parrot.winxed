@@ -52,29 +52,9 @@ namespace Rosella.Parrot
         try {
             sub();
         } catch (e) {
-            handle.print(e["message"]);
-            handle.print(" at ");
-            handle.print("\n");
-            for (string bt in get_backtrace_ex_strings(e)) {
-                if (indexof(bt, "Called from") == 0)
-                    bt = substr(bt, 11);
-                handle.print(Winxed_Builtins.sprintf("\t%s\n", [bt]));
-            }
+            var fmt = Rosella.Parrot.exception_formatter();
+            handle.print(fmt.format_default(e));
         }
-    }
-
-    // Format a single frame from a backtrace for printing
-    function format_frame(var frame)
-    {
-        var sub = frame["sub"];
-        string subname = "(entry)";
-        if (sub != null)
-            subname = string(sub);
-        var annotations = frame["annotations"];
-        string filename = annotations["file"];
-        int lineno = annotations["line"];
-        string text = Winxed_Builtins.sprintf("'%s' (%s : %d)", [subname, filename, lineno]);
-        return sub, text;
     }
 
     // private routine. Format backtrace information into an array of
@@ -83,14 +63,107 @@ namespace Rosella.Parrot
     function format_backtrace(var bt)
     {
         var bts = [];
+        var fmt = Rosella.Parrot.exception_formatter();
         for (int i = 0; i < elements(bt); i++) {
             var sub; string text;
-            :(sub, text) = format_frame(bt[i]);
-            bts[i] = "Called from " + text;
+            :(sub, text) = fmt.format_frame_default(bt[i]);
+            bts[i] = text;
             if (sub == null)
                 break;
         }
         return bts;
     }
+
+    function exception_formatter()
+    {
+        return Rosella.StringFormatter.autoget_type_formatter("Exception",
+            function() { return new Rosella.Parrot.ExceptionFormatter(); }
+        );
+    }
 }
 
+class Rosella.Parrot.ExceptionFormatter : Rosella.StringFormatter
+{
+    function ExceptionFormatter() { }
+
+    // Create a string from an object and a format string
+    function format(var obj, string fmt)
+    {
+        var sb = new 'StringBuilder';
+        push(sb, obj.message);
+        push(sb, "\n");
+        var bt = obj.backtrace();
+        for (int i = 0; i < elements(bt); i++) {
+            :(var sub, string text) = self.format_frame(bt[i], fmt);
+            push(sb, text);
+            if (sub == null)
+                break;
+        }
+        return sb;
+    }
+
+    // Create a string from the object using a default formatting rule
+    function format_default(var obj)
+    {
+        var sb = new 'StringBuilder';
+        push(sb, obj.message);
+        push(sb, " at \n");
+        var bt = obj.backtrace();
+        for (int i = 0; i < elements(bt); i++) {
+            :(var sub, string text) = self.format_frame_default(bt[i]);
+            push(sb, text);
+            if (sub == null)
+                break;
+        }
+        return sb;
+    }
+
+    function format_frame(var frame, var f)
+    {
+        var sub = frame["sub"];
+        string subname = (sub == null) ? "(entry)" : string(sub);
+        var annotations = frame["annotations"];
+        string filename = annotations["file"];
+        if (filename == null || filename == "")
+            filename = "<Unknown File>";
+        int lineno = annotations["line"];
+        string ns;
+        string hll_ns;
+        if (sub == null) {
+            ns = "";
+            hll_ns = "";
+        } else {
+            var ns_parts = sub.get_namespace().get_name();
+            hll_ns = ns_parts.shift();
+            ns = join(".", ns_parts);
+        }
+
+        if (contains(f, "NS"))   f = f.replace("NS", ns);
+        if (contains(f, "HLL"))  f = f.replace("HLL", hll_ns);
+        if (contains(f, "SUB"))  f = f.replace("SUB", subname);
+        if (contains(f, "FILE")) f = f.replace("FILE", filename);
+        if (contains(f, "LINE")) f = f.replace("LINE", string(lineno));
+        return sub, f;
+    }
+
+    function format_frame_default(var frame)
+    {
+        var sub = frame["sub"];
+        string subname = (sub == null) ? "(entry)" : string(sub);
+        var annotations = frame["annotations"];
+        string filename = annotations["file"];
+        if (filename == null || filename == "")
+            filename = "<Unknown File>";
+        int lineno = annotations["line"];
+        string ns;
+        if (sub == null) {
+            ns = "";
+        } else {
+            var ns_parts = sub.get_namespace().get_name();
+            ns_parts.shift();
+            ns = join(".", ns_parts);
+        }
+        string text = Winxed_Builtins.sprintf("\t[%s] '%s'\t(%s  %d)\n", [ns, subname, filename, lineno]);
+        return sub, text;
+    }
+}
