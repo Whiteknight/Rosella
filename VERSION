@@ -13,6 +13,7 @@ harness: 3 Stable
 lazy: 0 Alpha
 memoize: 1 Stable
 mockobject: 2 Stable
+net: 0 Alpha
 path: 1 Stable
 prototype: 0 Alpha
 proxy: 2 Stable

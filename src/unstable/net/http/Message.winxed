@@ -1,41 +1,3 @@
-class Rosella.Net.Http.Message.Factory : Rosella.ObjectFactory
-{
-    var header_type;
-    var message_types;
-
-    function Factory(var header_type = class Rosella.Net.Http.Header)
-    {
-        self.message_types = {
-            "request" : class Rosella.Net.Http.Request,
-            "response" : class Rosella.Net.Http.Response
-        };
-        self.header_type = header_type;
-    }
-
-    function create_request()
-    {
-        return self.create_typed(self.message_types["request"], self.header_type);
-    }
-
-    function create_response()
-    {
-        return self.create_typed(self.message_types["response"], self.header_type);
-    }
-
-    function create(var header_type = null, var header_args [slurpy,named])
-    {
-        if (header_type == null)
-            header_type = self.header_type;
-        return self.create_typed(self.target_type, header_type, header_args:[flat,named]);
-    }
-
-    function create_typed(var type, var header_type, var header_args [slurpy,named])
-    {
-        var header = Rosella.construct(header_type, header_args:[flat,named]);
-        return Rosella.construct(type, header);
-    }
-}
-
 class Rosella.Net.Http.Message
 {
     var header;
@@ -44,6 +6,8 @@ class Rosella.Net.Http.Message
 
     function Message(var header)
     {
+        if (header == null)
+            header = new Rosella.Net.Http.Header();
         self.header = header;
     }
 

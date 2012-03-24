@@ -4,7 +4,7 @@ class Rosella.Net.Http.Request : Rosella.Net.Http.Message
     var uri;
     var proxy;
 
-    function Request(var header)
+    function Request(var header = null)
     {
         self.Message(header);
     }
@@ -35,5 +35,42 @@ class Rosella.Net.Http.Request : Rosella.Net.Http.Message
     function set_method(string request_method)
     {
         self.request_method = request_method;
+    }
+
+    function is_form_data()
+    {
+        if (self.is_form_data == null || int(self.is_form_data) == false)
+            return false;
+        return true;
+    }
+
+    function set_post_content(string data)
+    {
+        self.is_form_data = false;
+
+        string content_type = self.get_header("Content-Type");
+        if (content_type == "")
+            self.set_header("Content-Type", "application/octet-stream");
+
+        self.set_content(data);
+    }
+
+    function set_post_content_fields(var fields)
+    {
+        self.is_form_data = true;
+        var sb = new 'StringBuilder';
+
+        // TODO: multipart/form-data
+        string content_type = self.get_header("Content-Type");
+        if (content_type == "")
+            self.set_header("Content-Type", "application/x-www-form-urlencoded");
+
+        for (string field_name in fields) {
+            string field_data = fields[field_name];
+            push(sb, Rosella.Net.Uri.percent_encode(field_name));
+            push(sb, "+");
+            push(sb, Rosella.Net.Uri.percent_encode(field_data));
+        }
+        self.set_content(string(sb));
     }
 }

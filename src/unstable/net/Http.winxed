@@ -8,28 +8,28 @@ namespace Rosella.Net.Http
         );
     }
 
-    const string MESSAGE_FACTORY_GLOBAL = "Rosella.Net.Http.message_factory";
-    function default_message_factory()
-    {
-        return Rosella.Globals.autoget_global(MESSAGE_FACTORY_GLOBAL,
-            function() { return new Rosella.Net.Http.Message.Factory(); }
-        );
-    }
-
     function create_socket(string host, int port)
     {
         return Rosella.Net.Http.default_socket_factory().create();
     }
 
-    function create_request()
+    function create_request(string uri = "")
     {
-        return Rosella.Net.Http.default_message_factory().create_request();
+        var request = new Rosella.Net.Http.Request();
+        if (uri != null && uri != "")
+            request.set_uri_string(uri);
+        return request;
     }
 
-    function request(var request)
+    function request(var request, var user_agent = new Rosella.Net.UserAgent())
     {
         // TODO: Verify that this is an http request
         var protocol = Rosella.Net.default_protocol_factory().create(request.get_uri());
-        return protocol.request(request);
+        if (protocol == null) {
+            string msg = Rosella.String.sprintf("Could not understand protocol '%s'", request.get_uri().protocol());
+            return new Rosella.Net.Http.Response(RC_BAD_REQUEST, msg);
+        }
+        protocol.prepare_request(request, user_agent);
+        return protocol.request(request, user_agent);
     }
 }

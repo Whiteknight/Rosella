@@ -67,4 +67,9 @@ class Rosella.FileSystem.FilePath
     {
         return self.details["shortname_noext"];
     }
+
+    function full_path()
+    {
+        return string(self.full_base_path()) + "/" + string(self.short_name());
+    }
 }

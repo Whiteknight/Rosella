@@ -33,6 +33,7 @@ class Rosella.Net.Http.Header
 
     function clear()
     {
+        self.values = {};
     }
 
     function get_header_text(var sb = new 'StringBuilder')

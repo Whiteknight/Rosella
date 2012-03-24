@@ -4,7 +4,12 @@ namespace Rosella.Net
     function default_protocol_factory()
     {
         return Rosella.Globals.autoget_global(PROTOCOL_FACTORY_GLOBAL,
-            function() { return new Rosella.Net.Protocol.Factory(); }
+            function() {
+                var factory = new Rosella.Net.Protocol.Factory();
+                factory.add_protocol(new Rosella.Net.Protocol.Http());
+                factory.add_protocol(new Rosella.Net.Protocol.File());
+                return factory;
+            }
         );
     }
 
