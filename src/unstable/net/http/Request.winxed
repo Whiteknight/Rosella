@@ -31,4 +31,9 @@ class Rosella.Net.Http.Request : Rosella.Net.Http.Message
             return "GET";
         return string(self.request_method);
     }
+
+    function set_method(string request_method)
+    {
+        self.request_method = request_method;
+    }
 }

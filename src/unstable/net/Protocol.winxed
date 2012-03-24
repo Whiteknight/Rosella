@@ -59,7 +59,7 @@ class Rosella.Net.Protocol.File : Rosella.Net.Protocol
     {
         var f = new Rosella.FileSystem.File(path);
         if (!f.exists())
-            return __error_not_found(request.get_uri());
+            return self.__error_not_found(request.get_uri());
         var response = new Rosella.Net.Http.Response(RC_OK);
         response.add_header("Last-Modified", f.modify_time().format_string(""));
         response.add_header("Content-Length", f.size());
@@ -70,7 +70,7 @@ class Rosella.Net.Protocol.File : Rosella.Net.Protocol
     {
         var f = new Rosella.FileSystem.File(path);
         if (!f.exists())
-            return __error_not_found(request.get_uri());
+            return self.__error_not_found(request.get_uri());
         var response = new Rosella.Net.Http.Response(RC_OK);
         response.add_header("Last-Modified", f.modify_time().format_string(""));
         response.add_header("Content-Length", f.size());
@@ -89,7 +89,7 @@ class Rosella.Net.Protocol.File : Rosella.Net.Protocol
     {
         var f = new Rosella.FileSystem.File(path);
         if (!f.exists())
-            return __error_not_found(request.get_uri());
+            return self.__error_not_found(request.get_uri());
         f.delete();
         return new Rosella.Net.Http.Response(RC_OK);
     }
