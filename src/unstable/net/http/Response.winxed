@@ -11,5 +11,11 @@ class Rosella.Net.Http.Response : Rosella.Net.Http.Message
         self.message = message;
         self.previous = previous;
         self.request = request;
+        self.header = new Rosella.Net.Http.Header();
+    }
+
+    function status_code()
+    {
+        return int(self.code);
     }
 }

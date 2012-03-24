@@ -66,9 +66,9 @@ function setup_stable_libraries(var rosella)
         "core/IteratorBase",
         "core/Globals",
         "core/ObjectFactory",
-        "core/Parrot",
         "core/Version",
         "core/StringFormatter",
+        "core/Parrot",
         "_build/_versions"
     );
 
@@ -380,13 +380,14 @@ function setup_experimental_libraries(var rosella)
 
     setup_unstable_lib(rosella, "net", ["Core", "FileSystem", "Date"],
         "net/Includes",
+        "net/Net",
         "net/Http",
         "net/MimeBase64",
+        "net/Protocol",
         "net/Uri",
         "net/UserAgent",
         "net/http/Header",
         "net/http/Message",
-        "net/http/Protocol",
         "net/http/Request",
         "net/http/Response",
         "net/http/SocketFactory"

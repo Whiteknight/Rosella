@@ -1,6 +1,6 @@
-class Rosella.Net.Http.Request
+class Rosella.Net.Http.Request : Rosella.Net.Http.Message
 {
-    var method;
+    var request_method;
     var uri;
     var proxy;
 
@@ -19,28 +19,16 @@ class Rosella.Net.Http.Request
         return self.proxy;
     }
 
-    function uri()
-    {
-    }
+    function get_uri() { return self.uri; }
 
-    function GET(string url, var msg)
-    {
-        return self.simple_request("GET", url, msg);
-    }
+    function set_uri(var uri) { self.uri = uri; }
 
-    function HEAD()
-    {
-    }
+    function set_uri_string(string uri) { self.uri = new Rosella.Net.Uri(uri); }
 
-    function POST()
+    function get_method()
     {
-    }
-
-    function PUT()
-    {
-    }
-
-    function POST()
-    {
+        if (self.request_method == null)
+            return "GET";
+        return string(self.request_method);
     }
 }
