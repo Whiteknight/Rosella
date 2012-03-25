@@ -52,6 +52,7 @@ class Rosella.Net.Http.Request : Rosella.Net.Http.Message
         if (content_type == "")
             self.set_header("Content-Type", "application/octet-stream");
 
+        self.add_header("Content-Length", length(data));
         self.set_content(data);
     }
 
@@ -74,6 +75,8 @@ class Rosella.Net.Http.Request : Rosella.Net.Http.Message
             push(sb, "=");
             push(sb, Rosella.Net.Http.formdata_encode(field_data));
         }
-        self.set_content(string(sb));
+        string content = string(sb);
+        self.add_header("Content-Length", length(content));
+        self.set_content(content);
     }
 }

@@ -40,8 +40,6 @@ namespace Rosella.Net.Uri
     {
         return percent_encode_except(s, URI_COMP_UNCHANGE);
     }
-
-
 }
 
 class Rosella.Net.Uri
