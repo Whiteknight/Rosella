@@ -212,6 +212,41 @@ inline string_has_prefix(string f, string p) return int
     return length(f) > len_p && substr(f, 0, len_p) == p;
 }
 
+inline find_encoding(string name) return int
+{
+    int value;
+    ${ find_encoding value, name };
+    return value;
+}
+
+inline encoding(string s) return int
+{
+    int value;
+    ${ encoding value, s };
+    return value;
+}
+
+inline trans_encoding(string s, int e) return string
+{
+    string value;
+    ${ trans_encoding value, s, e };
+    return value;
+}
+
+inline chr(int i) return string
+{
+    string value;
+    ${ chr value, i };
+    return value;
+}
+
+inline ord(string s) return int
+{
+    int value;
+    ${ ord value, s };
+    return value;
+}
+
 /* Namespaces
 */
 

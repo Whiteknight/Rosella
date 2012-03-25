@@ -2,6 +2,7 @@ $include_const "socket.pasm";
 $include_const "cclass.pasm";
 
 const string CRLF = "\r\n";
+const string HEXDIGITS = '0123456789ABCDEF';
 
 /* HTTP Status Codes */
 /* These are here for reference, this library does not use them all */

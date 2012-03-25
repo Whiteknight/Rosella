@@ -1,16 +1,47 @@
 namespace Rosella.Net.Uri
 {
-    function percent_encode_except()
+    const string URI_COMP_UNCHANGE = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789-_.~";
+    const string URI_UNCHANGE      = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789-_.~!*\'();:@&=+$,/?#[]";
+
+    function percent_encode_except(string s, string except)
     {
+        int s_enc = encoding(s);
+        int utf8_enc = find_encoding("utf8");
+        if (s_enc != find_encoding("ascii") && s_enc != utf8_enc)
+            s = trans_encoding(s, utf8_enc);
+
+        var buf = new 'ByteBuffer';
+        var result = new 'ByteBuffer';
+        buf =: s;
+        for (int code in buf) {
+            string c = chr(code);
+            int idx = index(except, c);
+            if (idx == -1) {
+                push(result, 0x25);
+                c = substr(HEXDIGITS, code / 16, 1);
+                push(result, ord(c));
+                c = substr(HEXDIGITS, code % 16, 1);
+                push(result, ord(c));
+            } else {
+                push(result, code);
+                continue;
+            }
+        }
+        s = result.get_string("ascii");
+        return s;
     }
 
-    function percent_encode()
+    function percent_encode(string s)
     {
+        return percent_encode_except(s, URI_UNCHANGE);
     }
 
-    function percent_encode_component()
+    function percent_encode_component(string s)
     {
+        return percent_encode_except(s, URI_COMP_UNCHANGE);
     }
+
+
 }
 
 class Rosella.Net.Uri

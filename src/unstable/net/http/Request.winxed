@@ -46,7 +46,7 @@ class Rosella.Net.Http.Request : Rosella.Net.Http.Message
 
     function set_post_content(string data)
     {
-        self.is_form_data = false;
+        //self.is_form_data = false;
 
         string content_type = self.get_header("Content-Type");
         if (content_type == "")
@@ -57,19 +57,22 @@ class Rosella.Net.Http.Request : Rosella.Net.Http.Message
 
     function set_post_content_fields(var fields)
     {
-        self.is_form_data = true;
+        //self.is_form_data = true;
         var sb = new 'StringBuilder';
 
         // TODO: multipart/form-data
         string content_type = self.get_header("Content-Type");
         if (content_type == "")
-            self.set_header("Content-Type", "application/x-www-form-urlencoded");
+            self.add_header("Content-Type", "application/x-www-form-urlencoded");
 
+        string separator = "";
         for (string field_name in fields) {
             string field_data = fields[field_name];
-            push(sb, Rosella.Net.Uri.percent_encode(field_name));
-            push(sb, "+");
-            push(sb, Rosella.Net.Uri.percent_encode(field_data));
+            push(sb, separator);
+            separator = "&";
+            push(sb, Rosella.Net.Http.formdata_encode(field_name));
+            push(sb, "=");
+            push(sb, Rosella.Net.Http.formdata_encode(field_data));
         }
         self.set_content(string(sb));
     }

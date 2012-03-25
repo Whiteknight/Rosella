@@ -32,4 +32,43 @@ namespace Rosella.Net.Http
         protocol.prepare_request(request, user_agent);
         return protocol.request(request, user_agent);
     }
+
+    function formdata_encode(string s)
+    {
+        int s_enc = encoding(s);
+        int utf8_enc = find_encoding("utf8");
+        if (s_enc != find_encoding("ascii") && s_enc != utf8_enc)
+            s = trans_encoding(s, utf8_enc);
+
+        int code_A = ord("A");
+        int code_Z = ord("Z");
+        int code_a = ord("a");
+        int code_z = ord("z");
+        int code_0 = ord("0");
+        int code_9 = ord("9");
+
+
+        var buf = new 'ByteBuffer';
+        var result = new 'ByteBuffer';
+        buf =: s;
+        for (int code in buf) {
+            if (code == 0x20) {
+                push(result, 0x2B);
+                continue;
+            }
+            if ((code >= code_a && code <= code_z) ||
+                (code >= code_A && code <= code_Z) ||
+                (code >= code_0 && code <= code_9))
+                push(result, code);
+            else {
+                push(result, 0x25);
+                string c = substr(HEXDIGITS, code / 16, 1);
+                push(result, ord(c));
+                c = substr(HEXDIGITS, code % 16, 1);
+                push(result, ord(c));
+            }
+        }
+        s = result.get_string("ascii");
+        return s;
+    }
 }
