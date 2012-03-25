@@ -2,7 +2,6 @@ class Rosella.Net.Http.Message
 {
     var header;
     var content;
-    var protocol;
 
     function Message(var header)
     {

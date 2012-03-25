@@ -13,18 +13,15 @@ class Rosella.Net.Protocol.File : Rosella.Net.Protocol
         string uri_protocol = uri.protocol();
         if (uri_protocol != "file")
             return self.__error_bad_protocol(uri_protocol);
-        return self.__dispatch_method(request.get_method(), request, uri.path(), proxy);
-    }
 
-    function __dispatch_method(string name, var request, var user_agent, string path, var proxy)
-    {
-        var m = find_method(self, "__request_" + name);
+        string request_method = request.get_method();
+        var m = find_method(self, "__request_" + request_method);
         if (m == null) {
-            string msg = Rosella.String.sprintf("Cannot dispatch request type '%s' for protocol '%s'", name, self.protocol_name());
+            string msg = Rosella.String.sprintf("Cannot dispatch request type '%s' for protocol '%s'", request_method, self.protocol_name());
             var response = new Rosella.Net.Http.Response(RC_METHOD_NOT_ALLOWED, msg);
             response.header().add_value("Allowed", "HEAD, GET, PUT, DELETE");
         }
-        return self.*m(request, user_agent, path, proxy);
+        return self.*m(request, user_agent, uri.path(), proxy);
     }
 
     function __request_HEAD(var request, var user_agent, string path, var proxy)

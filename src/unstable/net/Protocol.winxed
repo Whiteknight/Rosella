@@ -12,7 +12,7 @@ class Rosella.Net.Protocol
         Rosella.Error.must_subclass(__CLASS__);
     }
 
-    function prepare_header(var request, var user_agent) { }
+    function prepare_request(var request, var user_agent) { }
 
     function __error_bad_protocol(string protocol)
     {

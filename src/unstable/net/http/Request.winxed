@@ -3,6 +3,7 @@ class Rosella.Net.Http.Request : Rosella.Net.Http.Message
     var request_method;
     var uri;
     var proxy;
+    var form_data;
 
     function Request(var header = null) { self.Message(header); }
 
@@ -22,39 +23,215 @@ class Rosella.Net.Http.Request : Rosella.Net.Http.Message
 
     function set_method(string request_method) { self.request_method = request_method; }
 
-    function set_post_content(string data)
+    function get_content()
     {
-        //self.is_form_data = false;
-
-        string content_type = self.get_header("Content-Type");
-        if (content_type == "")
-            self.set_header("Content-Type", "application/octet-stream");
-
-        self.add_header("Content-Length", length(data));
-        self.set_content(data);
+        string content = "";
+        if (self.content != null) {
+            content = string(self.content);
+            if (length(content) > 0)
+                self.set_header("Content-Type", "application/octet-stream");
+        }
+        else if (self.form_data != null && elements(self.form_data) > 0) {
+            if (self.__is_multipart_request(self.form_data)) {
+                string boundary = self.__get_multipart_boundary();
+                self.add_header("Content-Type", "multipart/form-data, boundary=\"" + boundary + "\"");
+                content = self.__format_formdata_content(boundary, self.form_data);
+            } else {
+                self.add_header("Content-Type", "application/x-www-form-urlencoded");
+                content = self.__format_post_content(self.form_data);
+            }
+        }
+        int len = length(content);
+        if (len > 0)
+            self.add_header("Content-Length", length(content));
+        return content;
     }
 
-    function set_post_content_fields(var fields)
+    function set_content(string data)
     {
-        //self.is_form_data = true;
+        if (self.form_data != null)
+            Rosella.Error.error("May not set content and form_data in the same request");
+        self.content = data;
+    }
+
+    function add_form_fields(var fields)
+    {
+        for (string name in fields) {
+            string value = fields[name];
+            self.add_post_form_field(name, value);
+        }
+    }
+
+    function add_form_field(string name, string value)
+    {
+        if (self.form_data != null || self.content != null)
+            Rosella.Error.error("May not set content and form_data in the same request");
+        if (self.form_data == null)
+            self.form_data = {};
+        self.form_data[name] = new Rosella.Net.Http.Request.FormDataPair(name, value);
+    }
+
+    function add_form_field_file(string name, var file, string mimetype = "", string encoding = "binary")
+    {
+        if (self.content != null)
+            Rosella.Error.error("May not set content and form_data in the same request");
+        if (!file.exists())
+            Rosella.Error.error("File %s does not exist", file.path());
+        if (self.form_data == null)
+            self.form_data = {};
+        self.form_data[name] = new Rosella.Net.Http.Request.FormDataFile(name, file, mimetype, encoding);
+    }
+
+    function add_form_field_filename(string name, string filename, string mimetype = "", string encoding = "binary")
+    {
+        var f = new Rosella.FileSystem.File(filename);
+        self.add_form_field_file(name, f, mimetype, encoding);
+    }
+
+    function __format_formdata_content(string boundary, var form_data)
+    {
         var sb = new 'StringBuilder';
+        for (string name in form_data) {
+            push(sb, "--");
+            push(sb, boundary);
+            push(sb, CRLF);
+            string content = form_data[name].get_content_string();
+            push(sb, content);
+            push(sb, CRLF);
+        }
+        push(sb, "--");
+        push(sb, boundary);
+        push(sb, "--");
+        push(sb, CRLF);
+        return sb;
+    }
 
-        // TODO: multipart/form-data
-        string content_type = self.get_header("Content-Type");
-        if (content_type == "")
-            self.add_header("Content-Type", "application/x-www-form-urlencoded");
+    function __is_multipart_request(var form_data)
+    {
+        for (string name in form_data) {
+            if (form_data[name].requires_multipart())
+                return true;
+        }
+        return false;
+    }
 
+    function __format_post_content(var form_data)
+    {
+        var sb = new 'StringBuilder';
         string separator = "";
-        for (string field_name in fields) {
-            string field_data = fields[field_name];
+        for (string field_name in form_data) {
+            string field_data = form_data[field_name].get_post_content_string();
             push(sb, separator);
             separator = "&";
             push(sb, Rosella.Net.Http.formdata_encode(field_name));
             push(sb, "=");
             push(sb, Rosella.Net.Http.formdata_encode(field_data));
         }
-        string content = string(sb);
-        self.add_header("Content-Length", length(content));
-        self.set_content(content);
+        return sb;
+    }
+
+    function __get_multipart_boundary()
+    {
+        // TODO: Implement a random/pseudorandom generator for unique boundaries
+        return "this-is-a-test-multipart-boundary";
+    }
+}
+
+class Rosella.Net.Http.Request.FormData
+{
+    var name;
+
+    function FormData(string name)
+    {
+        self.name = name;
+    }
+
+    function get_multipart_content_string()
+    {
+        Rosella.Error.must_subclass(__CLASS__);
+    }
+
+    function get_post_content_string()
+    {
+        Rosella.Error.must_subclass(__CLASS__);
+    }
+
+    function requires_multipart() { return false; }
+}
+
+class Rosella.Net.Http.Request.FormDataFile : Rosella.Net.Http.Request.FormData
+{
+    var file;
+    var mimetype;
+    var encoding;
+
+    function FormDataFile(string name, var f, string mimetype = "", string encoding = "binary")
+    {
+        self.file = f;
+        self.mimetype = mimetype;
+
+        self.FormData(name);
+    }
+
+    function requires_multipart() { return true; }
+
+    function get_content_string()
+    {
+        var sb = new 'StringBuilder';
+        push(sb, "Content-Disposition: form-data; name=\"");
+        push(sb, self.name);
+        push(sb, "\"; filename=\"");
+        push(sb, self.file.short_name());
+        push(sb, "\"");
+        push(sb, CRLF);
+        string mimetype = self.mimetype;
+        if (mimetype != "") {
+            push(sb, "Content-Type: ");
+            push(sb, self.type);
+            push(sb, CRLF);
+        }
+        string encoding = self.encoding;
+        if (encoding != "") {
+            push(sb, "Content-Transfer-Encoding: ");
+            push(sb, self.encoding);
+            push(sb, CRLF);
+        }
+        push(sb, CRLF);
+
+        push(sb, self.file.read_all_text());
+        return sb;
+    }
+
+    function get_post_content_string()
+    {
+        Rosella.Error.error("Cannot get post content for File. Requires multipart/form-data request");
+    }
+}
+
+class Rosella.Net.Http.Request.FormDataPair : Rosella.Net.Http.Request.FormData
+{
+    var value;
+
+    function FormDataPair(string name, string value)
+    {
+        self.FormData(name);
+        self.value = value;
+    }
+
+    function get_content_string()
+    {
+        var sb = new 'StringBuilder';
+        push(sb, "Content-Disposition: form-data; name=\"");
+        push(sb, self.name);
+        push(sb, "\"");
+        push(sb, CRLF);
+        push(sb, CRLF);
+        push(sb, self.value);
+        return sb;
+    }
+
+    function get_post_content_string()
+    {
+        return self.value;
     }
 }
