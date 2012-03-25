@@ -51,7 +51,7 @@ class Rosella.Net.Http.Message
 
     function get_content_length_header()
     {
-        string content_length = self.header.get_header("Content-Length");
+        string content_length = self.header.get_value("Content-Length");
         if (content_length == null || content_length == "")
             return 0;
         return int(content_length);

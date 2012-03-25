@@ -123,8 +123,8 @@ class Rosella.Net.Protocol.Http : Rosella.Net.Protocol
     function prepare_request(var request, var user_agent)
     {
         var header = request.header();
-        var uri = request.uri();
-        var proxy = request.proxy();
+        var uri = request.get_uri();
+        var proxy = request.get_proxy();
 
         string host = uri.authority();
         string userinfo;
@@ -205,7 +205,7 @@ class Rosella.Net.Protocol.Http : Rosella.Net.Protocol
         }
     }
 
-    function __get_connected_socket(var request, var user_agent)
+    function __get_host_information(var request, var user_agent)
     {
         var proxy = request.get_proxy();
         string request_method = request.get_method();
@@ -294,10 +294,7 @@ class Rosella.Net.Protocol.Http : Rosella.Net.Protocol
         :(int ok, var response) = self.__receive_status_line(socket);
         if (ok != 1)
             return response;
-
-        if (!self.__receive_header(socket, response.header()))
-            return self.__error_receive_failure(request, response);
-
+        self.__receive_header(socket, response.header());
         if (!self.__receive_response_content(socket, response, user_agent))
             return self.__error_receive_failure(request, response);
 
