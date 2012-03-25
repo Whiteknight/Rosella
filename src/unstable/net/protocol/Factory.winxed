@@ -1,0 +1,26 @@
+class Rosella.Net.Protocol.Factory : Rosella.ObjectFactory
+{
+    var types;
+
+    function Factory()
+    {
+        self.types = {};
+    }
+
+    function add_protocol(var protocol)
+    {
+        self.types[string(protocol.protocol_name())] = protocol;
+    }
+
+    function create(var uri)
+    {
+        string pname = uri.protocol();
+        var protocol = self.types[pname];
+        return protocol;
+    }
+
+    function create_typed(var type)
+    {
+        Rosella.Error.error("Cannot create_typed with a Protocol.Factory");
+    }
+}

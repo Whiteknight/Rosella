@@ -4,25 +4,13 @@ class Rosella.Net.Http.Request : Rosella.Net.Http.Message
     var uri;
     var proxy;
 
-    function Request(var header = null)
-    {
-        self.Message(header);
-    }
+    function Request(var header = null) { self.Message(header); }
 
-    function set_proxy(var p)
-    {
-        self.proxy = p;
-    }
-
-    function get_proxy()
-    {
-        return self.proxy;
-    }
+    function set_proxy(var p) { self.proxy = p; }
+    function get_proxy() { return self.proxy; }
 
     function get_uri() { return self.uri; }
-
     function set_uri(var uri) { self.uri = uri; }
-
     function set_uri_string(string uri) { self.uri = new Rosella.Net.Uri(uri); }
 
     function get_method()
@@ -32,17 +20,7 @@ class Rosella.Net.Http.Request : Rosella.Net.Http.Message
         return string(self.request_method);
     }
 
-    function set_method(string request_method)
-    {
-        self.request_method = request_method;
-    }
-
-    function is_form_data()
-    {
-        if (self.is_form_data == null || int(self.is_form_data) == false)
-            return false;
-        return true;
-    }
+    function set_method(string request_method) { self.request_method = request_method; }
 
     function set_post_content(string data)
     {

@@ -1,0 +1,75 @@
+class Rosella.Net.Protocol.File : Rosella.Net.Protocol
+{
+    function File() { }
+
+    function protocol_name() { return "file"; }
+
+    function request(var request, var user_agent)
+    {
+        var proxy = request.get_proxy();
+        if (proxy != null)
+            return new Rosella.Net.Http.Response(RC_BAD_REQUEST, "Cannot access a file through a proxy");
+        var uri = request.get_uri();
+        string uri_protocol = uri.protocol();
+        if (uri_protocol != "file")
+            return self.__error_bad_protocol(uri_protocol);
+        return self.__dispatch_method(request.get_method(), request, uri.path(), proxy);
+    }
+
+    function __dispatch_method(string name, var request, var user_agent, string path, var proxy)
+    {
+        var m = find_method(self, "__request_" + name);
+        if (m == null) {
+            string msg = Rosella.String.sprintf("Cannot dispatch request type '%s' for protocol '%s'", name, self.protocol_name());
+            var response = new Rosella.Net.Http.Response(RC_METHOD_NOT_ALLOWED, msg);
+            response.header().add_value("Allowed", "HEAD, GET, PUT, DELETE");
+        }
+        return self.*m(request, user_agent, path, proxy);
+    }
+
+    function __request_HEAD(var request, var user_agent, string path, var proxy)
+    {
+        var f = new Rosella.FileSystem.File(path);
+        if (!f.exists())
+            return self.__error_not_found(path);
+        var response = new Rosella.Net.Http.Response(RC_OK);
+        response.add_header("Last-Modified", f.modify_time().format_string(""));
+        response.add_header("Content-Length", f.size());
+        return response;
+    }
+
+    function __request_GET(var request, var user_agent, string path, var proxy)
+    {
+        var f = new Rosella.FileSystem.File(path);
+        if (!f.exists())
+            return self.__error_not_found(path);
+
+        // TODO: If-Modified-Since Header
+        // TODO: If-Unmodified-Since Header
+        var response = new Rosella.Net.Http.Response(RC_OK);
+        response.add_header("Last-Modified", f.modify_time().format_string(""));
+        response.add_header("Content-Length", f.size());
+        response.set_content(f.read_all_text());
+        return response;
+    }
+
+    function __request_PUT(var request, var user_agent, string path, var proxy)
+    {
+        var f = new Rosella.FileSystem.File(path);
+        int created = !f.exists();
+        f.write_all_text(request.get_content());
+        var response = new Rosella.Net.Http.Response(created ? RC_CREATED : RC_OK);
+        if (created)
+            response.add_header("Location", "file://" + string(f.path_obj().full_path()));
+        return response;
+    }
+
+    function __request_DELETE(var request, var user_agent, string path, var proxy)
+    {
+        var f = new Rosella.FileSystem.File(path);
+        if (!f.exists())
+            return self.__error_not_found(path);
+        f.delete();
+        return new Rosella.Net.Http.Response(RC_OK);
+    }
+}

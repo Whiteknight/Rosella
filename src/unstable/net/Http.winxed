@@ -47,7 +47,6 @@ namespace Rosella.Net.Http
         int code_0 = ord("0");
         int code_9 = ord("9");
 
-
         var buf = new 'ByteBuffer';
         var result = new 'ByteBuffer';
         buf =: s;

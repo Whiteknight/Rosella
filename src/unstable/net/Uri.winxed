@@ -31,15 +31,9 @@ namespace Rosella.Net.Uri
         return s;
     }
 
-    function percent_encode(string s)
-    {
-        return percent_encode_except(s, URI_UNCHANGE);
-    }
+    function percent_encode(string s) { return percent_encode_except(s, URI_UNCHANGE); }
 
-    function percent_encode_component(string s)
-    {
-        return percent_encode_except(s, URI_COMP_UNCHANGE);
-    }
+    function percent_encode_component(string s) { return percent_encode_except(s, URI_COMP_UNCHANGE); }
 }
 
 class Rosella.Net.Uri
