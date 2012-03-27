@@ -3,6 +3,7 @@ class Rosella.Net.Protocol
     function Protocol() { }
 
     /* Public Interface
+        All Protocols must implement at least this interface.
     */
 
     // Get the name of this protocol
@@ -17,24 +18,27 @@ class Rosella.Net.Protocol
     /* Private Error-Handling Functions
     */
 
+    // TODO: These things are specific to HTTP-related requests, so should not
+    // be here in this global protocol object.
+
     function __error_bad_protocol(string protocol)
     {
-        string msg = Rosella.String.sprintf("Bad protocol. Expected '%s' but have '%s'", self.protocol_name(), protocol);
-        return new Rosella.Net.Http.Response(RC_INTERNAL_SERVER_ERROR, msg);
+        //string msg = Rosella.String.sprintf("Bad protocol. Expected '%s' but have '%s'
+        //return new Rosella.Net.Http.Response(RC_INTERNAL_SERVER_ERROR, msg);
     }
 
     function __error_not_found(string path)
     {
-        return new Rosella.Net.Http.Response(RC_NOT_FOUND, "Could not find resource ", path);
+        //return new Rosella.Net.Http.Response(RC_NOT_FOUND, "Could not find resource ",
     }
 
     function __error_network_failure(var request)
     {
-        return new Rosella.Net.Http.Response(RC_INTERNAL_SERVER_ERROR, "Network error");
+        //return new Rosella.Net.Http.Response(RC_INTERNAL_SERVER_ERROR, "Network error"
     }
 
     function __error_receive_failure(var request, var response)
     {
-        return new Rosella.Net.Http.Response(RC_INTERNAL_SERVER_ERROR, "Error during receive");
+        //return new Rosella.Net.Http.Response(RC_INTERNAL_SERVER_ERROR, "Error during r
     }
 }

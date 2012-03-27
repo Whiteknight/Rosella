@@ -2,6 +2,18 @@ class Rosella.Net.UserAgent.SimpleHttp : Rosella.Net.UserAgent
 {
     function SimpleHttp() { }
 
+    /* Standard UserAgent Interface
+    */
+
+    function supported_protocols()
+    {
+        return {
+            "http": true,
+            "file": true,
+            "https": false  // TODO
+        };
+    }
+
     /* HTTP Request Methods
     */
 
@@ -54,9 +66,12 @@ class Rosella.Net.UserAgent.SimpleHttp : Rosella.Net.UserAgent
         if (uri_raw == null || uri_raw == "")
             Rosella.Error.error("Invalid request. Uri is missing");
         var uri = new Rosella.Net.Uri(uri_raw);
+        string uri_protocol = uri.protocol();
+        if (!self.can_handle_protocol(uri_protocol))
+            Rosella.Error.error("This UserAgent cannot support protocol '%s'", uri_protocol);
         var protocol = Rosella.Net.default_protocol_factory().create(uri);
         if (protocol == null)
-            Rosella.Error.error("Could not dispatch protocol '%s'", uri.protocol());
+            Rosella.Error.error("Could not dispatch protocol '%s'", uri_protocol);
 
         var request = new Rosella.Net.Http.Request();
         request.set_method(request_method);

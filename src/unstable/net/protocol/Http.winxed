@@ -65,6 +65,10 @@ class Rosella.Net.Protocol.Http : Rosella.Net.Protocol
         return response;
     }
 
+    /* Private Helper Routines
+    */
+
+    // TODO: Move this into Rosella.Net.Http namespace as a utility
     function __format_request_header(string request_method, string fullpath, var request_header)
     {
         var sb = new 'StringBuilder';
@@ -100,6 +104,8 @@ class Rosella.Net.Protocol.Http : Rosella.Net.Protocol
 
     function __receive_header(var socket, var header)
     {
+        // TODO: Can we read out the entire header first, then parse it in a
+        // separate routine somewhere?
         while (true) {
             string raw = socket.readline();
             raw = Rosella.String.trim_end(raw);
@@ -116,6 +122,8 @@ class Rosella.Net.Protocol.Http : Rosella.Net.Protocol
 
     function __get_host_information(var request, var user_agent)
     {
+        // TODO: Take proxy as an argument. Break this out into a utility
+        // routine somewhere.
         var proxy = request.get_proxy();
         string request_method = request.get_method();
         var uri = request.get_uri();
@@ -150,6 +158,7 @@ class Rosella.Net.Protocol.Http : Rosella.Net.Protocol
 
     function __receive_response_content(var socket, var response, var user_agent)
     {
+        // TODO: Break up chunked and normal receives into separate functions.
         var buf = new 'StringBuilder';
         string transfer_encoding = response.get_header("Transfer-Encoding");
         string raw;
@@ -157,6 +166,7 @@ class Rosella.Net.Protocol.Http : Rosella.Net.Protocol
             int hex_class = Rosella.String.get_character_class("hexadecimal");
             while(true) {
                 // TODO: user_agent.request_progress()
+                // TODO: This is untested
                 say("CHUNKED");
                 string line = socket.readline();
                 int line_length = length(line);

@@ -45,47 +45,11 @@ class Rosella.Net.Uri
         self.parts = self.__parse(uri);
     }
 
-    function __parse(string uri)
-    {
-        var parts = {
-            "URI" : uri
-        };
-        int idx = index(uri, "//");
-        string protocol = (idx > 2) ? substr(uri, 0, idx - 1) : "";
-        parts["Protocol"] = protocol;
-        uri = substr(uri, idx + 2);
-        parts["Path"] = uri;
-        idx = index(uri, "/");
-        if (idx >= 0) {
-            parts["Path_Query"] = substr(uri, idx);
-            uri = substr(uri, 0, idx);
-        } else {
-            parts["Path_Query"] = "";
-        }
-        string port_authority = substr(uri, 0, idx);
-        idx = index(uri, ":");
-        if (idx < 0) {
-            parts["Authority"] = uri;
-            //parts["Port"] = "";
-            switch(protocol) {
-                case "http":
-                    parts["Port"] = "80";
-                    break;
-                default:
-                    parts["Port"] = "";
-                    break;
-            }
-        } else {
-            parts["Authority"] = substr(uri, 0, idx);
-            parts["Port"] = substr(uri, idx + 1);
-        }
-        return parts;
-    }
-
     function host() { return self.authority(); }
 
     function uri() { return self.parts["URI"]; }
 
+    // TODO: ToLower
     function protocol() { return self.parts["Protocol"]; }
 
     function path() { return self.parts["Path"]; }
@@ -95,4 +59,47 @@ class Rosella.Net.Uri
     function port() { return self.parts["Port"]; }
 
     function path_query() { return self.parts["Path_Query"]; }
+
+    function query_string() { }
+
+    function anchor() { }
+
+    function __default_parts_hash(string uri)
+    {
+        return {
+            "URI" : uri,
+            "Protocol": "",
+            "Path": "",
+            "Authority": "",
+            "Port": "",
+            "Path_Query": "",
+            "Query_String": "",
+            "Anchor": ""
+        };
+    }
+
+    function __parse(string uri)
+    {
+        var parts = self.__default_parts_hash(uri);
+        int idx = index(uri, "//");
+        string protocol = (idx > 2) ? substr(uri, 0, idx - 1) : "";
+        parts["Protocol"] = protocol;
+        uri = substr(uri, idx + 2);
+        parts["Path"] = uri;
+        idx = index(uri, "/");
+        if (idx >= 0) {
+            parts["Path_Query"] = substr(uri, idx);
+            uri = substr(uri, 0, idx);
+        }
+        string port_authority = substr(uri, 0, idx);
+        idx = index(uri, ":");
+        if (idx < 0)
+            parts["Authority"] = uri;
+        else {
+            parts["Authority"] = substr(uri, 0, idx);
+            parts["Port"] = substr(uri, idx + 1);
+        }
+        // TODO: QueryString and Anchor
+        return parts;
+    }
 }

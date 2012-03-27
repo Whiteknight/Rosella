@@ -2,6 +2,12 @@ class Rosella.Net.UserAgent
 {
     function UserAgent() { }
 
+    /* Public Interface
+        All UserAgent types must implement these interface methods. Each
+        UserAgent may supply additional methods, but this is the only guaranteed
+        common set.
+    */
+
     function get_version_string()
     {
         var cv = Rosella.Version.get_version("core");
@@ -18,4 +24,17 @@ class Rosella.Net.UserAgent
     function request_progress(float percent) { }
 
     function request_complete() { }
+
+    // A hash of protocols supported. If null, nothing is supported
+    function supported_protocols() { return null; }
+
+    function can_handle_protocol(string protocol)
+    {
+        var supported_protocols = self.supported_protocols();
+        if (supported_protocols == null || elements(supported_protocols) == 0)
+            return false;
+        if (exists supported_protocols[protocol])
+            return int(supported_protocols[protocol]);
+        return false;
+    }
 }

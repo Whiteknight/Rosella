@@ -267,6 +267,8 @@ namespace Rosella.String
         return result, pos - startpos;
     }
 
+    // TODO: To-Upper, To-Lower
+
     /*
     function replace_first(string str, string target, string subst, int count)
     {
