@@ -2,18 +2,74 @@ class Rosella.Net.UserAgent.SimpleHttp : Rosella.Net.UserAgent
 {
     function SimpleHttp() { }
 
-    function request_sent()
+    /* HTTP Request Methods
+    */
+
+    function get(string uri, var headers [named,optional])
     {
-        say("request sent");
+        return self.__dispatch_request("GET", uri, headers, null);
     }
 
-    function request_progress(float percent)
+    function post(string uri, var form_fields, var files = null, var headers [named,optional])
     {
-        Rosella.IO.sayf("Percent: %f", percent);
+        return self.__dispatch_request("POST", uri, headers,
+            function(r) {
+                if (form_fields != null && elements(form_fields) > 0) {
+                    for (string field_name in form_fields)
+                        r.add_form_field(field_name, form_fields[field_name]);
+                }
+
+                if (files != null && elements(files) > 0) {
+                    for (string file_name in files)
+                        r.add_form_field_filename(file_name, files[file_name]);
+                }
+            }
+        );
     }
 
-    function request_complete()
+    function put(string uri, string content, var headers [named,optional])
     {
-        say("request complete");
+        return self.__dispatch_request("PUT", uri, headers,
+            function(r) {
+                r.set_content(content);
+            }
+        );
+    }
+
+    function delete(string uri, var headers [named,optional])
+    {
+        return self.__dispatch_request("DELETE", uri, headers, null);
+    }
+
+    function head(string uri, var headers [named,optional])
+    {
+        return self.__dispatch_request("HEAD", uri, headers, null);
+    }
+
+    /* Private Helper Routines
+    */
+
+    function __dispatch_request(string request_method, string uri_raw, var headers, var setup_request)
+    {
+        if (uri_raw == null || uri_raw == "")
+            Rosella.Error.error("Invalid request. Uri is missing");
+        var uri = new Rosella.Net.Uri(uri_raw);
+        var protocol = Rosella.Net.default_protocol_factory().create(uri);
+        if (protocol == null)
+            Rosella.Error.error("Could not dispatch protocol '%s'", uri.protocol());
+
+        var request = new Rosella.Net.Http.Request();
+        request.set_method(request_method);
+        request.set_uri(uri);
+
+        if (setup_request != null)
+            setup_request(request);
+        protocol.prepare_request(request, self);
+        if (headers != null && elements(headers) > 0) {
+            for (string header_name in headers)
+                request.set_header(header_name, headers[header_name]);
+        }
+
+        return protocol.request(request, self);
     }
 }

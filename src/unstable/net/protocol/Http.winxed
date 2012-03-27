@@ -139,11 +139,9 @@ class Rosella.Net.Protocol.Http : Rosella.Net.Protocol
     {
         string content = request.get_content();
         string header_raw = self.__format_request_header(request.get_method(), fullpath, request.header());
-        //say(header_raw + CRLF + content);
         if (socket.puts(header_raw) < 0)
             return false;
         if (content != null && content != "") {
-            say("<<" + content + ">>");
             if (socket.puts(content) < 0)
                 return false;
         }

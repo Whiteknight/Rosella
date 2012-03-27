@@ -13,26 +13,6 @@ namespace Rosella.Net.Http
         return Rosella.Net.Http.default_socket_factory().create();
     }
 
-    function create_request(string uri = "")
-    {
-        var request = new Rosella.Net.Http.Request();
-        if (uri != null && uri != "")
-            request.set_uri_string(uri);
-        return request;
-    }
-
-    function request(var request, var user_agent = new Rosella.Net.UserAgent())
-    {
-        // TODO: Verify that this is an http request
-        var protocol = Rosella.Net.default_protocol_factory().create(request.get_uri());
-        if (protocol == null) {
-            string msg = Rosella.String.sprintf("Could not understand protocol '%s'", request.get_uri().protocol());
-            return new Rosella.Net.Http.Response(RC_BAD_REQUEST, msg);
-        }
-        protocol.prepare_request(request, user_agent);
-        return protocol.request(request, user_agent);
-    }
-
     function formdata_encode(string s)
     {
         int s_enc = encoding(s);
