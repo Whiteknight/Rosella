@@ -17,4 +17,12 @@ namespace Rosella.Net
     {
         return Rosella.Net.Http.default_protocol_factory().create(uri);
     }
+
+    const string TCP_SOCKET_FACTORY_GLOBAL = "Rosella.Net.Http.tcp_socket_factory";
+    function tcp_socket_factory()
+    {
+        return Rosella.Globals.autoget_global(TCP_SOCKET_FACTORY_GLOBAL,
+            function() { return new Rosella.Net.SocketFactory("ipv4", "stream", "tcp"); }
+        );
+    }
 }

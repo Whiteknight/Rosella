@@ -1,18 +1,5 @@
 namespace Rosella.Net.Http
 {
-    const string SOCKET_FACTORY_GLOBAL = "Rosella.Net.Http.socket_factory";
-    function default_socket_factory()
-    {
-        return Rosella.Globals.autoget_global(SOCKET_FACTORY_GLOBAL,
-            function() { return new Rosella.Net.SocketFactory("ipv4", "stream", "tcp"); }
-        );
-    }
-
-    function create_socket(string host, int port)
-    {
-        return Rosella.Net.Http.default_socket_factory().create();
-    }
-
     function formdata_encode(string s)
     {
         int s_enc = encoding(s);
