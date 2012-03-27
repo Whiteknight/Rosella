@@ -2,11 +2,20 @@ class Rosella.Net.UserAgent
 {
     function UserAgent() { }
 
-    function get_header_version_string()
+    function get_version_string()
     {
         var cv = Rosella.Version.get_version("core");
         var nv = Rosella.Version.get_version("net");
         string ua = Rosella.String.sprintf("parrot-rosella/%s net/%s (%s)", cv.library_version(), nv.library_version(), nv.library_state());
         return ua;
     }
+
+    // The request has been successfully dispatched. This may not be called if
+    // errors on the sending client prevent the message from being sent (a
+    // Response will still be returned with error information)
+    function request_sent() { }
+
+    function request_progress(float percent) { }
+
+    function request_complete() { }
 }

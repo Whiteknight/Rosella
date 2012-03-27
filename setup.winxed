@@ -389,6 +389,7 @@ function setup_experimental_libraries(var rosella)
         "net/protocol/Http",
         "net/Uri",
         "net/UserAgent",
+        "net/useragent/SimpleHttp",
         "net/http/Header",
         "net/http/Message",
         "net/http/Request",

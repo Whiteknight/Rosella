@@ -34,7 +34,7 @@ class Rosella.Net.Protocol.Http : Rosella.Net.Protocol
         if (!header.contains_value("Connection"))
             header.add_value("Connection", "Keep-Alive");
         if (!header.contains_value("User-Agent")) {
-            string ua_string = user_agent.get_header_version_string();
+            string ua_string = user_agent.get_version_string();
             if (ua_string != null && ua_string != "")
                 header.add_value("User-Agent", ua_string);
         }
@@ -47,13 +47,19 @@ class Rosella.Net.Protocol.Http : Rosella.Net.Protocol
 
         if (!self.__send_request(socket, request, fullpath, user_agent))
             return self.__error_network_failure(request);
+        user_agent.request_sent();
 
         :(int ok, var response) = self.__receive_status_line(socket);
         if (ok != 1)
             return response;
+        user_agent.request_progress(PERCENT_REQUEST_SENT);
+
         self.__receive_header(socket, response.header());
+        user_agent.request_progress(PERCENT_HEADERS_RECEIVED);
+
         if (!self.__receive_response_content(socket, response, user_agent))
             return self.__error_receive_failure(request, response);
+        user_agent.request_complete();
 
         socket.close();
         return response;
@@ -133,10 +139,12 @@ class Rosella.Net.Protocol.Http : Rosella.Net.Protocol
     {
         string content = request.get_content();
         string header_raw = self.__format_request_header(request.get_method(), fullpath, request.header());
+        //say(header_raw + CRLF + content);
         if (socket.puts(header_raw) < 0)
             return false;
         if (content != null && content != "") {
-            if (socket.puts(header_raw) < 0)
+            say("<<" + content + ">>");
+            if (socket.puts(content) < 0)
                 return false;
         }
         return true;
@@ -150,6 +158,8 @@ class Rosella.Net.Protocol.Http : Rosella.Net.Protocol
         if (contains(transfer_encoding, "chunked")) {
             int hex_class = Rosella.String.get_character_class("hexadecimal");
             while(true) {
+                // TODO: user_agent.request_progress()
+                say("CHUNKED");
                 string line = socket.readline();
                 int line_length = length(line);
                 int substr_idx = Rosella.String.first_not_cclass(line, hex_class);
@@ -164,20 +174,23 @@ class Rosella.Net.Protocol.Http : Rosella.Net.Protocol
             self.__receive_header(socket, response.header());
         } else {
             int content_length = response.get_content_length_header();
+            int recv_length = 0;
             if (content_length == 0) {
                 while(true) {
                     raw = socket.recv();
                     if (raw == null || raw == "")
                         break;
+                    recv_length += length(raw);
+                    user_agent.request_progress(__status_percent(content_length, recv_length));
                     push(buf, raw);
                 }
             } else {
-                int recv_length = 0;
                 while (recv_length < content_length) {
                     string raw = socket.recv();
                     if (raw == "")
                         break;
                     recv_length += length(raw);
+                    user_agent.request_progress(__status_percent(content_length, recv_length));
                     push(buf, raw);
                 }
             }

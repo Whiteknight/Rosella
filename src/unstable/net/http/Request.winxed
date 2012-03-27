@@ -4,6 +4,7 @@ class Rosella.Net.Http.Request : Rosella.Net.Http.Message
     var uri;
     var proxy;
     var form_data;
+    var is_form_data;
 
     function Request(var header = null) { self.Message(header); }
 
@@ -23,6 +24,14 @@ class Rosella.Net.Http.Request : Rosella.Net.Http.Message
 
     function set_method(string request_method) { self.request_method = request_method; }
 
+    function set_form_data_type(int is)
+    {
+        if (is == true || is == false)
+            self.is_form_data = is;
+        else
+            self.is_form_data = null;
+    }
+
     function get_content()
     {
         string content = "";
@@ -34,7 +43,7 @@ class Rosella.Net.Http.Request : Rosella.Net.Http.Message
         else if (self.form_data != null && elements(self.form_data) > 0) {
             if (self.__is_multipart_request(self.form_data)) {
                 string boundary = self.__get_multipart_boundary();
-                self.add_header("Content-Type", "multipart/form-data, boundary=\"" + boundary + "\"");
+                self.add_header("Content-Type", "multipart/form-data; boundary=" + boundary);
                 content = self.__format_formdata_content(boundary, self.form_data);
             } else {
                 self.add_header("Content-Type", "application/x-www-form-urlencoded");
@@ -44,7 +53,8 @@ class Rosella.Net.Http.Request : Rosella.Net.Http.Message
         int len = length(content);
         if (len > 0)
             self.add_header("Content-Length", length(content));
-        return content;
+        //say(content);
+        return content + CRLF;
     }
 
     function set_content(string data)
@@ -64,11 +74,11 @@ class Rosella.Net.Http.Request : Rosella.Net.Http.Message
 
     function add_form_field(string name, string value)
     {
-        if (self.form_data != null || self.content != null)
+        if (self.content != null)
             Rosella.Error.error("May not set content and form_data in the same request");
         if (self.form_data == null)
-            self.form_data = {};
-        self.form_data[name] = new Rosella.Net.Http.Request.FormDataPair(name, value);
+            self.form_data = [];
+        push(self.form_data, new Rosella.Net.Http.Request.FormDataPair(name, value));
     }
 
     function add_form_field_file(string name, var file, string mimetype = "", string encoding = "binary")
@@ -78,8 +88,8 @@ class Rosella.Net.Http.Request : Rosella.Net.Http.Message
         if (!file.exists())
             Rosella.Error.error("File %s does not exist", file.path());
         if (self.form_data == null)
-            self.form_data = {};
-        self.form_data[name] = new Rosella.Net.Http.Request.FormDataFile(name, file, mimetype, encoding);
+            self.form_data = [];
+        push(self.form_data, new Rosella.Net.Http.Request.FormDataFile(name, file, mimetype, encoding));
     }
 
     function add_form_field_filename(string name, string filename, string mimetype = "", string encoding = "binary")
@@ -91,25 +101,28 @@ class Rosella.Net.Http.Request : Rosella.Net.Http.Message
     function __format_formdata_content(string boundary, var form_data)
     {
         var sb = new 'StringBuilder';
-        for (string name in form_data) {
+        for (var data in form_data) {
+            string name = data.field_name();
             push(sb, "--");
             push(sb, boundary);
             push(sb, CRLF);
-            string content = form_data[name].get_content_string();
-            push(sb, content);
+            push(sb, data.get_content_string());
             push(sb, CRLF);
         }
         push(sb, "--");
         push(sb, boundary);
         push(sb, "--");
         push(sb, CRLF);
+        //push(sb, CRLF);
         return sb;
     }
 
     function __is_multipart_request(var form_data)
     {
-        for (string name in form_data) {
-            if (form_data[name].requires_multipart())
+        if (self.is_form_data != null)
+            return int(self.is_form_data);
+        for (var data in form_data) {
+            if (data.requires_multipart())
                 return true;
         }
         return false;
@@ -119,8 +132,9 @@ class Rosella.Net.Http.Request : Rosella.Net.Http.Message
     {
         var sb = new 'StringBuilder';
         string separator = "";
-        for (string field_name in form_data) {
-            string field_data = form_data[field_name].get_post_content_string();
+        for (var data in form_data) {
+            string field_name = data.field_name();
+            string field_data = data.get_post_content_string();
             push(sb, separator);
             separator = "&";
             push(sb, Rosella.Net.Http.formdata_encode(field_name));
@@ -133,7 +147,7 @@ class Rosella.Net.Http.Request : Rosella.Net.Http.Message
     function __get_multipart_boundary()
     {
         // TODO: Implement a random/pseudorandom generator for unique boundaries
-        return "this-is-a-test-multipart-boundary";
+        return "Aa03xBb04yCc05z";
     }
 }
 
@@ -145,6 +159,8 @@ class Rosella.Net.Http.Request.FormData
     {
         self.name = name;
     }
+
+    function field_name() { return self.name; }
 
     function get_multipart_content_string()
     {
@@ -169,7 +185,7 @@ class Rosella.Net.Http.Request.FormDataFile : Rosella.Net.Http.Request.FormData
     {
         self.file = f;
         self.mimetype = mimetype;
-
+        self.encoding = encoding;
         self.FormData(name);
     }
 
@@ -187,18 +203,19 @@ class Rosella.Net.Http.Request.FormDataFile : Rosella.Net.Http.Request.FormData
         string mimetype = self.mimetype;
         if (mimetype != "") {
             push(sb, "Content-Type: ");
-            push(sb, self.type);
+            push(sb, self.mimetype);
             push(sb, CRLF);
         }
         string encoding = self.encoding;
-        if (encoding != "") {
-            push(sb, "Content-Transfer-Encoding: ");
-            push(sb, self.encoding);
-            push(sb, CRLF);
-        }
+        //if (encoding != "") {
+            //push(sb, "Content-Transfer-Encoding: ");
+            //push(sb, self.encoding);
+            //push(sb, CRLF);
+        //}
         push(sb, CRLF);
 
-        push(sb, self.file.read_all_text());
+        push(sb, self.file.read_all_text("binary"));
+        push(sb, CRLF);
         return sb;
     }
 

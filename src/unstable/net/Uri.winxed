@@ -56,7 +56,12 @@ class Rosella.Net.Uri
         uri = substr(uri, idx + 2);
         parts["Path"] = uri;
         idx = index(uri, "/");
-        parts["Path Query"] = (idx >= 0) ? substr(uri, idx) : "";
+        if (idx >= 0) {
+            parts["Path_Query"] = substr(uri, idx);
+            uri = substr(uri, 0, idx);
+        } else {
+            parts["Path_Query"] = "";
+        }
         string port_authority = substr(uri, 0, idx);
         idx = index(uri, ":");
         if (idx < 0) {
@@ -89,5 +94,5 @@ class Rosella.Net.Uri
 
     function port() { return self.parts["Port"]; }
 
-    function path_query() { return self.parts["Path Query"]; }
+    function path_query() { return self.parts["Path_Query"]; }
 }

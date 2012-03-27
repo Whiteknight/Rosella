@@ -2,17 +2,20 @@ class Rosella.Net.Protocol
 {
     function Protocol() { }
 
-    function protocol_name()
-    {
-        Rosella.Error.must_subclass(__CLASS__);
-    }
+    /* Public Interface
+    */
 
-    function request(var request, var user_agent)
-    {
-        Rosella.Error.must_subclass(__CLASS__);
-    }
+    // Get the name of this protocol
+    function protocol_name() { Rosella.Error.must_subclass(__CLASS__); }
 
+    // Prepare the request to be sent
     function prepare_request(var request, var user_agent) { }
+
+    // Perform the request. Take a Request, return a Response
+    function request(var request, var user_agent) { Rosella.Error.must_subclass(__CLASS__); }
+
+    /* Private Error-Handling Functions
+    */
 
     function __error_bad_protocol(string protocol)
     {

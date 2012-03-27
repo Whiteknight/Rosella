@@ -4,6 +4,16 @@ $include_const "cclass.pasm";
 const string CRLF = "\r\n";
 const string HEXDIGITS = '0123456789ABCDEF';
 
+// Utilities for handling percent completion
+const float PERCENT_REQUEST_SENT = 0.10;
+const float PERCENT_HEADERS_RECEIVED = 0.20;
+const float PERCENT_RECV_MAX = 0.80; // 1.0 - (PERCENT_REQUEST_SENT + PERCENT_HEADERS_RECEIVED);
+inline __status_percent(int bytes_expected, int bytes_received) return float
+{
+    float percent_raw = float(bytes_received) / float(bytes_expected);
+    return (percent_raw * PERCENT_RECV_MAX) + PERCENT_HEADERS_RECEIVED;
+}
+
 /* HTTP Status Codes */
 /* These are here for reference, this library does not use them all */
 const int RC_CONTINUE                      = 100;

@@ -1,0 +1,19 @@
+class Rosella.Net.UserAgent.SimpleHttp : Rosella.Net.UserAgent
+{
+    function SimpleHttp() { }
+
+    function request_sent()
+    {
+        say("request sent");
+    }
+
+    function request_progress(float percent)
+    {
+        Rosella.IO.sayf("Percent: %f", percent);
+    }
+
+    function request_complete()
+    {
+        say("request complete");
+    }
+}
