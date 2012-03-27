@@ -4,7 +4,7 @@ namespace Rosella.Net.Http
     function default_socket_factory()
     {
         return Rosella.Globals.autoget_global(SOCKET_FACTORY_GLOBAL,
-            function() { return new Rosella.Net.Http.SocketFactory(); }
+            function() { return new Rosella.Net.SocketFactory("ipv4", "stream", "tcp"); }
         );
     }
 

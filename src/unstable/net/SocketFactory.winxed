@@ -1,0 +1,54 @@
+class Rosella.Net.SocketFactory : Rosella.ObjectFactory
+{
+    var protocol;
+
+    function SocketFactory(string inet_protocol, string data_protocol, string packet_protocol)
+    {
+        int inet, sock, packet;
+        switch (inet_protocol) {
+            case "ipv4":
+                inet = PIO_PF_INET;
+                break;
+            case "ipv6":
+                inet = PIO_PF_INET6;
+                break;
+            default:
+                Rosella.Error.error("Unknown internet protocol type '%s'", inet_protocol);
+        }
+
+        switch(data_protocol) {
+            case "stream":
+                sock = PIO_SOCK_STREAM;
+                break;
+            case "datagram":
+                sock = PIO_SOCK_DGRAM;
+                break;
+            default:
+                Rosella.Error.error("Unknown socket type '%s'", data_protocol);
+        }
+
+        switch(packet_protocol) {
+            case "tcp":
+                packet = PIO_PROTO_TCP;
+                break;
+            case "udp":
+                packet = PIO_PROTO_UDP;
+                break;
+            default:
+                Rosella.Error.error("Unknown protocol type '%s'", packet_protocol);
+        }
+
+        int protocol[] = [inet, sock, packet];
+        self.protocol = protocol;
+        self.ObjectFactory("Socket");
+    }
+
+    function create_typed(var type, string host, int port)
+    {
+        var socket = Rosella.construct(type);
+        socket.socket(self.protocol:[flat]);
+        var addr = socket.sockaddr(host, port);
+        socket.connect(addr);
+        return socket;
+    }
+}

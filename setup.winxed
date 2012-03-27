@@ -382,6 +382,10 @@ function setup_experimental_libraries(var rosella)
         "net/Includes",
         "net/Net",
         "net/Http",
+        "net/http/Header",
+        "net/http/Message",
+        "net/http/Request",
+        "net/http/Response",
         "net/MimeBase64",
         "net/Protocol",
         "net/protocol/Factory",
@@ -390,11 +394,7 @@ function setup_experimental_libraries(var rosella)
         "net/Uri",
         "net/UserAgent",
         "net/useragent/SimpleHttp",
-        "net/http/Header",
-        "net/http/Message",
-        "net/http/Request",
-        "net/http/Response",
-        "net/http/SocketFactory"
+        "net/SocketFactory"
     );
 }
 
