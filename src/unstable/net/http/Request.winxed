@@ -1,19 +1,21 @@
-class Rosella.Net.Http.Request : Rosella.Net.Http.Message
+class Rosella.Net.Http.Request : Rosella.Net.Request
 {
+    var header;
     var request_method;
     var uri;
     var proxy;
+    var content;
     var form_data;
     var is_form_data;
 
-    function Request(var header = null) { self.Message(header); }
+    function Request()
+    {
+        self.header = new Rosella.Net.Http.Header();
+    }
 
-    function set_proxy(var p) { self.proxy = p; }
-    function get_proxy() { return self.proxy; }
-
-    function get_uri() { return self.uri; }
-    function set_uri(var uri) { self.uri = uri; }
-    function set_uri_string(string uri) { self.uri = new Rosella.Net.Uri(uri); }
+    /* Request Method.
+        Can be one of HEAD, PUT, POST, DELETE and GET
+    */
 
     function get_method()
     {
@@ -24,6 +26,30 @@ class Rosella.Net.Http.Request : Rosella.Net.Http.Message
 
     function set_method(string request_method) { self.request_method = request_method; }
 
+    /* HTTP Header
+    */
+
+    function header() { return self.header; }
+    function add_header(string name, string value) { self.header.add_value(name, value); }
+    function get_header(string name) { return self.header.get_value(name); }
+    function remove_header(string name) { self.header.remove_value(name); }
+
+    /* Proxy
+    */
+
+    function set_proxy(var p) { self.proxy = p; }
+    function get_proxy() { return self.proxy; }
+
+    /* Request URI
+    */
+
+    function get_uri() { return self.uri; }
+    function set_uri(var uri) { self.uri = uri; }
+    function set_uri_string(string uri) { self.uri = new Rosella.Net.Uri(uri); }
+
+
+    // Set true if this request requires a mimetype of multipart/form-data.
+    // False if we can make the
     function set_form_data_type(int is)
     {
         if (is == true || is == false)
@@ -32,6 +58,8 @@ class Rosella.Net.Http.Request : Rosella.Net.Http.Message
             self.is_form_data = null;
     }
 
+    // Get the request packet content body. Generates the packet body and sets
+    // the correct headers for it.
     function get_content()
     {
         string content = "";
@@ -57,6 +85,8 @@ class Rosella.Net.Http.Request : Rosella.Net.Http.Message
         return content + CRLF;
     }
 
+    // Sets a raw chunk of content as the body of the request. A request may
+    // only have a content body or a hash of name/value field pairs as the body.
     function set_content(string data)
     {
         if (self.form_data != null)
@@ -64,6 +94,7 @@ class Rosella.Net.Http.Request : Rosella.Net.Http.Message
         self.content = data;
     }
 
+    // Add a hash of name->value pairs as form data
     function add_form_fields(var fields)
     {
         for (string name in fields) {
@@ -72,6 +103,7 @@ class Rosella.Net.Http.Request : Rosella.Net.Http.Message
         }
     }
 
+    // Add a name/value pair to the form data.
     function add_form_field(string name, string value)
     {
         if (self.content != null)
@@ -81,6 +113,8 @@ class Rosella.Net.Http.Request : Rosella.Net.Http.Message
         push(self.form_data, new Rosella.Net.Http.Request.FormDataPair(name, value));
     }
 
+    // Add file to the form data. Forces the content type to
+    // "multipart/form-data"
     function add_form_field_file(string name, var file, string mimetype = "", string encoding = "binary")
     {
         if (self.content != null)
@@ -92,14 +126,20 @@ class Rosella.Net.Http.Request : Rosella.Net.Http.Message
         push(self.form_data, new Rosella.Net.Http.Request.FormDataFile(name, file, mimetype, encoding));
     }
 
+    // Add a file to the form by filename
     function add_form_field_filename(string name, string filename, string mimetype = "", string encoding = "binary")
     {
         var f = new Rosella.FileSystem.File(filename);
         self.add_form_field_file(name, f, mimetype, encoding);
     }
 
+    /* Private Helper Methods
+    */
+
+    // Format request content as "multipart/form-data"
     function __format_formdata_content(string boundary, var form_data)
     {
+        // TODO: Support multipart requests and multiple file uploads
         var sb = new 'StringBuilder';
         for (var data in form_data) {
             string name = data.field_name();
@@ -117,6 +157,8 @@ class Rosella.Net.Http.Request : Rosella.Net.Http.Message
         return sb;
     }
 
+    // Determine if this is a multipart request and requires the
+    // "multipart/form-data" mime type
     function __is_multipart_request(var form_data)
     {
         if (self.is_form_data != null)
@@ -128,6 +170,7 @@ class Rosella.Net.Http.Request : Rosella.Net.Http.Message
         return false;
     }
 
+    // Format form data as "application/x-www-form-encoded"
     function __format_post_content(var form_data)
     {
         var sb = new 'StringBuilder';
@@ -144,6 +187,7 @@ class Rosella.Net.Http.Request : Rosella.Net.Http.Message
         return sb;
     }
 
+    // Get a boundary token for multpart/form-data requests
     function __get_multipart_boundary()
     {
         // TODO: Implement a random/pseudorandom generator for unique boundaries
@@ -151,6 +195,9 @@ class Rosella.Net.Http.Request : Rosella.Net.Http.Message
     }
 }
 
+/* Form Data wrapper
+    Abstract parent class of name/value pair data for forms
+*/
 class Rosella.Net.Http.Request.FormData
 {
     var name;
@@ -175,6 +222,9 @@ class Rosella.Net.Http.Request.FormData
     function requires_multipart() { return false; }
 }
 
+/* File Upload
+    Represents a file uploaded from form.
+*/
 class Rosella.Net.Http.Request.FormDataFile : Rosella.Net.Http.Request.FormData
 {
     var file;
@@ -225,6 +275,8 @@ class Rosella.Net.Http.Request.FormDataFile : Rosella.Net.Http.Request.FormData
     }
 }
 
+/* Represents a simple name/value pair
+*/
 class Rosella.Net.Http.Request.FormDataPair : Rosella.Net.Http.Request.FormData
 {
     var value;

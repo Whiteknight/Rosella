@@ -1,3 +1,5 @@
+/* HTTP Utilities Namespace
+*/
 namespace Rosella.Net.Http
 {
     function formdata_encode(string s)

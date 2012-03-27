@@ -1,5 +1,7 @@
-class Rosella.Net.Http.Response : Rosella.Net.Http.Message
+class Rosella.Net.Http.Response : Rosella.Net.Response
 {
+    var header;
+    var content;
     var code;
     var message;
     var previous;
@@ -14,8 +16,31 @@ class Rosella.Net.Http.Response : Rosella.Net.Http.Message
         self.header = new Rosella.Net.Http.Header();
     }
 
+    function header() { return self.header; }
+    function get_header(string name) { return self.header.get_value(name); }
+
+    function get_content()
+    {
+        if (self.content == null)
+            return "";
+        return string(self.content);
+    }
+
+    function set_content(string content)
+    {
+        self.content = content;
+    }
+
     function status_code()
     {
         return int(self.code);
+    }
+
+    function get_content_length_header()
+    {
+        string content_length = self.header.get_value("Content-Length");
+        if (content_length == null || content_length == "")
+            return 0;
+        return int(content_length);
     }
 }

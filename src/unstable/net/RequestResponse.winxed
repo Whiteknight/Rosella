@@ -1,0 +1,7 @@
+class Rosella.Net.Request
+{
+}
+
+class Rosella.Net.Response
+{
+}

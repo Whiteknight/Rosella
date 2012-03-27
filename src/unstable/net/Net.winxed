@@ -1,3 +1,6 @@
+/* Rosella Net Library
+    This namespace contains utilities for working with the internet
+*/
 namespace Rosella.Net
 {
     const string PROTOCOL_FACTORY_GLOBAL = "Rosella.Net.protocol_factory";
