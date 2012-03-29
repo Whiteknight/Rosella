@@ -247,6 +247,27 @@ inline ord(string s) return int
     return value;
 }
 
+inline ord_isi(string s, int i) return int
+{
+    int value;
+    ${ ord value, s, i };
+    return value;
+}
+
+inline replace(string s, int a, int b, string r) return string
+{
+    string value;
+    ${ replace value, s, a, b, r };
+    return value;
+}
+
+inline chopn(string s, int i) return string
+{
+    string value;
+    ${ chopn value, s, i };
+    return value;
+}
+
 /* Namespaces
 */
 

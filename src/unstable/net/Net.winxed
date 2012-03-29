@@ -21,11 +21,19 @@ namespace Rosella.Net
         return Rosella.Net.Http.default_protocol_factory().create(uri);
     }
 
-    const string TCP_SOCKET_FACTORY_GLOBAL = "Rosella.Net.Http.tcp_socket_factory";
+    const string TCP_SOCKET_FACTORY_GLOBAL = "Rosella.Net.tcp_socket_factory";
     function tcp_socket_factory()
     {
         return Rosella.Globals.autoget_global(TCP_SOCKET_FACTORY_GLOBAL,
             function() { return new Rosella.Net.SocketFactory("ipv4", "stream", "tcp"); }
+        );
+    }
+
+    const string MIMEBASE64_GLOBAL = "Rosella.Net.mimebase64";
+    function default_mime_encoder()
+    {
+        return Rosella.Globals.autoget_global(MIMEBASE64_GLOBAL,
+            function() { return new Rosella.Net.MimeBase64(); }
         );
     }
 }

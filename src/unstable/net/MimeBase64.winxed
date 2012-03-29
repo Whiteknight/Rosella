@@ -1,10 +1,138 @@
-namespace Rosella.Net.MimeBase64
+class Rosella.Net.MimeBase64
 {
+    const string PRINTABLE_CHARS = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789+/";
+    var eight_to_six;
+    var six_to_eight;
+
+    function MimeBase64()
+    {
+        :(var e, var s) = self.initialize();
+        self.eight_to_six = e;
+        self.six_to_eight = s;
+    }
+
+    function initialize()
+    {
+        var six_to_eight = new 'FixedIntegerArray';
+        six_to_eight =: 64;
+        var eight_to_six = new 'FixedIntegerArray';
+        eight_to_six =: 256;
+
+        eight_to_six[0] = 0;
+        for (int i = 1; i < 256; i++)
+            eight_to_six[i] = -1;
+
+        for (int six = 0; six < 64; six++) {
+            string tmp = substr(PRINTABLE_CHARS, six, 1);
+            int eight = ord(tmp);
+            eight_to_six[eight] = six;
+            six_to_eight[six] = eight;
+        }
+        return eight_to_six, six_to_eight;
+    }
+
     function encode(string plain)
     {
+        var s = self.six_to_eight;
+        int len = length(plain);
+        int len_mod_3 = len % 3;
+
+        if (len_mod_3 == 1)
+            plain = plain + "\0\0";
+        else if (len_mod_3 == 2)
+            plain = plain + "\0";
+
+        var result = new 'ByteBuffer';
+        for (int i = 0; i < len; ) {
+            int eight_0 = ord_isi(plain, i); i++;
+            int eight_1 = ord_isi(plain, i); i++;
+            int eight_2 = ord_isi(plain, i); i++;
+            int six_0 = eight_0 >> 2;
+            int tmp_int_1 = band(eight_0, 3);
+            tmp_int_1 = tmp_int_1 << 4;
+            int tmp_int_2 = eight_1 >> 4;
+            int six_1 = bor(tmp_int_1, tmp_int_2);
+            tmp_int_1 = band(eight_1, 15);
+            tmp_int_1 = tmp_int_1 << 2;
+            tmp_int_2 = eight_2 >> 6;
+            int six_2 = bor(tmp_int_1, tmp_int_2);
+            int six_3 = band(eight_2, 63);
+
+            push(result, int(s[six_0]));
+            push(result, int(s[six_1]));
+            push(result, int(s[six_2]));
+            push(result, int(s[six_3]));
+        }
+
+        if (len_mod_3 == 2) {
+            int buf_len = elements(result);
+            int equal_sign = ord("=");
+            result[buf_len - 1] = equal_sign;
+        }
+        else if (len_mod_3 == 1) {
+            int buf_len = elements(result);
+            int equal_sign = ord("=");
+            result[buf_len - 1] = equal_sign;
+            result[buf_len - 2] = equal_sign;
+        }
+
+        return result.get_string("ascii");
     }
 
     function decode(string base64)
     {
+        int len = length(base64);
+        var base64_cleaned = new 'ByteBuffer';
+        base64_cleaned =: len;
+
+        var e = self.eight_to_six;
+        for (int i = 0; i < len; i++) {
+            int tmp_int_1 = ord_isi(base64, i);
+            if (e[tmp_int_1] != -1)
+                push(base64_cleaned, tmp_int_1);
+        }
+
+        len = elements(base64_cleaned);
+        int len_mod_4 = len % 4;
+        push(base64_cleaned, 0);
+        push(base64_cleaned, 0);
+        push(base64_cleaned, 0);
+
+        var plain = new 'ByteBuffer';
+
+        for (int i = 0; i < len; ) {
+            int tmp_int_1 = base64_cleaned[i]; i++;
+            int six_0 = e[tmp_int_1];
+            tmp_int_1 = base64_cleaned[i]; i++;
+            int six_1 = e[tmp_int_1];
+            tmp_int_1 = base64_cleaned[i]; i++;
+            int six_2 = e[tmp_int_1];
+            tmp_int_1 = base64_cleaned[i]; i++;
+            int six_3 = e[tmp_int_1];
+
+            tmp_int_1 = six_0 << 2;
+            int tmp_int_2 = six_1 >> 4;
+            int eight_0 = bor(tmp_int_1, tmp_int_2);
+
+            tmp_int_1 = band(six_1, 15) << 4;
+            tmp_int_2 = six_2 >> 2;
+            int eight_1 = bor(tmp_int_1, tmp_int_2);
+
+            tmp_int_1 = band(six_2, 3) << 6;
+            int eight_2 = bor(tmp_int_1, six_3);
+
+            push(plain, eight_0);
+            push(plain, eight_1);
+            push(plain, eight_2);
+        }
+
+        int minus_length = 0;
+        if (len_mod_4 == 3)
+            minus_length = 1;
+        else if (len_mod_4 == 2)
+            minus_length = 2;
+
+
+        return plain.get_chars(0, elements(plain) - minus_length, "ascii");
     }
 }

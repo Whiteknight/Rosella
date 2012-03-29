@@ -18,6 +18,7 @@ class Rosella.Net.Http.Response : Rosella.Net.Response
 
     function header() { return self.header; }
     function get_header(string name) { return self.header.get_value(name); }
+    function add_header(string name, string value) { self.header.add_value(name, value); }
 
     function get_content()
     {
