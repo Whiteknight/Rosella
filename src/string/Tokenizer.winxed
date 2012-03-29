@@ -72,7 +72,7 @@ class Rosella.String.Tokenizer
     function get_token()
     {
         if (elements(self.tokens) >= 1)
-            return shift_p(self.tokens);
+            return shift_pmc(self.tokens);
         if (self.data != null && self.data != "")
             return self.lex_next_token();
         return null;

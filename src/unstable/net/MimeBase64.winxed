@@ -24,7 +24,7 @@ class Rosella.Net.MimeBase64
             eight_to_six[i] = -1;
 
         for (int six = 0; six < 64; six++) {
-            int eight = ord_isi(PRINTABLE_CHARS, six);
+            int eight = get_codepoint(PRINTABLE_CHARS, six);
             eight_to_six[eight] = six;
             six_to_eight[six] = eight;
         }
@@ -64,12 +64,12 @@ class Rosella.Net.MimeBase64
         int len_mod_3 = len % 3;
         if (len_mod_3 == 2) {
             int buf_len = elements(result);
-            int equal_sign = ord("=");
+            int equal_sign = get_codepoint("=", 0);
             result[buf_len - 1] = equal_sign;
         }
         else if (len_mod_3 == 1) {
             int buf_len = elements(result);
-            int equal_sign = ord("=");
+            int equal_sign = get_codepoint("=", 0);
             result[buf_len - 1] = equal_sign;
             result[buf_len - 2] = equal_sign;
         }

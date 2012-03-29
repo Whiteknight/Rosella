@@ -39,7 +39,7 @@ class Rosella.String.FormatPrinter
 
         while(cur_idx < fmt_len) {
             cur_idx = next_idx;
-            next_idx = index_ssi(fmt, "{", cur_idx);
+            next_idx = index_of_substr_from(fmt, "{", cur_idx);
             if (cur_idx != next_idx)
                 output_array[out_idx++] = substr(fmt, cur_idx, next_idx - cur_idx);
 
@@ -53,7 +53,7 @@ class Rosella.String.FormatPrinter
                 output_array[out_idx++] = "{";
                 continue;
             }
-            int ptr = index_ssi(fmt, "}", next_idx);
+            int ptr = index_of_substr_from(fmt, "}", next_idx);
             if (ptr == -1) {
                 output_array[out_idx++] = substr(fmt, cur_idx);
                 break;

@@ -53,7 +53,7 @@ class Rosella.Template.Node.Logic : Rosella.Template.Node
             current_node.add_child(self);
         else if (self.is_logic_end() &&
             string(self.logic_name) == string(current_node.logic_end_name()))
-            current_node = pop_p(parent_nodes);
+            current_node = parent_nodes.pop();
         else {
             current_node.add_child(self);
             push(parent_nodes, current_node);

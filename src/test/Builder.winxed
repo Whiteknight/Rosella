@@ -25,7 +25,7 @@ class Rosella.Test.Builder
     function _printf(string fmt, var args [slurpy])
     {
         int nest_level = int(self.nest_level);
-        string prefix = repeat("    ", nest_level);
+        string prefix = repeat_string("    ", nest_level);
         self.output.print(prefix + sprintf(fmt, args));
     }
 
@@ -84,13 +84,13 @@ class Rosella.Test.Builder
                 display_bt = [];
                 int i = 0;
                 for (; i < elements(bt_list); i++) {
-                    if (!contains(bt_list[i], "rosella/test.winxed"))
+                    if (!contains_substr(bt_list[i], "rosella/test.winxed"))
                         break;
                 }
                 int j = 0;
                 display_bt[j++] = bt_list[i - 1];
                 for (; i < elements(bt_list); i++) {
-                    if (contains(bt_list[i], "execute_test") && contains(bt_list[i], "rosella/test.winxed"))
+                    if (contains_substr(bt_list[i], "execute_test") && contains_substr(bt_list[i], "rosella/test.winxed"))
                         break;
                     display_bt[j++] = bt_list[i];
                 }

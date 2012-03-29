@@ -5,23 +5,23 @@ namespace Rosella.Net.Uri
 
     function percent_encode_except(string s, string except)
     {
-        int s_enc = encoding(s);
-        int utf8_enc = find_encoding("utf8");
-        if (s_enc != find_encoding("ascii") && s_enc != utf8_enc)
-            s = trans_encoding(s, utf8_enc);
+        int s_enc = get_string_encoding(s);
+        int utf8_enc = get_encoding_id("utf8");
+        if (s_enc != get_encoding_id("ascii") && s_enc != utf8_enc)
+            s = reencode_string(s, utf8_enc);
 
         var buf = new 'ByteBuffer';
         var result = new 'ByteBuffer';
         buf =: s;
         for (int code in buf) {
-            string c = chr(code);
-            int idx = index(except, c);
+            string c = codepoint_to_string(code);
+            int idx = index_of_substr(except, c);
             if (idx == -1) {
                 push(result, 0x25);
                 c = substr(HEXDIGITS, code / 16, 1);
-                push(result, ord(c));
+                push(result, get_codepoint(c, 0));
                 c = substr(HEXDIGITS, code % 16, 1);
-                push(result, ord(c));
+                push(result, get_codepoint(c, 0));
             } else {
                 push(result, code);
                 continue;
@@ -81,18 +81,18 @@ class Rosella.Net.Uri
     function __parse(string uri)
     {
         var parts = self.__default_parts_hash(uri);
-        int idx = index(uri, "//");
+        int idx = index_of_substr(uri, "//");
         string protocol = (idx > 2) ? substr(uri, 0, idx - 1) : "";
         parts["Protocol"] = protocol;
         uri = substr(uri, idx + 2);
         parts["Path"] = uri;
-        idx = index(uri, "/");
+        idx = index_of_substr(uri, "/");
         if (idx >= 0) {
             parts["Path_Query"] = substr(uri, idx);
             uri = substr(uri, 0, idx);
         }
         string port_authority = substr(uri, 0, idx);
-        idx = index(uri, ":");
+        idx = index_index_of_substr(uri, ":");
         if (idx < 0)
             parts["Authority"] = uri;
         else {

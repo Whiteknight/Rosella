@@ -10,10 +10,10 @@ class Rosella.Date.TimeSpanFormatter : Rosella.StringFormatter
     // Format the TimeSpan object
     function format(var obj, string f)
     {
-        if (contains(f, "dd")) f = f.replace("dd", format("%02d", obj.days()));
-        if (contains(f, "hh")) f = f.replace("hh", format("%02d", obj.hours()));
-        if (contains(f, "mm")) f = f.replace("mm", format("%02d", obj.minutes()));
-        if (contains(f, "ss")) f = f.replace("ss", format("%02d", obj.seconds()));
+        if (contains_substr(f, "dd")) f = f.replace("dd", format_string("%02d", obj.days()));
+        if (contains_substr(f, "hh")) f = f.replace("hh", format_string("%02d", obj.hours()));
+        if (contains_substr(f, "mm")) f = f.replace("mm", format_string("%02d", obj.minutes()));
+        if (contains_substr(f, "ss")) f = f.replace("ss", format_string("%02d", obj.seconds()));
         return f;
     }
 

@@ -12,7 +12,7 @@ class Rosella.Net.Protocol.Http : Rosella.Net.Protocol
 
         string host = uri.authority();
         string userinfo;
-        int amp_idx = index(host, "@");
+        int amp_idx = index_of_substr(host, "@");
         if (amp_idx >= 0) {
             userinfo = substr(host, 0, amp_idx);
             amp_idx++;
@@ -86,14 +86,14 @@ class Rosella.Net.Protocol.Http : Rosella.Net.Protocol
     {
         string status_line = socket.readline();
         status_line = Rosella.String.trim_end(status_line);
-        int idx = index(status_line, " ");
+        int idx = index_of_substr(status_line, " ");
 
         if (idx < 0)
             return false, new Rosella.Net.Http.Response(0, status_line);
 
         string protocol = substr(status_line, 0, idx);
         int next_idx = idx + 1;
-        idx = index_issi(status_line, " ", next_idx);
+        idx = index_of_substr_from(status_line, " ", next_idx);
         if (idx < 0)
             return false, new Rosella.Net.Http.Response(0, status_line, protocol);
 
@@ -111,7 +111,7 @@ class Rosella.Net.Protocol.Http : Rosella.Net.Protocol
             raw = Rosella.String.trim_end(raw);
             if (raw == null || raw == "")
                 return;
-            int idx = index(raw, ": ");
+            int idx = index_of_substr(raw, ": ");
             if (idx >= 0) {
                 string name = substr(raw, 0, idx);
                 string value = substr(raw, idx + 2);
@@ -136,7 +136,7 @@ class Rosella.Net.Protocol.Http : Rosella.Net.Protocol
             host = uri.host();
             port = uri.port();
             fullpath = uri.path_query();
-            if (index(fullpath, "/") != 0)
+            if (index_of_substr(fullpath, "/") != 0)
                 fullpath = "/" + fullpath;
         }
         int port_num = (port == null || port == "") ? 80 : int(port);
@@ -162,7 +162,7 @@ class Rosella.Net.Protocol.Http : Rosella.Net.Protocol
         var buf = new 'StringBuilder';
         string transfer_encoding = response.get_header("Transfer-Encoding");
         string raw;
-        if (contains(transfer_encoding, "chunked")) {
+        if (contains_substr(transfer_encoding, "chunked")) {
             int hex_class = Rosella.String.get_character_class("hexadecimal");
             while(true) {
                 // TODO: user_agent.request_progress()

@@ -80,7 +80,7 @@ class Rosella.Proxy.Factory : Rosella.ObjectFactory
         int id = Rosella.get_unique_count();
         string proxy_class_name = sprintf("!!!PROXY_%s_%d", [string(target_class), id]);
 
-        var proxy_class = newclass(proxy_class_name);
+        var proxy_class = new_class(proxy_class_name);
         Rosella.Proxy.add_proxy_class_private_attr(proxy_class, "proxy_controller");
         Rosella.Proxy.add_proxy_class_private_attr(proxy_class, "proxy_factory");
         Rosella.Proxy.add_proxy_class_private_attr(proxy_class, "target_class");

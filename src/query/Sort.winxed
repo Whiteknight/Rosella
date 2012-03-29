@@ -92,7 +92,7 @@ namespace Rosella.Query.Sort
     function get_default_comparer()
     {
         return function (var a, var b) {
-            return cmp_p(a, b);
+            return compare_pmcs(a, b);
         };
     }
 
@@ -100,7 +100,7 @@ namespace Rosella.Query.Sort
     function get_reverse_comparer()
     {
         return function (var a, var b) {
-            return -(cmp_p(a, b));
+            return -(compare_pmcs(a, b));
         };
     }
 

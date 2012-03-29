@@ -51,7 +51,7 @@ class Rosella.Harness.View
     function start_test(string name)
     {
         int diff = int(self.line_length) - length(name) + MIN_NUM_ELLIPSES;
-        string elipses = repeat(".", diff);
+        string elipses = repeat_string(".", diff);
         self.printf("%s %s ", name, elipses);
     }
 
@@ -60,7 +60,7 @@ class Rosella.Harness.View
     {
         if (self.need_backspaces > 0) {
             int num_b = int(self.need_backspaces);
-            string b = repeat("\b", num_b);
+            string b = repeat_string("\b", num_b);
             self.printf(b + " ");
             self.need_backspaces = 0;
         }
@@ -74,7 +74,7 @@ class Rosella.Harness.View
     {
         if (self.need_backspaces > 0) {
             int num_b = int(self.need_backspaces);
-            string b = repeat("\b", num_b);
+            string b = repeat_string("\b", num_b);
             self.printf(b + " ");
             self.need_backspaces = 0;
         }

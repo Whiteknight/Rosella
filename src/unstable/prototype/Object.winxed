@@ -7,7 +7,7 @@ namespace Rosella { namespace Prototype
         function init [vtable,nsentry]()
         {
             var mytype = typeof(self);
-            var proto = getprop(mytype, 'prototype');
+            var proto = get_property(mytype, 'prototype');
 
             var attrs = {};
             attrs['prototype'] = proto;
@@ -18,12 +18,12 @@ namespace Rosella { namespace Prototype
         {
             using Rosella.Prototype.Class.init;
             self.*init();
-            setprop(self, "code", sub);
+            set_property(self, "code", sub);
         }
 
         function invoke[vtable](var p [slurpy], var n [slurpy,named])
         {
-            var sub = getprop(self, "code");
+            var sub = get_property(self, "code");
             if (sub == null)
                 Rosella.Error.invalid("Prototype.Object", "Cannot be invoked");
             return sub(p:[flat], n:[flat,named]);

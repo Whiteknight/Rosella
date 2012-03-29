@@ -37,7 +37,7 @@ namespace Rosella.Date
     // Get a Date object representing the current instant
     function now()
     {
-        return new Rosella.Date(time_i());
+        return new Rosella.Date(time_ticks());
     }
 
     // Get a Date object representing the minimum representable date. This

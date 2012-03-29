@@ -30,12 +30,12 @@ const int TYPE_CALL_SIG  = 0x1000;
 inline __get_cached_reflector(var obj, string key) return var
 {
     string k = "!!!Rosella.Reflect." + key + "!!!";
-    return getprop(obj, k);
+    return get_property(obj, k);
 }
 
 inline __set_cached_reflector(var obj, string key, var r)
 {
     string k = "!!!Rosella.Reflect." + key + "!!!";
-    setprop(obj, k, r);
+    set_property(obj, k, r);
 }
 

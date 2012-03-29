@@ -138,11 +138,11 @@ class Rosella.Parrot.ExceptionFormatter : Rosella.StringFormatter
             ns = join(".", ns_parts);
         }
 
-        if (contains(f, "NS"))   f = f.replace("NS", ns);
-        if (contains(f, "HLL"))  f = f.replace("HLL", hll_ns);
-        if (contains(f, "SUB"))  f = f.replace("SUB", subname);
-        if (contains(f, "FILE")) f = f.replace("FILE", filename);
-        if (contains(f, "LINE")) f = f.replace("LINE", string(lineno));
+        if (contains_substr(f, "NS"))   f = f.replace("NS", ns);
+        if (contains_substr(f, "HLL"))  f = f.replace("HLL", hll_ns);
+        if (contains_substr(f, "SUB"))  f = f.replace("SUB", subname);
+        if (contains_substr(f, "FILE")) f = f.replace("FILE", filename);
+        if (contains_substr(f, "LINE")) f = f.replace("LINE", string(lineno));
         return sub, f;
     }
 

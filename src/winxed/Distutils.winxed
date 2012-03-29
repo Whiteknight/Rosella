@@ -137,7 +137,7 @@ namespace Rosella.Winxed.Distutils
     // Get the .pir filename corresponding to the given winxed file
     function get_pir_file_name(string winxed_file)
     {
-        int idx = index(winxed_file, ".winxed");
+        int idx = index_of_substr(winxed_file, ".winxed");
         if (idx == -1)
             die(winxed_file + " is not a winxed file");
         return substr(winxed_file, 0, idx) + ".pir";

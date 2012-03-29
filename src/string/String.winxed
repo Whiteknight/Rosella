@@ -254,7 +254,7 @@ namespace Rosella.String
         int startpos = pos;
         while(pos < length(source)) {
             string s0 = substr(source, pos, 1);
-            int digitval = index(DIGITS, s0);
+            int digitval = index_of_substr(DIGITS, s0);
             if (digitval < 0)
                 break;
             digitval = digitval >> 1;
@@ -324,7 +324,7 @@ namespace Rosella.String
 
         if (len < total_width) {
             int diff = total_width - len;
-            return repeat(char, diff);
+            return repeat_string(char, diff);
         }
         return "";
     }

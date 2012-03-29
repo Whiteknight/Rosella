@@ -36,21 +36,21 @@ inline new_pmc(var class_obj) return var
     return obj;
 }
 
-inline newclass(string name) return var
+inline new_class(string name) return var
 {
     var c;
     ${ newclass c, name };
     return c;
 }
 
-inline defined(var obj) return int
+inline is_defined(var obj) return int
 {
     int value;
     ${ defined value, obj };
     return value;
 }
 
-inline cmp_p(var a, var b) return int
+inline compare_pmcs(var a, var b) return int
 {
     int value;
     ${ cmp value, a, b };
@@ -65,7 +65,7 @@ inline schedule(var task)
     ${ schedule task };
 }
 
-inline time_i() return int
+inline time_ticks() return int
 {
     int t;
     ${ time t };
@@ -94,21 +94,21 @@ inline inspect(var obj) return var
     return value;
 }
 
-inline inspect_s(var obj, string property) return var
+inline inspect_named(var obj, string property) return var
 {
     var value;
     ${ inspect value, obj, property };
     return value;
 }
 
-inline getprop(var obj, string name) return var
+inline get_property(var obj, string name) return var
 {
     var value;
     ${ getprop value, name, obj };
     return value;
 }
 
-inline setprop(var obj, string name, var value)
+inline set_property(var obj, string name, var value)
 {
     ${ setprop obj, name, value };
 }
@@ -116,21 +116,21 @@ inline setprop(var obj, string name, var value)
 /* Aggregates and Arrays
 */
 
-inline shift_p(var obj) return var
+inline shift_pmc(var obj) return var
 {
     var value;
     ${ shift value, obj };
     return value;
 }
 
-inline pop_p(var obj) return var
+inline pop_pmc(var obj) return var
 {
     var value;
     ${ pop value, obj };
     return value;
 }
 
-inline iter(var obj) return var
+inline get_iterator(var obj) return var
 {
     var i;
     ${ iter i, obj };
@@ -166,42 +166,35 @@ inline find_cclass(int cclass, string s, int start_idx, int len) return int
     return idx;
 }
 
-inline repeat(string s, int c) return string
+inline repeat_string(string s, int c) return string
 {
     string value;
     ${ repeat value, s, c };
     return value;
 }
 
-inline index(string s, string n) return int
+inline index_of_substr(string s, string n) return int
 {
     int value;
     ${ index value, s, n };
     return value;
 }
 
-inline index_issi(string s, string n, int i) return int
+inline index_of_substr_from(string s, string n, int i) return int
 {
     int value;
     ${ index value, s, n, i };
     return value;
 }
 
-inline contains(string s, string n) return int
+inline contains_substr(string s, string n) return int
 {
     int value;
     ${ index value, s, n };
     return value == -1 ? false : true;
 }
 
-inline index_ssi(string s, string n, int idx) return int
-{
-    int value;
-    ${ index value, s, n, idx };
-    return value;
-}
-
-inline format(string f, var v) return string
+inline format_string(string f, var v) return string
 {
     return sprintf(f, [v]);
 }
@@ -212,42 +205,35 @@ inline string_has_prefix(string f, string p) return int
     return length(f) > len_p && substr(f, 0, len_p) == p;
 }
 
-inline find_encoding(string name) return int
+inline get_encoding_id(string name) return int
 {
     int value;
     ${ find_encoding value, name };
     return value;
 }
 
-inline encoding(string s) return int
+inline get_string_encoding(string s) return int
 {
     int value;
     ${ encoding value, s };
     return value;
 }
 
-inline trans_encoding(string s, int e) return string
+inline reencode_string(string s, int e) return string
 {
     string value;
     ${ trans_encoding value, s, e };
     return value;
 }
 
-inline chr(int i) return string
+inline codepoint_to_string(int i) return string
 {
     string value;
     ${ chr value, i };
     return value;
 }
 
-inline ord(string s) return int
-{
-    int value;
-    ${ ord value, s };
-    return value;
-}
-
-inline ord_isi(string s, int i) return int
+inline get_codepoint(string s, int i) return int
 {
     int value;
     ${ ord value, s, i };

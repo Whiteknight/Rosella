@@ -11,35 +11,35 @@ class Rosella.Date.DateFormatter : Rosella.StringFormatter
     // TODO: Find an algorithm which isn't so slow and wasteful
     function format(var obj, string f)
     {
-        if (contains(f, "yyyy")) f = f.replace("yyyy", format("%04d", obj.year()));
-        if (contains(f, "MMMM")) f = f.replace("MMMM", obj.month_name());
-        if (contains(f, "MMM"))  f = f.replace("MMM", substr(obj.month_name(), 0, 3));
-        if (contains(f, "MM"))   f = f.replace("MM", format("%02d", obj.month()));
-        if (contains(f, "dd"))   f = f.replace("dd", format("%02d", obj.day()));
-        if (contains(f, "AA")) {
+        if (contains_substr(f, "yyyy")) f = f.replace("yyyy", format_string("%04d", obj.year()));
+        if (contains_substr(f, "MMMM")) f = f.replace("MMMM", obj.month_name());
+        if (contains_substr(f, "MMM"))  f = f.replace("MMM", substr(obj.month_name(), 0, 3));
+        if (contains_substr(f, "MM"))   f = f.replace("MM", format_string("%02d", obj.month()));
+        if (contains_substr(f, "dd"))   f = f.replace("dd", format_string("%02d", obj.day()));
+        if (contains_substr(f, "AA")) {
             int hours = obj.hours();
             if (hours > 12)
                 f = f.replace("AA", "PM");
             else
                 f = f.replace("AA", "AM");
         }
-        if (contains(f, "HHH")) {
+        if (contains_substr(f, "HHH")) {
             int hours = obj.hours();
             if (hours > 12)
                 hours = hours - 12;
-            f = f.replace("HHH", format("%2d", hours));
+            f = f.replace("HHH", format_string("%2d", hours));
         }
-        if (contains(f, "HH")) {
+        if (contains_substr(f, "HH")) {
             int hours = obj.hours();
             if (hours > 12)
                 hours = hours - 12;
-            f = f.replace("HH", format("%d", hours));
+            f = f.replace("HH", format_string("%d", hours));
         }
-        if (contains(f, "ww"))   f = f.replace("ww", format("%02d", obj.week_day()));
-        if (contains(f, "WW"))   f = f.replace("WW", obj.week_day_name());
-        if (contains(f, "hh"))   f = f.replace("hh", format("%02d", obj.hours()));
-        if (contains(f, "mm"))   f = f.replace("mm", format("%02d", obj.minutes()));
-        if (contains(f, "ss"))   f = f.replace("ss", format("%02d", obj.seconds()));
+        if (contains_substr(f, "ww"))   f = f.replace("ww", format_string("%02d", obj.week_day()));
+        if (contains_substr(f, "WW"))   f = f.replace("WW", obj.week_day_name());
+        if (contains_substr(f, "hh"))   f = f.replace("hh", format_string("%02d", obj.hours()));
+        if (contains_substr(f, "mm"))   f = f.replace("mm", format_string("%02d", obj.minutes()));
+        if (contains_substr(f, "ss"))   f = f.replace("ss", format_string("%02d", obj.seconds()));
         return f;
     }
 

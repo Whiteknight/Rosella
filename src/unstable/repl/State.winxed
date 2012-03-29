@@ -36,6 +36,6 @@ class Rosella.Repl.State
 
     function get_iter[vtable]()
     {
-        return iter(self.data);
+        return get_iterator(self.data);
     }
 }

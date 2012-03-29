@@ -98,7 +98,7 @@ class Rosella.Container.Option.Property : Rosella.Container.Option
         var value = self.value;
         if (value instanceof Rosella.Container.Argument)
             value = value.get_value(container);
-        setprop(instance, prop, value);
+        set_property(instance, prop, value);
     }
 }
 

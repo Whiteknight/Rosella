@@ -30,7 +30,7 @@ class Rosella.Random.RandomNumber.MersenneTwister : Rosella.Random.RandomNumber
         int mag01[] = [];
         self.mag01 = mag01;
 
-        self.initialize(time_i());
+        self.initialize(time_ticks());
     }
 
     // Return the name of the distribution

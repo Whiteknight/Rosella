@@ -21,7 +21,7 @@ class Rosella.Query.Iterable.Source : Rosella.Query.Iterable
 
     function reset()
     {
-        self.iterator = iter(self.data);
+        self.iterator = get_iterator(self.data);
     }
 }
 
@@ -36,7 +36,7 @@ class Rosella.Query.Iterable.Array : Rosella.Query.Iterable.Source
     function Array(var array)
     {
         self.data = array;
-        self.iterator = iter(array);
+        self.iterator = get_iterator(array);
     }
 
     // Get the next item from the Array
@@ -45,7 +45,7 @@ class Rosella.Query.Iterable.Array : Rosella.Query.Iterable.Source
         var i = self.iterator;
         if (!get_bool(i))
             self.__empty();
-        var data = shift_p(i);
+        var data = shift_pmc(i);
         return data;
     }
 
@@ -55,7 +55,7 @@ class Rosella.Query.Iterable.Array : Rosella.Query.Iterable.Source
         var i = self.iterator;
         if (!get_bool(i))
             self.__empty();
-        var data = shift_p(i);
+        var data = shift_pmc(i);
         int m = get_bool(i);
         return data, m;
     }
@@ -79,7 +79,7 @@ class Rosella.Query.Iterable.Iterator : Rosella.Query.Iterable.Source
         var i = self.iterator;
         if (!get_bool(i))
             self.__empty();
-        var data = shift_p(i);
+        var data = shift_pmc(i);
         return data;
     }
 
@@ -89,7 +89,7 @@ class Rosella.Query.Iterable.Iterator : Rosella.Query.Iterable.Source
         var i = self.iterator;
         if (!get_bool(i))
             self.__empty();
-        var data = shift_p(i);
+        var data = shift_pmc(i);
         int m = get_bool(i);
         return data, m;
     }
@@ -110,7 +110,7 @@ class Rosella.Query.Iterable.Hash : Rosella.Query.Iterable.Source
     function Hash(var hash)
     {
         self.data = hash;
-        self.iterator = iter(hash);
+        self.iterator = get_iterator(hash);
     }
 
     // Get the next Key/Value pair from the hash
@@ -119,7 +119,7 @@ class Rosella.Query.Iterable.Hash : Rosella.Query.Iterable.Source
         var i = self.iterator;
         if (!get_bool(i))
             self.__empty();
-        var key = shift_p(i);
+        var key = shift_pmc(i);
         var value = self.data[key];
         return new Rosella.Query.Iterable.KeyValuePair(key, value);
     }
@@ -130,7 +130,7 @@ class Rosella.Query.Iterable.Hash : Rosella.Query.Iterable.Source
         var i = self.iterator;
         if (!get_bool(i))
             self.__empty();
-        var key = shift_p(i);
+        var key = shift_pmc(i);
         var value = self.data[key];
         var kvp = new Rosella.Query.Iterable.KeyValuePair(key, value);
         int m = get_bool(self.iterator);
