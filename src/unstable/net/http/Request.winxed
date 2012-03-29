@@ -197,7 +197,7 @@ class Rosella.Net.Http.Request : Rosella.Net.Request
         for (int i = 0; i < BOUNDARY_LENGTH; i++)
             push(buf, int(rand.get_range(32, 126)));     // printable ascii chars
         var encoder = Rosella.Net.default_mime_encoder();
-        return encoder.encode(buf.get_string("ascii"));
+        return encoder.encode_buffer(buf);
     }
 }
 

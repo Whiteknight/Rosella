@@ -34,20 +34,21 @@ class Rosella.Net.MimeBase64
 
     function encode(string plain)
     {
-        var s = self.six_to_eight;
-        int len = length(plain);
-        int len_mod_3 = len % 3;
+        var buf = new 'ByteBuffer';
+        buf =: plain;
+        return self.encode_bytebuffer(buf);
+    }
 
-        if (len_mod_3 == 1)
-            plain = plain + "\0\0";
-        else if (len_mod_3 == 2)
-            plain = plain + "\0";
+    function encode_bytebuffer(var buf)
+    {
+        var s = self.six_to_eight;
+        int len = elements(buf);
 
         var result = new 'ByteBuffer';
         for (int i = 0; i < len; ) {
-            int eight_0 = ord_isi(plain, i); i++;
-            int eight_1 = ord_isi(plain, i); i++;
-            int eight_2 = ord_isi(plain, i); i++;
+            int eight_0 = buf[i]; i++;
+            int eight_1 = buf[i]; i++;
+            int eight_2 = buf[i]; i++;
 
             int six_0 = eight_0 >> 2;
             int six_1 = bor(band(eight_0, 3) << 4, eight_1 >> 4);
@@ -60,6 +61,7 @@ class Rosella.Net.MimeBase64
             push(result, int(s[six_3]));
         }
 
+        int len_mod_3 = len % 3;
         if (len_mod_3 == 2) {
             int buf_len = elements(result);
             int equal_sign = ord("=");
