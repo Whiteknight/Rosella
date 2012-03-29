@@ -240,27 +240,6 @@ inline get_codepoint(string s, int i) return int
     return value;
 }
 
-inline replace(string s, int a, int b, string r) return string
-{
-    string value;
-    ${ replace value, s, a, b, r };
-    return value;
-}
-
-inline chopn(string s, int i) return string
-{
-    string value;
-    ${ chopn value, s, i };
-    return value;
-}
-
-inline bytelength(string s) return int
-{
-    int value;
-    ${ bytelength value, s };
-    return value;
-}
-
 /* Namespaces
 */
 
