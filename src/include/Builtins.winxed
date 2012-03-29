@@ -268,6 +268,13 @@ inline chopn(string s, int i) return string
     return value;
 }
 
+inline bytelength(string s) return int
+{
+    int value;
+    ${ bytelength value, s };
+    return value;
+}
+
 /* Namespaces
 */
 

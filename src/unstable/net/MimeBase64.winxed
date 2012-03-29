@@ -77,15 +77,17 @@ class Rosella.Net.MimeBase64
         return result.get_string("ascii");
     }
 
-    function decode(string base64)
+    function decode(string base64, string encoding = "ascii")
     {
-        int len = length(base64);
+        var base64_buf = new 'ByteBuffer';
+        base64_buf =: base64;
+        int len = elements(base64_buf);
         var base64_cleaned = new 'ByteBuffer';
         base64_cleaned =: len;          // Presize. This isn't what the final length will be, but it's better than nothing.
 
         var e = self.eight_to_six;
         for (int i = 0; i < len; i++) {
-            int tmp_int_1 = ord_isi(base64, i);
+            int tmp_int_1 = base64_buf[i];
             if (e[tmp_int_1] != -1)
                 push(base64_cleaned, tmp_int_1);
         }
@@ -119,6 +121,6 @@ class Rosella.Net.MimeBase64
         else if (len_mod_4 == 2)
             minus_length = 2;
 
-        return plain.get_chars(0, elements(plain) - minus_length, "ascii");
+        return plain.get_chars(0, elements(plain) - minus_length, encoding);
     }
 }
