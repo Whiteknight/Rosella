@@ -6,13 +6,14 @@ class Rosella.Net.MimeBase64
 
     function MimeBase64()
     {
-        :(var e, var s) = self.initialize();
-        self.eight_to_six = e;
-        self.six_to_eight = s;
+        self.initialize();
     }
 
     function initialize()
     {
+        if (self.eight_to_six != null && self.six_to_eight != null)
+            return;
+
         var six_to_eight = new 'FixedIntegerArray';
         six_to_eight =: 64;
         var eight_to_six = new 'FixedIntegerArray';
@@ -23,12 +24,12 @@ class Rosella.Net.MimeBase64
             eight_to_six[i] = -1;
 
         for (int six = 0; six < 64; six++) {
-            string tmp = substr(PRINTABLE_CHARS, six, 1);
-            int eight = ord(tmp);
+            int eight = ord_isi(PRINTABLE_CHARS, six);
             eight_to_six[eight] = six;
             six_to_eight[six] = eight;
         }
-        return eight_to_six, six_to_eight;
+        self.eight_to_six = eight_to_six;
+        self.six_to_eight = six_to_eight;
     }
 
     function encode(string plain)
@@ -47,15 +48,10 @@ class Rosella.Net.MimeBase64
             int eight_0 = ord_isi(plain, i); i++;
             int eight_1 = ord_isi(plain, i); i++;
             int eight_2 = ord_isi(plain, i); i++;
+
             int six_0 = eight_0 >> 2;
-            int tmp_int_1 = band(eight_0, 3);
-            tmp_int_1 = tmp_int_1 << 4;
-            int tmp_int_2 = eight_1 >> 4;
-            int six_1 = bor(tmp_int_1, tmp_int_2);
-            tmp_int_1 = band(eight_1, 15);
-            tmp_int_1 = tmp_int_1 << 2;
-            tmp_int_2 = eight_2 >> 6;
-            int six_2 = bor(tmp_int_1, tmp_int_2);
+            int six_1 = bor(band(eight_0, 3) << 4, eight_1 >> 4);
+            int six_2 = bor(band(eight_1, 15) << 2, eight_2 >> 6);
             int six_3 = band(eight_2, 63);
 
             push(result, int(s[six_0]));
@@ -83,7 +79,7 @@ class Rosella.Net.MimeBase64
     {
         int len = length(base64);
         var base64_cleaned = new 'ByteBuffer';
-        base64_cleaned =: len;
+        base64_cleaned =: len;          // Presize. This isn't what the final length will be, but it's better than nothing.
 
         var e = self.eight_to_six;
         for (int i = 0; i < len; i++) {
@@ -93,7 +89,6 @@ class Rosella.Net.MimeBase64
         }
 
         len = elements(base64_cleaned);
-        int len_mod_4 = len % 4;
         push(base64_cleaned, 0);
         push(base64_cleaned, 0);
         push(base64_cleaned, 0);
@@ -101,37 +96,26 @@ class Rosella.Net.MimeBase64
         var plain = new 'ByteBuffer';
 
         for (int i = 0; i < len; ) {
-            int tmp_int_1 = base64_cleaned[i]; i++;
-            int six_0 = e[tmp_int_1];
-            tmp_int_1 = base64_cleaned[i]; i++;
-            int six_1 = e[tmp_int_1];
-            tmp_int_1 = base64_cleaned[i]; i++;
-            int six_2 = e[tmp_int_1];
-            tmp_int_1 = base64_cleaned[i]; i++;
-            int six_3 = e[tmp_int_1];
+            int six_0 = e[int(base64_cleaned[i])]; i++;
+            int six_1 = e[int(base64_cleaned[i])]; i++;
+            int six_2 = e[int(base64_cleaned[i])]; i++;
+            int six_3 = e[int(base64_cleaned[i])]; i++;
 
-            tmp_int_1 = six_0 << 2;
-            int tmp_int_2 = six_1 >> 4;
-            int eight_0 = bor(tmp_int_1, tmp_int_2);
-
-            tmp_int_1 = band(six_1, 15) << 4;
-            tmp_int_2 = six_2 >> 2;
-            int eight_1 = bor(tmp_int_1, tmp_int_2);
-
-            tmp_int_1 = band(six_2, 3) << 6;
-            int eight_2 = bor(tmp_int_1, six_3);
+            int eight_0 = bor(six_0 << 2, six_1 >> 4);
+            int eight_1 = bor(band(six_1, 15) << 4, six_2 >> 2);
+            int eight_2 = bor(band(six_2, 3) << 6, six_3);
 
             push(plain, eight_0);
             push(plain, eight_1);
             push(plain, eight_2);
         }
 
+        int len_mod_4 = len % 4;
         int minus_length = 0;
         if (len_mod_4 == 3)
             minus_length = 1;
         else if (len_mod_4 == 2)
             minus_length = 2;
-
 
         return plain.get_chars(0, elements(plain) - minus_length, "ascii");
     }

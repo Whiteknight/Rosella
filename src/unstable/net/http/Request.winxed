@@ -187,11 +187,17 @@ class Rosella.Net.Http.Request : Rosella.Net.Request
         return sb;
     }
 
+    const int BOUNDARY_LENGTH = 30;
+
     // Get a boundary token for multpart/form-data requests
     function __get_multipart_boundary()
     {
-        // TODO: Implement a random/pseudorandom generator for unique boundaries
-        return "Aa03xBb04yCc05z";
+        var buf = new 'ByteBuffer';
+        var rand = Rosella.Random.default_uniform_random();
+        for (int i = 0; i < BOUNDARY_LENGTH; i++)
+            push(buf, int(rand.get_range(32, 126)));     // printable ascii chars
+        var encoder = Rosella.Net.default_mime_encoder();
+        return encoder.encode(buf.get_string("ascii"));
     }
 }
 
