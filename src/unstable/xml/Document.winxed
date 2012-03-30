@@ -31,4 +31,21 @@ class Rosella.Xml.Document
     {
         return self.get_document_root().to_xml();
     }
+
+    function write_to_file(string filename)
+    {
+        string xml = self.to_xml();
+        (new Rosella.FileSystem.File(filename)).write_all_text(xml);
+    }
+
+    function read_from_file(string filename)
+    {
+        string xml = (new Rosella.FileSystem.File(filename)).read_all_text();
+        Rosella.Xml.__parse(xml, self);
+    }
+
+    function read_from_string(string xml)
+    {
+        Rosella.Xml._parse(xml, self);
+    }
 }

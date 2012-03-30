@@ -15,18 +15,22 @@ namespace Rosella.Xml
 
 class Rosella.Xml
 {
-    function parse_file(string filename)
-    {
-        // TODO: Use Rosella.FileSystem
-        var f = new 'FileHandle';
-        string xml = f.readall(filename);
-        return self.parse(xml);
-    }
-
-    function parse(string xml)
+    function read_file(string filename)
     {
         var document = new Rosella.Xml.Document();
+        document.read_from_file(filename);
+        return document;
+    }
 
+    function read_string(string xml)
+    {
+        var document = new Rosella.Xml.Document();
+        document.read_from_string(xml);
+        return document;
+    }
+
+    function __parse(string xml, var document)
+    {
         int open_bracket = get_codepoint("<", 0);
         int question_mark = get_codepoint("?", 0);
 
