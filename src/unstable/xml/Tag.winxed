@@ -43,7 +43,7 @@ class Rosella.Xml.Tag
 
     function to_xml_sb(var sb, int indent)
     {
-        string indent_str = "\n" + repeat_string(INDENT_STR, indent);
+        string indent_str = indent_level(indent);
         push(sb, indent_str);
         push(sb, "<");
         push(sb, self.name);
@@ -106,7 +106,7 @@ class Rosella.Xml.Tag.Comment
 
     function to_xml_sb(var sb, int indent)
     {
-        string indent_str = "\n" + repeat_string(INDENT_STR, indent);
+        string indent_str = indent_level(indent);
         push(sb, indent_str);
         push(sb, "<!--");
         push(sb, self.text);

@@ -1,5 +1,10 @@
 const string INDENT_STR = "  ";
 
+inline indent_level(int i) return string
+{
+    return "\n" + repeat_string(INDENT_STR, i);
+}
+
 inline is_whitespace(int c) return int
 {
     return (c <= 0x20 || c >= 127); // Any non-printable characters and all whitespace
