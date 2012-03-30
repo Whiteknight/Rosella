@@ -25,7 +25,7 @@ class Rosella.Dumper.DumpHandler
         // TODO: For anonymous classes or classes without names we should print
         // out some kind of message about the class not having a name
         if (obj == null) {
-            emit.text("NULL");
+            emit.text("<UNEXPECTED NULL>");
             return;
         }
         try {

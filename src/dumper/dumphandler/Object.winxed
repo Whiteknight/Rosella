@@ -29,9 +29,15 @@ class Rosella.Dumper.DumpHandler.Object : Rosella.Dumper.DumpHandler
         } catch() { }
         emit.text("'%s' : %s", class_obj, text);
         emit.object(function() {
-            for (string key in class_obj.attributes()) {
-                emit.text_line("%s => ", key);
-                dump.__dump_recurse(emit, obj.*key);
+            var seen_attrs = {};
+            for (var parent in class_obj.inspect("all_parents")) {
+                for (string key in parent.attributes()) {
+                    if (!(exists seen_attrs[key])) {
+                        seen_attrs[key] = true;
+                        emit.text_line("%s => ", key);
+                        dump.__dump_recurse(emit, obj.*key);
+                    }
+                }
             }
         });
     }
