@@ -18,6 +18,12 @@ namespace Rosella.Dumper
     {
         Rosella.Globals.register_global(DEFAULT_DUMPER_GLOBAL, dumper);
     }
+
+    function dump(var obj, var handle = getstdout())
+    {
+        string s = Rosella.Dumper.default_dumper().dump(obj);
+        handle.print(s);
+    }
 }
 
 /* The Dumper
