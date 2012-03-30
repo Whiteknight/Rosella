@@ -71,7 +71,8 @@ class Rosella.Xml
                 }
                 continue;
             }
-            int j = eat_whitespace(buffer, i);
+            i = eat_whitespace(buffer, i);
+            int j = i;
             while(j < buf_length && c != open_bracket) {
                 c = buffer[j];
                 j++;

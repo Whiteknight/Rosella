@@ -24,7 +24,9 @@ class Rosella.Xml.Tag
 
     function add_child_text(string text)
     {
-        self.add_child(new Rosella.Xml.Text(text));
+        text = Rosella.String.trim(text);
+        if (text != null && text != "")
+            self.add_child(new Rosella.Xml.Text(text));
     }
 
     function set_end(var end_tag)

@@ -397,7 +397,7 @@ function setup_experimental_libraries(var rosella)
         "net/SocketFactory"
     );
 
-    setup_unstable_lib(rosella, "xml", ["Core"],
+    setup_unstable_lib(rosella, "xml", ["Core", "String"],
         "xml/Includes",
         "xml/Xml",
         "xml/Document",
