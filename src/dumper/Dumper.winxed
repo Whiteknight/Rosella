@@ -10,7 +10,7 @@ namespace Rosella.Dumper
     function default_dumper()
     {
         return Rosella.Globals.autoget_global(DEFAULT_DUMPER_GLOBAL,
-            function() { new Rosella.Dumper(); }
+            function() { return new Rosella.Dumper(); }
         );
     }
 
@@ -125,7 +125,7 @@ class Rosella.Dumper
     function __dump_recurse(var emit, var obj)
     {
         if (int(self.recurse_level) > RECURSE_LIMIT) {
-            self.fallback_dumper(self, emit, obj);
+            self.fallback_dumper.dump(self, emit, obj);
             return;
         }
         self.recurse_level++;
