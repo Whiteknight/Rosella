@@ -95,6 +95,9 @@ namespace Rosella.Xml
 
     function __parse_xml_header(var buffer, int i, var document)
     {
+        // TODO: Headers are usually like <?xml ... ?>. We aren't reading the "xml"
+        // TODO: If available, read the encoding attribute. Use that for parsing the
+        // rest of the document.
         int question_mark = get_codepoint("?", 0);
         int close_bracket = get_codepoint(">", 0);
         var header_tag = new Rosella.Xml.Tag.XmlHeader();

@@ -25,7 +25,6 @@ inline error_on_out_of_bounds(int c, var buffer, int j)
         int buflen = elements(buffer);
         if (j >= buflen)
             Rosella.Error.error("Attempt to read position %d, passed the end of the buffer %d", j, buflen);
-
     }
 }
 
