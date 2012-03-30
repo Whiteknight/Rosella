@@ -1,3 +1,5 @@
+const string INDENT_STR = "  ";
+
 inline is_whitespace(int c) return int
 {
     return (c <= 0x20 || c >= 127); // Any non-printable characters and all whitespace
@@ -12,6 +14,23 @@ inline is_alphanumeric(int c) return int
             c == 0x5F || c == 0x2D);         // c == '_' || c == '-'
 }
 
+inline error_on_out_of_bounds(int c, var buffer, int j)
+{
+    if (c == 0) {
+        int buflen = elements(buffer);
+        if (j >= buflen)
+            Rosella.Error.error("Attempt to read position %d, passed the end of the buffer %d", j, buflen);
+
+    }
+}
+
+inline read_char(var buffer, int j) return int
+{
+    int c = buffer[j];
+    error_on_out_of_bounds(c, buffer, j);
+    return c;
+}
+
 inline eat_whitespace(var buffer, int j) return int
 {
     int c = buffer[j];
@@ -19,6 +38,7 @@ inline eat_whitespace(var buffer, int j) return int
         j++;
         c = buffer[j];
     }
+    error_on_out_of_bounds(c, buffer, j);
     return j;
 }
 

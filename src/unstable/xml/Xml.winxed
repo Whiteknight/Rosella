@@ -13,7 +13,7 @@ namespace Rosella.Xml
     }
 }
 
-class Rosella.Xml
+namespace Rosella.Xml
 {
     function read_file(string filename)
     {
@@ -29,7 +29,7 @@ class Rosella.Xml
         return document;
     }
 
-    function __parse(string xml, var document)
+    function parse(string xml, var document)
     {
         int open_bracket = get_codepoint("<", 0);
         int question_mark = get_codepoint("?", 0);
@@ -43,12 +43,13 @@ class Rosella.Xml
         int i = eat_whitespace(buffer, 0);
         int c = buffer[i];
         if (buf_length > 5 && c == open_bracket && int(buffer[i + 1]) == question_mark)
-            i = self.__parse_xml_header(buffer, i + 2, document);
+            i = Rosella.Xml.__parse_xml_header(buffer, i + 2, document);
 
+        error_on_out_of_bounds(c, buffer, i);
         for ( ; i < elements(buffer); ) {
             int c = buffer[i];
             if (c == open_bracket) {
-                :(var tag, i, int is_close, int contained, int is_comment) = self.__parse_tag(buffer, i + 1, current_tag);
+                :(var tag, i, int is_close, int contained, int is_comment) = Rosella.Xml.__parse_tag(buffer, i + 1, current_tag);
 
                 // A closing tag: </foo>
                 if (!is_comment && !contained && is_close) {
@@ -98,7 +99,7 @@ class Rosella.Xml
         int close_bracket = get_codepoint(">", 0);
         var header_tag = new Rosella.Xml.Tag.XmlHeader();
         i = eat_whitespace(buffer, i);
-        i = self.__parse_attributes(buffer, i, header_tag);
+        i = Rosella.Xml.__parse_attributes(buffer, i, header_tag);
         i = eat_whitespace(buffer, i);
         int c = buffer[i];
         if (c == question_mark && int(buffer[i + 1]) == close_bracket) {
@@ -119,7 +120,7 @@ class Rosella.Xml
         int j = i;
         int c = buffer[j];
         if (c == exclamation_point)
-            return self.__parse_comment(buffer, i + 1);
+            return Rosella.Xml.__parse_comment(buffer, i + 1);
         int is_close_tag = false;
 
         if (c == close_slash) {
@@ -135,7 +136,7 @@ class Rosella.Xml
 
         j = eat_whitespace(buffer, j);
         if (!is_close_tag)
-            j = self.__parse_attributes(buffer, j, tag);
+            j = Rosella.Xml.__parse_attributes(buffer, j, tag);
 
         c = buffer[j];
         if (c == close_bracket)
@@ -178,6 +179,7 @@ class Rosella.Xml
                 return comment, j + 3, true, true, true;
             }
         }
+        Rosella.Error.error("Unterminated comment starting at position %d", i - 2);
     }
 
     function __parse_attributes(var buffer, int i, var tag)
@@ -228,6 +230,7 @@ class Rosella.Xml
             }
             c = buffer[j];
         }
+        error_on_out_of_bounds(c, buffer, i);
         return j;
     }
 }

@@ -37,23 +37,26 @@ class Rosella.Xml.Tag
     function to_xml()
     {
         var sb = new 'StringBuilder';
-        self.to_xml_sb(sb);
+        self.to_xml_sb(sb, 0);
         return sb;
     }
 
-    function to_xml_sb(var sb)
+    function to_xml_sb(var sb, int indent)
     {
+        string indent_str = "\n" + repeat_string(INDENT_STR, indent);
+        push(sb, indent_str);
         push(sb, "<");
         push(sb, self.name);
-        self.__to_xml_sb_attrs(sb);
+        self.__to_xml_sb_attrs(sb, indent);
         push(sb, ">");
-        self.__to_xml_sb_children(sb);
+        self.__to_xml_sb_children(sb, indent + 1);
+        push(sb, indent_str);
         push(sb, "</");
         push(sb, self.name);
         push(sb, ">");
     }
 
-    function __to_xml_sb_attrs(var sb)
+    function __to_xml_sb_attrs(var sb, int indent)
     {
         for (string attr_name in self.attributes) {
             string attr = self.attributes[attr_name];
@@ -65,10 +68,10 @@ class Rosella.Xml.Tag
         }
     }
 
-    function __to_xml_sb_children(var sb)
+    function __to_xml_sb_children(var sb, int indent)
     {
         for (var child in self.children)
-            child.to_xml_sb(sb);
+            child.to_xml_sb(sb, indent);
     }
 }
 
@@ -76,7 +79,7 @@ class Rosella.Xml.Tag.XmlHeader : Rosella.Xml.Tag
 {
     function XmlHeader() { self.Tag(""); }
 
-    function to_xml_sb(var sb)
+    function to_xml_sb(var sb, int indent)
     {
         push(sb, "<?");
         push(sb, self.name);
@@ -97,12 +100,14 @@ class Rosella.Xml.Tag.Comment
     function to_xml()
     {
         var sb = new 'StringBuilder';
-        self.to_xml_sb(sb);
+        self.to_xml_sb(sb, 0);
         return sb;
     }
 
-    function to_xml_sb(var sb)
+    function to_xml_sb(var sb, int indent)
     {
+        string indent_str = "\n" + repeat_string(INDENT_STR, indent);
+        push(sb, indent_str);
         push(sb, "<!--");
         push(sb, self.text);
         push(sb, "-->");

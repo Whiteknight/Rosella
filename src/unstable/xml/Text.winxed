@@ -11,12 +11,14 @@ class Rosella.Xml.Text
     function to_xml()
     {
         var sb = new 'StringBuilder';
-        self.to_xml_sb(sb);
+        self.to_xml_sb(sb, 0);
         return sb;
     }
 
-    function to_xml_sb(var sb)
+    function to_xml_sb(var sb, int indent)
     {
+        string indent_str = "\n" + repeat_string(INDENT_STR, indent);
+        push(sb, indent_str);
         push(sb, self.text);
     }
 }

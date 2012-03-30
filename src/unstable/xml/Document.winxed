@@ -40,12 +40,13 @@ class Rosella.Xml.Document
 
     function read_from_file(string filename)
     {
-        string xml = (new Rosella.FileSystem.File(filename)).read_all_text();
-        Rosella.Xml.__parse(xml, self);
+        var f = new Rosella.FileSystem.File(filename);
+        string xml = f.read_all_text();
+        Rosella.Xml.parse(xml, self);
     }
 
     function read_from_string(string xml)
     {
-        Rosella.Xml._parse(xml, self);
+        Rosella.Xml.parse(xml, self);
     }
 }
