@@ -396,6 +396,14 @@ function setup_experimental_libraries(var rosella)
         "net/useragent/SimpleHttp",
         "net/SocketFactory"
     );
+
+    setup_unstable_lib(rosella, "xml", ["Core"],
+        "xml/Includes",
+        "xml/Xml",
+        "xml/Document",
+        "xml/Tag",
+        "xml/Text"
+    );
 }
 
 function setup_utilities(var rosella)

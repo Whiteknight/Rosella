@@ -1,0 +1,49 @@
+class Rosella.Xml.Tag
+{
+    var attributes;
+    var children;
+    var name;
+    var end_tag;
+
+    function Tag(string name)
+    {
+        self.name = name;
+        self.attributes = {};
+        self.children = [];
+    }
+
+    function add_attribute(string name, string value)
+    {
+        self.attributes[name] = value;
+    }
+
+    function add_child(var child)
+    {
+        push(self.children, child);
+    }
+
+    function add_child_text(string text)
+    {
+        self.add_child(new Rosella.Xml.Text(text));
+    }
+
+    function set_end(var end_tag)
+    {
+        self.end_tag = end_tag;
+    }
+}
+
+class Rosella.Xml.Tag.XmlHeader : Rosella.Xml.Tag
+{
+    function XmlHeader() { self.Tag(""); }
+}
+
+class Rosella.Xml.Tag.Comment
+{
+    var text;
+
+    function Comment(string comment_text)
+    {
+        self.text = comment_text;
+    }
+}

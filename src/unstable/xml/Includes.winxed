@@ -1,0 +1,24 @@
+inline is_whitespace(int c) return int
+{
+    return (c <= 0x20 || c >= 127); // Any non-printable characters and all whitespace
+    // We can be more precise, but this is fastest.
+}
+
+inline is_alphanumeric(int c) return int
+{
+    return ((c >= 0x30 && c <= 0x39) ||  // '0' <= c <= '9'
+            (c >= 0x41 && c <= 0x5A) ||  // 'A' <= c <= 'Z'
+            (c >= 0x61 && c <= 0x7A) ||  // 'a' <= c <= 'A'
+            c == 0x5F || c == 0x2D);         // c == '_' || c == '-'
+}
+
+inline eat_whitespace(var buffer, int j) return int
+{
+    int c = buffer[j];
+    while (is_whitespace(c)) {
+        j++;
+        c = buffer[j];
+    }
+    return j;
+}
+

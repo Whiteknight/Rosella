@@ -1,0 +1,229 @@
+namespace Rosella.Xml
+{
+    function __capture_alphanumeric(var buffer, int start_idx)
+    {
+        int end_idx = start_idx;
+        int c = buffer[start_idx];
+        while(is_alphanumeric(c)) {
+            end_idx++;
+            c = buffer[end_idx];
+        }
+        string result = buffer.get_chars(start_idx, end_idx - start_idx, "ascii");
+        return result, end_idx;
+    }
+}
+
+class Rosella.Xml
+{
+    function parse_file(string filename)
+    {
+        // TODO: Use Rosella.FileSystem
+        var f = new 'FileHandle';
+        string xml = f.readall(filename);
+        return self.parse(xml);
+    }
+
+    function parse(string xml)
+    {
+        var document = new Rosella.Xml.Document();
+
+        int open_bracket = get_codepoint("<", 0);
+        int question_mark = get_codepoint("?", 0);
+
+        var buffer = new 'ByteBuffer';
+        buffer =: xml;
+        int buf_length = elements(buffer);
+        var tag_stack = [];
+        var current_tag = null;
+
+        int i = eat_whitespace(buffer, 0);
+        int c = buffer[i];
+        if (buf_length > 5 && c == open_bracket && int(buffer[i + 1]) == question_mark)
+            i = self.__parse_xml_header(buffer, i + 2, document);
+
+        for ( ; i < elements(buffer); ) {
+            int c = buffer[i];
+            if (c == open_bracket) {
+                :(var tag, i, int is_close, int contained, int is_comment) = self.__parse_tag(buffer, i + 1, current_tag);
+
+                // A closing tag: </foo>
+                if (!is_comment && !contained && is_close) {
+                    if (current_tag == null)
+                        Rosella.Error.error("Syntax error. Found closing tag '%s' without corresponding open tag", tag.name);
+                    current_tag.set_end(tag);
+                    current_tag = tag_stack.pop();
+                }
+                else
+                    document.add_tag(tag);
+
+                // A self-contained tag: <foo />
+                if (contained) {
+                    if (current_tag != null)
+                        current_tag.add_child(tag);
+                }
+
+                // An opening tag: <foo ...>
+                else if (!is_close) {
+                    if (current_tag != null)
+                        current_tag.add_child(tag);
+                    push(tag_stack, current_tag);
+                    current_tag = tag;
+                }
+                continue;
+            }
+            int j = eat_whitespace(buffer, i);
+            while(j < buf_length && c != open_bracket) {
+                c = buffer[j];
+                j++;
+            }
+            if (j >= buf_length)
+                break;
+            if (j - i - 2 > 0 && current_tag != null) {
+                string content = buffer.get_chars(i + 1, j - i - 2, "ascii");
+                current_tag.add_child_text(content);
+            }
+            i = j - 1;
+        }
+        return document;
+    }
+
+    function __parse_xml_header(var buffer, int i, var document)
+    {
+        int question_mark = get_codepoint("?", 0);
+        int close_bracket = get_codepoint(">", 0);
+        var header_tag = new Rosella.Xml.Tag.XmlHeader();
+        i = eat_whitespace(buffer, i);
+        i = self.__parse_attributes(buffer, i, header_tag);
+        i = eat_whitespace(buffer, i);
+        int c = buffer[i];
+        if (c == question_mark && int(buffer[i + 1]) == close_bracket) {
+            document.set_header(header_tag);
+            return i + 2;
+        }
+        Rosella.Error.error("Malformed XML Header tag");
+    }
+
+    function __parse_tag(var buffer, int i, var current_tag)
+    {
+        // TODO: Namespaces (<foo:bar ...> </foo:bar>)
+        int close_bracket = ord(">");
+        int close_slash = ord("/");
+        int exclamation_point = ord("!");
+
+        i = eat_whitespace(buffer, i);
+        int j = i;
+        int c = buffer[j];
+        if (c == exclamation_point)
+            return self.__parse_comment(buffer, i + 1);
+        int is_close_tag = false;
+
+        if (c == close_slash) {
+            j++;
+            c = buffer[j];
+            is_close_tag = true;
+        }
+
+        :(string tag_name, j) = Rosella.Xml.__capture_alphanumeric(buffer, j);
+        //if (is_close_tag)
+            //tag_name = "/" + tag_name;
+        var tag = new Rosella.Xml.Tag(tag_name);
+
+        j = eat_whitespace(buffer, j);
+        if (!is_close_tag)
+            j = self.__parse_attributes(buffer, j, tag);
+
+        c = buffer[j];
+        if (c == close_bracket)
+            return tag, j, is_close_tag, false, false;
+
+        if (c == close_slash) {
+            int next = buffer[j + 1];
+            if (next == close_bracket)
+                return tag, j, false, true, false;
+            else
+                Rosella.Error.error("Syntax error at position %d", j);
+        }
+
+        Rosella.Error.error("Syntax error, unknown character '%s' at position %d", chr(c), j);
+    }
+
+    function __parse_comment(var buffer, int i)
+    {
+        int dash = ord("-");
+        int close_bracket = ord(">");
+        int exclamation_point = ord("!");
+
+        int buf_len = elements(buffer);
+
+        if (int(buffer[i]) != dash || int(buffer[i+1]) != dash)
+            Rosella.Error.error("Malformed comment at position %d", i);
+
+        i = i + 2;
+        int j = i;
+        int c = buffer[j];
+        while (j < buf_len) {
+            j++;
+            c = buffer[j];
+            if (c == dash &&
+                int(buffer[j + 1]) == dash &&
+                int(buffer[j + 2]) == close_bracket) {
+
+                string text = buffer.get_chars(i, j - i, "ascii");
+                var comment = new Rosella.Xml.Tag.Comment(text);
+                return comment, j + 3, true, true, true;
+            }
+        }
+    }
+
+    function __parse_attributes(var buffer, int i, var tag)
+    {
+        int close_bracket = ord(">");
+        int equals_sign = ord("=");
+        int close_slash = ord("/");
+        int single_quote = ord("'");
+        int double_quote = ord("\"");
+        int escape_slash = ord("\\");
+
+        int j = i;
+        int c = buffer[j];
+        while (is_alphanumeric(c)) {
+            :(string attr_name, j) = Rosella.Xml.__capture_alphanumeric(buffer, j);
+            j = eat_whitespace(buffer, j);
+
+            c = buffer[j];
+            if (c != equals_sign) {
+                tag.add_attribute(attr_name, "true");
+                j = eat_whitespace(buffer, j);
+                c = buffer[j];
+                continue;
+            }
+            j++;
+            c = buffer[j];
+            if (c == single_quote || c == double_quote) {
+                int quote = c;
+                j++;
+                int start_quotes = j;
+                c = buffer[j];
+                while (c != quote) {
+                    if (c == escape_slash)
+                        j += 2;
+                    else
+                        j++;
+                    c = buffer[j];
+                }
+                int end_quotes = j;
+                j++;
+                string attr_value = buffer.get_chars(start_quotes, end_quotes - start_quotes, "ascii");
+                tag.add_attribute(attr_name, attr_value);
+                j = eat_whitespace(buffer, j);
+            } else {
+                :(string attr_value, j) = Rosella.Xml.__capture_alphanumeric(buffer, j);
+                tag.add_attribute(attr_name, attr_value);
+                j = eat_whitespace(buffer, j);
+            }
+            c = buffer[j];
+        }
+        return j;
+    }
+}
+

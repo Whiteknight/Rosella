@@ -1,0 +1,10 @@
+class Rosella.Xml.Text
+{
+    var text;
+    function Text(string text)
+    {
+        self.text = text;
+    }
+
+    function get_text() { return self.text; }
+}

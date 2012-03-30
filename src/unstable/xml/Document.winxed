@@ -1,0 +1,29 @@
+class Rosella.Xml.Document
+{
+    var header;
+    var tags;
+
+    function Document()
+    {
+        self.tags = [];
+    }
+
+    function set_header(var header)
+    {
+        self.header = header;
+    }
+
+    function add_tag(var tag)
+    {
+        push(self.tags, tag);
+    }
+
+    function get_document_root()
+    {
+        for (int i = 0; i < elements(self.tags); i++) {
+            var tag = self.tags[i];
+            if (tag instanceof Rosella.Xml.Tag)
+                return tag;
+        }
+    }
+}
