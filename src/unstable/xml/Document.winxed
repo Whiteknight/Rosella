@@ -26,4 +26,9 @@ class Rosella.Xml.Document
                 return tag;
         }
     }
+
+    function to_xml()
+    {
+        return self.get_document_root().to_xml();
+    }
 }

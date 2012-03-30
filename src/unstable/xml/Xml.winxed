@@ -139,7 +139,7 @@ class Rosella.Xml
         if (c == close_slash) {
             int next = buffer[j + 1];
             if (next == close_bracket)
-                return tag, j, false, true, false;
+                return tag, j + 2, false, true, false;
             else
                 Rosella.Error.error("Syntax error at position %d", j);
         }

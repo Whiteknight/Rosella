@@ -31,11 +31,56 @@ class Rosella.Xml.Tag
     {
         self.end_tag = end_tag;
     }
+
+    function to_xml()
+    {
+        var sb = new 'StringBuilder';
+        self.to_xml_sb(sb);
+        return sb;
+    }
+
+    function to_xml_sb(var sb)
+    {
+        push(sb, "<");
+        push(sb, self.name);
+        self.__to_xml_sb_attrs(sb);
+        push(sb, ">");
+        self.__to_xml_sb_children(sb);
+        push(sb, "</");
+        push(sb, self.name);
+        push(sb, ">");
+    }
+
+    function __to_xml_sb_attrs(var sb)
+    {
+        for (string attr_name in self.attributes) {
+            string attr = self.attributes[attr_name];
+            push(sb, " ");
+            push(sb, attr_name);
+            push(sb, "='");
+            push(sb, attr);
+            push(sb, "'");
+        }
+    }
+
+    function __to_xml_sb_children(var sb)
+    {
+        for (var child in self.children)
+            child.to_xml_sb(sb);
+    }
 }
 
 class Rosella.Xml.Tag.XmlHeader : Rosella.Xml.Tag
 {
     function XmlHeader() { self.Tag(""); }
+
+    function to_xml_sb(var sb)
+    {
+        push(sb, "<?");
+        push(sb, self.name);
+        self.__to_xml_sb_attrs(sb);
+        push(sb, "?>");
+    }
 }
 
 class Rosella.Xml.Tag.Comment
@@ -45,5 +90,19 @@ class Rosella.Xml.Tag.Comment
     function Comment(string comment_text)
     {
         self.text = comment_text;
+    }
+
+    function to_xml()
+    {
+        var sb = new 'StringBuilder';
+        self.to_xml_sb(sb);
+        return sb;
+    }
+
+    function to_xml_sb(var sb)
+    {
+        push(sb, "<!--");
+        push(sb, self.text);
+        push(sb, "-->");
     }
 }
