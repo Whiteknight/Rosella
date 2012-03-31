@@ -18,7 +18,7 @@ namespace Rosella.Dumper.DumpHandler {
     class Null;
 }
 
-function __include_dumper [anon] ()
+function __include_dumper [anon, load, init] ()
 {
     Rosella.load_bytecode_file('rosella/dumper.pbc', 'load');
 }
