@@ -1,5 +1,11 @@
 namespace Rosella.Json
 {
+    function to_json(var obj)
+    {
+        var dumper = new Rosella.Json.Dumper();
+        return dumper.dump(obj);
+    }
+
     function parse(string json)
     {
         int len = length(json);

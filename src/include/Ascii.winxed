@@ -101,6 +101,9 @@ const int ASCII_BAR = 0x7c;
 const int ASCII_CLOSE_CURLY = 0x7d;
 const int ASCII_TILDE = 0x7e;
 
+/* ASCII Helper Routines
+*/
+
 inline codepoint_to_string(int i) return string
 {
     string value;

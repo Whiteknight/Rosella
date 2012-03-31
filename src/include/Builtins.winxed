@@ -130,6 +130,13 @@ inline shift_int(var i) return int
     return value;
 }
 
+inline shift_string(var i) return string
+{
+    string value;
+    ${ shift value, i };
+    return value;
+}
+
 inline unshift_int(var s, int i)
 {
     ${ unshift s, i };
@@ -237,6 +244,8 @@ inline reencode_string(string s, int e) return string
     ${ trans_encoding value, s, e };
     return value;
 }
+
+// For ASCII-related things, look in src/include/Ascii.winxed
 
 /* Namespaces
 */

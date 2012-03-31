@@ -1,0 +1,41 @@
+class Rosella.Json.Dumper : Rosella.Dumper
+{
+    // Get the default set of role dumpers
+    function default_role_dumpers()
+    {
+        return {
+            "array" : new Rosella.Json.DumpHandler.Array,
+            "hash"  : new Rosella.Json.DumpHandler.Hash
+        };
+    }
+
+    // Get the default set of miscellaneous dumpers
+    function default_misc_dumpers()
+    {
+        return {
+            "object" : new Rosella.Json.DumpHandler.Object
+        };
+    }
+
+    function default_type_dumpers()
+    {
+        return {
+            "Integer" : new Rosella.Json.DumpHandler.Integer,
+            "Float" : new Rosella.Json.DumpHandler.Float,
+            "String" : new Rosella.Json.DumpHandler.String,
+            "Boolean" : new Rosella.Json.DumpHandler.Boolean
+        };
+    }
+
+
+    // Get the default fallback dumper
+    function default_fallback_dumper()
+    {
+        return null;
+    }
+
+    function default_null_dumper()
+    {
+        return new Rosella.Json.DumpHandler.Null;
+    }
+}

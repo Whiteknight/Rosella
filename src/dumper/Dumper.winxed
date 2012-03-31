@@ -41,7 +41,7 @@ class Rosella.Dumper
     var null_dumper;        // Dumper for null
     var fallback_dumper;    // Dumper for objects which are not dumped by any other handler
     var indent;             // The intentation string to use for each level
-    var registry;           // A registry of PMCs to prevent recursion
+    //var registry;           // A registry of PMCs to prevent recursion
     var recurse_level;      // The current recursion level
 
     const int RECURSE_LIMIT = 6;    // The maximum recursion depth
@@ -49,7 +49,7 @@ class Rosella.Dumper
     // Constructor
     function Dumper()
     {
-        self.null_dumper = new Rosella.Dumper.DumpHandler.Null();
+        self.null_dumper = self.default_null_dumper();
         self.role_dumpers = self.default_role_dumpers();
         self.type_dumpers = self.default_type_dumpers();
         self.misc_dumpers = self.default_misc_dumpers();
@@ -69,8 +69,7 @@ class Rosella.Dumper
     // Get the default set of type dumpers
     function default_type_dumpers()
     {
-        var type_dumpers = pmc_keyed_hash();
-        return type_dumpers;
+        return {};
     }
 
     // Get the default set of miscellaneous dumpers
@@ -86,6 +85,11 @@ class Rosella.Dumper
     function default_fallback_dumper()
     {
         return new Rosella.Dumper.DumpHandler();
+    }
+
+    function default_null_dumper()
+    {
+        return new Rosella.Dumper.DumpHandler.Null();
     }
 
     // Add a new type dumper to the list
@@ -118,8 +122,7 @@ class Rosella.Dumper
     {
         self.recurse_level = 0;
         var emit = new Rosella.Dumper.Emitter(self.indent);
-        self.registry = new 'Hash';
-        self.registry.set_key_type(3);
+        //self.registry = pmc_keyed_hash();
         self.__dump_recurse(emit, obj);
         return emit.get_output();
     }
@@ -131,7 +134,8 @@ class Rosella.Dumper
     function __dump_recurse(var emit, var obj)
     {
         if (int(self.recurse_level) > RECURSE_LIMIT) {
-            self.fallback_dumper.dump(self, emit, obj);
+            if (self.fallback_dumper != null)
+                self.fallback_dumper.dump(self, emit, obj);
             return;
         }
         self.recurse_level++;
@@ -141,6 +145,8 @@ class Rosella.Dumper
             return;
         }
         string type_name = Rosella.get_type_name(typeof(obj));
+        if (substr(type_name, 0, 7) == "parrot;")
+            type_name = substr(type_name, 7);
         if (exists self.type_dumpers[type_name]) {
             var type_dumper = self.type_dumpers[type_name];
             if (type_dumper.can_dump(obj)) {
@@ -167,7 +173,8 @@ class Rosella.Dumper
                 return;
             }
         }
-        self.fallback_dumper.dump(self, emit, obj);
+        if (self.fallback_dumper != null)
+            self.fallback_dumper.dump(self, emit, obj);
         self.recurse_level--;
     }
 }

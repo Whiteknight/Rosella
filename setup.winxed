@@ -380,7 +380,7 @@ function setup_experimental_libraries(var rosella)
         "genetic/mutator/Generic"
     );
 
-    setup_unstable_lib(rosella, "net", ["Core", "Math_Builtins", "String", "FileSystem", "Date", "Random"],
+    setup_unstable_lib(rosella, "net", ["Core", "Ascii", "Math_Builtins", "String", "FileSystem", "Date", "Random"],
         "net/Includes",
         "net/Net",
         "net/Http",
@@ -399,7 +399,7 @@ function setup_experimental_libraries(var rosella)
         "net/SocketFactory"
     );
 
-    setup_unstable_lib(rosella, "xml", ["Core", "String", "FileSystem"],
+    setup_unstable_lib(rosella, "xml", ["Core", "Ascii", "String", "FileSystem"],
         "xml/Includes",
         "xml/Xml",
         "xml/Document",
@@ -407,9 +407,11 @@ function setup_experimental_libraries(var rosella)
         "xml/Text"
     );
 
-    setup_unstable_lib(rosella, "json", ["Core", "Ascii"],
+    setup_unstable_lib(rosella, "json", ["Core", "Ascii", "Dumper"],
         "json/Includes",
-        "json/Json"
+        "json/Json",
+        "json/Dumper",
+        "json/DumpHandler"
     );
 }
 
