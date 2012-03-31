@@ -1,0 +1,133 @@
+// ASCII codepoint values
+const int ASCII_NULL = 0x00;
+const int ASCII_BACKSPACE = 0x08;
+const int ASCII_TAB = 0x09;
+const int ASCII_LINE_FEED = 0x0A;
+const int ASCII_VERTICAL_TAB = 0x0B;
+const int ASCII_CARRIAGE_RETURN = 0x0D;
+const int ASCII_SPACE  = 0x20;
+const int ASCII_EXCLAMATION_POINT = 0x21;
+const int ASCII_DOUBLE_QUOTE = 0x22;
+const int ASCII_OCTOTHORPE = 0x23;
+const int ASCII_DOLLAR_SIGN = 0x24;
+const int ASCII_PERCENT = 0x25;
+const int ASCII_AMPERSAND = 0x26;
+const int ASCII_SINGLE_QUOTE = 0x27;
+const int ASCII_OPEN_PAREN = 0x28;
+const int ASCII_CLOSE_PAREN = 0x29;
+const int ASCII_ASTERISK = 0x2a;
+const int ASCII_PLUS = 0x2b;
+const int ASCII_COMMA = 0x2c;
+const int ASCII_DASH = 0x2d;
+const int ASCII_PERIOD = 0x2e;
+const int ASCII_SLASH = 0x2f;
+const int ASCII_0 = 0x30;
+const int ASCII_1 = 0x31;
+const int ASCII_2 = 0x32;
+const int ASCII_3 = 0x33;
+const int ASCII_4 = 0x34;
+const int ASCII_5 = 0x35;
+const int ASCII_6 = 0x36;
+const int ASCII_7 = 0x37;
+const int ASCII_8 = 0x38;
+const int ASCII_9 = 0x39;
+const int ASCII_COLON = 0x3a;
+const int ASCII_SEMICOLON = 0x3b;
+const int ASCII_LESS_THAN = 0x3c;
+const int ASCII_EQUALS = 0x3d;
+const int ASCII_GREATER_THAN = 0x3e;
+const int ASCII_QUESTION_MARK = 0x3f;
+const int ASCII_AT_SIGN = 0x40;
+const int ASCII_A = 0x41;
+const int ASCII_B = 0x42;
+const int ASCII_C = 0x43;
+const int ASCII_D = 0x44;
+const int ASCII_E = 0x45;
+const int ASCII_F = 0x46;
+const int ASCII_G = 0x47;
+const int ASCII_H = 0x48;
+const int ASCII_I = 0x49;
+const int ASCII_J = 0x4a;
+const int ASCII_K = 0x4b;
+const int ASCII_L = 0x4c;
+const int ASCII_M = 0x4d;
+const int ASCII_N = 0x4e;
+const int ASCII_O = 0x4f;
+const int ASCII_P = 0x50;
+const int ASCII_Q = 0x51;
+const int ASCII_R = 0x52;
+const int ASCII_S = 0x53;
+const int ASCII_T = 0x54;
+const int ASCII_U = 0x55;
+const int ASCII_V = 0x56;
+const int ASCII_W = 0x57;
+const int ASCII_X = 0x58;
+const int ASCII_Y = 0x59;
+const int ASCII_Z = 0x5a;
+const int ASCII_OPEN_BRACKET = 0x5b;
+const int ASCII_BACKSLASH = 0x5c;
+const int ASCII_CLOSE_BRACKET = 0x5d;
+const int ASCII_UP_CARROT = 0x5e;
+const int ASCII_UNDERSCORE = 0x5f;
+const int ASCII_BACK_TICK = 0x60;
+const int ASCII_a = 0x61;
+const int ASCII_b = 0x62;
+const int ASCII_c = 0x63;
+const int ASCII_d = 0x64;
+const int ASCII_e = 0x65;
+const int ASCII_f = 0x66;
+const int ASCII_g = 0x67;
+const int ASCII_h = 0x68;
+const int ASCII_i = 0x69;
+const int ASCII_j = 0x6a;
+const int ASCII_k = 0x6b;
+const int ASCII_l = 0x6c;
+const int ASCII_m = 0x6d;
+const int ASCII_n = 0x6e;
+const int ASCII_o = 0x6f;
+const int ASCII_p = 0x70;
+const int ASCII_q = 0x71;
+const int ASCII_r = 0x72;
+const int ASCII_s = 0x73;
+const int ASCII_t = 0x74;
+const int ASCII_u = 0x75;
+const int ASCII_v = 0x76;
+const int ASCII_w = 0x77;
+const int ASCII_x = 0x78;
+const int ASCII_y = 0x79;
+const int ASCII_z = 0x7a;
+const int ASCII_OPEN_CURLY = 0x7b;
+const int ASCII_BAR = 0x7c;
+const int ASCII_CLOSE_CURLY = 0x7d;
+const int ASCII_TILDE = 0x7e;
+
+inline codepoint_to_string(int i) return string
+{
+    string value;
+    ${ chr value, i };
+    return value;
+}
+
+inline get_codepoint(string s, int i) return int
+{
+    int value;
+    ${ ord value, s, i };
+    return value;
+}
+
+inline codepoint_is_whitespace(int c) return int
+{
+    return (c == ASCII_SPACE || c == ASCII_TAB || c == ASCII_CARRIAGE_RETURN || c == ASCII_LINE_FEED || c == ASCII_VERTICAL_TAB);
+}
+
+inline codepoint_is_alphanumeric(int c) return int
+{
+    return ((c >= ASCII_0 && c <= ASCII_9) ||
+            (c >= ASCII_A && c <= ASCII_Z) ||
+            (c >= ASCII_a && c <= ASCII_z));
+}
+
+inline codepoint_is_digit(int c) return int
+{
+    return ((c >= ASCII_0 && c <= ASCII_9))  // '0' <= c <= '9'
+}

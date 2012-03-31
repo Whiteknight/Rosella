@@ -407,7 +407,7 @@ function setup_experimental_libraries(var rosella)
         "xml/Text"
     );
 
-    setup_unstable_lib(rosella, "json", ["Core"],
+    setup_unstable_lib(rosella, "json", ["Core", "Ascii"],
         "json/Includes",
         "json/Json"
     );
@@ -487,6 +487,7 @@ function setup_include_headers(var rosella)
 {
     rosella["inst_wxheader"] = {
         "src/include/Action.winxed"        : "Rosella/Action.winxed",
+        "src/include/Ascii.winxed"         : "Rosella/Ascii.winxed",
         "src/include/Builtins.winxed"      : "Rosella/Builtins.winxed",
         "src/include/CommandLine.winxed"   : "Rosella/CommandLine.winxed",
         "src/include/Container.winxed"     : "Rosella/Container.winxed",

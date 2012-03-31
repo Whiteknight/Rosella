@@ -238,37 +238,6 @@ inline reencode_string(string s, int e) return string
     return value;
 }
 
-inline codepoint_to_string(int i) return string
-{
-    string value;
-    ${ chr value, i };
-    return value;
-}
-
-inline get_codepoint(string s, int i) return int
-{
-    int value;
-    ${ ord value, s, i };
-    return value;
-}
-
-inline codepoint_is_whitespace(int c) return int
-{
-    return (c == 0x09 || c == 0x20 || c == 0x15 || c == 0x12 || c == 0x13);
-}
-
-inline codepoint_is_alphanumeric(int c) return int
-{
-    return ((c >= 0x30 && c <= 0x39) ||  // '0' <= c <= '9'
-            (c >= 0x41 && c <= 0x5A) ||  // 'A' <= c <= 'Z'
-            (c >= 0x61 && c <= 0x7A));   // 'a' <= c <= 'A'
-}
-
-inline codepoint_is_digit(int c) return int
-{
-    return ((c >= 0x30 && c <= 0x39))  // '0' <= c <= '9'
-}
-
 /* Namespaces
 */
 
