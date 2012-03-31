@@ -406,6 +406,11 @@ function setup_experimental_libraries(var rosella)
         "xml/Tag",
         "xml/Text"
     );
+
+    setup_unstable_lib(rosella, "json", ["Core"],
+        "json/Includes",
+        "json/Json"
+    );
 }
 
 function setup_utilities(var rosella)

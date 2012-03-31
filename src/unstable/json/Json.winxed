@@ -1,0 +1,165 @@
+namespace Rosella.Json
+{
+    function parse(string json)
+    {
+        int len = length(json);
+        var b = get_iterator(var(json));
+        int s[] = [];
+        return __parse_value(json, s, b, len);
+    }
+
+    function __parse_value(string json, var s, var b, int len)
+    {
+        if (!b)
+            Rosella.Error.error("Out of input!");
+
+        eat_whitespace(s, b);
+        int c = get_next(s, b);
+
+        if (c == get_codepoint("{", 0))
+            return __parse_object(json, s, b, len);
+        if (c == get_codepoint("[", 0))
+            return __parse_array(json, s, b, len);
+        if (c == get_codepoint("'", 0) || c == get_codepoint("\"", 0))
+            return __parse_string(c, json, s, b, len);
+        if (codepoint_is_digit(c))
+            return __parse_number(c, json, s, b, len);
+        if (c == get_codepoint("t", 0)) {
+            if (get_next(s, b) == get_codepoint("r", 0) &&
+                get_next(s, b) == get_codepoint("u", 0) &&
+                get_next(s, b) == get_codepoint("e", 0))
+                return new 'Boolean'(true);
+            else
+                Rosella.Error.error("Unknown code sequence");
+        }
+        if (c == get_codepoint("f", 0)) {
+            if (get_next(s, b) == get_codepoint("a", 0) &&
+                get_next(s, b) == get_codepoint("l", 0) &&
+                get_next(s, b) == get_codepoint("s", 0) &&
+                get_next(s, b) == get_codepoint("e", 0))
+                return new 'Boolean'(false);
+            else
+                Rosella.Error.error("Unknown code sequence");
+        }
+        if (c == get_codepoint("n", 0)) {
+            if (get_next(s, b) == get_codepoint("u", 0) &&
+                get_next(s, b) == get_codepoint("l", 0) &&
+                get_next(s, b) == get_codepoint("l", 0))
+                return null;
+            else
+                Rosella.Error.error("Unknown code sequence");
+        }
+    }
+
+    function __parse_object(string json, var s, var b, int len)
+    {
+        var h = {};
+        while(have_more_chars(s, b)) {
+            eat_whitespace(s, b);
+            int c = get_next(s, b);
+            if (c == get_codepoint("'", 0) || c == get_codepoint("\"", 0)) {
+                string str = __parse_string(c, json, s, b, len);
+                eat_whitespace(s, b);
+                c = get_next(s, b);
+                if (c != get_codepoint(":", 0))
+                    Rosella.Error.error("Bad object literal syntax");
+                var v = __parse_value(json, s, b, len);
+                h[str] = v;
+                eat_whitespace(s, b);
+                c = get_next(s, b);
+                if (c == get_codepoint(",", 0))
+                    continue;
+                if (c == get_codepoint("}", 0))
+                    break;
+            }
+            else if (c == get_codepoint("}", 0))
+            {
+                return h;
+            }
+            Rosella.Error.error("Unknown character in object literal '%s'", chr(c));
+        }
+        return h;
+    }
+
+    function __parse_array(string json, var s, var b, int len)
+    {
+        var a = [];
+        eat_whitespace(s, b);
+        int c = get_next(s, b);
+        if (c == get_codepoint("]", 0))
+            return a;
+        unshift_int(s, c);
+        while(have_more_chars(s, b)) {
+            var v = __parse_value(json, s, b, len);
+            push(a, v);
+            eat_whitespace(s, b);
+            c = get_next(s, b);
+            if (c == get_codepoint("]", 0))
+                break;
+            if (c == get_codepoint(",", 0)) {
+                eat_whitespace(s, b);
+                continue;
+            }
+            Rosella.Error.error("Unknown character in array '%s'", chr(c));
+        }
+        return a;
+    }
+
+    function __parse_string(int q, string json, var s, var b, int len)
+    {
+        var sb = new 'StringBuilder';
+        while(have_more_chars(s, b)) {
+            int c = get_next(s, b);
+            if (c == get_codepoint("\\", 0)) {
+                push(sb, "\\");
+                c = get_next(s, b);
+                push(sb, chr(c));
+                continue;
+            }
+            if (c == q)
+                break;
+            push(sb, chr(c));
+        }
+        return sb;
+    }
+
+    function __parse_number(int c, string json, var s, var b, int len)
+    {
+        int have_e = false;
+        int have_dot = false;
+        int have_sign = false;
+        var sb = new 'StringBuilder';
+        push(sb, codepoint_to_string(c));
+        while (have_more_chars(s, b)) {
+            int d = get_next(s, b);
+            if (!have_sign && (d == get_codepoint("+", 0) || d == get_codepoint("-", 0))) {
+                have_sign = true;
+                push(sb, codepoint_to_string(d));
+            }
+            else if (codepoint_is_digit(d)) {
+                push(sb, codepoint_to_string(d));
+                continue;
+            }
+            else if (!have_e && d == get_codepoint("e", 0)) {
+                have_e = true;
+                have_sign = false;
+                push(sb, 'e');
+            }
+            else if (!have_e && !have_dot && d == get_codepoint(".", 0)) {
+                have_dot = true;
+                push(sb, '.');
+            }
+            else {
+                unshift_int(s, d);
+                break;
+            }
+        }
+        if (have_dot) {
+            float f_value = float(string(sb));
+            return f_value;
+        } else {
+            int i_value = int(string(sb));
+            return i_value;
+        }
+    }
+}
