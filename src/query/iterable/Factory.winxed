@@ -28,7 +28,7 @@ class Rosella.Query.Iterable.Factory : Rosella.ObjectFactory
 
     function get_type_map()
     {
-        return Rosella.get_pmc_keyed_hash();
+        return pmc_keyed_hash();
     }
 
     // Create the provider for the given data

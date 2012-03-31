@@ -240,6 +240,19 @@ inline get_codepoint(string s, int i) return int
     return value;
 }
 
+inline codepoint_is_whitespace(int c) return int
+{
+    return (c <= 0x20 || c >= 127); // Any non-printable characters and all whitespace
+    // We can be more precise, but this is fastest.
+}
+
+inline codepoint_is_alphanumeric(int c) return int
+{
+    return ((c >= 0x30 && c <= 0x39) ||  // '0' <= c <= '9'
+            (c >= 0x41 && c <= 0x5A) ||  // 'A' <= c <= 'Z'
+            (c >= 0x61 && c <= 0x7A));   // 'a' <= c <= 'A'
+}
+
 /* Namespaces
 */
 
@@ -265,4 +278,49 @@ inline get_context() return var
     var cc;
     ${ get_context cc };
     return cc;
+}
+
+/* Data Structures
+*/
+
+$include_const "hash_key_type.pasm";
+
+inline pmc_keyed_hash() return var
+{
+    var h = new 'Hash';
+    //h =: Hash_key_type_PMC;
+    h.set_key_type(Hash_key_type_PMC);
+    return h;
+}
+
+inline int_keyed_hash() return var
+{
+    var h = new 'Hash';
+    //h =: Hash_key_type_int;
+    h.set_key_type(Hash_key_type_int);
+    return h;
+}
+
+inline fixed_integer_array(int i) return var
+{
+    var a = new 'FixedIntegerArray';
+    //a =: i;
+    ${ assign a, i };
+    return a;
+}
+
+inline fixed_string_array(int i) return var
+{
+    var a = new 'FixedStringArray';
+    //a =: i;
+    ${ assign a, i };
+    return a;
+}
+
+inline fixed_pmc_array(int i) return var
+{
+    var a = new 'FixedPMCArray';
+    //a =: i;
+    ${ assign a, i };
+    return a;
 }

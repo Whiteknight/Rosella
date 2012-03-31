@@ -76,7 +76,7 @@ class Rosella.Container.LifetimeManager.Thread : Rosella.Container.LifetimeManag
 
     function Thread()
     {
-        self.lookup = Rosella.get_pmc_keyed_hash();
+        self.lookup = pmc_keyed_hash();
     }
 
     function has_instance()

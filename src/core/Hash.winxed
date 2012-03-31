@@ -1,0 +1,13 @@
+namespace Rosella
+{
+    // Get a PMC-keyed hash
+    function get_pmc_keyed_hash()
+    {
+        return pmc_keyed_hash();
+    }
+
+    function get_int_keyed_hash()
+    {
+        return int_keyed_hash();
+    }
+}

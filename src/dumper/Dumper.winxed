@@ -69,7 +69,7 @@ class Rosella.Dumper
     // Get the default set of type dumpers
     function default_type_dumpers()
     {
-        var type_dumpers = Rosella.get_pmc_keyed_hash();
+        var type_dumpers = pmc_keyed_hash();
         return type_dumpers;
     }
 

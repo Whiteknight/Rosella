@@ -217,13 +217,5 @@ namespace Rosella
             yield i;
         }
     }
-
-    // Get a PMC-keyed hash
-    function get_pmc_keyed_hash()
-    {
-        var h = {};
-        h.set_key_type(3);
-        return h;
-    }
 }
 

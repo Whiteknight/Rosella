@@ -36,7 +36,7 @@ class Rosella.Container
     // Constructor
     function Container()
     {
-        self.type_registry = Rosella.get_pmc_keyed_hash();
+        self.type_registry = pmc_keyed_hash();
         self.aliases = {};
     }
 

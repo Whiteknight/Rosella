@@ -22,10 +22,8 @@ class Rosella.Net.MimeBase64
         if (self.eight_to_six != null && self.six_to_eight != null)
             return;
 
-        var six_to_eight = new 'FixedIntegerArray';
-        six_to_eight =: 64;
-        var eight_to_six = new 'FixedIntegerArray';
-        eight_to_six =: 256;
+        var six_to_eight = fixed_integer_array(64);
+        var eight_to_six = fixed_integer_array(256);
 
         eight_to_six[0] = 0;
         for (int i = 1; i < 256; i++)

@@ -59,8 +59,10 @@ function setup_stable_libraries(var rosella)
     // The Rosella "core" library. Does very little on its own but is
     // required by other libraries in the sequence
     setup_winxed_lib(rosella, "core", [],
+        "core/Includes",
         "core/Rosella",
         "core/Error",
+        "core/Hash",
         "core/Function",
         "core/IO",
         "core/IteratorBase",

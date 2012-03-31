@@ -4,7 +4,7 @@ class Rosella.Container.ServiceLocator
 
     function ServiceLocator()
     {
-        self.registry = Rosella.get_pmc_keyed_hash();
+        self.registry = pmc_keyed_hash();
     }
 
     function register(var type, var instance)
