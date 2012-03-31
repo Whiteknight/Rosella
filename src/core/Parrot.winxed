@@ -112,6 +112,7 @@ class Rosella.Parrot.ExceptionFormatter : Rosella.StringFormatter
         for (int i = 0; i < elements(bt); i++) {
             :(var sub, string text) = self.format_frame_default(bt[i]);
             push(sb, text);
+            push(sb, "\n");
             if (sub == null)
                 break;
         }
@@ -163,7 +164,7 @@ class Rosella.Parrot.ExceptionFormatter : Rosella.StringFormatter
             ns_parts.shift();
             ns = join(".", ns_parts);
         }
-        string text = Winxed_Builtins.sprintf("\t[%s] '%s'\t(%s  %d)\n", [ns, subname, filename, lineno]);
+        string text = Winxed_Builtins.sprintf("\t[%s] '%s'\t(%s  %d)", [ns, subname, filename, lineno]);
         return sub, text;
     }
 }
