@@ -46,7 +46,7 @@ class Rosella.Net.Protocol.Http : Rosella.Net.Protocol
         var socket = Rosella.Net.tcp_socket_factory().create(host, port);
 
         if (!self.__send_request(socket, request, fullpath, user_agent))
-            return self.__error_network_failure(request);
+            return Rosella.Net.Http.Response.__error_network_failure(request);
         user_agent.request_sent();
 
         :(int ok, var response) = self.__receive_status_line(socket);
@@ -58,7 +58,7 @@ class Rosella.Net.Protocol.Http : Rosella.Net.Protocol
         user_agent.request_progress(PERCENT_HEADERS_RECEIVED);
 
         if (!self.__receive_response_content(socket, response, user_agent))
-            return self.__error_receive_failure(request, response);
+            return Rosella.Net.Http.Response.__error_receive_failure(request, response);
         user_agent.request_complete();
 
         socket.close();

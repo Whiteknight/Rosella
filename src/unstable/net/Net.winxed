@@ -3,6 +3,7 @@
 */
 namespace Rosella.Net
 {
+    // Get the default protocol factory.
     const string PROTOCOL_FACTORY_GLOBAL = "Rosella.Net.protocol_factory";
     function default_protocol_factory()
     {
@@ -16,11 +17,13 @@ namespace Rosella.Net
         );
     }
 
+    // Get the Protocol object for the given uri
     function get_protocol(var uri)
     {
         return Rosella.Net.Http.default_protocol_factory().create(uri);
     }
 
+    // Get the default TCP SocketFactory
     const string TCP_SOCKET_FACTORY_GLOBAL = "Rosella.Net.tcp_socket_factory";
     function tcp_socket_factory()
     {
@@ -29,6 +32,7 @@ namespace Rosella.Net
         );
     }
 
+    // Get the default MIME Base64 Encoder.
     const string MIMEBASE64_GLOBAL = "Rosella.Net.mimebase64";
     function default_mime_encoder()
     {

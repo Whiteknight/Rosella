@@ -1,3 +1,17 @@
+/* Internet Protocol
+    Protocol classes implement a particular communication protocol. Different
+    protocol objects can be used to access resources identified by different
+    types of URIs.
+
+    http:// uses the HTTP Protocol
+    file:// uses the File Protocol
+
+    Other Protocols can be added to handle different types of resources.
+
+    This is an abstract parent class inherited by all Protocol objects.
+    Protocol objects should probably not be used directly. Use a UserAgent
+    object instead.
+*/
 class Rosella.Net.Protocol
 {
     function Protocol() { }
@@ -14,31 +28,4 @@ class Rosella.Net.Protocol
 
     // Perform the request. Take a Request, return a Response
     function request(var request, var user_agent) { Rosella.Error.must_subclass(__CLASS__); }
-
-    /* Private Error-Handling Functions
-    */
-
-    // TODO: These things are specific to HTTP-related requests, so should not
-    // be here in this global protocol object.
-
-    function __error_bad_protocol(string protocol)
-    {
-        //string msg = Rosella.String.sprintf("Bad protocol. Expected '%s' but have '%s'
-        //return new Rosella.Net.Http.Response(RC_INTERNAL_SERVER_ERROR, msg);
-    }
-
-    function __error_not_found(string path)
-    {
-        //return new Rosella.Net.Http.Response(RC_NOT_FOUND, "Could not find resource ",
-    }
-
-    function __error_network_failure(var request)
-    {
-        //return new Rosella.Net.Http.Response(RC_INTERNAL_SERVER_ERROR, "Network error"
-    }
-
-    function __error_receive_failure(var request, var response)
-    {
-        //return new Rosella.Net.Http.Response(RC_INTERNAL_SERVER_ERROR, "Error during r
-    }
 }

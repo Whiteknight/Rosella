@@ -1,7 +1,22 @@
+/* Request Object
+    Requests are used to encapsulate a request to a resource identified by a
+    Uri. The type of request used will be determined by the UserAgent and the
+    Protocol.
+
+    This is the abstract parent type of all Requests. Do not use this type
+    directly.
+*/
 class Rosella.Net.Request
 {
 }
 
+/* Respose Object
+    A request to a resource typically returns some type of response. The exact
+    type is determined by the Protocol and the UserAgent.
+
+    This is the abstract parent type of all Responses. Do not use this type
+    directly.
+*/
 class Rosella.Net.Response
 {
 }

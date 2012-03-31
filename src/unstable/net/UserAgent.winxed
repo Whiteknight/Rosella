@@ -1,5 +1,14 @@
+/* User Agent
+    The UserAgent encapsulates behavior for interacting with a remote resource.
+    Each UserAgent contains behavior specific to its type of prototype and
+    offers a user-friendly interface over some of the more complicated protocol
+    behaviors.
+
+    This is the abstract parent type of UserAgents. Use a subclass instead.
+*/
 class Rosella.Net.UserAgent
 {
+    // Constructor
     function UserAgent() { }
 
     /* Public Interface
@@ -8,11 +17,12 @@ class Rosella.Net.UserAgent
         common set.
     */
 
+    // Get the version string to send along with a request
     function get_version_string()
     {
         var cv = Rosella.Version.get_version("core");
         var nv = Rosella.Version.get_version("net");
-        string ua = Rosella.String.sprintf("parrot-rosella/%s net/%s (%s)", cv.library_version(), nv.library_version(), nv.library_state());
+        string ua = Rosella.String.sprintf("parrot-rosella/%s.0 net/%s.0 (%s)", cv.library_version(), nv.library_version(), nv.library_state());
         return ua;
     }
 
@@ -21,13 +31,17 @@ class Rosella.Net.UserAgent
     // Response will still be returned with error information)
     function request_sent() { }
 
+    // The request is in progress. Takes a percentage where 0.0 is the request
+    // not yet started and 1.0 is the request completed
     function request_progress(float percent) { }
 
+    // The request is complete
     function request_complete() { }
 
     // A hash of protocols supported. If null, nothing is supported
     function supported_protocols() { return null; }
 
+    // Returns true if this UserAgent can work with the given protocol
     function can_handle_protocol(string protocol)
     {
         var supported_protocols = self.supported_protocols();

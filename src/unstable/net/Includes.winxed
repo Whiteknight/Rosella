@@ -4,6 +4,13 @@ $include_const "cclass.pasm";
 const string CRLF = "\r\n";
 const string HEXDIGITS = '0123456789ABCDEF';
 
+inline is_ascii_alphanumeric(int c) return int
+{
+    return ((c >= 0x30 && c <= 0x39) ||  // '0' <= c <= '9'
+            (c >= 0x41 && c <= 0x5A) ||  // 'A' <= c <= 'Z'
+            (c >= 0x61 && c <= 0x7A));   // 'a' <= c <= 'A'
+}
+
 // Utilities for handling percent completion
 const float PERCENT_REQUEST_SENT = 0.10;
 const float PERCENT_HEADERS_RECEIVED = 0.20;

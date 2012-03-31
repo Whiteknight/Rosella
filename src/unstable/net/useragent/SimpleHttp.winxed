@@ -1,3 +1,8 @@
+/* Basic HTTP User Agent
+    This UserAgent encapsulates logic for making HTTP requests. It exposes
+    methods for making different types of requests. It returns Http.Response
+    objects for each type of request.
+*/
 class Rosella.Net.UserAgent.SimpleHttp : Rosella.Net.UserAgent
 {
     function SimpleHttp() { }
@@ -5,6 +10,7 @@ class Rosella.Net.UserAgent.SimpleHttp : Rosella.Net.UserAgent
     /* Standard UserAgent Interface
     */
 
+    // This UserAgent supports http and file uris
     function supported_protocols()
     {
         return {
@@ -17,11 +23,13 @@ class Rosella.Net.UserAgent.SimpleHttp : Rosella.Net.UserAgent
     /* HTTP Request Methods
     */
 
+    // Perform an HTTP GET
     function get(string uri, var headers [named,optional])
     {
         return self.__dispatch_request("GET", uri, headers, null);
     }
 
+    // Perform an HTTP POST
     function post(string uri, var form_fields, var files = null, var headers [named,optional])
     {
         return self.__dispatch_request("POST", uri, headers,
@@ -39,6 +47,7 @@ class Rosella.Net.UserAgent.SimpleHttp : Rosella.Net.UserAgent
         );
     }
 
+    // Perform an HTTP PUT
     function put(string uri, string content, var headers [named,optional])
     {
         return self.__dispatch_request("PUT", uri, headers,
@@ -48,11 +57,13 @@ class Rosella.Net.UserAgent.SimpleHttp : Rosella.Net.UserAgent
         );
     }
 
+    // Perform an HTTP DELETE
     function delete(string uri, var headers [named,optional])
     {
         return self.__dispatch_request("DELETE", uri, headers, null);
     }
 
+    // Perform an HTTP HEAD
     function head(string uri, var headers [named,optional])
     {
         return self.__dispatch_request("HEAD", uri, headers, null);
@@ -61,6 +72,7 @@ class Rosella.Net.UserAgent.SimpleHttp : Rosella.Net.UserAgent
     /* Private Helper Routines
     */
 
+    // Dispatch the request.
     function __dispatch_request(string request_method, string uri_raw, var headers, var setup_request)
     {
         if (uri_raw == null || uri_raw == "")

@@ -1,14 +1,22 @@
+/* MIME Base 64 Encoder
+    Converts arbitrary binary data into MIME Base 64 encoded output string. The
+    encoded string is a printable code using only alphanumeric characters, '+'
+    and '/'. This format is suitable for transmission over text-based protocols
+    such as HTTP.
+*/
 class Rosella.Net.MimeBase64
 {
     const string PRINTABLE_CHARS = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789+/";
     var eight_to_six;
     var six_to_eight;
 
+    // Constructor
     function MimeBase64()
     {
         self.initialize();
     }
 
+    // Initialize this object with the mapping arrays
     function initialize()
     {
         if (self.eight_to_six != null && self.six_to_eight != null)
@@ -32,6 +40,8 @@ class Rosella.Net.MimeBase64
         self.six_to_eight = six_to_eight;
     }
 
+    // Encode a string of arbitrarily-encoded data to an ASCII MIME Base64
+    // string.
     function encode(string plain)
     {
         var buf = new 'ByteBuffer';
@@ -39,6 +49,7 @@ class Rosella.Net.MimeBase64
         return self.encode_bytebuffer(buf);
     }
 
+    // Encode the contents of a ByteBuffer to MIME Base 64
     function encode_bytebuffer(var buf)
     {
         var s = self.six_to_eight;
@@ -77,6 +88,7 @@ class Rosella.Net.MimeBase64
         return result.get_string("ascii");
     }
 
+    // Decode the base64 string and return a string in the specified encoding.
     function decode(string base64, string encoding = "ascii")
     {
         var base64_buf = new 'ByteBuffer';

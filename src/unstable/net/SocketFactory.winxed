@@ -1,7 +1,13 @@
+/* Socket Factory
+    The SocketFactory creates Socket objects with specific settings. The
+    settings are specified when the factory is created and all subsequent
+    Sockets created by that factory have the same settings.
+*/
 class Rosella.Net.SocketFactory : Rosella.ObjectFactory
 {
     var protocol;
 
+    // Constructor. Take several human-readable strings to configure settings
     function SocketFactory(string inet_protocol, string data_protocol, string packet_protocol)
     {
         int inet, sock, packet;
@@ -43,6 +49,7 @@ class Rosella.Net.SocketFactory : Rosella.ObjectFactory
         self.ObjectFactory("Socket");
     }
 
+    // Create a Socket with the given host and port
     function create_typed(var type, string host, int port)
     {
         var socket = Rosella.construct(type);

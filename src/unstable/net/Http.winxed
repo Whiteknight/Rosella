@@ -1,7 +1,10 @@
 /* HTTP Utilities Namespace
+    This namespace contains utility helper functions for HTTP-related requests
 */
 namespace Rosella.Net.Http
 {
+    // Encode form data for an HTTP request. Spaces become '+', and all other
+    // non-alphanumerics are percent-encoded
     function formdata_encode(string s)
     {
         int s_enc = get_string_encoding(s);
@@ -9,31 +12,20 @@ namespace Rosella.Net.Http
         if (s_enc != get_encoding_id("ascii") && s_enc != utf8_enc)
             s = reencode_string(s, utf8_enc);
 
-        int code_A = get_codepoint("A", 0);
-        int code_Z = get_codepoint("Z", 0);
-        int code_a = get_codepoint("a", 0);
-        int code_z = get_codepoint("z", 0);
-        int code_0 = get_codepoint("0", 0);
-        int code_9 = get_codepoint("9", 0);
-
         var buf = new 'ByteBuffer';
         var result = new 'ByteBuffer';
         buf =: s;
         for (int code in buf) {
-            if (code == 0x20) {
-                push(result, 0x2B);
+            if (code == 0x20) {         // 0x20 = space
+                push(result, 0x2B);     // 0x2B = '+'
                 continue;
             }
-            if ((code >= code_a && code <= code_z) ||
-                (code >= code_A && code <= code_Z) ||
-                (code >= code_0 && code <= code_9))
+            if (is_ascii_alphanumeric(code))
                 push(result, code);
             else {
-                push(result, 0x25);
-                string c = substr(HEXDIGITS, code / 16, 1);
-                push(result, get_codepoint(c, 0));
-                c = substr(HEXDIGITS, code % 16, 1);
-                push(result, get_codepoint(c, 0));
+                push(result, 0x25);     // 0x25 = '%'
+                push(result, get_codepoint(HEXDIGITS, int(code/16)));
+                push(result, get_codepoint(HEXDIGITS, int(code%16)));
             }
         }
         s = result.get_string("ascii");

@@ -1,8 +1,12 @@
+/* Utilities for working with Uri Objects
+*/
 namespace Rosella.Net.Uri
 {
     const string URI_COMP_UNCHANGE = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789-_.~";
     const string URI_UNCHANGE      = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789-_.~!*\'();:@&=+$,/?#[]";
 
+    // Percent encode the input except for a list of characters that do not
+    // require encoding
     function percent_encode_except(string s, string except)
     {
         int s_enc = get_string_encoding(s);
@@ -31,39 +35,62 @@ namespace Rosella.Net.Uri
         return s;
     }
 
+    // Normal percent-encoding rules, excepting most safe characters
     function percent_encode(string s) { return percent_encode_except(s, URI_UNCHANGE); }
 
+    // Restrictive percent-encoding rules, only excepting alphanumerics and a few symbols
     function percent_encode_component(string s) { return percent_encode_except(s, URI_COMP_UNCHANGE); }
 }
 
+/* Uri
+    This type is used to represent a Uri. A Uri should point uniquely to a
+    resource object. The Uri contains information about the protocol to use and
+    the path for the request to take.
+*/
 class Rosella.Net.Uri
 {
     var parts;
 
+    // Constructor
     function Uri(string uri)
     {
         self.parts = self.__parse(uri);
     }
 
+    // Get the host
     function host() { return self.authority(); }
 
+    // Get the raw Uri string
     function uri() { return self.parts["URI"]; }
 
     // TODO: ToLower
+    // Get the protocol to use
     function protocol() { return self.parts["Protocol"]; }
 
+    // Get the path
     function path() { return self.parts["Path"]; }
 
+    // Get the authority
     function authority() { return self.parts["Authority"]; }
 
+    // Get the port number
     function port() { return self.parts["Port"]; }
 
+    // Get the Path and Query
     function path_query() { return self.parts["Path_Query"]; }
 
+    // TODO: This
+    // Get the Query String
     function query_string() { }
 
+    // TODO: This
+    // Get the anchor
     function anchor() { }
 
+    /* Private Helper Methods
+    */
+
+    // Get a hash containing default values
     function __default_parts_hash(string uri)
     {
         return {
@@ -78,6 +105,7 @@ class Rosella.Net.Uri
         };
     }
 
+    // Parse the raw string uri and add it to the hash
     function __parse(string uri)
     {
         var parts = self.__default_parts_hash(uri);
