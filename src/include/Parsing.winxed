@@ -4,6 +4,15 @@
     StringIterator.
 */
 
+inline peek_next(var s, var i) return int
+{
+    if (elements(s) > 0)
+        return int(s[0]);
+    int _c = shift_int(i);
+    unshift_int(s, _c);
+    return _c;
+}
+
 inline get_next(var s, var i) return int
 {
     if (elements(s) > 0)

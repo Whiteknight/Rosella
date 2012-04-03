@@ -196,18 +196,23 @@ namespace Rosella.Xml
 
     function __parse_attributes(string xml, var s, var b, int len, var xtag)
     {
-        int c = get_next(s, b);
-        while (have_more_chars(s, b) && is_name_char(c)) {
+        while (have_more_chars(s, b)) {
+            eat_whitespace(s, b);
+            int c = peek_next(s, b);
+            if (!is_name_char(c))
+                break;
+
             string attr_name = Rosella.Xml.__capture_alphanumeric(xml, s, b, len);
             eat_whitespace(s, b);
 
             c = get_next(s, b);
             if (c != ASCII_EQUALS) {
+                unshift_int(s, c);
                 xtag.add_attribute(attr_name, "true");
                 eat_whitespace(s, b);
-                c = get_next(s, b);
                 continue;
             }
+
             c = get_next(s, b);
             if (c == ASCII_SINGLE_QUOTE || c == ASCII_DOUBLE_QUOTE) {
                 int quote = c;
@@ -223,14 +228,11 @@ namespace Rosella.Xml
                 }
                 string attr_value = string(sb);
                 xtag.add_attribute(attr_name, attr_value);
-                eat_whitespace(s, b);
             } else {
+                unshift_int(s, c);
                 string attr_value = Rosella.Xml.__capture_alphanumeric(xml, s, b, len);
                 xtag.add_attribute(attr_name, attr_value);
-                eat_whitespace(s, b);
             }
-            c = get_next(s, b);
         }
-        unshift_int(s, c);
     }
 }
