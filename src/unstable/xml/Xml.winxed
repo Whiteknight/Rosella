@@ -60,33 +60,43 @@ namespace Rosella.Xml
             if (c == ASCII_LESS_THAN) {
                 :(var tag, int is_close, int contained, int is_comment) = Rosella.Xml.__parse_tag(xml, s, b, len);
 
-                // A closing tag: </foo>
-                if (!is_comment && !contained && is_close) {
-                    if (current_tag == null)
-                        Rosella.Error.error("Syntax error. Found closing tag '%s' without corresponding open tag", tag.name);
-                    current_tag.set_end(tag);
-                    current_tag = tag_stack.pop();
+                if (is_comment) {
+                    // TODO: What do we do about comments appearing before and
+                    // after the root node?
+                    if (current_tag != null)
+                        current_tag.add_child(tag);
+                    continue;
                 }
-                else
-                    document.add_tag(tag);
 
                 // A self-contained tag: <foo />
                 if (contained) {
                     if (current_tag != null)
                         current_tag.add_child(tag);
+                    else {
+                        current_tag = tag;
+                        document.set_root(tag);
+                    }
+                    continue;
+                }
+
+                // A closing tag: </foo>
+                if (is_close) {
+                    if (current_tag == null)
+                        Rosella.Error.error("Syntax error. Found closing tag '%s' without corresponding open tag", tag.name);
+                    current_tag.set_end(tag);
+                    current_tag = tag_stack.pop();
+                    continue;
                 }
 
                 // An opening tag: <foo ...>
-                else if (!is_close) {
-                    if (current_tag != null)
-                        current_tag.add_child(tag);
-                    push(tag_stack, current_tag);
-                    current_tag = tag;
-                }
+                if (current_tag != null)
+                    current_tag.add_child(tag);
+                else
+                    document.set_root(tag);
+                push(tag_stack, current_tag);
+                current_tag = tag;
                 continue;
             }
-            eat_whitespace(s, b);
-            c = get_next(s, b);
             var sb = new 'StringBuilder';
             while(have_more_chars(s, b) && c != ASCII_LESS_THAN) {
                 push(sb, chr(c));
