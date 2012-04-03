@@ -1,15 +1,16 @@
 namespace Rosella.Xml
 {
-    function __capture_alphanumeric(var buffer, int start_idx)
+    function __capture_alphanumeric(string xml, var s, var b, int len)
     {
-        int end_idx = start_idx;
-        int c = buffer[start_idx];
-        while(is_alphanumeric(c)) {
-            end_idx++;
-            c = buffer[end_idx];
+        var sb = new 'StringBuilder';
+        int c = get_next(s, b);
+        while(have_more_chars(s, b) && is_name_char(c)) {
+            push(sb, chr(c));
+            c = get_next(s, b);
         }
-        string result = buffer.get_chars(start_idx, end_idx - start_idx, "ascii");
-        return result, end_idx;
+        unshift_int(s, c);
+        string result = string(sb);
+        return result;
     }
 }
 
@@ -31,22 +32,33 @@ namespace Rosella.Xml
 
     function parse(string xml, var document)
     {
-        var buffer = new 'ByteBuffer';
-        buffer =: xml;
-        int buf_length = elements(buffer);
+        int len = length(xml);
+        var b = get_iterator(var(xml));
+        int s[] = [];
+        return __parse_xml(xml, s, b, len, document);
+    }
+
+    function __parse_xml(string xml, var s, var b, int len, var document)
+    {
         var tag_stack = [];
         var current_tag = null;
 
-        int i = eat_whitespace(buffer, 0);
-        int c = buffer[i];
-        if (buf_length > 5 && c == ASCII_LESS_THAN && int(buffer[i + 1]) == ASCII_QUESTION_MARK)
-            i = Rosella.Xml.__parse_xml_header(buffer, i + 2, document);
+        eat_whitespace(s, b);
+        int c = get_next(s, b);
 
-        error_on_out_of_bounds(c, buffer, i);
-        for ( ; i < elements(buffer); ) {
-            int c = buffer[i];
+        if (c == ASCII_LESS_THAN) {
+            c = get_next(s, b);
+            if (c == ASCII_QUESTION_MARK)
+                Rosella.Xml.__parse_xml_header(xml, s, b, len, document);
+            else
+                unshift_int(s, c);
+        }
+
+        while(have_more_chars(s, b)) {
+            eat_whitespace(s, b);
+            c = get_next(s, b);
             if (c == ASCII_LESS_THAN) {
-                :(var tag, i, int is_close, int contained, int is_comment) = Rosella.Xml.__parse_tag(buffer, i + 1, current_tag);
+                :(var tag, int is_close, int contained, int is_comment) = Rosella.Xml.__parse_tag(xml, s, b, len);
 
                 // A closing tag: </foo>
                 if (!is_comment && !contained && is_close) {
@@ -73,148 +85,152 @@ namespace Rosella.Xml
                 }
                 continue;
             }
-            i = eat_whitespace(buffer, i);
-            int j = i;
-            while(j < buf_length && c != ASCII_LESS_THAN) {
-                c = buffer[j];
-                j++;
+            eat_whitespace(s, b);
+            c = get_next(s, b);
+            var sb = new 'StringBuilder';
+            while(have_more_chars(s, b) && c != ASCII_LESS_THAN) {
+                push(sb, chr(c));
+                c = get_next(s, b);
             }
-            if (j >= buf_length)
+
+            if (!have_more_chars(s, b))
                 break;
-            if (j - i - 2 > 0 && current_tag != null) {
-                string content = buffer.get_chars(i + 1, j - i - 2, "ascii");
-                current_tag.add_child_text(content);
-            }
-            i = j - 1;
+
+            unshift_int(s, c);
+            string str = string(sb);
+            if (current_tag != null)
+                current_tag.add_child_text(str);
         }
         return document;
     }
 
-    function __parse_xml_header(var buffer, int i, var document)
+    function __parse_xml_header(string xml, var s, var b, int len, var document)
     {
-        // TODO: Headers are usually like <?xml ... ?>. We aren't reading the "xml"
-        // TODO: If available, read the encoding attribute. Use that for parsing the
-        // rest of the document.
+        // TODO: If available, read the encoding attribute and compare to the
+        // encoding that the string is being read as.
         var header_tag = new Rosella.Xml.Tag.XmlHeader();
-        i = eat_whitespace(buffer, i);
-        i = Rosella.Xml.__parse_attributes(buffer, i, header_tag);
-        i = eat_whitespace(buffer, i);
-        int c = buffer[i];
-        if (c == ASCII_QUESTION_MARK && int(buffer[i + 1]) == ASCII_GREATER_THAN) {
-            document.set_header(header_tag);
-            return i + 2;
+        if (get_next(s, b) != ASCII_x ||
+            get_next(s, b) != ASCII_m ||
+            get_next(s, b) != ASCII_l)
+            Rosella.Error.error("Malformed XML header. Should start with '<?xml ... ?>'");
+
+        eat_whitespace(s, b);
+        Rosella.Xml.__parse_attributes(xml, s, b, len, header_tag);
+        eat_whitespace(s, b);
+        int c = get_next(s, b);
+        if (c == ASCII_QUESTION_MARK) {
+            c = get_next(s, b);
+            if (c == ASCII_GREATER_THAN) {
+                document.set_header(header_tag);
+                return;
+            }
+            unshift_int(s, c);
         }
-        Rosella.Error.error("Malformed XML Header tag");
+        Rosella.Error.error("Malformed XML Header tag: '%s'", chr(c));
     }
 
-    function __parse_tag(var buffer, int i, var current_tag)
+    function __parse_tag(string xml, var s, var b, int len)
     {
         // TODO: Namespaces (<foo:bar ...> </foo:bar>)
-        i = eat_whitespace(buffer, i);
-        int j = i;
-        int c = buffer[j];
+        eat_whitespace(s, b);
+        int c = get_next(s, b);
         if (c == ASCII_EXCLAMATION_POINT)
-            return Rosella.Xml.__parse_comment(buffer, i + 1);
+            return Rosella.Xml.__parse_comment(xml, s, b, len);
         int is_close_tag = false;
 
         if (c == ASCII_SLASH) {
-            j++;
-            c = buffer[j];
+            c = get_next(s, b);
             is_close_tag = true;
         }
-
-        :(string tag_name, j) = Rosella.Xml.__capture_alphanumeric(buffer, j);
+        unshift_int(s, c);
+        string tag_name = Rosella.Xml.__capture_alphanumeric(xml, s, b, len);
         //if (is_close_tag)
             //tag_name = "/" + tag_name;
-        var tag = new Rosella.Xml.Tag(tag_name);
+        var xtag = new Rosella.Xml.Tag(tag_name);
 
-        j = eat_whitespace(buffer, j);
+        eat_whitespace(s, b);
         if (!is_close_tag)
-            j = Rosella.Xml.__parse_attributes(buffer, j, tag);
+            Rosella.Xml.__parse_attributes(xml, s, b, len, xtag);
 
-        c = buffer[j];
+        c = get_next(s, b);
         if (c == ASCII_GREATER_THAN)
-            return tag, j, is_close_tag, false, false;
+            return xtag, is_close_tag, false, false;
 
         if (c == ASCII_SLASH) {
-            int next = buffer[j + 1];
+            int next = get_next(s, b);
             if (next == ASCII_GREATER_THAN)
-                return tag, j + 2, false, true, false;
+                return xtag, false, true, false;
             else
-                Rosella.Error.error("Syntax error at position %d", j);
+                Rosella.Error.error("Syntax error in tag %s", tag_name);
         }
 
-        Rosella.Error.error("Syntax error, unknown character '%s' at position %d", chr(c), j);
+        Rosella.Error.error("Syntax error, unknown character '%s' in tag '%s'", chr(c), tag_name);
     }
 
-    function __parse_comment(var buffer, int i)
+    function __parse_comment(string xml, var s, var b, int len)
     {
-        int buf_len = elements(buffer);
+        if (get_next(s, b) != ASCII_DASH || get_next(s, b) != ASCII_DASH)
+            Rosella.Error.error("Malformed comment");
 
-        if (int(buffer[i]) != ASCII_DASH || int(buffer[i+1]) != ASCII_DASH)
-            Rosella.Error.error("Malformed comment at position %d", i);
+        var sb = new 'StringBuilder';
+        while (have_more_chars(s, b)) {
+            int c = get_next(s, b);
 
-        i = i + 2;
-        int j = i;
-        int c = buffer[j];
-        while (j < buf_len) {
-            j++;
-            c = buffer[j];
-            if (c == ASCII_DASH &&
-                int(buffer[j + 1]) == ASCII_DASH &&
-                int(buffer[j + 2]) == ASCII_GREATER_THAN) {
-
-                string text = buffer.get_chars(i, j - i, "ascii");
-                var comment = new Rosella.Xml.Tag.Comment(text);
-                return comment, j + 3, true, true, true;
+            if (c == ASCII_DASH) {
+                int d = get_next(s, b);
+                if (d == ASCII_DASH) {
+                    int e = get_next(s, b);
+                    if (e == ASCII_GREATER_THAN) {
+                        string text = string(sb);
+                        var comment = new Rosella.Xml.Tag.Comment(text);
+                        return comment, true, true, true;
+                    }
+                    unshift_int(s, e);
+                }
+                unshift_int(s, d);
             }
+            push(sb, chr(c));
         }
-        Rosella.Error.error("Unterminated comment starting at position %d", i - 2);
+        Rosella.Error.error("Unterminated comment at end of document");
     }
 
-    function __parse_attributes(var buffer, int i, var tag)
+    function __parse_attributes(string xml, var s, var b, int len, var xtag)
     {
-        int j = i;
-        int c = buffer[j];
-        while (is_alphanumeric(c)) {
-            :(string attr_name, j) = Rosella.Xml.__capture_alphanumeric(buffer, j);
-            j = eat_whitespace(buffer, j);
+        int c = get_next(s, b);
+        while (have_more_chars(s, b) && is_name_char(c)) {
+            string attr_name = Rosella.Xml.__capture_alphanumeric(xml, s, b, len);
+            eat_whitespace(s, b);
 
-            c = buffer[j];
+            c = get_next(s, b);
             if (c != ASCII_EQUALS) {
-                tag.add_attribute(attr_name, "true");
-                j = eat_whitespace(buffer, j);
-                c = buffer[j];
+                xtag.add_attribute(attr_name, "true");
+                eat_whitespace(s, b);
+                c = get_next(s, b);
                 continue;
             }
-            j++;
-            c = buffer[j];
+            c = get_next(s, b);
             if (c == ASCII_SINGLE_QUOTE || c == ASCII_DOUBLE_QUOTE) {
                 int quote = c;
-                j++;
-                int start_quotes = j;
-                c = buffer[j];
+                var sb = new 'StringBuilder';
+                c = get_next(s, b);
                 while (c != quote) {
-                    if (c == ASCII_SLASH)
-                        j += 2;
-                    else
-                        j++;
-                    c = buffer[j];
+                    push(sb, chr(c));
+                    if (c == ASCII_SLASH) {
+                        c = get_next(s, b);
+                        push(sb, chr(c));
+                    }
+                    c = get_next(s, b);
                 }
-                int end_quotes = j;
-                j++;
-                string attr_value = buffer.get_chars(start_quotes, end_quotes - start_quotes, "ascii");
-                tag.add_attribute(attr_name, attr_value);
-                j = eat_whitespace(buffer, j);
+                string attr_value = string(sb);
+                xtag.add_attribute(attr_name, attr_value);
+                eat_whitespace(s, b);
             } else {
-                :(string attr_value, j) = Rosella.Xml.__capture_alphanumeric(buffer, j);
-                tag.add_attribute(attr_name, attr_value);
-                j = eat_whitespace(buffer, j);
+                string attr_value = Rosella.Xml.__capture_alphanumeric(xml, s, b, len);
+                xtag.add_attribute(attr_name, attr_value);
+                eat_whitespace(s, b);
             }
-            c = buffer[j];
+            c = get_next(s, b);
         }
-        error_on_out_of_bounds(c, buffer, i);
-        return j;
+        unshift_int(s, c);
     }
 }
-

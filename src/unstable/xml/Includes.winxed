@@ -5,18 +5,9 @@ inline indent_level(int i) return string
     return "\n" + repeat_string(INDENT_STR, i);
 }
 
-inline is_whitespace(int c) return int
+inline is_name_char(int c) return int
 {
-    return (c <= 0x20 || c >= 127); // Any non-printable characters and all whitespace
-    // We can be more precise, but this is fastest.
-}
-
-inline is_alphanumeric(int c) return int
-{
-    return ((c >= 0x30 && c <= 0x39) ||  // '0' <= c <= '9'
-            (c >= 0x41 && c <= 0x5A) ||  // 'A' <= c <= 'Z'
-            (c >= 0x61 && c <= 0x7A) ||  // 'a' <= c <= 'A'
-            c == 0x5F || c == 0x2D);         // c == '_' || c == '-'
+    return codepoint_is_alphanumeric(c) || c == ASCII_UNDERSCORE || c == ASCII_DASH;
 }
 
 inline error_on_out_of_bounds(int c, var buffer, int j)
@@ -26,23 +17,5 @@ inline error_on_out_of_bounds(int c, var buffer, int j)
         if (j >= buflen)
             Rosella.Error.error("Attempt to read position %d, passed the end of the buffer %d", j, buflen);
     }
-}
-
-inline read_char(var buffer, int j) return int
-{
-    int c = buffer[j];
-    error_on_out_of_bounds(c, buffer, j);
-    return c;
-}
-
-inline eat_whitespace(var buffer, int j) return int
-{
-    int c = buffer[j];
-    while (is_whitespace(c)) {
-        j++;
-        c = buffer[j];
-    }
-    error_on_out_of_bounds(c, buffer, j);
-    return j;
 }
 

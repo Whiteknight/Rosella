@@ -399,7 +399,7 @@ function setup_experimental_libraries(var rosella)
         "net/SocketFactory"
     );
 
-    setup_unstable_lib(rosella, "xml", ["Core", "Ascii", "String", "FileSystem"],
+    setup_unstable_lib(rosella, "xml", ["Core", "Ascii", "Parsing", "String", "FileSystem"],
         "xml/Includes",
         "xml/Xml",
         "xml/Document",
@@ -407,7 +407,7 @@ function setup_experimental_libraries(var rosella)
         "xml/Text"
     );
 
-    setup_unstable_lib(rosella, "json", ["Core", "Ascii", "Dumper"],
+    setup_unstable_lib(rosella, "json", ["Core", "Ascii", "Parsing", "Dumper"],
         "json/Includes",
         "json/Json",
         "json/Dumper",
@@ -502,6 +502,7 @@ function setup_include_headers(var rosella)
         "src/include/Math_Builtins.winxed" : "Rosella/Math_Builtins.winxed",
         "src/include/Memoize.winxed"       : "Rosella/Memoize.winxed",
         "src/include/MockObject.winxed"    : "Rosella/MockObject.winxed",
+        "src/include/Parsing.winxed"       : "Rosella/Parsing.winxed",
         "src/include/Proxy.winxed"         : "Rosella/Proxy.winxed",
         "src/include/Path.winxed"          : "Rosella/Path.winxed",
         "src/include/Query.winxed"         : "Rosella/Query.winxed",
