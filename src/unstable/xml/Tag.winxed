@@ -104,7 +104,21 @@ class Rosella.Xml.Tag.XmlHeader : Rosella.Xml.Tag
 
 class Rosella.Xml.Tag.DtdHeader : Rosella.Xml.Tag
 {
-    function DtdHeader() { self.Tag("!DOCTYPE"); }
+    var doctype;
+    var scope;
+    var filename;
+
+    function DtdHeader(string doctype, string scope)
+    {
+        self.doctype = doctype;
+        self.scope = scope;
+        self.Tag("!DOCTYPE");
+    }
+
+    function set_filename(string filename)
+    {
+        self.filename = filename;
+    }
 
     function to_xml_sb(var sb, int indent)
     {

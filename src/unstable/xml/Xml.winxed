@@ -157,19 +157,22 @@ namespace Rosella.Xml
             Rosella.Error.error("Invalid DOCTYPE tag");
         eat_whitespace(s, b);
 
-        var dtd_header = new Rosella.Xml.Tag.DtdHeader();
-        // TODO: Store all this information in the dtd_header
         string doctype = Rosella.Xml.__parse_alphanumeric(xml, s, b, len);
         eat_whitespace(s, b);
 
         // Should be one of SYSTEM, PUBLIC, etc
         string dtd_scope = Rosella.Xml.__parse_alphanumeric(xml, s, b, len);
+
+        var dtd_header = new Rosella.Xml.Tag.DtdHeader(doctype, dtd_scope);
+
         eat_whitespace(s, b);
         int c = get_next(s, b);
         if (c == ASCII_SINGLE_QUOTE || c == ASCII_DOUBLE_QUOTE) {
             string filename = Rosella.Xml.__parse_quoted(c, xml, s, b, len);
+            dtd_header.set_filename(filename);
         } else if (c == ASCII_OPEN_BRACKET) {
-            // TODO: Parse the inline DTD definitions
+            // TODO: Parse the inline DTD definitions. Add each as a child to
+            // the dtd_header
             Rosella.Error.not_implemented("Cannot parse inline DOCTYPE yet!");
         }
         eat_whitespace(s, b);
