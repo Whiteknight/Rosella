@@ -196,10 +196,20 @@ namespace Rosella.Xml
             is_close_tag = true;
         }
         unshift_int(s, c);
+        string ns = "";
         string tag_name = Rosella.Xml.__parse_alphanumeric(xml, s, b, len);
+        eat_whitespace(s, b);
+        c = peek_next(s, b);
+        if (c == ASCII_COLON) {
+            get_next(s, b);
+            eat_whitespace(s, b);
+            ns = tag_name;
+            tag_name = Rosella.Xml.__parse_alphanumeric(xml, s, b, len);
+        }
+
         //if (is_close_tag)
             //tag_name = "/" + tag_name;
-        var xtag = new Rosella.Xml.Tag(tag_name);
+        var xtag = new Rosella.Xml.Tag(ns, tag_name);
 
         eat_whitespace(s, b);
         if (!is_close_tag)

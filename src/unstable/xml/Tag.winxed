@@ -2,11 +2,14 @@ class Rosella.Xml.Tag
 {
     var attributes;
     var children;
+    var xmlns;
     var name;
     var end_tag;
 
-    function Tag(string name)
+    function Tag(string xmlns, string name)
     {
+        if (xmlns != "")
+            self.xmlns = xmlns;
         self.name = name;
         self.attributes = {};
         self.children = [];
@@ -46,6 +49,11 @@ class Rosella.Xml.Tag
         string indent_str = indent_level(indent);
         push(sb, indent_str);
         push(sb, "<");
+        if (self.xmlns != null) {
+            string ns = self.xmlns;
+            push(sb, ns);
+            push(sb, ":");
+        }
         push(sb, self.name);
         self.__to_xml_sb_attrs(sb, indent);
         push(sb, ">");
@@ -77,7 +85,7 @@ class Rosella.Xml.Tag
 
 class Rosella.Xml.Tag.XmlHeader : Rosella.Xml.Tag
 {
-    function XmlHeader() { self.Tag("?xml"); }
+    function XmlHeader() { self.Tag("", "?xml"); }
 
     function to_xml_sb(var sb, int indent)
     {
@@ -112,7 +120,7 @@ class Rosella.Xml.Tag.DtdHeader : Rosella.Xml.Tag
     {
         self.doctype = doctype;
         self.scope = scope;
-        self.Tag("!DOCTYPE");
+        self.Tag("", "!DOCTYPE");
     }
 
     function set_filename(string filename)
