@@ -77,14 +77,55 @@ class Rosella.Xml.Tag
 
 class Rosella.Xml.Tag.XmlHeader : Rosella.Xml.Tag
 {
-    function XmlHeader() { self.Tag(""); }
+    function XmlHeader() { self.Tag("?xml"); }
 
     function to_xml_sb(var sb, int indent)
     {
-        push(sb, "<?");
-        push(sb, self.name);
+        push(sb, "<?xml ");
         self.__to_xml_sb_attrs(sb);
         push(sb, "?>");
+    }
+
+    function add_child(var child)
+    {
+        Rosella.Error.error("XML Header tags do not have child tags");
+    }
+
+    function add_child_text(string text)
+    {
+        Rosella.Error.error("XML Header tags may not contain raw text");
+    }
+
+    function set_end(var end_tag)
+    {
+        Rosella.Error.error("XML Header tags do not have closing tags");
+    }
+}
+
+class Rosella.Xml.Tag.DtdHeader : Rosella.Xml.Tag
+{
+    function DtdHeader() { self.Tag("!DOCTYPE"); }
+
+    function to_xml_sb(var sb, int indent)
+    {
+        push(sb, "<!DOCTYPE ");
+        self.__to_xml_sb_attrs(sb);
+        push(sb, ">");
+    }
+
+    function add_child(var child)
+    {
+        Rosella.Error.not_implemented("Inline DTD definitions are not yet implemented");
+    }
+
+    function add_child_text(string text)
+    {
+        Rosella.Error.error("DTD Header tags may not contain raw text");
+    }
+
+    function set_end(var end_tag)
+    {
+        Rosella.Error.error("DTD Header tags do not have closing tags");
     }
 }
 
@@ -112,4 +153,9 @@ class Rosella.Xml.Tag.Comment
         push(sb, self.text);
         push(sb, "-->");
     }
+}
+
+class Rosella.Xml.Tag.DocumentRoot : Rosella.Xml.Tag
+{
+    function DocumentRoot() {}
 }

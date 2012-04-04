@@ -142,7 +142,7 @@ namespace Rosella.Xml
         if (c == ASCII_QUESTION_MARK) {
             c = get_next(s, b);
             if (c == ASCII_GREATER_THAN) {
-                document.set_header(header_tag);
+                document.add_header(header_tag);
                 return;
             }
             unshift_int(s, c);
@@ -157,6 +157,8 @@ namespace Rosella.Xml
             Rosella.Error.error("Invalid DOCTYPE tag");
         eat_whitespace(s, b);
 
+        var dtd_header = new Rosella.Xml.Tag.DtdHeader();
+        // TODO: Store all this information in the dtd_header
         string doctype = Rosella.Xml.__parse_alphanumeric(xml, s, b, len);
         eat_whitespace(s, b);
 
@@ -174,6 +176,7 @@ namespace Rosella.Xml
         c = get_next(s, b);
         if (c != ASCII_GREATER_THAN)
             Rosella.Error.error("Unknown token in DOCTYPE header: '%s'", chr(c));
+        document.add_header(dtd_header);
     }
 
     function __parse_tag(string xml, var s, var b, int len)

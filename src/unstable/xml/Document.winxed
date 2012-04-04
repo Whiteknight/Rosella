@@ -1,15 +1,33 @@
 class Rosella.Xml.Document
 {
-    var header;
+    var xml_header;
+    var dtd_header;
     var root;
 
-    function Document()
+    function Document() { }
+
+    function add_header(var header)
     {
+        if (header instanceof Rosella.Xml.Tag.XmlHeader) {
+            if (self.xml_header != null)
+                Rosella.Error.error("Document already contains an XML Header");
+            self.xml_header = header;
+        } else if (header instanceof Rosella.Xml.Tag.DtdHeader) {
+            if (self.dtd_header != null)
+                Rosella.Error.error("Document already contains a DTD Header");
+            self.dtd_header = header;
+        }
     }
 
-    function set_header(var header)
+    function set_documentroot(var root)
     {
-        self.header = header;
+        for (var child in root.children)
+        {
+            if (child instanceof Rosella.Xml.Tag) {
+                self.set_root(child);
+                return;
+            }
+        }
     }
 
     function set_root(var tag)
