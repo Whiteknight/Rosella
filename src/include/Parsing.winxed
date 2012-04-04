@@ -6,6 +6,8 @@
 
 inline peek_next(var s, var i) return int
 {
+    if (!have_more_chars(s, i))
+        return ASCII_NULL;
     if (elements(s) > 0)
         return int(s[0]);
     int _c = shift_int(i);
@@ -15,6 +17,8 @@ inline peek_next(var s, var i) return int
 
 inline get_next(var s, var i) return int
 {
+    if (!have_more_chars(s, i))
+        return ASCII_NULL;
     if (elements(s) > 0)
         return shift_int(s);
     return shift_int(i);
@@ -22,10 +26,11 @@ inline get_next(var s, var i) return int
 
 inline eat_whitespace(var s, var b)
 {
-    int c = get_next(s, b);
-    while(codepoint_is_whitespace(c))
+    int c = ASCII_SPACE;
+    while(have_more_chars(s, b) && codepoint_is_whitespace(c))
         c = get_next(s, b);
-    unshift_int(s, c);
+    if (have_more_chars(s, b))
+        unshift_int(s, c);
 }
 
 inline have_more_chars(var s, var b) return int

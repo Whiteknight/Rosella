@@ -28,7 +28,7 @@ namespace Rosella.Xml
             eat_whitespace(s, b);
             int c = get_next(s, b);
             if (c != ASCII_LESS_THAN)
-                Rosella.Error.error("Unexpected token in XML frontmatter: '%s'", chr(c));
+                Rosella.Xml.__error_unknown_char(c, "XML frontmatter");
             c = get_next(s, b);
             if (c == ASCII_QUESTION_MARK) {
                 Rosella.Xml.__parse_xml_header(xml, s, b, len, document);
@@ -67,6 +67,8 @@ namespace Rosella.Xml
         int c;
         while(have_more_chars(s, b)) {
             eat_whitespace(s, b);
+            if (!have_more_chars(s, b))
+                break;
             c = get_next(s, b);
             if (c == ASCII_LESS_THAN) {
                 :(var tag, int is_close, int contained, int is_comment) = Rosella.Xml.__parse_tag(xml, s, b, len);
@@ -121,6 +123,7 @@ namespace Rosella.Xml
             string str = string(sb);
             if (current_tag != null)
                 current_tag.add_child_text(str);
+            Rosella.IO.sayf("Done reading text after tag");
         }
         return document;
     }
@@ -147,7 +150,7 @@ namespace Rosella.Xml
             }
             unshift_int(s, c);
         }
-        Rosella.Error.error("Malformed XML Header tag: '%s'", chr(c));
+        Rosella.Xml.__error_unknown_char(c, "XML Header");
     }
 
     function __parse_dtd_header(string xml, var s, var b, int len, var document)
@@ -178,7 +181,7 @@ namespace Rosella.Xml
         eat_whitespace(s, b);
         c = get_next(s, b);
         if (c != ASCII_GREATER_THAN)
-            Rosella.Error.error("Unknown token in DOCTYPE header: '%s'", chr(c));
+            Rosella.Xml.__error_unknown_char(c, "DOCTYPE header");
         document.add_header(dtd_header);
     }
 
@@ -227,7 +230,14 @@ namespace Rosella.Xml
                 Rosella.Error.error("Syntax error in tag %s", tag_name);
         }
 
-        Rosella.Error.error("Syntax error, unknown character '%s' in tag '%s'", chr(c), tag_name);
+        Rosella.Xml.__error_unknown_char(c, "tag " + tag_name);
+    }
+
+    function __error_unknown_char(int c, string context)
+    {
+        if (c == ASCII_NULL)
+            Rosella.Error.error("Unexpected end of input while parsing %s", context);
+        Rosella.Error.error("Unexpected token '%s' in %s", chr(c), context);
     }
 
     function __parse_comment(string xml, var s, var b, int len)
