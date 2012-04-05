@@ -8,8 +8,7 @@ class Rosella.Xml.Tag
 
     function Tag(string xmlns, string name)
     {
-        if (xmlns != "")
-            self.xmlns = xmlns;
+        self.xmlns = xmlns;
         self.name = name;
         self.attributes = {};
         self.children = [];
@@ -58,8 +57,14 @@ class Rosella.Xml.Tag
         self.__to_xml_sb_attrs(sb, indent);
         push(sb, ">");
         self.__to_xml_sb_children(sb, indent + 1);
+
         push(sb, indent_str);
         push(sb, "</");
+        if (self.xmlns != null) {
+            string xmlns = self.xmlns;
+            push(sb, xmlns);
+            push(sb, ":");
+        }
         push(sb, self.name);
         push(sb, ">");
     }
@@ -80,6 +85,40 @@ class Rosella.Xml.Tag
     {
         for (var child in self.children)
             child.to_xml_sb(sb, indent);
+    }
+}
+
+class Rosella.Xml.Tag.EndTag : Rosella.Xml.Tag
+{
+    var xmlns;
+    var name;
+
+    function EndTag(string xmlns, string name)
+    {
+        self.xmlns = xmlns;
+        self.name = name;
+    }
+
+    function add_attribute(string name, string value) { Rosella.Error.error("End tags do not have attributes"); }
+
+    function add_child(var child) { Rosella.Error.error("End tags do not have children"); }
+
+    function add_child_text(string text) { Rosella.Error.error("End tags do not contain text"); }
+
+    function set_end(var end_tag) { Rosella.Error.error("End tags do not have end tags"); }
+
+    function to_xml_sb(var sb, int indent)
+    {
+        string indent_str = indent_level(indent);
+        push(sb, indent_str);
+        push(sb, "</");
+        if (self.xmlns != null) {
+            string xmlns = self.xmlns;
+            push(sb, xmlns);
+            push(sb, ":");
+        }
+        push(sb, self.name);
+        push(sb, ">");
     }
 }
 
@@ -179,5 +218,6 @@ class Rosella.Xml.Tag.Comment
 
 class Rosella.Xml.Tag.DocumentRoot : Rosella.Xml.Tag
 {
-    function DocumentRoot() {}
+    function DocumentRoot() { self.children = []; }
+
 }

@@ -1,5 +1,73 @@
 namespace Rosella.Xml.Parser
 {
+    function __parse_xml(string xml, var s, var b, int len, var document)
+    {
+        var tag_stack = [];
+        var current_tag = new Rosella.Xml.Tag.DocumentRoot();
+        var root = current_tag;
+
+        eat_whitespace(s, b);
+
+        Rosella.Xml.Parser.__parse_frontmatter(xml, s, b, len, document);
+
+        int c;
+        while(have_more_chars(s, b)) {
+            eat_whitespace(s, b);
+            if (!have_more_chars(s, b))
+                break;
+            c = get_next(s, b);
+            if (c == ASCII_LESS_THAN) {
+                :(var tag, int is_close, int contained, int is_comment) = Rosella.Xml.Parser.__parse_tag(xml, s, b, len);
+
+                if (is_comment) {
+                    current_tag.add_child(tag);
+                    continue;
+                }
+
+                // A self-contained tag: <foo />
+                if (contained) {
+                    current_tag.add_child(tag);
+                    continue;
+                }
+
+                // A closing tag: </foo>
+                if (is_close) {
+                    if (tag.xmlns != current_tag.xmlns)
+                        Rosella.Error.error("Syntax error, mismatched tags. Tag namespaces and/or names do not match");
+                    if (tag.name != current_tag.name)
+                        Rosella.Error.error("Syntax error, mismatched tags. Found closing tag '%s' but current tag is '%s'", tag.name, current_tag.name);
+                    current_tag.set_end(tag);
+                    current_tag = tag_stack.pop();
+                    continue;
+                }
+
+                // An opening tag: <foo ...>
+                current_tag.add_child(tag);
+                push(tag_stack, current_tag);
+                current_tag = tag;
+                continue;
+            }
+            var sb = new 'StringBuilder';
+            while(have_more_chars(s, b) && c != ASCII_LESS_THAN) {
+                push(sb, chr(c));
+                c = get_next(s, b);
+            }
+
+            if (!have_more_chars(s, b))
+                break;
+
+            unshift_int(s, c);
+            string str = string(sb);
+            if (current_tag != null)
+                current_tag.add_child_text(str);
+            Rosella.IO.sayf("Done reading text after tag");
+        }
+        if (elements(tag_stack) > 0)
+            Rosella.Error.error("Syntax error, mismatched tags. There are %d unclosed tags", elements(tag_stack));
+        document.set_documentroot(root);
+        return document;
+    }
+
     function __parse_frontmatter(string xml, var s, var b, int len, var document)
     {
         while(have_more_chars(s, b)) {
@@ -31,79 +99,6 @@ namespace Rosella.Xml.Parser
             unshift_int(s, ASCII_LESS_THAN);
             return;
         }
-    }
-
-    function __parse_xml(string xml, var s, var b, int len, var document)
-    {
-        var tag_stack = [];
-        var current_tag = null;
-
-        eat_whitespace(s, b);
-
-        Rosella.Xml.Parser.__parse_frontmatter(xml, s, b, len, document);
-
-        int c;
-        while(have_more_chars(s, b)) {
-            eat_whitespace(s, b);
-            if (!have_more_chars(s, b))
-                break;
-            c = get_next(s, b);
-            if (c == ASCII_LESS_THAN) {
-                :(var tag, int is_close, int contained, int is_comment) = Rosella.Xml.Parser.__parse_tag(xml, s, b, len);
-
-                if (is_comment) {
-                    // TODO: What do we do about comments appearing before and
-                    // after the root node?
-                    if (current_tag != null)
-                        current_tag.add_child(tag);
-                    continue;
-                }
-
-                // A self-contained tag: <foo />
-                if (contained) {
-                    if (current_tag != null)
-                        current_tag.add_child(tag);
-                    else {
-                        current_tag = tag;
-                        document.set_root(tag);
-                    }
-                    continue;
-                }
-
-                // A closing tag: </foo>
-                if (is_close) {
-                    if (current_tag == null)
-                        Rosella.Error.error("Syntax error. Found closing tag '%s' without corresponding open tag", tag.name);
-                    current_tag.set_end(tag);
-                    current_tag = tag_stack.pop();
-                    continue;
-                }
-
-                // An opening tag: <foo ...>
-                if (current_tag != null)
-                    current_tag.add_child(tag);
-                else
-                    document.set_root(tag);
-                push(tag_stack, current_tag);
-                current_tag = tag;
-                continue;
-            }
-            var sb = new 'StringBuilder';
-            while(have_more_chars(s, b) && c != ASCII_LESS_THAN) {
-                push(sb, chr(c));
-                c = get_next(s, b);
-            }
-
-            if (!have_more_chars(s, b))
-                break;
-
-            unshift_int(s, c);
-            string str = string(sb);
-            if (current_tag != null)
-                current_tag.add_child_text(str);
-            Rosella.IO.sayf("Done reading text after tag");
-        }
-        return document;
     }
 
     // TODO: If available, read the encoding attribute and compare to the
@@ -188,9 +183,11 @@ namespace Rosella.Xml.Parser
             tag_name = Rosella.Xml.Parser.__parse_alphanumeric(xml, s, b, len);
         }
 
+        var xtag;
         if (is_close_tag)
-            tag_name = "/" + tag_name;
-        var xtag = new Rosella.Xml.Tag(ns, tag_name);
+            xtag = new Rosella.Xml.Tag.EndTag(ns, tag_name);
+        else
+            xtag = new Rosella.Xml.Tag(ns, tag_name);
 
         eat_whitespace(s, b);
         if (!is_close_tag)

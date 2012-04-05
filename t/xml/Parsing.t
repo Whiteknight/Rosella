@@ -29,4 +29,6 @@ function __test_data() { return {
 
 
 :>>
+,
+    "namespaces" : "<foo:bar></foo:bar>"
 };}
