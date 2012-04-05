@@ -29,7 +29,7 @@ inline eat_whitespace(var s, var b)
     int c = ASCII_SPACE;
     while(have_more_chars(s, b) && codepoint_is_whitespace(c))
         c = get_next(s, b);
-    if (have_more_chars(s, b))
+    if (c != ASCII_NULL && !codepoint_is_whitespace(c))
         unshift_int(s, c);
 }
 

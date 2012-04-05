@@ -403,6 +403,7 @@ function setup_experimental_libraries(var rosella)
         "xml/Includes",
         "xml/Xml",
         "xml/Document",
+        "xml/Parser",
         "xml/Tag",
         "xml/Text"
     );
