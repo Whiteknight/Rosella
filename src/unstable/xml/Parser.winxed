@@ -284,7 +284,6 @@ namespace Rosella.Xml.Parser
             push(sb, chr(c));
             c = get_next(s, b);
         }
-        Rosella.IO.sayf("parse_alpha unshifting %d %s", c, chr(c));
         unshift_int(s, c);
         string result = string(sb);
         return result;
