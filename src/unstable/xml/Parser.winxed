@@ -289,14 +289,13 @@ namespace Rosella.Xml.Parser
     function __parse_quoted(int q, string xml, var s, var b, int len)
     {
         var sb = new 'StringBuilder';
-        int c = get_next(s, b);
-        while (c != q) {
-            push(sb, chr(c));
-            if (c == ASCII_SLASH) {
+        while (have_more_chars(s, b)) {
+            int c = get_next(s, b);
+            if (c == ASCII_NULL || c == q)
+                break;
+            if (c == ASCII_BACKSLASH)
                 c = get_next(s, b);
-                push(sb, chr(c));
-            }
-            c = get_next(s, b);
+            push(sb, chr(c));
         }
         return sb;
     }
