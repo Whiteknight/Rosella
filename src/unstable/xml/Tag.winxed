@@ -5,9 +5,11 @@ class Rosella.Xml.Tag
     var xmlns;
     var name;
     var end_tag;
+    var pos;
 
-    function Tag(string xmlns, string name)
+    function Tag(int pos, string xmlns, string name)
     {
+        self.pos = pos;
         self.xmlns = xmlns;
         self.name = name;
         self.attributes = {};
@@ -48,8 +50,8 @@ class Rosella.Xml.Tag
         string indent_str = indent_level(indent);
         push(sb, indent_str);
         push(sb, "<");
-        if (self.xmlns != null) {
-            string ns = self.xmlns;
+        string ns = self.xmlns;
+        if (ns != "") {
             push(sb, ns);
             push(sb, ":");
         }
@@ -60,9 +62,8 @@ class Rosella.Xml.Tag
 
         push(sb, indent_str);
         push(sb, "</");
-        if (self.xmlns != null) {
-            string xmlns = self.xmlns;
-            push(sb, xmlns);
+        if (ns != "") {
+            push(sb, ns);
             push(sb, ":");
         }
         push(sb, self.name);
@@ -92,9 +93,11 @@ class Rosella.Xml.Tag.EndTag : Rosella.Xml.Tag
 {
     var xmlns;
     var name;
+    var pos;
 
-    function EndTag(string xmlns, string name)
+    function EndTag(int pos, string xmlns, string name)
     {
+        self.pos = pos;
         self.xmlns = xmlns;
         self.name = name;
     }
@@ -112,8 +115,8 @@ class Rosella.Xml.Tag.EndTag : Rosella.Xml.Tag
         string indent_str = indent_level(indent);
         push(sb, indent_str);
         push(sb, "</");
-        if (self.xmlns != null) {
-            string xmlns = self.xmlns;
+        string xmlns = self.xmlns;
+        if (xmlns != "") {
             push(sb, xmlns);
             push(sb, ":");
         }
@@ -124,7 +127,7 @@ class Rosella.Xml.Tag.EndTag : Rosella.Xml.Tag
 
 class Rosella.Xml.Tag.XmlHeader : Rosella.Xml.Tag
 {
-    function XmlHeader() { self.Tag("", "?xml"); }
+    function XmlHeader(int pos) { self.Tag(pos, "", "?xml"); }
 
     function to_xml_sb(var sb, int indent)
     {
@@ -155,11 +158,11 @@ class Rosella.Xml.Tag.DtdHeader : Rosella.Xml.Tag
     var scope;
     var filename;
 
-    function DtdHeader(string doctype, string scope)
+    function DtdHeader(int pos, string doctype, string scope)
     {
         self.doctype = doctype;
         self.scope = scope;
-        self.Tag("", "!DOCTYPE");
+        self.Tag(pos, "", "!DOCTYPE");
     }
 
     function set_filename(string filename)
@@ -193,10 +196,12 @@ class Rosella.Xml.Tag.DtdHeader : Rosella.Xml.Tag
 class Rosella.Xml.Tag.Comment
 {
     var text;
+    var pos;
 
-    function Comment(string comment_text)
+    function Comment(int pos, string comment_text)
     {
         self.text = comment_text;
+        self.pos;
     }
 
     function to_xml()

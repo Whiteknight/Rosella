@@ -4,15 +4,18 @@
     StringIterator.
 */
 
+inline current_position(int len, var s, var b) return int
+{
+    return len - elements(b) - elements(s);
+}
+
 inline peek_next(var s, var i) return int
 {
     if (!have_more_chars(s, i))
         return ASCII_NULL;
     if (elements(s) > 0)
         return int(s[0]);
-    int _c = shift_int(i);
-    unshift_int(s, _c);
-    return _c;
+    return int(i[0]);
 }
 
 inline get_next(var s, var i) return int

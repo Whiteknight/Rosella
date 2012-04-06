@@ -6,8 +6,6 @@ namespace Rosella.Xml.Parser
         var current_tag = new Rosella.Xml.Tag.DocumentRoot();
         var root = current_tag;
 
-        eat_whitespace(s, b);
-
         Rosella.Xml.Parser.__parse_frontmatter(xml, s, b, len, document);
 
         int c;
@@ -33,9 +31,9 @@ namespace Rosella.Xml.Parser
                 // A closing tag: </foo>
                 if (is_close) {
                     if (tag.xmlns != current_tag.xmlns)
-                        Rosella.Error.error("Syntax error, mismatched tags. Tag namespaces and/or names do not match");
+                        Rosella.Error.error("Syntax error, mismatched tags. Tag namespaces and/or names do not match at position %d", current_position(len, s, b));
                     if (tag.name != current_tag.name)
-                        Rosella.Error.error("Syntax error, mismatched tags. Found closing tag '%s' but current tag is '%s'", tag.name, current_tag.name);
+                        Rosella.Error.error("Syntax error, mismatched tags. Found closing tag '%s' at position %d but current tag is '%s'", tag.name, current_position(len, s, b), current_tag.name);
                     current_tag.set_end(tag);
                     current_tag = tag_stack.pop();
                     continue;
@@ -63,7 +61,7 @@ namespace Rosella.Xml.Parser
             Rosella.IO.sayf("Done reading text after tag");
         }
         if (elements(tag_stack) > 0)
-            Rosella.Error.error("Syntax error, mismatched tags. There are %d unclosed tags", elements(tag_stack));
+            Rosella.Error.error("Syntax error, mismatched tags. There are %d unclosed tags at position %d", elements(tag_stack), current_position(len, s, b));
         document.set_documentroot(root);
         return document;
     }
@@ -106,11 +104,12 @@ namespace Rosella.Xml.Parser
     function __parse_xml_header(string xml, var s, var b, int len, var document)
     {
         eat_whitespace(s, b);
+        int pos = current_position(len, s, b);
         string tag_name = Rosella.Xml.Parser.__parse_alphanumeric(xml, s, b, len);
         if (tag_name != "xml")
-            Rosella.Error.error("Malformed XML header. Should start with '<?xml ... ?>'");
+            Rosella.Error.error("Malformed XML header. Should start with '<?xml ... ?>' at position %d", current_position(len, s, b));
 
-        var header_tag = new Rosella.Xml.Tag.XmlHeader();
+        var header_tag = new Rosella.Xml.Tag.XmlHeader(pos);
         eat_whitespace(s, b);
         Rosella.Xml.Parser.__parse_attributes(xml, s, b, len, header_tag);
         eat_whitespace(s, b);
@@ -128,6 +127,7 @@ namespace Rosella.Xml.Parser
 
     function __parse_dtd_header(string xml, var s, var b, int len, var document)
     {
+        int pos = current_position(len, s, b);
         string tagname = Rosella.Xml.Parser.__parse_alphanumeric(xml, s, b, len);
         if (tagname != "DOCTYPE")
             Rosella.Error.error("Invalid DOCTYPE tag");
@@ -139,7 +139,7 @@ namespace Rosella.Xml.Parser
         // Should be one of SYSTEM, PUBLIC, etc
         string dtd_scope = Rosella.Xml.Parser.__parse_alphanumeric(xml, s, b, len);
 
-        var dtd_header = new Rosella.Xml.Tag.DtdHeader(doctype, dtd_scope);
+        var dtd_header = new Rosella.Xml.Tag.DtdHeader(pos, doctype, dtd_scope);
 
         eat_whitespace(s, b);
         int c = get_next(s, b);
@@ -154,13 +154,14 @@ namespace Rosella.Xml.Parser
         eat_whitespace(s, b);
         c = get_next(s, b);
         if (c != ASCII_GREATER_THAN)
-            Rosella.Xml.Parser.__error_unknown_char(c, "DOCTYPE header");
+            Rosella.Xml.Parser.__error_unknown_char(c, "DOCTYPE header", current_position(len, s, b));
         document.add_header(dtd_header);
     }
 
     function __parse_tag(string xml, var s, var b, int len)
     {
         // TODO: Namespaces (<foo:bar ...> </foo:bar>)
+        int pos = current_position(len, s, b);
         eat_whitespace(s, b);
         int c = get_next(s, b);
         if (c == ASCII_EXCLAMATION_POINT)
@@ -185,9 +186,9 @@ namespace Rosella.Xml.Parser
 
         var xtag;
         if (is_close_tag)
-            xtag = new Rosella.Xml.Tag.EndTag(ns, tag_name);
+            xtag = new Rosella.Xml.Tag.EndTag(pos, ns, tag_name);
         else
-            xtag = new Rosella.Xml.Tag(ns, tag_name);
+            xtag = new Rosella.Xml.Tag(pos, ns, tag_name);
 
         eat_whitespace(s, b);
         if (!is_close_tag)
@@ -202,23 +203,24 @@ namespace Rosella.Xml.Parser
             if (next == ASCII_GREATER_THAN)
                 return xtag, false, true, false;
             else
-                Rosella.Error.error("Syntax error in tag %s", tag_name);
+                Rosella.Error.error("Syntax error in tag %s at position %d", tag_name, current_position(len, s, b));
         }
 
         Rosella.Xml.Parser.__error_unknown_char(c, "tag " + tag_name);
     }
 
-    function __error_unknown_char(int c, string context)
+    function __error_unknown_char(int c, string context, int pos)
     {
         if (c == ASCII_NULL)
-            Rosella.Error.error("Unexpected end of input while parsing %s", context);
-        Rosella.Error.error("Unexpected token '%s' in %s", chr(c), context);
+            Rosella.Error.error("Unexpected end of input while parsing %s at position %d", context, pos);
+        Rosella.Error.error("Unexpected token '%s' in %s at position %d", chr(c), context, pos);
     }
 
     function __parse_comment(string xml, var s, var b, int len)
     {
+        int pos = current_position(len, s, b);
         if (get_next(s, b) != ASCII_DASH || get_next(s, b) != ASCII_DASH)
-            Rosella.Error.error("Malformed comment");
+            Rosella.Error.error("Malformed comment at position %d", current_position(len, s, b));
 
         var sb = new 'StringBuilder';
         while (have_more_chars(s, b)) {
@@ -230,7 +232,7 @@ namespace Rosella.Xml.Parser
                     int e = get_next(s, b);
                     if (e == ASCII_GREATER_THAN) {
                         string text = string(sb);
-                        var comment = new Rosella.Xml.Tag.Comment(text);
+                        var comment = new Rosella.Xml.Tag.Comment(pos, text);
                         return comment, true, true, true;
                     }
                     unshift_int(s, e);
@@ -276,12 +278,14 @@ namespace Rosella.Xml.Parser
     function __parse_alphanumeric(string xml, var s, var b, int len)
     {
         var sb = new 'StringBuilder';
-        int c = get_next(s, b);
-        while(have_more_chars(s, b) && is_name_char(c)) {
+        while(have_more_chars(s, b)) {
+            int c = get_next(s, b);
+            if (!is_name_char(c)) {
+                unshift_int(s, c);
+                break;
+            }
             push(sb, chr(c));
-            c = get_next(s, b);
         }
-        unshift_int(s, c);
         string result = string(sb);
         return result;
     }
