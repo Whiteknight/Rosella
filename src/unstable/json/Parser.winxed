@@ -1,0 +1,155 @@
+namespace Rosella.Json.Parser
+{
+    function __parse_value(string json, var s, var b, int len)
+    {
+        if (!b)
+            Rosella.Error.error("Out of input!");
+
+        eat_whitespace(s, b);
+        int c = get_next(s, b);
+
+        if (c == ASCII_OPEN_CURLY)
+            return __parse_object(json, s, b, len);
+        if (c == ASCII_OPEN_BRACKET)
+            return __parse_array(json, s, b, len);
+        if (c == ASCII_SINGLE_QUOTE || c == ASCII_DOUBLE_QUOTE)
+            return __parse_string(c, json, s, b, len);
+        if (codepoint_is_digit(c))
+            return __parse_number(c, json, s, b, len);
+        if (c == ASCII_t) {
+            if (get_next(s, b) == ASCII_r &&
+                get_next(s, b) == ASCII_u &&
+                get_next(s, b) == ASCII_e)
+                return new 'Boolean'(true);
+            else
+                Rosella.Error.error("Unknown code sequence at position %d", current_position(len, s, b));
+        }
+        if (c == ASCII_f) {
+            if (get_next(s, b) == ASCII_a &&
+                get_next(s, b) == ASCII_l &&
+                get_next(s, b) == ASCII_s &&
+                get_next(s, b) == ASCII_e)
+                return new 'Boolean'(false);
+            else
+                Rosella.Error.error("Unknown code sequence at position %d", current_position(len, s, b));
+        }
+        if (c == ASCII_n) {
+            if (get_next(s, b) == ASCII_u &&
+                get_next(s, b) == ASCII_l &&
+                get_next(s, b) == ASCII_l)
+                return null;
+            else
+                Rosella.Error.error("Unknown code sequence at position %d", current_position(len, s, b));
+        }
+    }
+
+    function __parse_object(string json, var s, var b, int len)
+    {
+        var h = {};
+        while(have_more_chars(s, b)) {
+            eat_whitespace(s, b);
+            int c = get_next(s, b);
+            if (c == ASCII_SINGLE_QUOTE || c == ASCII_DOUBLE_QUOTE) {
+                string str = __parse_string(c, json, s, b, len);
+                eat_whitespace(s, b);
+                c = get_next(s, b);
+                if (c != ASCII_COLON)
+                    Rosella.Error.error("Bad object literal syntax at position %d", current_position(len, s, b));
+                var v = __parse_value(json, s, b, len);
+                h[str] = v;
+                eat_whitespace(s, b);
+                c = get_next(s, b);
+                if (c == ASCII_COMMA)
+                    continue;
+                if (c == ASCII_CLOSE_CURLY)
+                    break;
+            }
+            else if (c == ASCII_CLOSE_CURLY)
+                return h;
+            Rosella.Error.error("Unknown character in object literal '%s' at position %d", chr(c), current_position(len, s, b));
+        }
+        return h;
+    }
+
+    function __parse_array(string json, var s, var b, int len)
+    {
+        var a = [];
+        eat_whitespace(s, b);
+        int c = get_next(s, b);
+        if (c == ASCII_CLOSE_BRACKET)
+            return a;
+        unshift_int(s, c);
+        while(have_more_chars(s, b)) {
+            var v = __parse_value(json, s, b, len);
+            push(a, v);
+            eat_whitespace(s, b);
+            c = get_next(s, b);
+            if (c == ASCII_CLOSE_BRACKET)
+                break;
+            if (c == ASCII_COMMA) {
+                eat_whitespace(s, b);
+                continue;
+            }
+            Rosella.Error.error("Unknown character in array '%s' at position %d", chr(c), current_position(len, s, b));
+        }
+        return a;
+    }
+
+    function __parse_string(int q, string json, var s, var b, int len)
+    {
+        var sb = new 'StringBuilder';
+        while(have_more_chars(s, b)) {
+            int c = get_next(s, b);
+            if (c == ASCII_BACKSLASH) {
+                push(sb, "\\");
+                c = get_next(s, b);
+                push(sb, chr(c));
+                continue;
+            }
+            if (c == q)
+                break;
+            push(sb, chr(c));
+        }
+        return sb;
+    }
+
+    function __parse_number(int c, string json, var s, var b, int len)
+    {
+        int have_e = false;
+        int have_dot = false;
+        int have_sign = false;
+        var sb = new 'StringBuilder';
+        push(sb, codepoint_to_string(c));
+        while (have_more_chars(s, b)) {
+            int d = get_next(s, b);
+            if (!have_sign && (d == ASCII_PLUS|| d == ASCII_DASH)) {
+                have_sign = true;
+                push(sb, codepoint_to_string(d));
+            }
+            else if (codepoint_is_digit(d)) {
+                push(sb, codepoint_to_string(d));
+                continue;
+            }
+            else if (!have_e && (d == ASCII_e || d == ASCII_E)) {
+                have_e = true;
+                have_sign = false;
+                push(sb, 'e');
+            }
+            else if (!have_e && !have_dot && d == ASCII_PERIOD) {
+                have_dot = true;
+                push(sb, '.');
+            }
+            else {
+                unshift_int(s, d);
+                break;
+            }
+        }
+        if (have_dot) {
+            float f_value = float(string(sb));
+            return f_value;
+        } else {
+            int i_value = int(string(sb));
+            return i_value;
+        }
+    }
+}

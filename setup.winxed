@@ -412,7 +412,8 @@ function setup_experimental_libraries(var rosella)
         "json/Includes",
         "json/Json",
         "json/Dumper",
-        "json/DumpHandler"
+        "json/DumpHandler",
+        "json/Parser"
     );
 }
 
