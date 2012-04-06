@@ -134,3 +134,9 @@ inline codepoint_is_digit(int c) return int
 {
     return ((c >= ASCII_0 && c <= ASCII_9))  // '0' <= c <= '9'
 }
+
+inline codepoint_is_alpha(int c) return int
+{
+    return ((c >= ASCII_A && c <= ASCII_Z) ||
+            (c >= ASCII_a && c <= ASCII_z));
+}

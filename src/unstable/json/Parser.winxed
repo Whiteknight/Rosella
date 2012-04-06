@@ -64,6 +64,22 @@ namespace Rosella.Json.Parser
                 if (c == ASCII_CLOSE_CURLY)
                     break;
             }
+            else if (codepoint_is_alpha(c)) {
+                unshift_int(s, c);
+                string str = __parse_alphanumeric(json, s, b, len);
+                eat_whitespace(s, b);
+                c = get_next(s, b);
+                if (c != ASCII_COLON)
+                    Rosella.Error.error("Bad object literal syntax at position %d", current_position(len, s, b));
+                var v = __parse_value(json, s, b, len);
+                h[str] = v;
+                eat_whitespace(s, b);
+                c = get_next(s, b);
+                if (c == ASCII_COMMA)
+                    continue;
+                if (c == ASCII_CLOSE_CURLY)
+                    break;
+            }
             else if (c == ASCII_CLOSE_CURLY)
                 return h;
             Rosella.Error.error("Unknown character in object literal '%s' at position %d", chr(c), current_position(len, s, b));
@@ -111,6 +127,21 @@ namespace Rosella.Json.Parser
             push(sb, chr(c));
         }
         return sb;
+    }
+
+    function __parse_alphanumeric(string xml, var s, var b, int len)
+    {
+        var sb = new 'StringBuilder';
+        while(have_more_chars(s, b)) {
+            int c = get_next(s, b);
+            if (!codepoint_is_alphanumeric(c)) {
+                unshift_int(s, c);
+                break;
+            }
+            push(sb, chr(c));
+        }
+        string result = string(sb);
+        return result;
     }
 
     function __parse_number(int c, string json, var s, var b, int len)
