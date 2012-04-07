@@ -4,8 +4,7 @@ class Rosella.Net.Http.Header
 
     function Header()
     {
-        self.values = {};
-        // TODO: Set hash value to be strings to avoid boxing
+        self.values = Rosella.get_string_string_hash();
     }
 
     function add_value(string name, string value)

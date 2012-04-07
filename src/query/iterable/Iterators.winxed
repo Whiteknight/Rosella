@@ -562,7 +562,7 @@ class Rosella.Query.Iterable.GroupBy : Rosella.Query.Iterable
         if (!self.source.has_more())
             self.__empty();
         var f = self.func;
-        var groups = Rosella.pmc_keyed_hash();
+        var groups = pmc_keyed_hash();
         :(var d, int m) = self.next_and_more();
         var key = f(d);
         groups[key] = [d];

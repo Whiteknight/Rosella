@@ -11,8 +11,8 @@ namespace Rosella.StringFormatter
     // Get a hash of type-specific formatters
     function type_formatters()
     {
-        using Rosella.get_pmc_keyed_hash;
-        return Rosella.Globals.autoget_global(TYPE_FORMATTERS, get_pmc_keyed_hash);
+        using Rosella.get_pmc_pmc_hash;
+        return Rosella.Globals.autoget_global(TYPE_FORMATTERS, get_pmc_pmc_hash);
     }
 
     // Register a new formatter object for a specific type
