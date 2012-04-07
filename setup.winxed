@@ -394,6 +394,9 @@ function setup_experimental_libraries(var rosella)
         "net/protocol/File",
         "net/protocol/Http",
         "net/Uri",
+        "net/uri/Factory",
+        "net/uri/File",
+        "net/uri/Http",
         "net/UserAgent",
         "net/useragent/SimpleHttp",
         "net/SocketFactory"

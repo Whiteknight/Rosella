@@ -1,0 +1,48 @@
+class Rosella.Net.Uri.Factory : Rosella.ObjectFactory
+{
+    var uri_types;
+    var default_type;
+
+    function Factory()
+    {
+        self.uri_types = {};
+        self.default_type = class Rosella.Net.Uri;
+    }
+
+    function add_uri_type(string protocol, var type)
+    {
+        self.uri_types[protocol] = type;
+    }
+
+    function create(string uristr)
+    {
+        int s[] = [];
+        var b = get_iterator(var(uristr));
+        int len = length(uristr);
+        string protocol = Rosella.Parse.parse_alphanumeric(uristr, s, b, len);
+        var uri_type = null;
+        if (exists self.uri_types[protocol])
+            uri_type = self.uri_types[protocol];
+        else
+            uri_type = self.default_type;
+        if (uri_type == null)
+            Rosella.Error.error("Cannot create Uri for protocol type '%s'", protocol);
+
+        var uri = Rosella.construct(uri_type, protocol, uristr);
+        uri.parse(uristr, s, b, len);
+        return uri;
+    }
+
+    function create_typed(var type, string uristr)
+    {
+        int s[] = [];
+        var b = get_iterator(uri);
+        int len = length(uri);
+        string protocol = Rosella.Parse.parse_alphanumeric(uri, s, b, len);
+
+        var uri = Rosella.construct(type, uristr);
+        uri.parse(protocol, uristr, s, b, len);
+        return uri;
+    }
+
+}

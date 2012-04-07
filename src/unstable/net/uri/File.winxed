@@ -1,0 +1,48 @@
+class Rosella.Net.Uri.File : Rosella.Net.Uri
+{
+    function File(string protocol, string uri) { self.Uri(protocol, uri); }
+
+    /* Component Accessors
+    */
+
+    // Get the host
+    function host() { return self.parts_hash["Host"]; }
+
+    // Get the path
+    function path() { return self.parts_hash["Path"]; }
+
+    /* Private Helper Methods
+    */
+
+    // Get a hash containing default values
+    function __get_parts_hash(string protocol, string uri)
+    {
+        return {
+            "URI" : uri,
+            "Protocol": "",
+            "Host" : ".",
+            "Path": ""
+        };
+    }
+
+    // Parse the Uri. These should be simple:
+    // <protocol>://[<host>]/<path>
+    function __parse(string uri, var s, var b, int len, var hash_parts)
+    {
+        if (get_next(s, b) != ASCII_COLON ||
+            get_next(s, b) != ASCII_SLASH ||
+            get_next(s, b) != ASCII_SLASH)
+            Rosella.Error.error("File urls should begin with 'file://'");
+
+        // Read out the authority information this is everything between the protocol and
+        // the first forward slash (or end of string)
+        :(string host, int marker) = Rosella.Parse.parse_until(uri, s, b, len, ASCII_SLASH);
+        if (marker == ASCII_NULL)
+            Rosella.Error.error("Empty file:// uri");
+        if (host != null && host != "")
+            hash_parts["Host"] = host;
+
+        string path = Rosella.Parse.parse_remainder(uri, s, b, len);
+        hash_parts["Path"] = path;
+    }
+}

@@ -77,7 +77,7 @@ class Rosella.Net.UserAgent.SimpleHttp : Rosella.Net.UserAgent
     {
         if (uri_raw == null || uri_raw == "")
             Rosella.Error.error("Invalid request. Uri is missing");
-        var uri = new Rosella.Net.Uri(uri_raw);
+        var uri = Rosella.Net.Uri.get_uri(uri_raw);
         string uri_protocol = uri.protocol();
         if (!self.can_handle_protocol(uri_protocol))
             Rosella.Error.error("This UserAgent cannot support protocol '%s'", uri_protocol);

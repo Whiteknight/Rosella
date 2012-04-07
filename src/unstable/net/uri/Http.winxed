@@ -1,0 +1,141 @@
+class Rosella.Net.Uri.Http : Rosella.Net.Uri
+{
+    function Http(string protocol, string uri) { self.Uri(protocol, uri); }
+
+    /* Component Accessors
+    */
+
+    // Get the Path and Query
+    function path_query()
+    {
+        string path = self.path();
+        string query = self.query();
+        string fragment = self.fragment();
+        if (query != null && query != "")
+            path = path + "?" + query;
+        if (fragment != null && fragment != "")
+            path = path + "#" + fragment;
+        return path;
+    }
+
+    // Get the path
+    function path() { return self.parts_hash["Path"]; }
+
+    // Get the Query String
+    function query() { return self.parts_hash["Query"]; }
+
+    // Get the fragment/anchor
+    function fragment() { return self.parts_hash["Fragment"]; }
+
+    // Get the host
+    function host() { return self.authority(); }
+
+    // Get the authority
+    function authority() { return self.parts_hash["Authority"]; }
+
+    // Get the port number
+    function port() { return self.parts_hash["Port"]; }
+
+    /* Private Helper Methods
+    */
+
+    // Get a hash containing default values
+    function __get_parts_hash(string protocol, string uri)
+    {
+        return {
+            "URI" : uri,
+            "Protocol": protocol,
+            "Authority": "",
+            "Path": "",
+            "Port": "",
+            "Query": "",
+            "Fragment": ""
+        };
+    }
+
+    // Parse the uri. It could come in many forms:
+    // <protocol>://[<username>:<password>@]<host>[:<port>][/<path>][?<query>][#<fragment>]
+    function __parse(string uri, var s, var b, int len, var hash_parts)
+    {
+        if (get_next(s, b) != ASCII_COLON ||
+            get_next(s, b) != ASCII_SLASH ||
+            get_next(s, b) != ASCII_SLASH)
+            Rosella.Error.error("Http urls should begin with 'http://' or 'https://'");
+
+        // Read out the authority information this is everything between the protocol and
+        // the first forward slash (or end of string)
+        :(string authority, int marker) = Rosella.Parse.parse_until_either(uri, s, b, len, ASCII_SLASH, ASCII_COLON);
+        if (marker == ASCII_NULL) {
+            hash_parts["Authority"] = authority;
+            return;
+        }
+
+        // Search for a colon. If we find one we have one of these two formats:
+        // <username>:<password>@<host>[:<port>]
+        // <host>:<port>
+        // We can determine which by searching next for an @ or a / (or end of string)
+        if (marker == ASCII_COLON) {
+            string save = authority;
+            :(string tmp, marker) = Rosella.Parse.parse_until_either(uri, s, b, len, ASCII_AT_SIGN, ASCII_SLASH);
+
+            // It's end of string. That means we have <protocol>://<host>:<port>
+            if (marker == ASCII_NULL) {
+                string port = tmp;
+                hash_parts["Port"] = tmp;
+                return;
+            }
+
+            // It's <protocol>://<username>:<password>@<host>[:<port>]
+            if (marker == ASCII_AT_SIGN) {
+                string username = save;
+                string password = tmp;
+                hash_parts["Username"] = username;
+                hash_parts["Password"] = password;
+                :(authority, marker) = Rosella.Parse.parse_until_either(uri, s, b, len, ASCII_COLON, ASCII_SLASH);
+                hash_parts["Authority"] = authority;
+                if (marker == ASCII_NULL)
+                    return;
+                if (marker == ASCII_COLON) {
+                    :(string port, marker) = Rosella.Parse.parse_until(uri, s, b, len, ASCII_SLASH);
+                    hash_parts["Port"] = port;
+                    if (marker == ASCII_NULL)
+                        return;
+                }
+            }
+            else if (marker == ASCII_SLASH) {
+                string port = tmp;
+                hash_parts["Authority"] = authority;
+                hash_parts["Port"] = port;
+            }
+        }
+        // No colon, That means we have a simple <protocol>://<host> uri
+        else
+            hash_parts["Authority"] = authority;
+
+        if (!have_more_chars(s, b))
+            return;
+
+        // Everything after the authority, but before a ? or a # is the path.
+        // Get that, then figure out what to do next.
+        :(string path, marker) = Rosella.Parse.parse_until_either(uri, s, b, len, ASCII_QUESTION_MARK, ASCII_OCTOTHORPE);
+        hash_parts["Path"] = path;
+        if (marker == ASCII_NULL)
+            return;
+
+        // If ?, we have a query string. Get that, looking for a fragment or EOS
+        string query = "";
+        if (marker == ASCII_QUESTION_MARK) {
+            :(query, marker) = Rosella.Parse.parse_until(uri, s, b, len, ASCII_OCTOTHORPE);
+            hash_parts["Query"] = query;
+            if (marker == ASCII_NULL)
+                return;
+        }
+
+        // If # we have a fragment. This is the last bit of the uri
+        string fragment = "";
+        if (marker == ASCII_OCTOTHORPE) {
+            fragment = Rosella.Parse.parse_remainder(uri, s, b, len);
+            hash_parts["Fragment"] = fragment;
+        }
+    }
+}
