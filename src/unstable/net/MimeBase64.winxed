@@ -60,9 +60,9 @@ class Rosella.Net.MimeBase64
             int eight_2 = buf[i]; i++;
 
             int six_0 = eight_0 >> 2;
-            int six_1 = bor(band(eight_0, 3) << 4, eight_1 >> 4);
-            int six_2 = bor(band(eight_1, 15) << 2, eight_2 >> 6);
-            int six_3 = band(eight_2, 63);
+            int six_1 = ((eight_0 & 3) << 4) | (eight_1 >> 4);
+            int six_2 = ((eight_1 & 15) << 2) | (eight_2 >> 6);
+            int six_3 = eight_2 & 63;
 
             push(result, int(s[six_0]));
             push(result, int(s[six_1]));
@@ -113,9 +113,9 @@ class Rosella.Net.MimeBase64
             int six_2 = e[int(base64_cleaned[i])]; i++;
             int six_3 = e[int(base64_cleaned[i])]; i++;
 
-            int eight_0 = bor(six_0 << 2, six_1 >> 4);
-            int eight_1 = bor(band(six_1, 15) << 4, six_2 >> 2);
-            int eight_2 = bor(band(six_2, 3) << 6, six_3);
+            int eight_0 = (six_0 << 2) | (six_1 >> 4);
+            int eight_1 = ((six_1 & 15) << 4) | (six_2 >> 2);
+            int eight_2 = ((six_2 & 3) << 6) | (six_3);
 
             push(plain, eight_0);
             push(plain, eight_1);
