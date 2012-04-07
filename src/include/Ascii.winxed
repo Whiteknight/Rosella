@@ -132,7 +132,44 @@ inline codepoint_is_alphanumeric(int c) return int
 
 inline codepoint_is_digit(int c) return int
 {
-    return ((c >= ASCII_0 && c <= ASCII_9))  // '0' <= c <= '9'
+    return ((c >= ASCII_0 && c <= ASCII_9));
+}
+
+inline codepoint_is_octal(int c) return int
+{
+    return ((c >= ASCII_0 && c <= ASCII_7));
+}
+
+inline codepoint_is_hexadecimal(int c) return int
+{
+    return ((c >= ASCII_0 && c <= ASCII_9) ||
+            (c >= ASCII_A && c <= ASCII_F) ||
+            (c >= ASCII_a && c <= ASCII_f));
+}
+
+inline hex_codepoint_to_integer(int c) return int
+{
+    if (c >= ASCII_0 && c <= ASCII_9)
+        return c - ASCII_0;
+    if (c >= ASCII_A && c <= ASCII_F)
+        return c - ASCII_A + 10;
+    if (c >= ASCII_a && c <= ASCII_f)
+        return c - ASCII_a + 10;
+    return 0;
+}
+
+inline dec_codepoint_to_integer(int c) return int
+{
+    if (c >= ASCII_0 && c <= ASCII_9)
+        return c - ASCII_0;
+    return 0;
+}
+
+inline oct_codepoint_to_integer(int c) return int
+{
+    if (c >= ASCII_0 && c <= ASCII_7)
+        return c - ASCII_0;
+    return 0;
 }
 
 inline codepoint_is_alpha(int c) return int

@@ -37,6 +37,15 @@ namespace Rosella.Parse
                     case ASCII_t:
                         push(sb, "\t");
                         break;
+                    case ASCII_u:
+                    case ASCII_x:
+                        int x = parse_hexadecimal(_str, s, b, len, 4);
+                        push(sb, chr(x));
+                        break;
+                    case ASCII_o:
+                        int o = parse_octal(_str, s, b, len, 3);
+                        push(sb, chr(o));
+                        break;
                     default:
                         push(sb, chr(c));
                         break;
@@ -119,6 +128,63 @@ namespace Rosella.Parse
             int i_value = int(string(sb));
             return i_value;
         }
+    }
+
+    function parse_hexadecimal(string _str, var s, var b, int len, int maxchars = 8)
+    {
+        int value = 0;
+        int chars = 0;
+        while(have_more_chars(s, b)) {
+            int c = get_next(s, b);
+            if (!codepoint_is_hexadecimal(c)) {
+                unshift_int(s, c);
+                break;
+            }
+            int i = hex_codepoint_to_integer(c);
+            value = (value << 4) | i;
+            chars++;
+            if (chars >= maxchars)
+                break;
+        }
+        return value;
+    }
+
+    function parse_integer(string _str, var s, var b, int len, int maxchars = 9)
+    {
+        int value = 0;
+        int chars = 0;
+        while(have_more_chars(s, b)) {
+            int c = get_next(s, b);
+            if (!codepoint_is_digit(c)) {
+                unshift_int(s, c);
+                break;
+            }
+            int i = dec_codepoint_to_integer(c);
+            value = (value * 10) | i;
+            chars++;
+            if (chars >= maxchars)
+                break;
+        }
+        return value;
+    }
+
+    function parse_octal(string _str, var s, var b, int len, int maxchars = 10)
+    {
+        int value = 0;
+        int chars = 0;
+        while(have_more_chars(s, b)) {
+            int c = get_next(s, b);
+            if (!codepoint_is_octal(c)) {
+                unshift_int(s, c);
+                break;
+            }
+            int i = oct_codepoint_to_integer(c);
+            value = (value << 3) | i;
+            chars++;
+            if (chars >= maxchars)
+                break;
+        }
+        return value;
     }
 
     function error_unknown_char(int c, string context, int pos)
