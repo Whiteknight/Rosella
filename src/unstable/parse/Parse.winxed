@@ -20,10 +20,28 @@ namespace Rosella.Parse
         while(have_more_chars(s, b)) {
             int c = get_next(s, b);
             if (c == ASCII_BACKSLASH) {
-                // TODO: Deal with common C-style escapes
-                push(sb, "\\");
                 c = get_next(s, b);
-                push(sb, chr(c));
+                switch (c) {
+                    case ASCII_b:
+                        push(sb, chr(ASCII_BACKSPACE));
+                        break;
+                    case ASCII_f:
+                        push(sb, chr(ASCII_LINE_FEED));
+                        break;
+                    case ASCII_n:
+                        push(sb, "\n");
+                        break;
+                    case ASCII_r:
+                        push(sb, chr(ASCII_CARRIAGE_RETURN));
+                        break;
+                    case ASCII_t:
+                        push(sb, "\t");
+                        break;
+                    default:
+                        push(sb, chr(c));
+                        break;
+
+                }
                 continue;
             }
             if (c == q)
