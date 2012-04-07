@@ -6,7 +6,7 @@ namespace Rosella.Xml.Parser
         var current_tag = new Rosella.Xml.Tag.DocumentRoot();
         var root = current_tag;
 
-        Rosella.Xml.Parser.__parse_frontmatter(xml, s, b, len, document);
+        Rosella.Xml.Parser.__parse_frontmatter(xml, s, b, len, document, current_tag);
 
         int c;
         while(have_more_chars(s, b)) {
@@ -66,13 +66,13 @@ namespace Rosella.Xml.Parser
         return document;
     }
 
-    function __parse_frontmatter(string xml, var s, var b, int len, var document)
+    function __parse_frontmatter(string xml, var s, var b, int len, var document, var root)
     {
         while(have_more_chars(s, b)) {
             eat_whitespace(s, b);
             int c = get_next(s, b);
             if (c != ASCII_LESS_THAN)
-                Rosella.Xml.Parser.__error_unknown_char(c, "XML frontmatter");
+                Rosella.Parse.error_unknown_char(c, "XML frontmatter", current_position(len, s, b));
             c = get_next(s, b);
             if (c == ASCII_QUESTION_MARK) {
                 Rosella.Xml.Parser.__parse_xml_header(xml, s, b, len, document);
@@ -81,8 +81,8 @@ namespace Rosella.Xml.Parser
             if (c == ASCII_EXCLAMATION_POINT) {
                 c = peek_next(s, b);
                 if (c == ASCII_DASH) {
-                    // TODO: We shouldn't just discard this
-                    Rosella.Xml.Parser.__parse_comment(xml, s, b, len);
+                    var c = Rosella.Xml.Parser.__parse_comment(xml, s, b, len);
+                    root.add_child(c);
                     continue;
                 }
                 if (c == ASCII_D) {
@@ -105,7 +105,7 @@ namespace Rosella.Xml.Parser
     {
         eat_whitespace(s, b);
         int pos = current_position(len, s, b);
-        string tag_name = Rosella.Xml.Parser.__parse_alphanumeric(xml, s, b, len);
+        string tag_name = Rosella.Xml.Parser.__parse_ident(xml, s, b, len);
         if (tag_name != "xml")
             Rosella.Error.error("Malformed XML header. Should start with '<?xml ... ?>' at position %d", current_position(len, s, b));
 
@@ -128,23 +128,23 @@ namespace Rosella.Xml.Parser
     function __parse_dtd_header(string xml, var s, var b, int len, var document)
     {
         int pos = current_position(len, s, b);
-        string tagname = Rosella.Xml.Parser.__parse_alphanumeric(xml, s, b, len);
+        string tagname = Rosella.Xml.Parser.__parse_ident(xml, s, b, len);
         if (tagname != "DOCTYPE")
             Rosella.Error.error("Invalid DOCTYPE tag");
         eat_whitespace(s, b);
 
-        string doctype = Rosella.Xml.Parser.__parse_alphanumeric(xml, s, b, len);
+        string doctype = Rosella.Xml.Parser.__parse_ident(xml, s, b, len);
         eat_whitespace(s, b);
 
         // Should be one of SYSTEM, PUBLIC, etc
-        string dtd_scope = Rosella.Xml.Parser.__parse_alphanumeric(xml, s, b, len);
+        string dtd_scope = Rosella.Xml.Parser.__parse_ident(xml, s, b, len);
 
         var dtd_header = new Rosella.Xml.Tag.DtdHeader(pos, doctype, dtd_scope);
 
         eat_whitespace(s, b);
         int c = get_next(s, b);
         if (c == ASCII_SINGLE_QUOTE || c == ASCII_DOUBLE_QUOTE) {
-            string filename = Rosella.Xml.Parser.__parse_quoted(c, xml, s, b, len);
+            string filename = Rosella.Parse.parse_quoted(c, xml, s, b, len);
             dtd_header.set_filename(filename);
         } else if (c == ASCII_OPEN_BRACKET) {
             // TODO: Parse the inline DTD definitions. Add each as a child to
@@ -174,14 +174,14 @@ namespace Rosella.Xml.Parser
         }
         unshift_int(s, c);
         string ns = "";
-        string tag_name = Rosella.Xml.Parser.__parse_alphanumeric(xml, s, b, len);
+        string tag_name = Rosella.Xml.Parser.__parse_ident(xml, s, b, len);
 
         eat_whitespace(s, b);
         if (peek_next(s, b) == ASCII_COLON) {
             get_next(s, b);
             eat_whitespace(s, b);
             ns = tag_name;
-            tag_name = Rosella.Xml.Parser.__parse_alphanumeric(xml, s, b, len);
+            tag_name = Rosella.Xml.Parser.__parse_ident(xml, s, b, len);
         }
 
         var xtag;
@@ -207,13 +207,6 @@ namespace Rosella.Xml.Parser
         }
 
         Rosella.Xml.Parser.__error_unknown_char(c, "tag " + tag_name);
-    }
-
-    function __error_unknown_char(int c, string context, int pos)
-    {
-        if (c == ASCII_NULL)
-            Rosella.Error.error("Unexpected end of input while parsing %s at position %d", context, pos);
-        Rosella.Error.error("Unexpected token '%s' in %s at position %d", chr(c), context, pos);
     }
 
     function __parse_comment(string xml, var s, var b, int len)
@@ -252,7 +245,7 @@ namespace Rosella.Xml.Parser
             if (!is_name_char(c))
                 break;
 
-            string attr_name = Rosella.Xml.Parser.__parse_alphanumeric(xml, s, b, len);
+            string attr_name = Rosella.Xml.Parser.__parse_ident(xml, s, b, len);
             eat_whitespace(s, b);
 
             c = get_next(s, b);
@@ -265,17 +258,17 @@ namespace Rosella.Xml.Parser
 
             c = get_next(s, b);
             if (c == ASCII_SINGLE_QUOTE || c == ASCII_DOUBLE_QUOTE) {
-                string attr_value = Rosella.Xml.Parser.__parse_quoted(c, xml, s, b, len);
+                string attr_value = Rosella.Parse.parse_quoted(c, xml, s, b, len);
                 xtag.add_attribute(attr_name, attr_value);
             } else {
                 unshift_int(s, c);
-                string attr_value = Rosella.Xml.Parser.__parse_alphanumeric(xml, s, b, len);
+                string attr_value = Rosella.Xml.Parser.__parse_ident(xml, s, b, len);
                 xtag.add_attribute(attr_name, attr_value);
             }
         }
     }
 
-    function __parse_alphanumeric(string xml, var s, var b, int len)
+    function __parse_ident(string xml, var s, var b, int len)
     {
         var sb = new 'StringBuilder';
         while(have_more_chars(s, b)) {
@@ -288,19 +281,5 @@ namespace Rosella.Xml.Parser
         }
         string result = string(sb);
         return result;
-    }
-
-    function __parse_quoted(int q, string xml, var s, var b, int len)
-    {
-        var sb = new 'StringBuilder';
-        while (have_more_chars(s, b)) {
-            int c = get_next(s, b);
-            if (c == ASCII_NULL || c == q)
-                break;
-            if (c == ASCII_BACKSLASH)
-                c = get_next(s, b);
-            push(sb, chr(c));
-        }
-        return sb;
     }
 }

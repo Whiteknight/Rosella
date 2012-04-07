@@ -79,13 +79,11 @@ class Rosella.Net.Uri
     // Get the Path and Query
     function path_query() { return self.parts["Path_Query"]; }
 
-    // TODO: This
     // Get the Query String
-    function query_string() { }
+    function query_string() { return self.parts["Query_String"]; }
 
-    // TODO: This
-    // Get the anchor
-    function anchor() { }
+    // Get the fragment/anchor
+    function fragment() { return self.parts["Fragment"]; }
 
     /* Private Helper Methods
     */
@@ -101,7 +99,7 @@ class Rosella.Net.Uri
             "Port": "",
             "Path_Query": "",
             "Query_String": "",
-            "Anchor": ""
+            "Fragment": ""
         };
     }
 

@@ -1,0 +1,97 @@
+namespace Rosella.Parse
+{
+    function parse_quoted(int q, string xml, var s, var b, int len)
+    {
+        var sb = new 'StringBuilder';
+        while (have_more_chars(s, b)) {
+            int c = get_next(s, b);
+            if (c == q)
+                break;
+            if (c == ASCII_BACKSLASH)
+                c = get_next(s, b);
+            push(sb, chr(c));
+        }
+        return sb;
+    }
+
+    function parse_string(int q, string _str, var s, var b, int len)
+    {
+        var sb = new 'StringBuilder';
+        while(have_more_chars(s, b)) {
+            int c = get_next(s, b);
+            if (c == ASCII_BACKSLASH) {
+                // TODO: Deal with common C-style escapes
+                push(sb, "\\");
+                c = get_next(s, b);
+                push(sb, chr(c));
+                continue;
+            }
+            if (c == q)
+                break;
+            push(sb, chr(c));
+        }
+        return sb;
+    }
+
+    function parse_alphanumeric(string _str, var s, var b, int len)
+    {
+        var sb = new 'StringBuilder';
+        while(have_more_chars(s, b)) {
+            int c = get_next(s, b);
+            if (!codepoint_is_alphanumeric(c)) {
+                unshift_int(s, c);
+                break;
+            }
+            push(sb, chr(c));
+        }
+        string result = string(sb);
+        return result;
+    }
+
+    function parse_number(int c, string _str, var s, var b, int len)
+    {
+        int have_e = false;
+        int have_dot = false;
+        int have_sign = false;
+        var sb = new 'StringBuilder';
+        push(sb, codepoint_to_string(c));
+        while (have_more_chars(s, b)) {
+            int d = get_next(s, b);
+            if (!have_sign && (d == ASCII_PLUS|| d == ASCII_DASH)) {
+                have_sign = true;
+                push(sb, codepoint_to_string(d));
+            }
+            else if (codepoint_is_digit(d)) {
+                push(sb, codepoint_to_string(d));
+                continue;
+            }
+            else if (!have_e && (d == ASCII_e || d == ASCII_E)) {
+                have_e = true;
+                have_sign = false;
+                push(sb, 'e');
+            }
+            else if (!have_e && !have_dot && d == ASCII_PERIOD) {
+                have_dot = true;
+                push(sb, '.');
+            }
+            else {
+                unshift_int(s, d);
+                break;
+            }
+        }
+        if (have_dot) {
+            float f_value = float(string(sb));
+            return f_value;
+        } else {
+            int i_value = int(string(sb));
+            return i_value;
+        }
+    }
+
+    function error_unknown_char(int c, string context, int pos)
+    {
+        if (c == ASCII_NULL)
+            Rosella.Error.error("Unexpected end of input while parsing %s at position %d", context, pos);
+        Rosella.Error.error("Unexpected token '%s' in %s at position %d", chr(c), context, pos);
+    }
+}

@@ -270,7 +270,7 @@ function setup_stable_libraries(var rosella)
     );
 
     // Random number generation and tools
-    setup_winxed_lib(rosella, "random", ["Math_Builtins", "String"],
+    setup_winxed_lib(rosella, "random", ["String", "Math_Builtins"],
         "random/Includes",
         "random/Random",
         "random/RandomNumber",
@@ -380,7 +380,7 @@ function setup_experimental_libraries(var rosella)
         "genetic/mutator/Generic"
     );
 
-    setup_unstable_lib(rosella, "net", ["Core", "Ascii", "Math_Builtins", "String", "FileSystem", "Date", "Random"],
+    setup_unstable_lib(rosella, "net", ["Core", "Math_Builtins", "Ascii", "Parse_builtins", "Parse", "String", "FileSystem", "Date", "Random"],
         "net/Includes",
         "net/Net",
         "net/Http",
@@ -399,7 +399,11 @@ function setup_experimental_libraries(var rosella)
         "net/SocketFactory"
     );
 
-    setup_unstable_lib(rosella, "xml", ["Core", "Ascii", "Parsing", "String", "FileSystem"],
+    setup_unstable_lib(rosella, "parse", ["Core", "Ascii", "Parse_builtins"],
+        "parse/Parse"
+    );
+
+    setup_unstable_lib(rosella, "xml", ["Core", "Ascii", "Parse_builtins", "Parse", "String", "FileSystem"],
         "xml/Includes",
         "xml/Xml",
         "xml/Document",
@@ -408,7 +412,7 @@ function setup_experimental_libraries(var rosella)
         "xml/Text"
     );
 
-    setup_unstable_lib(rosella, "json", ["Core", "Ascii", "Parsing", "Dumper"],
+    setup_unstable_lib(rosella, "json", ["Core", "Ascii", "Parse_builtins", "Parse", "Dumper"],
         "json/Includes",
         "json/Json",
         "json/Dumper",

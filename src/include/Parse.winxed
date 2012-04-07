@@ -1,0 +1,11 @@
+namespace Rosella.Parse {
+    extern function parse_string;
+    extern function parse_alphanumeric;
+    extern function parse_number;
+    extern function error_unknown_char;
+}
+
+function __include_parse [anon,init,load] ()
+{
+    Rosella.load_bytecode_file('rosella/parse.pbc', 'load');
+}
