@@ -245,6 +245,20 @@ inline reencode_string(string s, int e) return string
     return value;
 }
 
+inline string_to_lower(string s) return string
+{
+    string value;
+    ${ downcase value, s };
+    return value;
+}
+
+inline string_to_upper(string s) return string
+{
+    string value;
+    ${ upcase value, s };
+    return value;
+}
+
 // For ASCII-related things, look in src/include/Ascii.winxed
 
 /* Namespaces

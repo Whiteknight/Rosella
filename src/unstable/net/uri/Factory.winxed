@@ -18,6 +18,7 @@ class Rosella.Net.Uri.Factory : Rosella.ObjectFactory
     {
         :(uristr, var s, var b, int len) = Rosella.Parse.setup_parse(uristr);
         string protocol = Rosella.Parse.parse_alphanumeric(uristr, s, b, len);
+        protocol = string_to_lower(protocol);
         var uri_type = null;
         if (exists self.uri_types[protocol])
             uri_type = self.uri_types[protocol];

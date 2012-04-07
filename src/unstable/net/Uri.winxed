@@ -92,7 +92,6 @@ class Rosella.Net.Uri
     // Get the raw Uri string
     function uri() { return self.parts_hash["URI"]; }
 
-    // TODO: ToLower
     // Get the protocol to use
     function protocol() { return self.parts_hash["Protocol"]; }
 
