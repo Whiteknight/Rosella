@@ -48,6 +48,21 @@ namespace Rosella.Parse
         return result;
     }
 
+    function parse_alpha(string _str, var s, var b, int len)
+    {
+        var sb = new 'StringBuilder';
+        while(have_more_chars(s, b)) {
+            int c = get_next(s, b);
+            if (!codepoint_is_alpha(c)) {
+                unshift_int(s, c);
+                break;
+            }
+            push(sb, chr(c));
+        }
+        string result = string(sb);
+        return result;
+    }
+
     function parse_number(int c, string _str, var s, var b, int len)
     {
         int have_e = false;
@@ -93,5 +108,47 @@ namespace Rosella.Parse
         if (c == ASCII_NULL)
             Rosella.Error.error("Unexpected end of input while parsing %s at position %d", context, pos);
         Rosella.Error.error("Unexpected token '%s' in %s at position %d", chr(c), context, pos);
+    }
+
+    function parse_until(string _str, var s, var b, int len, int marker)
+    {
+        var sb = new 'StringBuilder';
+        int c = ASCII_NULL;
+        while (have_more_chars(s, b)) {
+            c = get_next(s, b);
+            if (c == marker)
+                break;
+            if (c == ASCII_NULL)
+                break;
+            push(sb, chr(c));
+        }
+        return sb, c;
+    }
+
+    function parse_until_either(string _str, var s, var b, int len, int ma, int mb)
+    {
+        var sb = new 'StringBuilder';
+        int c = ASCII_NULL;
+        while (have_more_chars(s, b)) {
+            c = get_next(s, b);
+            if (c == ma || c == mb)
+                break;
+            if (c == ASCII_NULL)
+                break;
+            push(sb, chr(c));
+        }
+        return sb, c;
+    }
+
+    function parse_remainder(string _str, var s, var b, int len)
+    {
+        var sb = new 'StringBuilder';
+        while (have_more_chars(s, b)) {
+            int c = get_next(s, b);
+            if (c == ASCII_NULL)
+                break;
+            push(sb, chr(c));
+        }
+        return sb;
     }
 }
