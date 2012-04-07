@@ -1,5 +1,13 @@
 namespace Rosella.Parse
 {
+    function setup_parse(string _str)
+    {
+        int s[] = [];
+        var b = get_iterator(var(_str));
+        int len = length(_str);
+        return _str, s, b, len;
+    }
+
     function parse_quoted(int q, string xml, var s, var b, int len)
     {
         var sb = new 'StringBuilder';

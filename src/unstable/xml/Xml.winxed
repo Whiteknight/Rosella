@@ -16,9 +16,7 @@ namespace Rosella.Xml
 
     function parse(string xml, var document)
     {
-        int len = length(xml);
-        var b = get_iterator(var(xml));
-        int s[] = [];
+        :(xml, var s, var b, int len) = Rosella.Parse.setup_parse(xml);
         return Rosella.Xml.Parser.__parse_xml(xml, s, b, len, document);
     }
 }

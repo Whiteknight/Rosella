@@ -8,9 +8,7 @@ namespace Rosella.Json
 
     function parse(string json)
     {
-        int len = length(json);
-        var b = get_iterator(var(json));
-        int s[] = [];
+        :(json, var s, var b, int len) = Rosella.Parse.setup_parse(json);
         return Rosella.Json.Parser.__parse_value(json, s, b, len);
     }
 }
