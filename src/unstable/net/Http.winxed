@@ -31,4 +31,37 @@ namespace Rosella.Net.Http
         s = result.get_string("ascii");
         return s;
     }
+
+    function format_request_header(string request_method, string fullpath, var request_header)
+    {
+        var sb = new 'StringBuilder';
+        push(sb, request_method);
+        push(sb, " ");
+        push(sb, fullpath);
+        push(sb, " HTTP/1.1");
+        push(sb, CRLF);
+        push(sb, request_header.get_header_text());
+        push(sb, CRLF);
+        return sb;
+    }
+
+    function get_host_information(var request, var proxy, var user_agent)
+    {
+        string request_method = request.get_method();
+        var uri = request.get_uri();
+        string host, port, fullpath;
+        if (proxy != null) {
+            host = proxy.host();
+            port = proxy.port();
+            fullpath = string(uri.host()) + ":" + string(uri.port());
+        } else {
+            host = uri.host();
+            port = uri.port();
+            fullpath = uri.path_query();
+            if (index_of_substr(fullpath, "/") != 0)
+                fullpath = "/" + fullpath;
+        }
+        int port_num = (port == null || port == "") ? 80 : int(port);
+        return host, port_num, fullpath;
+    }
 }

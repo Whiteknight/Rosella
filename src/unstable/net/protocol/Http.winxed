@@ -42,7 +42,7 @@ class Rosella.Net.Protocol.Http : Rosella.Net.Protocol
 
     function request(var request, var user_agent)
     {
-        :(string host, int port, string fullpath) = self.__get_host_information(request, user_agent);
+        :(string host, int port, string fullpath) = Rosella.Net.Http.get_host_information(request, request.get_proxy(), user_agent);
         var socket = Rosella.Net.tcp_socket_factory().create(host, port);
 
         if (!self.__send_request(socket, request, fullpath, user_agent))
@@ -67,20 +67,6 @@ class Rosella.Net.Protocol.Http : Rosella.Net.Protocol
 
     /* Private Helper Routines
     */
-
-    // TODO: Move this into Rosella.Net.Http namespace as a utility
-    function __format_request_header(string request_method, string fullpath, var request_header)
-    {
-        var sb = new 'StringBuilder';
-        push(sb, request_method);
-        push(sb, " ");
-        push(sb, fullpath);
-        push(sb, " HTTP/1.1");
-        push(sb, CRLF);
-        push(sb, request_header.get_header_text());
-        push(sb, CRLF);
-        return sb;
-    }
 
     function __receive_status_line(var socket)
     {
@@ -120,33 +106,10 @@ class Rosella.Net.Protocol.Http : Rosella.Net.Protocol
         }
     }
 
-    function __get_host_information(var request, var user_agent)
-    {
-        // TODO: Take proxy as an argument. Break this out into a utility
-        // routine somewhere.
-        var proxy = request.get_proxy();
-        string request_method = request.get_method();
-        var uri = request.get_uri();
-        string host, port, fullpath;
-        if (proxy != null) {
-            host = proxy.host();
-            port = proxy.port();
-            fullpath = string(uri.host()) + ":" + string(uri.port());
-        } else {
-            host = uri.host();
-            port = uri.port();
-            fullpath = uri.path_query();
-            if (index_of_substr(fullpath, "/") != 0)
-                fullpath = "/" + fullpath;
-        }
-        int port_num = (port == null || port == "") ? 80 : int(port);
-        return host, port_num, fullpath;
-    }
-
     function __send_request(var socket, var request, string fullpath, var user_agent)
     {
         string content = request.get_content();
-        string header_raw = self.__format_request_header(request.get_method(), fullpath, request.header());
+        string header_raw = Rosella.Net.Http.format_request_header(request.get_method(), fullpath, request.header());
         if (socket.puts(header_raw) < 0)
             return false;
         if (content != null && content != "") {
