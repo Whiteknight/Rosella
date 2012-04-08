@@ -160,7 +160,6 @@ namespace Rosella.Xml.Parser
 
     function __parse_tag(string xml, var s, var b, int len)
     {
-        // TODO: Namespaces (<foo:bar ...> </foo:bar>)
         int pos = current_position(len, s, b);
         eat_whitespace(s, b);
         int c = get_next(s, b);

@@ -158,15 +158,6 @@ class Rosella.FileSystem.File : Rosella.FileSystem.Entry
         return file;
     }
 
-    // Get a Rosella.FileSystem.Path object to get path information about
-    // the filename
-    function path_obj()
-    {
-        // TODO: Cache this, and clear the cache if the file is moved/renamed/deleted
-        string path = self.path;
-        return new Rosella.FileSystem.FilePath(path);
-    }
-
     // Get a FileIterator object for this file, to read it in line by
     // line
     function get_iter[vtable]()

@@ -9,6 +9,12 @@ namespace Rosella.FileSystem.Directory
         string cwd = Rosella.FileSystem.get_os_pmc().cwd();
         return new Rosella.FileSystem.Directory(cwd);
     }
+
+    function current_directory_path()
+    {
+        string cwd = Rosella.FileSystem.get_os_pmc().cwd();
+        return cwd;
+    }
 }
 
 /* Directory Class
@@ -39,6 +45,7 @@ class Rosella.FileSystem.Directory : Rosella.FileSystem.Entry
     {
         if (!self.exists())
             Rosella.Error.error("Cannot delete a Directory that does not exist");
+        self.path_obj = null;
         var deleter = new Rosella.FileSystem.Visitor.Delete();
         return self.walk(deleter);
     }

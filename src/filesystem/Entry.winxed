@@ -25,6 +25,7 @@ namespace Rosella.FileSystem.Entry
 class Rosella.FileSystem.Entry
 {
     var path;
+    var path_obj;
 
     // Constructor. Set the path of this Entry. The path is relative to
     // the current working directory of the program
@@ -46,6 +47,7 @@ class Rosella.FileSystem.Entry
         if (!os.exists(self.path))
             Rosella.Error.error("Cannot delete an Entry that does not exist");
         os.rm(self.path);
+        self.path_obj = null;
     }
 
     // Determine if the file exists. Returns non-zero if it exists, 0
@@ -61,18 +63,24 @@ class Rosella.FileSystem.Entry
     {
         Rosella.FileSystem.get_os_pmc().rename(self.path, new_name);
         self.path = new_name;
+        self.path_obj = null;
     }
 
     // Get the short name of this Entry
     function short_name()
     {
-        string sep = Rosella.FileSystem.path_separator();
-        var parts = split(sep, self.path);
-        for (int i = elements(parts) - 1; i >= 0; i--) {
-            string part = parts[i];
-            if (part != null && part != "")
-                return part;
-        }
-        return null;
+        return self.path_object().short_name();
+    }
+
+    // Get a Rosella.FileSystem.Path object to get path information about
+    // the filename
+    function path_object()
+    {
+        if (self.path_obj != null)
+            return self.path_obj;
+        string path = self.path;
+        var path_obj = new Rosella.FileSystem.Path(path, self instanceof Rosella.FileSystem.Directory);
+        self.path_obj = path_obj;
+        return path_obj;
     }
 }

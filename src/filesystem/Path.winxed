@@ -1,0 +1,98 @@
+namespace Rosella.FileSystem.Path
+{
+    function get_path_from_root(string path)
+    {
+        if (Rosella.Parrot.is_linux() && substr(path, 0, 1) == "/")
+            return path;
+        if (Rosella.Parrot.is_windows()) {
+            string prefix = substr(path, 1, 2);
+            if (prefix == ":/" || prefix == ":\\")
+                return path;
+        }
+        var cwd = Rosella.FileSystem.Directory.current_directory();
+        return string(cwd) + path;
+    }
+}
+
+/* File system Path object
+    This object represents a Path on a filesystem. It can be used to
+    extract information about a path.
+*/
+class Rosella.FileSystem.Path
+{
+    var details;
+
+    // Constructor. Parse the path string out into named parts
+    function Path(string path, int is_dir)
+    {
+        self.details = self.__get_parts_hash();
+        self.__parse(path, is_dir);
+    }
+
+    // The file extension, without "."
+    function extension()
+    {
+        return self.details["extension"];
+    }
+
+    // The base path of the file starting from the current working
+    // directory
+    function base_path()
+    {
+        return self.details["basepath"];
+    }
+
+    // The short name of the file, without folder path information
+    function short_name()
+    {
+        return self.details["shortname"];
+    }
+
+    // The short name of the file without the extension
+    function short_name_no_ext()
+    {
+        return self.details["shortname_noext"];
+    }
+
+    function full_path()
+    {
+        return self.details["fullpath"];
+    }
+
+    /* Private Helper Methods
+    */
+
+    function __get_parts_hash()
+    {
+        return {};
+    }
+
+    function __parse(string path, int is_dir)
+    {
+        string fullpath = Rosella.FileSystem.Path.get_path_from_root(path);
+        string pathsep = Rosella.FileSystem.path_separator();
+        var pathparts = split(pathsep, fullpath);
+        string entryname = pathparts.pop();
+        if (is_dir) {
+            // TODO: We need to handle /. and /..
+            // Go through the path, resolving out these elements.
+            if (elements(pathparts) >= 1)
+                entryname = pathparts[elements(pathparts) - 1];
+            else
+                entryname = ".";
+        } else {
+            var entryparts = split(".", entryname);
+
+            if (elements(entryparts) > 1)
+                self.details["extension"] = entryparts.pop();
+            else
+                self.details["extension"] = "";
+            self.details["shortname_noext"] = join(".", entryparts);
+        }
+        self.details["fullpath"] = fullpath;
+        self.details["shortname"] = entryname;
+        self.details["pathseparator"] = pathsep;
+        self.details["basepath_parts"] = pathparts;
+        self.details["basepath"] = join(pathsep, pathparts) + pathsep;
+    }
+}

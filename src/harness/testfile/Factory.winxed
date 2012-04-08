@@ -34,7 +34,7 @@ class Rosella.Harness.TestFile.Factory : Rosella.ObjectFactory
                     return dir.get_files();
             })
             .flatten()
-            .filter(function(f) { return f.path_obj().extension() == "t"; })
+            .filter(function(f) { return f.path_object().extension() == "t"; })
             .map(function(f) { return self.create_typed(test_type, string(f)); });
     }
 
