@@ -1,28 +1,37 @@
+/* HTTP Request/Response header
+    This header object represents a list of name/value pairs for use as the
+    header of an HTTP request and response message
+*/
 class Rosella.Net.Http.Header
 {
     var values;
 
+    // Constructor
     function Header()
     {
         self.values = Rosella.get_string_string_hash();
     }
 
+    // Add a name/value pair
     function add_value(string name, string value)
     {
         self.values[name] = value;
     }
 
+    // Determine if the header contains the named key
     function contains_value(string name)
     {
         return exists self.values[name];
     }
 
+    // Remove the value from the hash, if it exists
     function remove_value(string name)
     {
         if (exists self.values[name])
             delete self.values[name];
     }
 
+    // Get the value corresponding to the given key
     function get_value(string name)
     {
         if (exists self.values[name])
@@ -30,11 +39,14 @@ class Rosella.Net.Http.Header
         return "";
     }
 
+    // Clear all data
     function clear()
     {
         self.values = {};
     }
 
+    // Get the text of the header. Name/value pairs separated by a colon and
+    // each pair on a separate line.
     function get_header_text(var sb = new 'StringBuilder')
     {
         for (string name in self.values) {
@@ -44,5 +56,19 @@ class Rosella.Net.Http.Header
             push(sb, CRLF);
         }
         return sb;
+    }
+
+    // Set the header values from a list of text lines. Each line should contain
+    // a name/value pair separated by a colon.
+    function set_header_lines(var lines)
+    {
+        for (string line in lines) {
+            int idx = index_of_substr(line, ": ");
+            if (idx >= 0) {
+                string name = substr(line, 0, idx);
+                string value = substr(line, idx + 2);
+                self.add_value(name, value);
+            }
+        }
     }
 }

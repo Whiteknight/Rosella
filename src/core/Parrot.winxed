@@ -59,7 +59,6 @@ namespace Rosella.Parrot
 
     // private routine. Format backtrace information into an array of
     // human-readable strings
-    // TODO: Use a StringFormatter
     function format_backtrace(var bt)
     {
         var bts = [];
@@ -74,6 +73,7 @@ namespace Rosella.Parrot
         return bts;
     }
 
+    // Get the default exception formatter object
     function exception_formatter()
     {
         return Rosella.StringFormatter.autoget_type_formatter("Exception",
@@ -119,6 +119,7 @@ class Rosella.Parrot.ExceptionFormatter : Rosella.StringFormatter
         return sb;
     }
 
+    // Format a frame
     function format_frame(var frame, var f)
     {
         var sub = frame["sub"];
@@ -147,6 +148,7 @@ class Rosella.Parrot.ExceptionFormatter : Rosella.StringFormatter
         return sub, f;
     }
 
+    // Format a frame using the default formatting
     function format_frame_default(var frame)
     {
         var sub = frame["sub"];

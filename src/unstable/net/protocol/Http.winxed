@@ -1,9 +1,20 @@
+/* HTTP Protocol
+    This class implements the basics of the HTTP protocol. It handles making
+    requests to a remote server and reading back the response if any.
+*/
 class Rosella.Net.Protocol.Http : Rosella.Net.Protocol
 {
+    // Constructor
     function Http() { }
 
+    /* Public Interface Methods
+    */
+
+    // This is the "http" protocol
     function protocol_name() { return "http"; }
 
+    // Prepare the request headers. Add in authoritzation, proxy-authorization,
+    // connection and other standard headers that belong in all requests
     function prepare_request(var request, var user_agent)
     {
         var header = request.header();
@@ -18,7 +29,7 @@ class Rosella.Net.Protocol.Http : Rosella.Net.Protocol
             amp_idx++;
             host = substr(host, amp_idx);
             string auth = header.get_value("Authorization");
-            if (auth == "") {
+            if (auth != "") {
                 string mimed = Rosella.Net.MimeBase64.encode(auth);
                 header.add_value("Authorization", "Basic " + mimed);
             }
@@ -40,6 +51,7 @@ class Rosella.Net.Protocol.Http : Rosella.Net.Protocol
         }
     }
 
+    // Execute the request object. Return a response.
     function request(var request, var user_agent)
     {
         :(string host, int port, string fullpath) = Rosella.Net.Http.get_host_information(request, request.get_proxy(), user_agent);
@@ -54,7 +66,8 @@ class Rosella.Net.Protocol.Http : Rosella.Net.Protocol
             return response;
         user_agent.request_progress(PERCENT_REQUEST_SENT);
 
-        self.__receive_header(socket, response.header());
+        var header_lines = self.__receive_header(socket);
+        response.header().set_header_lines(header_lines);
         user_agent.request_progress(PERCENT_HEADERS_RECEIVED);
 
         if (!self.__receive_response_content(socket, response, user_agent))
@@ -68,6 +81,7 @@ class Rosella.Net.Protocol.Http : Rosella.Net.Protocol
     /* Private Helper Routines
     */
 
+    // Receive the HTTP response/status link
     function __receive_status_line(var socket)
     {
         string status_line = socket.readline();
@@ -88,24 +102,21 @@ class Rosella.Net.Protocol.Http : Rosella.Net.Protocol
         return true, new Rosella.Net.Http.Response(int(code), status_line, protocol);
     }
 
-    function __receive_header(var socket, var header)
+    // Receive the response header. Return it as an array of lines
+    function __receive_header(var socket)
     {
-        // TODO: Can we read out the entire header first, then parse it in a
-        // separate routine somewhere?
+        string header_lines[] = [];
         while (true) {
             string raw = socket.readline();
             raw = Rosella.String.trim_end(raw);
             if (raw == null || raw == "")
-                return;
-            int idx = index_of_substr(raw, ": ");
-            if (idx >= 0) {
-                string name = substr(raw, 0, idx);
-                string value = substr(raw, idx + 2);
-                header.add_value(name, value);
-            }
+                break;
+            push(header_lines, raw);
         }
+        return header_lines;
     }
 
+    // Transmit the request
     function __send_request(var socket, var request, string fullpath, var user_agent)
     {
         string content = request.get_content();
@@ -119,53 +130,63 @@ class Rosella.Net.Protocol.Http : Rosella.Net.Protocol
         return true;
     }
 
-    function __receive_response_content(var socket, var response, var user_agent)
+    // Receive a normal response
+    function __receive_response_content_normal(var socket, var response, var buf, var user_agent)
     {
-        // TODO: Break up chunked and normal receives into separate functions.
-        var buf = new 'StringBuilder';
-        string transfer_encoding = response.get_header("Transfer-Encoding");
-        string raw;
-        if (contains_substr(transfer_encoding, "chunked")) {
-            int hex_class = Rosella.String.get_character_class("hexadecimal");
+        int content_length = response.get_content_length_header();
+        int recv_length = 0;
+        if (content_length == 0) {
             while(true) {
-                // TODO: user_agent.request_progress()
-                // TODO: This is untested
-                say("CHUNKED");
-                string line = socket.readline();
-                int line_length = length(line);
-                int substr_idx = Rosella.String.first_not_cclass(line, hex_class);
-                line = substr(line, 0, substr_idx);
-                int chunk_length = Rosella.String.to_integer(line, 16);
-                if (chunk_length == 0)
+                string raw = socket.recv();
+                if (raw == null || raw == "")
                     break;
-                raw = socket.read(chunk_length);
+                recv_length += length(raw);
+                user_agent.request_progress(__status_percent(content_length, recv_length));
                 push(buf, raw);
-                socket.readline();
             }
-            self.__receive_header(socket, response.header());
         } else {
-            int content_length = response.get_content_length_header();
-            int recv_length = 0;
-            if (content_length == 0) {
-                while(true) {
-                    raw = socket.recv();
-                    if (raw == null || raw == "")
-                        break;
-                    recv_length += length(raw);
-                    user_agent.request_progress(__status_percent(content_length, recv_length));
-                    push(buf, raw);
-                }
-            } else {
-                while (recv_length < content_length) {
-                    string raw = socket.recv();
-                    if (raw == "")
-                        break;
-                    recv_length += length(raw);
-                    user_agent.request_progress(__status_percent(content_length, recv_length));
-                    push(buf, raw);
-                }
+            while (recv_length < content_length) {
+                string raw = socket.recv();
+                if (raw == "")
+                    break;
+                recv_length += length(raw);
+                user_agent.request_progress(__status_percent(content_length, recv_length));
+                push(buf, raw);
             }
         }
+    }
+
+    // Receive a chunked response
+    function __receive_response_content_chunked(var socket, var response, var buf, var user_agent)
+    {
+        int hex_class = Rosella.String.get_character_class("hexadecimal");
+        while(true) {
+            // TODO: user_agent.request_progress()
+            // TODO: This is untested
+            say("CHUNKED");
+            string line = socket.readline();
+            int line_length = length(line);
+            int substr_idx = Rosella.String.first_not_cclass(line, hex_class);
+            line = substr(line, 0, substr_idx);
+            int chunk_length = Rosella.String.to_integer(line, 16);
+            if (chunk_length == 0)
+                break;
+            string raw = socket.read(chunk_length);
+            push(buf, raw);
+            socket.readline();
+        }
+        self.__receive_header(socket, response.header());
+    }
+
+    // Receive response content.
+    function __receive_response_content(var socket, var response, var user_agent)
+    {
+        var buf = new 'StringBuilder';
+        string transfer_encoding = response.get_header("Transfer-Encoding");
+        if (contains_substr(transfer_encoding, "chunked"))
+            self.__receive_response_content_chunked(socket, response, buf, user_agent);
+        else
+            self.__receive_response_content_normal(socket, response, buf, user_agent);
         response.set_content(string(buf));
         return true;
     }
