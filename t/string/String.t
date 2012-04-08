@@ -136,4 +136,16 @@ class Test::String {
     method indexof_end() {
         $!status.unimplemented("Test this");
     }
+
+    method to_upper() {
+        my $s := "this is a test";
+        my $result := Rosella::String::to_upper($s);
+        $!assert.equal($result, "THIS IS A TEST");
+    }
+
+    method to_lower() {
+        my $s := "THIS IS A TEST";
+        my $result := Rosella::String::to_lower($s);
+        $!assert.equal($result, "this is a test");
+    }
 }
