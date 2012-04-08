@@ -147,6 +147,12 @@ inline codepoint_is_hexadecimal(int c) return int
             (c >= ASCII_a && c <= ASCII_f));
 }
 
+inline codepoint_is_alpha(int c) return int
+{
+    return ((c >= ASCII_A && c <= ASCII_Z) ||
+            (c >= ASCII_a && c <= ASCII_z));
+}
+
 inline hex_codepoint_to_integer(int c) return int
 {
     if (c >= ASCII_0 && c <= ASCII_9)
@@ -170,10 +176,4 @@ inline oct_codepoint_to_integer(int c) return int
     if (c >= ASCII_0 && c <= ASCII_7)
         return c - ASCII_0;
     return 0;
-}
-
-inline codepoint_is_alpha(int c) return int
-{
-    return ((c >= ASCII_A && c <= ASCII_Z) ||
-            (c >= ASCII_a && c <= ASCII_z));
 }

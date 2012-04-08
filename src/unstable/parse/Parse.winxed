@@ -243,4 +243,17 @@ namespace Rosella.Parse
         }
         return sb;
     }
+
+    function parse_repeat(int d, string _str, var s, var b, int len)
+    {
+        int num = 0;
+        int c = d;
+        while(c == d) {
+            num++;
+            c = get_next(s, b);
+        }
+        if (c != ASCII_NULL)
+            unshift_int(s, c);
+        return num;
+    }
 }
