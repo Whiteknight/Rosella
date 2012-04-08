@@ -89,12 +89,8 @@ class Rosella.FileSystem.Path
 
         string entryname = pathparts.pop();
         if (is_dir) {
-            // TODO: We need to handle /. and /..
-            // Go through the path, resolving out these elements.
             if (elements(pathparts) >= 1)
                 entryname = pathparts[elements(pathparts) - 1];
-            else
-                entryname = ".";
         } else {
             var entryparts = split(".", entryname);
 
