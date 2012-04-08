@@ -149,6 +149,13 @@ inline pop_pmc(var obj) return var
     return value;
 }
 
+inline pop_string(var obj) return string
+{
+    string value;
+    ${ pop value, obj };
+    return value;
+}
+
 inline get_iterator(var obj) return var
 {
     var i;

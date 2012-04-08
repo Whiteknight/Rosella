@@ -72,6 +72,21 @@ class Rosella.FileSystem.Path
         string fullpath = Rosella.FileSystem.Path.get_path_from_root(path);
         string pathsep = Rosella.FileSystem.path_separator();
         var pathparts = split(pathsep, fullpath);
+
+        string temp[] = [];
+        for (string s in pathparts) {
+            if (s == ".")
+                continue;
+            else if (s == "..") {
+                pop_string(temp);
+                continue;
+            }
+            else
+                push(temp, s);
+        }
+        pathparts = temp;
+        fullpath = join(pathsep, pathparts);
+
         string entryname = pathparts.pop();
         if (is_dir) {
             // TODO: We need to handle /. and /..
