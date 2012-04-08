@@ -6,11 +6,10 @@ class Rosella.Repl.View
     var stdin;
     var stdout;
 
-    function View()
+    function View(var stdin = getstdin(), var stdout = getstdout())
     {
-        // TODO: Take these in the constructor
-        self.stdin = getstdin();
-        self.stdout = getstdout();
+        self.stdin = stdin;
+        self.stdout = stdout;
     }
 
     function __printf(string fmt, var args [slurpy])
