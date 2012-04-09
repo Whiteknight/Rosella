@@ -273,6 +273,8 @@ namespace Rosella.Xml.Parser
 
     function __parse_dtd_element_children(string xml, var s, var  b, int len, var dtd_header, var elem)
     {
+        // TODO: Handle alternations (foo|bar|baz)[<modifier>], ...
+        // or (foo,bar,(baz|fie)?), etc
         int c = get_next(s, b);
         while (have_more_chars(s, b)) {
             eat_whitespace(s, b);
@@ -418,6 +420,8 @@ namespace Rosella.Xml.Parser
         return result;
     }
 
+    // dtd tagname here is like an ident, except it might start with an #.
+    // Just read the first character and force it into the buffer
     function __parse_dtd_tagname(string xml, var s, var b, int len)
     {
         var sb = new 'StringBuilder';
