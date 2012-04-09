@@ -1,5 +1,12 @@
+/* Parser Utilities Library
+    This library contains several utilities for parsing text.
+*/
+// TODO: StringBuilder appears to be a very inefficient mechanism for this use
+// pattern.
 namespace Rosella.Parse
 {
+    // Setup all the data structures we need for a parse. These structures
+    // Should be passed to all routines used to parse this string.
     function setup_parse(string _str)
     {
         int s[] = [];
@@ -8,6 +15,9 @@ namespace Rosella.Parse
         return _str, s, b, len;
     }
 
+    // Parse out a quoted sequence. The opening quote should already be read
+    // out. The parse continues until the next non-escaped quote q. The contents
+    // of the quote are returned as a string.
     function parse_quoted(int q, string xml, var s, var b, int len)
     {
         var sb = new 'StringBuilder';
@@ -22,6 +32,9 @@ namespace Rosella.Parse
         return sb;
     }
 
+    // Parse out a quoted sequence. This is the same as parse_quoted, except
+    // multiple different C-style escape sequences such as \n \l \r \b and \t
+    // are parsed and converted into the appropriate ASCII values in the string.
     function parse_string(int q, string _str, var s, var b, int len)
     {
         var sb = new 'StringBuilder';
@@ -68,6 +81,8 @@ namespace Rosella.Parse
         return sb;
     }
 
+    // Parse an alphanumeric sequence containing any lower and uppercase letters
+    // and digits
     function parse_alphanumeric(string _str, var s, var b, int len)
     {
         var sb = new 'StringBuilder';
@@ -83,6 +98,7 @@ namespace Rosella.Parse
         return result;
     }
 
+    // Parse out a sequence of upper and lower case letters
     function parse_alpha(string _str, var s, var b, int len)
     {
         var sb = new 'StringBuilder';
@@ -98,6 +114,7 @@ namespace Rosella.Parse
         return result;
     }
 
+    // Parse out a floating point number with optional scientific notation.
     function parse_number(int c, string _str, var s, var b, int len)
     {
         int have_e = false;
@@ -138,6 +155,7 @@ namespace Rosella.Parse
         }
     }
 
+    // Parse out a hexadecimal number. Return the integer value
     function parse_hexadecimal(string _str, var s, var b, int len, int maxchars = 8)
     {
         int value = 0;
@@ -157,6 +175,7 @@ namespace Rosella.Parse
         return value;
     }
 
+    // Parse out a number in decimal digits. Return the integer value.
     function parse_integer(string _str, var s, var b, int len, int maxchars = 9)
     {
         int value = 0;
@@ -176,6 +195,7 @@ namespace Rosella.Parse
         return value;
     }
 
+    // Parse out a number in octal. Return the integer value
     function parse_octal(string _str, var s, var b, int len, int maxchars = 10)
     {
         int value = 0;
@@ -195,6 +215,7 @@ namespace Rosella.Parse
         return value;
     }
 
+    // Throw an error when we've received an unexpected character.
     function error_unknown_char(int c, string context, int pos)
     {
         if (c == ASCII_NULL)
@@ -202,6 +223,9 @@ namespace Rosella.Parse
         Rosella.Error.error("Unexpected token '%s' in %s at position %d", chr(c), context, pos);
     }
 
+    // Parse out all text until the next occurance of the marker. Return the
+    // string and the marker received. The returned marker will be ASCII_NULL if
+    // we've reached the end of string before finding the marker.
     function parse_until(string _str, var s, var b, int len, int marker)
     {
         var sb = new 'StringBuilder';
@@ -217,6 +241,9 @@ namespace Rosella.Parse
         return sb, c;
     }
 
+    // Parse out all text into the occurance of either of two possible markers.
+    // Return the string and the marker received. If we reach the end of string
+    // before finding either marker, return ASCII_NULL as the marker found
     function parse_until_either(string _str, var s, var b, int len, int ma, int mb)
     {
         var sb = new 'StringBuilder';
@@ -232,8 +259,11 @@ namespace Rosella.Parse
         return sb, c;
     }
 
+    // Parse out the remainder of the string
     function parse_remainder(string _str, var s, var b, int len)
     {
+        // TODO: If s is empty, we should be able to read the rest of the
+        // string out of b more easily.
         var sb = new 'StringBuilder';
         while (have_more_chars(s, b)) {
             int c = get_next(s, b);
@@ -244,6 +274,8 @@ namespace Rosella.Parse
         return sb;
     }
 
+    // Parse a repeated character d. Return the number of times the character
+    // is repeated
     function parse_repeat(int d, string _str, var s, var b, int len)
     {
         int num = 0;
