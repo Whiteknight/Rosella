@@ -54,15 +54,20 @@ class Rosella.Xml.Document
         (new Rosella.FileSystem.File(filename)).write_all_text(xml);
     }
 
-    function read_from_file(string filename)
+    function read_from_file(string filename, int do_validate = true)
     {
         var f = new Rosella.FileSystem.File(filename);
         string xml = f.read_all_text();
-        Rosella.Xml.parse(xml, self);
+        Rosella.Xml.parse(xml, self, do_validate);
     }
 
-    function read_from_string(string xml)
+    function read_from_string(string xml, int do_validate = true)
     {
-        Rosella.Xml.parse(xml, self);
+        Rosella.Xml.parse(xml, self, do_validate);
+    }
+
+    function validate()
+    {
+        // TODO: Validate the document. If we have a DTD, verify we satisfy it.
     }
 }

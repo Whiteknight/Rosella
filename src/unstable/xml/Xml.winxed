@@ -14,9 +14,12 @@ namespace Rosella.Xml
         return document;
     }
 
-    function parse(string xml, var document)
+    function parse(string xml, var document, int do_verify = true)
     {
         :(xml, var s, var b, int len) = Rosella.Parse.setup_parse(xml);
-        return Rosella.Xml.Parser.__parse_xml(xml, s, b, len, document);
+        Rosella.Xml.Parser.__parse_xml(xml, s, b, len, document);
+        if (do_verify)
+            document.validate();
+        return document;
     }
 }

@@ -157,16 +157,17 @@ class Rosella.Xml.Tag.DtdHeader : Rosella.Xml.Tag
     var doctype;
     var scope;
     var filename;
+    var typedefs;
 
-    function DtdHeader(int pos, string doctype, string scope)
+    function DtdHeader(int pos, string doctype)
     {
         self.doctype = doctype;
-        self.scope = scope;
         self.Tag(pos, "", "!DOCTYPE");
     }
 
-    function set_filename(string filename)
+    function set_scope(string scope, string filename)
     {
+        self.scope = scope;
         self.filename = filename;
     }
 
@@ -177,9 +178,30 @@ class Rosella.Xml.Tag.DtdHeader : Rosella.Xml.Tag
         push(sb, ">");
     }
 
+    function add_element_def(string name, var elem)
+    {
+        if (self.typedefs == null)
+            self.typedefs = {};
+        self.typedefs[name] = elem;
+    }
+
+    function add_element_attribute_type(string elemname, string attrname, string attrtype)
+    {
+        if (!(exists self.typedefs[elemname]))
+            Rosella.Error.error("!ELEMENT type '%s' is not defined", elemname);
+        self.typedefs[elemname].add_attribute_type(attrname, attrtype);
+    }
+
+    function set_element_attribute_default_value(string elemname, string attrname, string default_value)
+    {
+        if (!(exists self.typedefs[elemname]))
+            Rosella.Error.error("!ELEMENT type '%s' is not defined", elemname);
+        self.typedefs[elemname].set_attribute_default_value(attrname, default_value);
+    }
+
     function add_child(var child)
     {
-        Rosella.Error.not_implemented("Inline DTD definitions are not yet implemented");
+        Rosella.Error.error("Inline DTD do not contain children");
     }
 
     function add_child_text(string text)
@@ -190,6 +212,39 @@ class Rosella.Xml.Tag.DtdHeader : Rosella.Xml.Tag
     function set_end(var end_tag)
     {
         Rosella.Error.error("DTD Header tags do not have closing tags");
+    }
+}
+
+class Rosella.Xml.Tag.DtdElement
+{
+    var children;
+    var attributes;
+    var name;
+
+    function DtdElement(string name)
+    {
+        string children[] = [];
+        self.children = children;
+        self.attributes = {};
+        self.name = name;
+    }
+
+    function add_child_type(string name, string modifier)
+    {
+        // TODO: Do what with the modifier?
+        push(self.children, name);
+    }
+
+    function add_attribute_type(string name, string type)
+    {
+        self.attributes[name] = type;
+    }
+
+    function set_attribute_default_value(string attrname, string value)
+    {
+        if (!(exists self.attributes[attrname]))
+            Rosella.Error.error("Cannot set attribute default value '%s' on non-existant attribute '%s'", value, attrname);
+        // TODO : Keep track of the default value somehow
     }
 }
 

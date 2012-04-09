@@ -136,26 +136,128 @@ namespace Rosella.Xml.Parser
         string doctype = Rosella.Xml.Parser.__parse_ident(xml, s, b, len);
         eat_whitespace(s, b);
 
+        var dtd_header = new Rosella.Xml.Tag.DtdHeader(pos, doctype);
+        document.add_header(dtd_header);
+
+        int c = peek_next(s, b);
+        if (c == ASCII_OPEN_BRACKET)
+            return __parse_dtd_header_inline(xml, s, b, len, dtd_header);
+
         // Should be one of SYSTEM, PUBLIC, etc
         string dtd_scope = Rosella.Xml.Parser.__parse_ident(xml, s, b, len);
 
-        var dtd_header = new Rosella.Xml.Tag.DtdHeader(pos, doctype, dtd_scope);
-
         eat_whitespace(s, b);
-        int c = get_next(s, b);
+        c = get_next(s, b);
         if (c == ASCII_SINGLE_QUOTE || c == ASCII_DOUBLE_QUOTE) {
             string filename = Rosella.Parse.parse_quoted(c, xml, s, b, len);
-            dtd_header.set_filename(filename);
-        } else if (c == ASCII_OPEN_BRACKET) {
-            // TODO: Parse the inline DTD definitions. Add each as a child to
-            // the dtd_header
-            Rosella.Error.not_implemented("Cannot parse inline DOCTYPE yet!");
+            dtd_header.set_scope(dtd_scope, filename);
+            eat_whitespace(s, b);
+        }
+        c = get_next(s, b);
+        if (c != ASCII_GREATER_THAN)
+            Rosella.Xml.Parser.__error_unknown_char(c, "DOCTYPE header", current_position(len, s, b));
+    }
+
+    function __parse_dtd_header_inline(string xml, var s, var b, int len, var dtd_header)
+    {
+        int c = get_next(s, b);
+        while (have_more_chars(s, b)) {
+            eat_whitespace(s, b);
+            c = get_next(s, b);
+            if (c == ASCII_CLOSE_BRACKET)
+                break;
+            if (c == ASCII_LESS_THAN)
+                __parse_dtd_inline_tag(xml, s, b, len, dtd_header);
+            else
+                Rosella.Parse.error_unknown_char(c, "!DOCTYPE header", current_position(len, s, b));
+            eat_whitespace(s, b);
         }
         eat_whitespace(s, b);
         c = get_next(s, b);
         if (c != ASCII_GREATER_THAN)
-            Rosella.Xml.Parser.__error_unknown_char(c, "DOCTYPE header", current_position(len, s, b));
-        document.add_header(dtd_header);
+            Rosella.Parse.error_unknown_char(c, "!DOCTYPE header", current_position(len, s, b));
+    }
+
+    function __parse_dtd_inline_tag(string xml, var s, var b, int len, var dtd_header)
+    {
+        int c = get_next(s, b);
+        if (c != ASCII_EXCLAMATION_POINT)
+            Rosella.Parse.error_unknown_char(c, "!DOCTYPE inline tag", current_position(len, s, b));
+        string tagname = Rosella.Xml.Parser.__parse_ident(xml, s, b, len);
+        eat_whitespace(s, b);
+        string elemname = Rosella.Xml.Parser.__parse_ident(xml, s, b, len);
+        eat_whitespace(s, b);
+        switch (tagname) {
+            case "ELEMENT":
+                var elem = new Rosella.Xml.Tag.DtdElement(elemname);
+                dtd_header.add_element_def(elemname, elem);
+                c = peek_next(s, b);
+                if (c == ASCII_E) {
+                    string empty = Rosella.Xml.Parser.__parse_ident(xml, s, b, len);
+                    if (empty != "EMPTY")
+                        Rosella.Error.error("Expected 'EMPTY', got '%s' at position %d", empty, current_position(len, s, b));
+                } else if (c == ASCII_OPEN_PAREN)
+                    __parse_dtd_element_children(xml, s, b, len, dtd_header, elem);
+                else
+                    Rosella.Parse.error_unknown_char(c, "!ELEMENT tag", current_position(len, s, b));
+                break;
+            case "ATTLIST":
+                string attrname = Rosella.Xml.Parser.__parse_ident(xml, s, b, len);
+                eat_whitespace(s, b);
+                c = peek_next(s, b);
+                if (c == ASCII_OPEN_PAREN) {
+                    // TODO: Enumerated attribute values
+                    Rosella.Error.not_implemented("Enumerated attribute values");
+                } else {
+                    string attrtype = Rosella.Xml.Parser.__parse_ident(xml, s, b, len);
+                    dtd_header.add_element_attribute_type(elemname, attrname, attrtype);
+                }
+                eat_whitespace(s, b);
+                c = peek_next(s, b);
+                if (c == ASCII_SINGLE_QUOTE || c == ASCII_DOUBLE_QUOTE) {
+                    c = get_next(s, b);
+                    string default_value = Rosella.Parse.parse_quoted(c, xml, s, b, len);
+                    dtd_header.set_element_attribute_default_value(elemname, attrname, default_value);
+                } else if (c == ASCII_OCTOTHORPE) {
+                    // TODO: Parse #REQUIRED, #IMPLIED, or #FIXED
+                    Rosella.Error.not_implemented("Special default values in !ATTLIST tag");
+                } else
+                    Rosella.Parse.error_unknown_char(c, "!ATTLIST tag", current_position(len, s, b));
+
+                break;
+            case "ENTITY":
+                Rosella.Error.not_implemented("DTD !ENTITY declarations");
+                break;
+            default:
+                Rosella.Error.error("Unknown inline DTD tag name '%s' at position %d", tagname, current_position(len, s, b));
+        }
+        eat_whitespace(s, b);
+        c = get_next(s, b);
+        if (c != ASCII_GREATER_THAN)
+            Rosella.Parse.error_unknown_char(c, "DTD tag", current_position(len, s, b));
+    }
+
+    function __parse_dtd_element_children(string xml, var s, var  b, int len, var dtd_header, var elem)
+    {
+        int c = get_next(s, b);
+        while (have_more_chars(s, b)) {
+            eat_whitespace(s, b);
+            string tagname = __parse_ident(xml, s, b, len);
+            eat_whitespace(s, b);
+            c = get_next(s, b);
+            string modifier = "";
+            if (c == ASCII_ASTERISK || c == ASCII_QUESTION_MARK || c == ASCII_PLUS)
+                modifier = chr(c);
+
+            elem.add_child_type(tagname, modifier);
+
+            if (c == ASCII_COMMA)
+                continue;
+            if (c = ASCII_CLOSE_PAREN)
+                return;
+            Rosella.Parse.error_unknown_char(c, "!ELEMENT child list", current_position(len, s, b));
+        }
+        Rosella.Parse.error_unknown_char(ASCII_NULL, "!ELEMENT child_list", current_position(len, s, b));
     }
 
     function __parse_tag(string xml, var s, var b, int len)

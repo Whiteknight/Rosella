@@ -47,5 +47,21 @@ function __test_data() { return {
     "attribute" : "<foo bar='baz'></foo>",
     "attribute unquoted" : "<foo bar=baz></foo>",
     "attribute boolean" : "<foo bar></foo>",
-    "attribute quoted escapes" : "<foo bar='blahblah\\'blahblah'></foo>"
+    "attribute quoted escapes" : "<foo bar='blahblah\\'blahblah'></foo>",
+
+    // Tests for !DOCTYPE and children
+    "!ELEMENT and !ATTLIST" : <<:
+<?xml version='1.0'?>
+<!DOCTYPE foo [
+    <!ELEMENT foo (bar)>
+    <!ATTLIST foo id CDATA "0">
+]>
+<foo>
+    <bar/>
+</foo>
+:>>
+,
+
+    // The empty string (Keep this one last)
+    "Empty string" : ""
 };}
