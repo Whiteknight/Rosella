@@ -203,6 +203,9 @@ namespace Rosella.Xml.Parser
                 break;
             case "ATTLIST":
                 string attrname = Rosella.Xml.Parser.__parse_ident(xml, s, b, len);
+                var attr = new Rosella.Xml.Tag.DtdAttlist(attrname);
+                dtd_header.add_element_attribute(elemname, attrname, attr);
+
                 eat_whitespace(s, b);
                 c = peek_next(s, b);
                 if (c == ASCII_OPEN_PAREN) {
@@ -210,17 +213,26 @@ namespace Rosella.Xml.Parser
                     Rosella.Error.not_implemented("Enumerated attribute values");
                 } else {
                     string attrtype = Rosella.Xml.Parser.__parse_ident(xml, s, b, len);
-                    dtd_header.add_element_attribute_type(elemname, attrname, attrtype);
+                    attr.set_type(attrtype);
                 }
                 eat_whitespace(s, b);
-                c = peek_next(s, b);
-                if (c == ASCII_SINGLE_QUOTE || c == ASCII_DOUBLE_QUOTE) {
+                c = get_next(s, b);
+
+                if (c == ASCII_OCTOTHORPE) {
+                    string default_rule = __parse_ident(xml, s, b, len);
+                    attr.set_default_rule(default_rule);
+
+                    // If "FIXED", we need a quoted value too
+                    if (default_rule == "REQUIRED" || default_rule == "IMPLIED")
+                        break;
+
+                    eat_whitespace(s, b);
                     c = get_next(s, b);
+                }
+
+                if (c == ASCII_SINGLE_QUOTE || c == ASCII_DOUBLE_QUOTE) {
                     string default_value = Rosella.Parse.parse_quoted(c, xml, s, b, len);
-                    dtd_header.set_element_attribute_default_value(elemname, attrname, default_value);
-                } else if (c == ASCII_OCTOTHORPE) {
-                    // TODO: Parse #REQUIRED, #IMPLIED, or #FIXED
-                    Rosella.Error.not_implemented("Special default values in !ATTLIST tag");
+                    attr.set_default_value(default_value);
                 } else
                     Rosella.Parse.error_unknown_char(c, "!ATTLIST tag", current_position(len, s, b));
 

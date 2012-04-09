@@ -185,18 +185,11 @@ class Rosella.Xml.Tag.DtdHeader : Rosella.Xml.Tag
         self.typedefs[name] = elem;
     }
 
-    function add_element_attribute_type(string elemname, string attrname, string attrtype)
+    function add_element_attribute(string elemname, string attrname, var attr)
     {
         if (!(exists self.typedefs[elemname]))
             Rosella.Error.error("!ELEMENT type '%s' is not defined", elemname);
-        self.typedefs[elemname].add_attribute_type(attrname, attrtype);
-    }
-
-    function set_element_attribute_default_value(string elemname, string attrname, string default_value)
-    {
-        if (!(exists self.typedefs[elemname]))
-            Rosella.Error.error("!ELEMENT type '%s' is not defined", elemname);
-        self.typedefs[elemname].set_attribute_default_value(attrname, default_value);
+        self.typedefs[elemname].add_attribute(attrname, attr);
     }
 
     function add_child(var child)
@@ -223,21 +216,19 @@ class Rosella.Xml.Tag.DtdElement
 
     function DtdElement(string name)
     {
-        string children[] = [];
-        self.children = children;
+        self.children = {};
         self.attributes = {};
         self.name = name;
     }
 
     function add_child_type(string name, string modifier)
     {
-        // TODO: Do what with the modifier?
-        push(self.children, name);
+        self.children[name] = modifier;
     }
 
-    function add_attribute_type(string name, string type)
+    function add_attribute(string name, var attr)
     {
-        self.attributes[name] = type;
+        self.attributes[name] = attr;
     }
 
     function set_attribute_default_value(string attrname, string value)
@@ -245,6 +236,45 @@ class Rosella.Xml.Tag.DtdElement
         if (!(exists self.attributes[attrname]))
             Rosella.Error.error("Cannot set attribute default value '%s' on non-existant attribute '%s'", value, attrname);
         // TODO : Keep track of the default value somehow
+    }
+}
+
+class Rosella.Xml.Tag.DtdAttlist
+{
+    var name;
+    var type;
+    var default_value;
+    var default_rule;
+
+    function DtdAttlist(string name)
+    {
+        self.name = name;
+    }
+
+    function set_type(string type)
+    {
+        // TODO: Validate against a list of possible types:
+        // CDATA, ID, IDREF, IDREFS, NMTOKEN, NMTOKENS, ENTITY, ENTITIES, NOTATION
+        // or an alternation "(foo|bar|baz)" of these things.
+        self.type = type;
+    }
+
+    function set_default_value(string default_value)
+    {
+        self.default_value = default_value;
+    }
+
+    function set_default_rule(string default_rule)
+    {
+        switch (default_rule) {
+            case "REQUIRED":
+            case "IMPLIED":
+            case "FIXED":
+                break;
+            default:
+                Rosella.Error.error("ATTLIST default rule must be one of REQUIRED IMPLIED or FIXED");
+        }
+        self.default_rule = default_rule;
     }
 }
 

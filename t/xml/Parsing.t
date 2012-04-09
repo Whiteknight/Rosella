@@ -4,7 +4,8 @@ function main[main]()
     var(Rosella.initialize_rosella)("test", "xml");
     Rosella.Test.test_vector(
         function(var self, string data) {
-            var doc = Rosella.Xml.read_string(data);
+            var doc = new Rosella.Xml.Document();
+            doc.read_from_string(data, false);
             self.assert.not_null(doc);
             self.assert.instance_of(doc, class Rosella.Xml.Document);
         }, __test_data()
@@ -61,7 +62,33 @@ function __test_data() { return {
 </foo>
 :>>
 ,
-
+    "!ATTLIST with #REQUIRED" : <<:
+<?xml version='1.0'?>
+<!DOCTYPE foo [
+    <!ELEMENT foo (bar)>
+    <!ATTLIST foo id CDATA #REQUIRED>
+]>
+<foo><bar/></foo>
+:>>
+,
+    "!ATTLIST with #IMPLIED" : <<:
+<?xml version='1.0'?>
+<!DOCTYPE foo [
+    <!ELEMENT foo (bar)>
+    <!ATTLIST foo id CDATA #IMPLIED>
+]>
+<foo><bar/></foo>
+:>>
+,
+    "!ATTLIST with #FIXED" : <<:
+<?xml version='1.0'?>
+<!DOCTYPE foo [
+    <!ELEMENT foo (bar)>
+    <!ATTLIST foo id CDATA #FIXED "baz">
+]>
+<foo><bar/></foo>
+:>>
+,
     // The empty string (Keep this one last)
     "Empty string" : ""
 };}
