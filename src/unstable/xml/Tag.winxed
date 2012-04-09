@@ -211,6 +211,7 @@ class Rosella.Xml.Tag.DtdHeader : Rosella.Xml.Tag
 class Rosella.Xml.Tag.DtdElement
 {
     var children;
+    var children_rule;
     var attributes;
     var name;
 
@@ -237,6 +238,11 @@ class Rosella.Xml.Tag.DtdElement
         if (!(exists self.attributes[attrname]))
             Rosella.Error.error("Cannot set attribute default value '%s' on non-existant attribute '%s'", value, attrname);
         // TODO : Keep track of the default value somehow
+    }
+
+    function set_child_rule(string rule)
+    {
+        self.children_rule = rule;
     }
 }
 

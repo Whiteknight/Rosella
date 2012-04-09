@@ -212,6 +212,12 @@ namespace Rosella.Xml.Parser
                     string empty = Rosella.Xml.Parser.__parse_ident(xml, s, b, len);
                     if (empty != "EMPTY")
                         Rosella.Error.error("Expected 'EMPTY', got '%s' at position %d", empty, current_position(len, s, b));
+                    elem.set_child_rule(empty);
+                } else if (c == ASCII_A) {
+                    string any = Rosella.Xml.Parser.__parse_ident(xml, s, b, len);
+                    if (any != "ANY")
+                        Rosella.Error.error("Expected 'ANY', got '%s' at position %d", any, current_position(len, s, b));
+                    elem.set_child_rule(any);
                 } else if (c == ASCII_OPEN_PAREN)
                     __parse_dtd_element_children(xml, s, b, len, dtd_header, elem);
                 else

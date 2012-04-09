@@ -89,6 +89,38 @@ function __test_data() { return {
 <foo><bar/></foo>
 :>>
 ,
+    "!ELEMENT with ANY" : <<:
+<?xml version='1.0'?>
+<!DOCTYPE foo [
+    <!ELEMENT foo ANY>
+]>
+<foo/>
+:>>
+,
+    "!ELEMENT with EMPTY" : <<:
+<?xml version='1.0'?>
+<!DOCTYPE foo [
+    <!ELEMENT foo EMPTY>
+]>
+<foo/>
+:>>
+,
+    "!ELEMENT with #PCDATA" : <<:
+<?xml version='1.0'?>
+<!DOCTYPE foo [
+    <!ELEMENT foo (#PCDATA)>
+]>
+<foo/>
+:>>
+,
+    "!ELEMENT with #CDATA" : <<:
+<?xml version='1.0'?>
+<!DOCTYPE foo [
+    <!ELEMENT foo (#CDATA)>
+]>
+<foo/>
+:>>
+,
     // The empty string (Keep this one last)
     "Empty string" : ""
 };}
