@@ -1,4 +1,4 @@
-class Rosella.Generic.Mutator
+class Rosella.Genetic.Mutator
 {
     function evaluate(var d)
     {
