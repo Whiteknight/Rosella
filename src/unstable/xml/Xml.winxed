@@ -22,4 +22,10 @@ namespace Rosella.Xml
             document.validate();
         return document;
     }
+
+    function parse_dtd(string dtd)
+    {
+        :(dtd, var s, var b, int len) = Rosella.Parse.setup_parse(dtd);
+        return Rosella.Xml.Parser.__parse_dtd_standalone(dtd, s, b, len);
+    }
 }

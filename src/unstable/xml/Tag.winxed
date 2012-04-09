@@ -223,6 +223,7 @@ class Rosella.Xml.Tag.DtdElement
 
     function add_child_type(string name, string modifier)
     {
+        // TODO: Handle #CDATA and #PCDATA specially.
         self.children[name] = modifier;
     }
 
