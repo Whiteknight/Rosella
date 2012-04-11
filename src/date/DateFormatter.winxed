@@ -28,7 +28,6 @@ class Rosella.Date.DateFormatter : Rosella.StringFormatter
 
     // Format the Date object
     // TODO: Support additional codes
-    // TODO: Find an algorithm which isn't so slow and wasteful
     function format(var obj, string f)
     {
         if (contains_substr(f, "yyyy")) f = f.replace("yyyy", format_string("%04d", obj.year()));

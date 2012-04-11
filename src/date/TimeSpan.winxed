@@ -21,8 +21,48 @@ class Rosella.Date.TimeSpan
         if (start >= end)
             Rosella.Error.error("Start Date must be before End Date (%s >= %s)", start, end);
 
-        int diff = end.to_total_seconds() - start.to_total_seconds();
-        self.TimeSpan(diff);
+        int day_diff = self.__days_base(end) - self.__days_base(start);
+        int sec_diff = self.__secs_base(end) - self.__secs_base(start);
+        if (sec_diff < 0) {
+            day_diff = day_diff - 1;
+            sec_diff = sec_diff + (24 * 60 * 60);
+        }
+
+        int secs = sec_diff % 60;
+        sec_diff = sec_diff / 60;
+        int mins = sec_diff % 60;
+        sec_diff = sec_diff / 60;
+        int hours = sec_diff % 24;
+        sec_diff = sec_diff / 24;
+        self.TimeSpan(day_diff, hours, mins, secs);
+    }
+
+    function __days_base(var d)
+    {
+        int year = d.year();
+        int base_year = year - (year % 4);
+
+        int year_d = 0;
+        for (int i = 4; i < base_year; i += 4) {
+            year_d += 4 * 365;
+            if ((i % 100 != 0) || (i % 400 == 0))
+                year_d += 1;
+        }
+        for (int i = base_year + 1; i < year; i++) {
+            year_d += 365;
+            if (Rosella.Date.is_leap_year(i))
+                year_d += 1;
+        }
+
+        return year_d + d.day_of_year();
+    }
+
+    function __secs_base(var d)
+    {
+        return d.seconds() +
+            60 * (d.minutes() +
+                60 * d.hours()
+            );
     }
 
     // Constructor taking a number of seconds

@@ -272,32 +272,6 @@ class Rosella.Date
             self.__add_minutes(m);
     }
 
-    function to_total_seconds()
-    {
-        int time_s = self.seconds() +
-            60 * (self.minutes() +
-                60 * self.hours()
-            );
-
-        int year = self.year();
-        var month_day_counts = Rosella.Date.month_day_counts(year);
-        int day_of_year = self.day() - 1;
-        int month = self.month();
-        for (int i = 0; i < month; i++)
-            day_of_year += int(month_day_counts[i]);
-        int day_s = day_of_year * 24 * 60 * 60;
-        int base_year = year - (year % 4);
-
-        // TODO: We can probably loop by 100-year or 400-year blocks instead
-        int year_s = 0;
-        for (int i = 4; i < base_year; i += 4) {
-            year_s += (4 * 365 * 24 * 60 * 60);
-            if ((i % 100 != 0) || (i % 400 == 0))
-             year_s += (24 * 60 * 60);
-         }
-         return time_s + day_s + year_s;
-    }
-
     /* Minutes
     */
 
@@ -418,6 +392,11 @@ class Rosella.Date
         if (m != 0)
             self.__add_months(m);
         self.time_array[TM_WDAY] = Rosella.Date.get_day_of_week(self.year(), self.month(), self.day());
+    }
+
+    function day_of_year()
+    {
+        return self.time_array[TM_YDAY];
     }
 
     /* Week-Day
