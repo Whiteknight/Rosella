@@ -214,9 +214,11 @@ class Rosella.Xml.Tag.DtdElement
     var children_rule;
     var attributes;
     var name;
+    var pos;
 
-    function DtdElement(string name)
+    function DtdElement(int pos, string name)
     {
+        self.pos = pos;
         self.children = {};
         self.attributes = {};
         self.name = name;
@@ -252,9 +254,11 @@ class Rosella.Xml.Tag.DtdAttlist
     var type;
     var default_value;
     var default_rule;
+    var pos;
 
-    function DtdAttlist(string name)
+    function DtdAttlist(int pos, string name)
     {
+        self.pos = pos;
         self.name = name;
     }
 

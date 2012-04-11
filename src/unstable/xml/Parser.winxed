@@ -99,8 +99,6 @@ namespace Rosella.Xml.Parser
         }
     }
 
-    // TODO: If available, read the encoding attribute and compare to the
-    // encoding that the string is being read as.
     function __parse_xml_header(string xml, var s, var b, int len, var document)
     {
         eat_whitespace(s, b);
@@ -179,23 +177,25 @@ namespace Rosella.Xml.Parser
 
     function __parse_dtd_standalone(string dtd, var s, var b, int len)
     {
-        // TODO: Make a DTDDocument class instead of returning a single tag
         var dtd_header = new Rosella.Xml.Tag.DtdHeader(0, "");
         while (have_more_chars(s, b)) {
             eat_whitespace(s, b);
             int c = get_next(s, b);
             if (c == ASCII_NULL)
-                return dtd_header;
+                break;
             if (c == ASCII_LESS_THAN)
                 __parse_dtd_inline_tag(dtd, s, b, len, dtd_header);
             else
                 Rosella.Parse.error_unknown_char(c, "DTD", current_position(len, s, b));
         }
-        return dtd_header;
+        var dtd_doc = new Rosella.Xml.DtdDocument();
+        dtd_doc.set_dtd_header(dtd_header);
+        return dtd_doc;
     }
 
     function __parse_dtd_inline_tag(string xml, var s, var b, int len, var dtd_header)
     {
+        int start_pos = current_position(len, s, b);
         int c = get_next(s, b);
         if (c != ASCII_EXCLAMATION_POINT)
             Rosella.Parse.error_unknown_char(c, "!DOCTYPE inline tag", current_position(len, s, b));
@@ -205,7 +205,7 @@ namespace Rosella.Xml.Parser
         eat_whitespace(s, b);
         switch (tagname) {
             case "ELEMENT":
-                var elem = new Rosella.Xml.Tag.DtdElement(elemname);
+                var elem = new Rosella.Xml.Tag.DtdElement(start_pos, elemname);
                 dtd_header.add_element_def(elemname, elem);
                 c = peek_next(s, b);
                 if (c == ASCII_E) {
@@ -225,7 +225,7 @@ namespace Rosella.Xml.Parser
                 break;
             case "ATTLIST":
                 string attrname = Rosella.Xml.Parser.__parse_ident(xml, s, b, len);
-                var attr = new Rosella.Xml.Tag.DtdAttlist(attrname);
+                var attr = new Rosella.Xml.Tag.DtdAttlist(start_pos, attrname);
                 dtd_header.add_element_attribute(elemname, attrname, attr);
 
                 eat_whitespace(s, b);

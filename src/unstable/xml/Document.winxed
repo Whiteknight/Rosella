@@ -69,5 +69,21 @@ class Rosella.Xml.Document
     function validate()
     {
         // TODO: Validate the document. If we have a DTD, verify we satisfy it.
+        // Read out the version and encoding info from the heading and verify
+        // that we match
+    }
+}
+
+class Rosella.Xml.DtdDocument
+{
+    var dtd_header;
+
+    function DtdDocument()
+    {
+    }
+
+    function set_dtd_header(var header)
+    {
+        self.dtd_header = header;
     }
 }
