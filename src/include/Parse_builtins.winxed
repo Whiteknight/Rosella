@@ -42,3 +42,9 @@ inline have_more_chars(var s, var b) return int
         return true;
     return false;
 }
+
+inline add_char_to_builder(var sb, int c)
+{
+    // push(sb, c);
+    push(sb, chr(c));
+}

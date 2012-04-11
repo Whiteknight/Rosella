@@ -1,3 +1,23 @@
+inline make_key(int c, int n) return int
+{
+    return c << 2 | n;
+}
+
+inline push_2digit_number(var sb, int i)
+{
+    push(sb, int(i / 10) + ASCII_0);
+    push(sb, int(i % 10) + ASCII_0);
+}
+
+inline push_4digit_number(var sb, int i)
+{
+
+    push(sb, int(i / 1000) + ASCII_0);
+    push(sb, (int(i / 100) % 10) + ASCII_0);
+    push(sb, int(i / 10) + ASCII_0);
+    push(sb, int(i % 10) + ASCII_0);
+}
+
 /* Date String Formatter
     Formats a Date object into a string according to the given formatting string
 */
@@ -43,83 +63,91 @@ class Rosella.Date.DateFormatter : Rosella.StringFormatter
         return f;
     }
 
-    function format_fast(var obj, string f)
+    function format_experimental(var obj, string f)
     {
-        var sb = new 'StringBuilder';
+        int flen = length(f);
+        var sb;
+        ${ new sb, 'StringBuilder', flen };
+        int iyear = obj.year();
+        int imonth = obj.month();
+        int iday = obj.day();
+        int ihour = obj.hours();
+        int iminute = obj.minutes();
+        int isecond = obj.seconds();
+
         :(f, var s, var b, int len) = Rosella.Parse.setup_parse(f);
-        while(have_more_chars(s, b)) {
+        while(true) {
             int c = get_next(s, b);
+            if (c == ASCII_NULL)
+                break;
             if (!codepoint_is_alpha(c)) {
-                push(sb, chr(c));
+                add_char_to_builder(sb, c);
                 continue;
             }
             int num = Rosella.Parse.parse_repeat(c, f, s, b, len);
+
             string sval;
             int ival;
             switch(c) {
                 case ASCII_y:
-                    ival = obj.year();
                     if (num == 4) {
-                        push(sb, format_string("%04d", ival));
+                        push_4digit_number(sb, iyear);
                         break;
                     }
                     self.__format_error(c, num);
                 case ASCII_M:
-                    if (num == 4) {
+                    if (num == 2) {
+                        push_2digit_number(sb, imonth);
+                        break;
+                    } else if (num == 4) {
                         sval = obj.month_name();
                         push(sb, sval);
                         break;
                     } else if (num == 3) {
                         sval = obj.month_name();
-                        push(sb, substr(sval, 0, 3));
-                        break;
-                    } else if (num == 2) {
-                        ival = obj.month();
-                        push(sb, format_string("%02d", ival));
+                        sval = substr(sval, 0, 3);
+                        push(sb, sval);
                         break;
                     }
                     self.__format_error(c, num);
                 case ASCII_d:
                     if (num == 2) {
-                        ival = obj.day();
-                        push(sb, format_string("%02d", ival));
+                        push_2digit_number(sb, iday);
                         break;
                     }
                     self.__format_error(c, num);
                 case ASCII_H:
                     if (num == 2) {
-                        ival = obj.hours();
+                        ival = ihour;
                         if (ival > 12)
                             ival = ival - 12;
-                        push(sb, format_string("%02d", ival));
+                        push_2digit_number(sb, ival);
                         break;
                     }
                     self.__format_error(c, num);
                 case ASCII_h:
                     if (num == 2) {
-                        ival = obj.hours();
-                        push(sb, format_string("%02d", ival));
+                        push_2digit_number(sb, ihour);
                         break;
                     }
                     self.__format_error(c, num);
                 case ASCII_m:
                     if (num == 2) {
-                        ival = obj.minutes();
-                        push(sb, format_string("%02d", ival));
+                        push_2digit_number(sb, iminute);
                         break;
                     }
                     self.__format_error(c, num);
                 case ASCII_s:
                     if (num == 2) {
-                        ival = obj.seconds();
-                        push(sb, format_string("%02d", ival));
+                        push_2digit_number(sb, isecond);
                         break;
                     }
                     self.__format_error(c, num);
                 case ASCII_w:
                     if (num == 2) {
                         ival = obj.week_day();
-                        push(sb, format_string("%02d", ival));
+                        sval = format_string("%02d", ival);
+                        push(sb, sval);
                         break;
                     }
                     self.__format_error(c, num);
@@ -133,7 +161,8 @@ class Rosella.Date.DateFormatter : Rosella.StringFormatter
                 case ASCII_A:
                     if (num == 2) {
                         ival = obj.hours();
-                        push(sb, ival > 12 ? "PM" : "AM");
+                        sval = ival > 12 ? "PM" : "AM";
+                        push(sb, sval);
                         break;
                     }
                     self.__format_error(c, num);
@@ -141,6 +170,7 @@ class Rosella.Date.DateFormatter : Rosella.StringFormatter
                     self.__format_error(c, num);
             }
         }
+        return sb;
     }
 
     function __format_error(int c, int num)

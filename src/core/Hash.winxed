@@ -22,4 +22,11 @@ namespace Rosella
         h.set_value_type(DATATYPE_STRING);
         return h;
     }
+
+    function get_integer_string_hash()
+    {
+        var h = int_keyed_hash();
+        h.set_value_type(DATATYPE_STRING);
+        return h;
+    }
 }
