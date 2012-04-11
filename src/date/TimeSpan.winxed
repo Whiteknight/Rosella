@@ -37,34 +37,6 @@ class Rosella.Date.TimeSpan
         self.TimeSpan(day_diff, hours, mins, secs);
     }
 
-    function __days_base(var d)
-    {
-        int year = d.year();
-        int base_year = year - (year % 4);
-
-        int year_d = 0;
-        for (int i = 4; i < base_year; i += 4) {
-            year_d += 4 * 365;
-            if ((i % 100 != 0) || (i % 400 == 0))
-                year_d += 1;
-        }
-        for (int i = base_year + 1; i < year; i++) {
-            year_d += 365;
-            if (Rosella.Date.is_leap_year(i))
-                year_d += 1;
-        }
-
-        return year_d + d.day_of_year();
-    }
-
-    function __secs_base(var d)
-    {
-        return d.seconds() +
-            60 * (d.minutes() +
-                60 * d.hours()
-            );
-    }
-
     // Constructor taking a number of seconds
     function TimeSpan(int diff)
     {
@@ -164,4 +136,35 @@ class Rosella.Date.TimeSpan
     function get_string[vtable]() { return self.to_string(); }
 
     function clone[vtable]() { return self.copy(); }
+
+    /* Private Helper Methods
+    */
+
+    function __days_base(var d)
+    {
+        int year = d.year();
+        int base_year = year - (year % 4);
+
+        int year_d = 0;
+        for (int i = 4; i < base_year; i += 4) {
+            year_d += 4 * 365;
+            if ((i % 100 != 0) || (i % 400 == 0))
+                year_d += 1;
+        }
+        for (int i = base_year + 1; i < year; i++) {
+            year_d += 365;
+            if (Rosella.Date.is_leap_year(i))
+                year_d += 1;
+        }
+
+        return year_d + d.day_of_year();
+    }
+
+    function __secs_base(var d)
+    {
+        return d.seconds() +
+            60 * (d.minutes() +
+                60 * d.hours()
+            );
+    }
 }

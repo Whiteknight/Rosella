@@ -310,6 +310,22 @@ class Test_Rosella_Date
         self.assert.equal(result.hours(), 0);
         self.assert.equal(result.days(), 0);
     }
+
+    function diff2() {
+        var a = new Rosella.Date(2012, 04, 9,  1, 0, 0);
+        var b = new Rosella.Date(2012, 04, 10, 0, 0, 0);
+        var ts = b.diff(a);
+        self.assert.equal(ts.days(), 0);
+        self.assert.equal(ts.hours(), 23);
+    }
+
+    function diff3() {
+        var a = new Rosella.Date(2012, 04, 9,  0, 0, 0);
+        var b = new Rosella.Date(2012, 04, 10, 1, 0, 0);
+        var ts = b.diff(a);
+        self.assert.equal(ts.days(), 1);
+        self.assert.equal(ts.hours(), 1);
+    }
 }
 
 function main[main]()
