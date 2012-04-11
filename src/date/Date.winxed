@@ -174,8 +174,10 @@ namespace Rosella.Date
 
     Date objects are immutable. Once created, you cannot alter the date/time
     it represents.
+
+    Dates start at year 1. There is no year zero and BC years are not supported.
+    This may change in the future.
 */
-// TODO: Handle negative (BC) years
 class Rosella.Date
 {
     var time_array;
@@ -192,6 +194,8 @@ class Rosella.Date
     // Construct a new Date given a year, month and day
     function Date(int year, int month, int day)
     {
+        if (year < 1 || year > 9999)
+            Rosella.Error.error("Bad year %d. Must be in the range [1, 9999]", year);
         if (month < 1 || month > 12)
             Rosella.Error.error("Bad month %d. Must be in the range [1, 12]", month);
         var month_day_counts = Rosella.Date.month_day_counts(year);
@@ -579,7 +583,6 @@ class Rosella.Date
 
     function compare_to(var d)
     {
-        // TODO: Can we attempt to coerce to a Date and compare in a sane way?
         if (!(d instanceof Rosella.Date))
             Rosella.Error.invalid("Cannot compare Date and non-Date PMC");
         if (d instanceof Rosella.Date.SpecialDate)
