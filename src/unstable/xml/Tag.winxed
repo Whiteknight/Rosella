@@ -152,6 +152,10 @@ class Rosella.Xml.Tag.XmlHeader : Rosella.Xml.Tag
     }
 }
 
+
+// TODO: The DtdHeader should generate a DtdDocument. If a path is given it
+// should load the document from the path. If inline tags are given, it should
+// use them instead. If both, standard rules for scoping apply.
 class Rosella.Xml.Tag.DtdHeader : Rosella.Xml.Tag
 {
     var doctype;

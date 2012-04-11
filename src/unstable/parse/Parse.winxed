@@ -1,8 +1,6 @@
 /* Parser Utilities Library
     This library contains several utilities for parsing text.
 */
-// TODO: StringBuilder appears to be a very inefficient mechanism for this use
-// pattern.
 namespace Rosella.Parse
 {
     // Setup all the data structures we need for a parse. These structures

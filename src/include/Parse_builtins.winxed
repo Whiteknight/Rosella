@@ -45,6 +45,8 @@ inline have_more_chars(var s, var b) return int
 
 inline add_char_to_builder(var sb, int c)
 {
+    // TODO: Uncomment this when the StringBuilder.push_integer vtable is
+    // stable in Parrot core
     // push(sb, c);
     push(sb, chr(c));
 }

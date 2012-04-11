@@ -70,8 +70,11 @@ class Rosella.Xml.Document
     {
         // TODO: Validate the document. If we have a DTD, verify we satisfy it.
         // Read out the version and encoding info from the heading and verify
-        // that we match
+        // that we match.
     }
+
+    // TODO: Store a reference to a DTD document here. The dtd header tag should
+    // be used to feed data into the document.
 }
 
 class Rosella.Xml.DtdDocument
