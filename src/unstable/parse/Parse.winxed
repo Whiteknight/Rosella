@@ -259,15 +259,15 @@ namespace Rosella.Parse
     // Parse out the remainder of the string
     function parse_remainder(string _str, var s, var b, int len)
     {
-        // TODO: If s is empty, we should be able to read the rest of the
-        // string out of b more easily.
+        string rem = substr(_str, length(_str) - elements(b));
+        if (elements(s) == 0)
+            return rem;
         var sb = new 'StringBuilder';
-        while (have_more_chars(s, b)) {
-            int c = get_next(s, b);
-            if (c == ASCII_NULL)
-                break;
+        while(elements(s) > 0) {
+            c = shift_int(s);
             add_char_to_builder(sb, c);
         }
+        push(sb, rem);
         return sb;
     }
 

@@ -161,8 +161,7 @@ class Rosella.Net.Protocol.Http : Rosella.Net.Protocol
     {
         int hex_class = Rosella.String.get_character_class("hexadecimal");
         while(true) {
-            // TODO: user_agent.request_progress()
-            // TODO: This is untested
+            // TODO: Chunked receive
             say("CHUNKED");
             string line = socket.readline();
             int line_length = length(line);
