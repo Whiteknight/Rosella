@@ -27,7 +27,7 @@ class Rosella.Template.Handler.Include : Rosella.Template.Handler
     function to_winxed(var engine, var builder)
     {
         push(builder, "\n    // Begin template from '" + string(self.filename) + "'\n");
-        engine.compile_to_winxed_from_file(self.filename, builder, 1:[named("recurse")]);
+        engine.compile_to_winxed_file_recurse(self.filename, builder, 1:[named("recurse")]);
         push(builder, "    // End template from '" + string(self.filename) + "'\n\n");
     }
 }

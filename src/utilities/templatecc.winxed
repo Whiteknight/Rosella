@@ -32,8 +32,6 @@ function template_cc_main(var args)
         string wx_code = engine.compile_to_winxed_from_file(template);
         say(wx_code);
     } else {
-        //var code = engine.compile_from_file(template);
-        // TODO: Currently this is an Eval PMC. When it's a PackfileView we can
-        // save it to file.
+        var code = engine.compile_from_file(template);
     }
 }

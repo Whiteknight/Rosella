@@ -24,8 +24,21 @@ class Rosella.Template.Node.Master : Rosella.Template.Node
     function to_winxed(var engine, var builder)
     {
         int master_idx = Rosella.get_unique_count();
+        self.__to_winxed("__TMPL_" + string(master_idx), engine, builder);
+    }
+
+    function to_winxed_master(var engine, var builder)
+    {
+        int master_idx = Rosella.get_unique_count();
+        string func_name = "__TMPL_" + string(master_idx);
+        self.__to_winxed(func_name, engine, builder);
+        return func_name;
+    }
+
+    function __to_winxed(string func_name, var engine, var builder)
+    {
         string preamble = <<:
-function __TMPL_%d[anon](var __CONTEXT_RAW__)
+function %s[anon](var __CONTEXT_RAW__)
 {
     var __CONTEXT__ = new Rosella.Template.Context(__CONTEXT_RAW__);
     var __BUILDER__ = new 'StringBuilder';
@@ -33,7 +46,7 @@ function __TMPL_%d[anon](var __CONTEXT_RAW__)
     var __RESULTS__ = null;
 :>>
 ;
-        preamble = Rosella.String.sprintf(preamble, master_idx);
+        preamble = Rosella.String.sprintf(preamble, func_name);
         push(builder, preamble);
         for (var child in self.children)
             child.to_winxed(engine, builder);

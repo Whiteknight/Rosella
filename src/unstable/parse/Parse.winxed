@@ -264,7 +264,7 @@ namespace Rosella.Parse
             return rem;
         var sb = new 'StringBuilder';
         while(elements(s) > 0) {
-            c = shift_int(s);
+            int c = shift_int(s);
             add_char_to_builder(sb, c);
         }
         push(sb, rem);
