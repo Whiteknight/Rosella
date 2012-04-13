@@ -1,0 +1,44 @@
+namespace Rosella.Net {
+    extern function get_protocol;
+    extern function tcp_socket_factory;
+    extern function default_mime_encoder;
+}
+
+namespace Rosella.Net.Http {
+    extern function format_request_header;
+    extern function get_host_information;
+}
+
+namespace Rosella.Net.Http.Response { }
+
+namespace Rosella.Net.Uri {
+    extern function percent_encode;
+    extern function percent_encode_component;
+    extern function default_uri_factory;
+    extern function get_uri;
+}
+
+class Rosella.Net.Http.Header;
+class Rosella.Net.Http.Request;
+class Rosella.Net.Http.Request.FormData;
+class Rosella.Net.Http.Request.FormDataFile;
+class Rosella.Net.Http.Request.FormDataPair;
+class Rosella.Net.Http.Response;
+class Rosella.Net.MimeBase64;
+class Rosella.Net.Protocol;
+class Rosella.Net.Protocol.Factory;
+class Rosella.Net.Protocol.File;
+class Rosella.Net.Protocol.Http;
+class Rosella.Net.Uri;
+class Rosella.Net.Uri.Factory;
+class Rosella.Net.Uri.File;
+class Rosella.Net.Uri.Http;
+class Rosella.Net.UserAgent;
+class Rosella.Net.UserAgent.SimpleHttp;
+class Rosella.Net.SocketFactory;
+
+
+function __include_net [anon,init,load] ()
+{
+    Rosella.load_bytecode_file('rosella/net.pbc', 'load');
+}

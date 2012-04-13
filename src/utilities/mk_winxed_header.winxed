@@ -38,7 +38,7 @@ function mk_header_main(var args)
         .foreach(function(c) { Rosella.IO.sayf("class %s;", c); });
 
     if (rosella_mode) {
-        var fpath = new Rosella.FileSystem.FilePath(libpath);
+        var fpath = new Rosella.FileSystem.Path(libpath, 0);
         string libname_short = fpath.short_name_no_ext();
         string libname = fpath.short_name();
         Rosella.IO.sayf("\n\nfunction __include_%s [anon,init,load] ()\n{", libname_short);
