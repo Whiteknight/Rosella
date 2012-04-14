@@ -524,7 +524,8 @@ function setup_include_headers(var rosella)
         "src/include/Repl.winxed"           : "Rosella/Repl.winxed",
         "src/include/String.winxed"         : "Rosella/String.winxed",
         "src/include/Template.winxed"       : "Rosella/Template.winxed",
-        "src/include/Test.winxed"           : "Rosella/Test.winxed"
+        "src/include/Test.winxed"           : "Rosella/Test.winxed",
+        "src/include/Winxed.winxed"         : "Rosella/Winxed.winxed"
     };
 }
 

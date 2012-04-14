@@ -1,0 +1,21 @@
+namespace Rosella.Winxed.Distutils {
+    extern function make_path_for;
+    extern function build_winxed_files;
+    extern function build_winxed_const_includes;
+    extern function build_concat_winxed_files;
+    extern function delete_files;
+    extern function install_winxed_headers;
+    extern function uninstall_winxed_headers;
+    extern function get_pir_file_name;
+    extern function compile_to_pir;
+    extern function compile_to_pasm_include;
+    extern function delete_file;
+    extern function needs_updating_all;
+    extern function needs_updating;
+    extern function concat_files;
+}
+
+function __include_winxed [anon,init,load] ()
+{
+    Rosella.load_bytecode_file('rosella/winxed.pbc', 'load');
+}
