@@ -1,0 +1,25 @@
+namespace Rosella.Json {
+    extern function parse;
+    extern function default_builder_factory;
+}
+
+namespace Rosella.Json.Parser { }
+
+class Rosella.Json.Builder;
+class Rosella.Json.Builder.Factory;
+class Rosella.Json.Builder.DataObject;
+class Rosella.Json.Dumper;
+class Rosella.Json.DumpHandler.Array;
+class Rosella.Json.DumpHandler.Hash;
+class Rosella.Json.DumpHandler.Object;
+class Rosella.Json.DumpHandler.Null;
+class Rosella.Json.DumpHandler.Integer;
+class Rosella.Json.DumpHandler.Float;
+class Rosella.Json.DumpHandler.String;
+class Rosella.Json.DumpHandler.Boolean;
+
+
+function __include_json [anon,init,load] ()
+{
+    Rosella.load_bytecode_file('rosella/json.pbc', 'load');
+}
