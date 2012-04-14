@@ -6,9 +6,21 @@ namespace Rosella.Json
         return dumper.dump(obj);
     }
 
-    function parse(string json)
+    function parse(string json, var builder = null)
     {
         :(json, var s, var b, int len) = Rosella.Parse.setup_parse(json);
-        return Rosella.Json.Parser.__parse_value(json, s, b, len);
+        if (builder == null)
+            builder = Rosella.Json.default_builder_factory().create();
+        builder.start();
+        Rosella.Json.Parser.__parse_value(json, s, b, len, "", builder);
+        return builder.get_value();
+    }
+
+    const string DEFAULT_BUILDER_FACTORY = "Rosella.Json.default_builder_factory";
+    function default_builder_factory()
+    {
+        return Rosella.Globals.autoget_global(DEFAULT_BUILDER_FACTORY,
+            function () { return new Rosella.Json.Builder.Factory(); }
+        );
     }
 }

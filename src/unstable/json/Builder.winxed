@@ -1,0 +1,30 @@
+class Rosella.Json.Builder
+{
+    function Builder()
+    {
+        Rosella.Error.error("Rosella.Json.Builder is an abstract parent type and should not be used directly");
+    }
+
+    function start() { }
+
+    function start_array(string name) { }
+
+    function end_array() { }
+
+    function start_object(string name) { }
+
+    function end_object() { }
+
+    function add_string(string name, string value) { }
+
+    function add_integer(string name, int value) { }
+
+    function add_number(string name, float value) { }
+
+    function add_boolean(string name, int value) { }
+
+    function add_null(string name) { }
+
+    function get_value() { }
+
+}

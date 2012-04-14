@@ -418,6 +418,9 @@ function setup_experimental_libraries(var rosella)
     setup_unstable_lib(rosella, "json", ["Core", "Ascii", "Parse_builtins", "Parse", "Dumper"],
         "json/Includes",
         "json/Json",
+        "json/Builder",
+        "json/builder/Factory",
+        "json/builder/DataObject",
         "json/Dumper",
         "json/DumpHandler",
         "json/Parser"

@@ -1,0 +1,112 @@
+class Rosella.Json.Builder.DataObject : Rosella.Json.Builder
+{
+    var stack;
+    var current;
+    var root;
+
+    function DataObject()
+    {
+        self.stack = [];
+        self.current = null;
+        self.root = null;
+    }
+
+    function start() { }
+
+    function start_array(string name)
+    {
+        var a = [];
+        if (self.current != null) {
+            if (self.current instanceof 'ResizablePMCArray') {
+                //int idx = int(name);
+                // TODO: We can safely assume that the value is next in line
+                push(self.current, a);
+            } else if (self.current instanceof 'Hash') {
+                self.current[name] = a;
+            }
+        } else {
+            self.root = a;
+        }
+        push(self.stack, self.current);
+        self.current = a;
+    }
+
+    function end_array()
+    {
+        self.current = self.stack.pop();
+    }
+
+    function start_object(string name)
+    {
+        var a = {};
+        if (self.current != null) {
+            if (self.current instanceof 'ResizablePMCArray') {
+                //int idx = int(name);
+                // TODO: We can safely assume that the value is next in line
+                push(self.current, a);
+            } else if (self.current instanceof 'Hash') {
+                self.current[name] = a;
+            }
+        } else {
+            self.root = a;
+        }
+        push(self.stack, a);
+        self.current = a;
+    }
+
+    function end_object()
+    {
+        self.current = self.stack.pop();
+    }
+
+    function add_string(string name, string value)
+    {
+        if (self.current == null)
+            self.root = var(value);
+        else if (self.current instanceof 'ResizablePMCArray')
+            push(self.current, var(value));
+        else if (self.current instanceof 'Hash')
+            self.current[name] = value;
+    }
+
+    function add_integer(string name, int value)
+    {
+        if (self.current == null)
+            self.root = var(value);
+        else if (self.current instanceof 'ResizablePMCArray')
+            push(self.current, var(value));
+        else if (self.current instanceof 'Hash')
+            self.current[name] = value;
+    }
+
+    function add_number(string name, float value)
+    {
+        if (self.current == null)
+            self.root = value;
+        else if (self.current instanceof 'ResizablePMCArray')
+            push(self.current, var(value));
+        else if (self.current instanceof 'Hash')
+            self.current[name] = value;
+    }
+
+    function add_boolean(string name, int value)
+    {
+        var v = new 'Boolean'(value);
+        if (self.current == null)
+            self.root = v;
+        else if (self.current instanceof 'ResizablePMCArray')
+            push(self.current, v);
+        else if (self.current instanceof 'Hash')
+            self.current[name] = v;
+    }
+
+    function add_null(string name)
+    {
+        if (self.current instanceof 'ResizablePMCArray')
+            push(self.current, null);
+        else if (self.current instanceof 'Hash')
+            self.current[name] = null;
+    }
+
+    function get_value() { return self.root; }
+}
