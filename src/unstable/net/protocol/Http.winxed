@@ -161,8 +161,6 @@ class Rosella.Net.Protocol.Http : Rosella.Net.Protocol
     {
         int hex_class = Rosella.String.get_character_class("hexadecimal");
         while(true) {
-            // TODO: Chunked receive
-            say("CHUNKED");
             string line = socket.readline();
             int line_length = length(line);
             int substr_idx = Rosella.String.first_not_cclass(line, hex_class);
@@ -173,8 +171,10 @@ class Rosella.Net.Protocol.Http : Rosella.Net.Protocol
             string raw = socket.read(chunk_length);
             push(buf, raw);
             socket.readline();
+            user_agent.request_progress_tick();
         }
-        self.__receive_header(socket, response.header());
+        var header_lines = self.__receive_header(socket);
+        response.header().set_header_lines(header_lines);
     }
 
     // Receive response content.

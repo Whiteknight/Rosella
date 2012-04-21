@@ -35,6 +35,10 @@ class Rosella.Net.UserAgent
     // not yet started and 1.0 is the request completed
     function request_progress(float percent) { }
 
+    // The request is executing. Progress has been made, but exactly how much
+    // can not be determined.
+    function request_progress_tick() { }
+
     // The request is complete
     function request_complete() { }
 
