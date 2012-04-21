@@ -325,6 +325,10 @@ function setup_stable_libraries(var rosella)
         "reflect/Module",
         "reflect/OpArg"
     );
+
+    setup_winxed_lib(rosella, "parse", ["Core", "Ascii", "Parse_builtins"],
+        "parse/Parse"
+    );
 }
 
 function setup_experimental_libraries(var rosella)
@@ -400,10 +404,6 @@ function setup_experimental_libraries(var rosella)
         "net/UserAgent",
         "net/useragent/SimpleHttp",
         "net/SocketFactory"
-    );
-
-    setup_unstable_lib(rosella, "parse", ["Core", "Ascii", "Parse_builtins"],
-        "parse/Parse"
     );
 
     setup_unstable_lib(rosella, "xml", ["Core", "Ascii", "Parse_builtins", "Parse", "String", "FileSystem"],
