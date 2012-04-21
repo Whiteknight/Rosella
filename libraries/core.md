@@ -284,6 +284,12 @@ The `Rosella.Version` class is used as the return object from the
 `Rosella.Version.get_version` function. It encapsulates version information
 from individual Rosella libraries.
 
+## Winxed Include Files
+
+### Rosella/Builtins.winxed
+
+### Rosella/Math_Builtins.winxed
+
 ## Examples
 
 ### Winxed
