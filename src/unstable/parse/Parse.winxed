@@ -184,7 +184,7 @@ namespace Rosella.Parse
                 break;
             }
             int i = dec_codepoint_to_integer(c);
-            value = (value * 10) | i;
+            value = (value * 10) + i;
             chars++;
             if (chars >= maxchars)
                 break;
@@ -227,7 +227,7 @@ namespace Rosella.Parse
     {
         var sb = new 'StringBuilder';
         int c = ASCII_NULL;
-        while (have_more_chars(s, b)) {
+        while (true) {
             c = get_next(s, b);
             if (c == marker)
                 break;
@@ -245,7 +245,7 @@ namespace Rosella.Parse
     {
         var sb = new 'StringBuilder';
         int c = ASCII_NULL;
-        while (have_more_chars(s, b)) {
+        while (true) {
             c = get_next(s, b);
             if (c == ma || c == mb)
                 break;
