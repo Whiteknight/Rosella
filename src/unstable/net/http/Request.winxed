@@ -1,3 +1,6 @@
+/* HTTP Request
+    This class represents an HTTP request.
+*/
 class Rosella.Net.Http.Request : Rosella.Net.Request
 {
     var header;
@@ -8,6 +11,7 @@ class Rosella.Net.Http.Request : Rosella.Net.Request
     var form_data;
     var is_form_data;
 
+    // Constructor
     function Request()
     {
         self.header = new Rosella.Net.Http.Header();
@@ -208,23 +212,28 @@ class Rosella.Net.Http.Request.FormData
 {
     var name;
 
+    // Constructor
     function FormData(string name)
     {
         self.name = name;
     }
 
+    // get the name of the field
     function field_name() { return self.name; }
 
+    // Get the content as it would appear in a multipart request
     function get_multipart_content_string()
     {
         Rosella.Error.must_subclass(__CLASS__);
     }
 
+    // Get the content as it would appear in a normal POST request
     function get_post_content_string()
     {
         Rosella.Error.must_subclass(__CLASS__);
     }
 
+    // Return true if this type of data requires multipart
     function requires_multipart() { return false; }
 }
 
@@ -237,6 +246,7 @@ class Rosella.Net.Http.Request.FormDataFile : Rosella.Net.Http.Request.FormData
     var mimetype;
     var encoding;
 
+    // Constructor
     function FormDataFile(string name, var f, string mimetype = "", string encoding = "binary")
     {
         self.file = f;
@@ -245,9 +255,11 @@ class Rosella.Net.Http.Request.FormDataFile : Rosella.Net.Http.Request.FormData
         self.FormData(name);
     }
 
+    // File uploads require multipart
     function requires_multipart() { return true; }
 
-    function get_content_string()
+    // Get the text for a multipart request
+    function get_multipart_content_string()
     {
         var sb = new 'StringBuilder';
         push(sb, "Content-Disposition: form-data; name=\"");
@@ -287,13 +299,15 @@ class Rosella.Net.Http.Request.FormDataPair : Rosella.Net.Http.Request.FormData
 {
     var value;
 
+    // Constructor
     function FormDataPair(string name, string value)
     {
         self.FormData(name);
         self.value = value;
     }
 
-    function get_content_string()
+    // Get the multipart string for this data
+    function get_multipart_content_string()
     {
         var sb = new 'StringBuilder';
         push(sb, "Content-Disposition: form-data; name=\"");
@@ -305,6 +319,7 @@ class Rosella.Net.Http.Request.FormDataPair : Rosella.Net.Http.Request.FormData
         return sb;
     }
 
+    // Get the POST-style string for this data
     function get_post_content_string()
     {
         return self.value;

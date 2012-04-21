@@ -1,17 +1,25 @@
+/* Protocol Factory
+    The protocol factory clas takes a Uri object and determines the correct
+    protocol handler to use to fulfill that request.
+*/
 class Rosella.Net.Protocol.Factory : Rosella.ObjectFactory
 {
     var types;
 
+    // Constructor
     function Factory()
     {
         self.types = {};
     }
 
+    // Add a new protocol to the list of known types for this factory. The
+    // protocol object tells what types of Uris can be handled
     function add_protocol(var protocol)
     {
         self.types[string(protocol.protocol_name())] = protocol;
     }
 
+    // Create a Protocol for the given URI
     function create(var uri)
     {
         string pname = uri.protocol();
@@ -19,6 +27,7 @@ class Rosella.Net.Protocol.Factory : Rosella.ObjectFactory
         return protocol;
     }
 
+    // Cannot do create_typed.
     function create_typed(var type)
     {
         Rosella.Error.error("Cannot create_typed with a Protocol.Factory");

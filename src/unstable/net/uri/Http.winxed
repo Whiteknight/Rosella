@@ -1,3 +1,6 @@
+/* HTTP Uri scheme
+    This class represents an HTTP or an HTTPS URI.
+*/
 class Rosella.Net.Uri.Http : Rosella.Net.Uri
 {
     function Http(string protocol, string uri) { self.Uri(protocol, uri); }

@@ -32,6 +32,7 @@ namespace Rosella.Net.Http
         return s;
     }
 
+    // Format an HTTP request header, given an HTTP.Header object
     function format_request_header(string request_method, string fullpath, var request_header)
     {
         var sb = new 'StringBuilder';
@@ -45,6 +46,8 @@ namespace Rosella.Net.Http
         return sb;
     }
 
+    // Get the target host information, taking into account the existence of a
+    // proxy
     function get_host_information(var request, var proxy, var user_agent)
     {
         string request_method = request.get_method();

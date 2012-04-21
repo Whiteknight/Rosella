@@ -1,19 +1,26 @@
+/* URI Factory
+    This factory reads the protocol from the URI and creates a suitable URI
+    parser for it.
+*/
 class Rosella.Net.Uri.Factory : Rosella.ObjectFactory
 {
-    var uri_types;
-    var default_type;
+    var uri_types;      // Known types of URIs
+    var default_type;   // The default URI class, to use for unrecognized protocols
 
+    // Constructor
     function Factory()
     {
         self.uri_types = {};
         self.default_type = class Rosella.Net.Uri;
     }
 
+    // Set the type of URI parser object to use for the given protocol
     function add_uri_type(string protocol, var type)
     {
         self.uri_types[protocol] = type;
     }
 
+    // Create a URI object for the given URI string
     function create(string uristr)
     {
         :(uristr, var s, var b, int len) = Rosella.Parse.setup_parse(uristr);
@@ -32,6 +39,9 @@ class Rosella.Net.Uri.Factory : Rosella.ObjectFactory
         return uri;
     }
 
+    // Create a URI object of the given type with the given URI string.
+    // This is probably not what you want, unless you know exactly what you are
+    // doing
     function create_typed(var type, string uristr)
     {
         int s[] = [];

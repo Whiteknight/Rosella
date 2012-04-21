@@ -1,3 +1,6 @@
+/* File URI Scheme
+    This class represents a local file:// URI
+*/
 class Rosella.Net.Uri.File : Rosella.Net.Uri
 {
     function File(string protocol, string uri) { self.Uri(protocol, uri); }
@@ -32,7 +35,7 @@ class Rosella.Net.Uri.File : Rosella.Net.Uri
         if (get_next(s, b) != ASCII_COLON ||
             get_next(s, b) != ASCII_SLASH ||
             get_next(s, b) != ASCII_SLASH)
-            Rosella.Error.error("File urls should begin with 'file://'");
+            Rosella.Error.error("File uris should begin with 'file://'");
 
         // Read out the authority information this is everything between the protocol and
         // the first forward slash (or end of string)

@@ -1,28 +1,40 @@
+/* HTTP Response Utility Namespace
+    This namespace contains some common and error-handling routines for use with
+    HTTP Responses
+*/
 namespace Rosella.Net.Http.Response
 {
+    // Return an error response for a bad protocol
     function __error_bad_protocol(string protocol, string expected)
     {
         string msg = Rosella.String.sprintf("Bad protocol. Expected '%s' but have '%s'", expected, protocol);
         return new Rosella.Net.Http.Response(RC_INTERNAL_SERVER_ERROR, msg);
     }
 
+    // Return an error response when the resource cannot be found
     function __error_not_found(string path)
     {
         string msg = Rosella.String.sprintf("Could not find resource '%s'", path);
         return new Rosella.Net.Http.Response(RC_NOT_FOUND, msg);
     }
 
+    // Return an error response for network/socket errors
     function __error_network_failure(var request)
     {
         return new Rosella.Net.Http.Response(RC_INTERNAL_SERVER_ERROR, "Network error");
     }
 
+    // Return an error response for errors during receive
     function __error_receive_failure(var request, var response)
     {
         return new Rosella.Net.Http.Response(RC_INTERNAL_SERVER_ERROR, "Error during data receive");
     }
 }
 
+/* HTTP Response object
+    This class represents a response from HTTP requests. It contains the
+    response content, response status and all response headers
+*/
 class Rosella.Net.Http.Response : Rosella.Net.Response
 {
     var header;
@@ -32,6 +44,7 @@ class Rosella.Net.Http.Response : Rosella.Net.Response
     var previous;
     var request;
 
+    // Constructor
     function Response(int code, string message = "", var previous = null, var request = null)
     {
         self.code = code;
@@ -41,10 +54,18 @@ class Rosella.Net.Http.Response : Rosella.Net.Response
         self.header = new Rosella.Net.Http.Header();
     }
 
+    /* Header Routines
+        These routines are used to get, set, and manipulate the response Header
+    */
+
     function header() { return self.header; }
     function get_header(string name) { return self.header.get_value(name); }
     function add_header(string name, string value) { self.header.add_value(name, value); }
 
+    /* Content Routines
+    */
+
+    // Get the response content
     function get_content()
     {
         if (self.content == null)
@@ -52,16 +73,24 @@ class Rosella.Net.Http.Response : Rosella.Net.Response
         return string(self.content);
     }
 
+    // Set the response content
     function set_content(string content)
     {
+        if (self.content != null)
+            Rosella.Error.error("Content has already been set for this response");
         self.content = content;
     }
 
+    /* Other Routines
+    */
+
+    // Get the status code
     function status_code()
     {
         return int(self.code);
     }
 
+    // Get the content length, from the header
     function get_content_length_header()
     {
         string content_length = self.header.get_value("Content-Length");

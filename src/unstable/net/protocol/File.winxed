@@ -1,9 +1,15 @@
+/* File Protocol
+    This class implements the file:// protocol for fetching local resources
+*/
 class Rosella.Net.Protocol.File : Rosella.Net.Protocol
 {
+    // Constructor
     function File() { }
 
+    // The name of this protocol is "file"
     function protocol_name() { return "file"; }
 
+    // Perform a request with the given user agent.
     function request(var request, var user_agent)
     {
         var proxy = request.get_proxy();
@@ -30,6 +36,10 @@ class Rosella.Net.Protocol.File : Rosella.Net.Protocol
         return response;
     }
 
+    /* Private Handler Routines
+    */
+
+    // Perform a HEAD
     function __request_HEAD(var request, var user_agent, string path, var proxy)
     {
         var f = new Rosella.FileSystem.File(path);
@@ -41,6 +51,7 @@ class Rosella.Net.Protocol.File : Rosella.Net.Protocol
         return response;
     }
 
+    // Perform a GET
     function __request_GET(var request, var user_agent, string path, var proxy)
     {
         var f = new Rosella.FileSystem.File(path);
@@ -56,6 +67,7 @@ class Rosella.Net.Protocol.File : Rosella.Net.Protocol
         return response;
     }
 
+    // Perform a PUT
     function __request_PUT(var request, var user_agent, string path, var proxy)
     {
         var f = new Rosella.FileSystem.File(path);
@@ -67,6 +79,7 @@ class Rosella.Net.Protocol.File : Rosella.Net.Protocol
         return response;
     }
 
+    // Perform a DELETE
     function __request_DELETE(var request, var user_agent, string path, var proxy)
     {
         var f = new Rosella.FileSystem.File(path);
