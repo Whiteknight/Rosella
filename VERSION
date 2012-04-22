@@ -10,7 +10,7 @@ dumper: 1 Stable
 event: 4 Alpha
 filesystem: 1 Stable
 harness: 3 Stable
-json: 0 Alpha
+json: 1 Stable
 lazy: 0 Alpha
 memoize: 1 Stable
 mockobject: 2 Stable

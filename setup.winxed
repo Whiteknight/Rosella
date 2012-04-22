@@ -329,6 +329,17 @@ function setup_stable_libraries(var rosella)
     setup_winxed_lib(rosella, "parse", ["Core", "Ascii", "Parse_builtins"],
         "parse/Parse"
     );
+
+    setup_winxed_lib(rosella, "json", ["Core", "Ascii", "Parse_builtins", "Parse", "Dumper"],
+        "json/Includes",
+        "json/Json",
+        "json/Builder",
+        "json/builder/Factory",
+        "json/builder/DataObject",
+        "json/Dumper",
+        "json/DumpHandler",
+        "json/Parser"
+    );
 }
 
 function setup_experimental_libraries(var rosella)
@@ -413,17 +424,6 @@ function setup_experimental_libraries(var rosella)
         "xml/Parser",
         "xml/Tag",
         "xml/Text"
-    );
-
-    setup_unstable_lib(rosella, "json", ["Core", "Ascii", "Parse_builtins", "Parse", "Dumper"],
-        "json/Includes",
-        "json/Json",
-        "json/Builder",
-        "json/builder/Factory",
-        "json/builder/DataObject",
-        "json/Dumper",
-        "json/DumpHandler",
-        "json/Parser"
     );
 }
 
