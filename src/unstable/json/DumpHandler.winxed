@@ -1,3 +1,4 @@
+// Dump handler for arrays and array-like objects
 class Rosella.Json.DumpHandler.Array : Rosella.Dumper.DumpHandler.Array
 {
     // Dump the array
@@ -13,6 +14,7 @@ class Rosella.Json.DumpHandler.Array : Rosella.Dumper.DumpHandler.Array
     }
 }
 
+// Dump handler for hashes and string-keyed objects
 class Rosella.Json.DumpHandler.Hash : Rosella.Dumper.DumpHandler.Hash
 {
     function dump(var dump, var emit, var obj)
@@ -34,6 +36,7 @@ class Rosella.Json.DumpHandler.Hash : Rosella.Dumper.DumpHandler.Hash
     }
 }
 
+// Dump handler for non-array, non-hash user defined types
 class Rosella.Json.DumpHandler.Object : Rosella.Dumper.DumpHandler.Object
 {
     function dump(var dump, var emit, var obj)
@@ -65,6 +68,7 @@ class Rosella.Json.DumpHandler.Object : Rosella.Dumper.DumpHandler.Object
     }
 }
 
+// Dump handler for null
 class Rosella.Json.DumpHandler.Null : Rosella.Dumper.DumpHandler
 {
     function can_dump(var obj) { return obj == null; }
@@ -72,6 +76,7 @@ class Rosella.Json.DumpHandler.Null : Rosella.Dumper.DumpHandler
     function dump(var dump, var emit, var obj) { emit.text("null"); }
 }
 
+// Dump handler for integers
 class Rosella.Json.DumpHandler.Integer : Rosella.Dumper.DumpHandler
 {
     function can_dump(var obj) { return true; }
@@ -79,6 +84,7 @@ class Rosella.Json.DumpHandler.Integer : Rosella.Dumper.DumpHandler
     function dump(var dump, var emit, var obj) { emit.text("%d", int(obj)); }
 }
 
+// Dump handler for floating-point values
 class Rosella.Json.DumpHandler.Float : Rosella.Dumper.DumpHandler
 {
     function can_dump(var obj) { return true; }
@@ -86,13 +92,16 @@ class Rosella.Json.DumpHandler.Float : Rosella.Dumper.DumpHandler
     function dump(var dump, var emit, var obj) { emit.text("%f", float(obj)); }
 }
 
+// Dump handler for strings
 class Rosella.Json.DumpHandler.String : Rosella.Dumper.DumpHandler
 {
     function can_dump(var obj) { return true; }
 
+    // TODO: Need to escape quotes in the string
     function dump(var dump, var emit, var obj) { emit.text("'%s'", obj); }
 }
 
+// Dump handler for boolean values
 class Rosella.Json.DumpHandler.Boolean : Rosella.Dumper.DumpHandler
 {
     function can_dump(var obj) { return true; }

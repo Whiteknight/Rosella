@@ -1,3 +1,6 @@
+/* JSON Dumper
+    This class can be used to dump a nested data object to a string of JSON
+*/
 class Rosella.Json.Dumper : Rosella.Dumper
 {
     // Get the default set of role dumpers
@@ -17,6 +20,7 @@ class Rosella.Json.Dumper : Rosella.Dumper
         };
     }
 
+    // Get a hash of dumpers for specific types
     function default_type_dumpers()
     {
         return {
@@ -27,13 +31,13 @@ class Rosella.Json.Dumper : Rosella.Dumper
         };
     }
 
-
     // Get the default fallback dumper
     function default_fallback_dumper()
     {
         return null;
     }
 
+    // A dumper for null values
     function default_null_dumper()
     {
         return new Rosella.Json.DumpHandler.Null;

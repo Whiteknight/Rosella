@@ -1,9 +1,14 @@
+/* Data Object Builder
+    This Builder reads from a string of JSON and outputs a nested structure of
+    basic Parrot Hash and ResizablePMCArray objects.
+*/
 class Rosella.Json.Builder.DataObject : Rosella.Json.Builder
 {
     var stack;
     var current;
     var root;
 
+    // Constructor
     function DataObject()
     {
         self.stack = [];
@@ -11,8 +16,10 @@ class Rosella.Json.Builder.DataObject : Rosella.Json.Builder
         self.root = null;
     }
 
+    // Start Building
     function start() { }
 
+    // Start a new array. Create a ResizablePMCArray
     function start_array(string name)
     {
         var a = [];
@@ -31,11 +38,13 @@ class Rosella.Json.Builder.DataObject : Rosella.Json.Builder
         self.current = a;
     }
 
+    // End the current array
     function end_array()
     {
         self.current = self.stack.pop();
     }
 
+    // Start a new object. Create a Hash
     function start_object(string name)
     {
         var a = {};
@@ -54,11 +63,13 @@ class Rosella.Json.Builder.DataObject : Rosella.Json.Builder
         self.current = a;
     }
 
+    // End the current object
     function end_object()
     {
         self.current = self.stack.pop();
     }
 
+    // Add a string
     function add_string(string name, string value)
     {
         if (self.current == null)
@@ -69,6 +80,7 @@ class Rosella.Json.Builder.DataObject : Rosella.Json.Builder
             self.current[name] = value;
     }
 
+    // Add an integer
     function add_integer(string name, int value)
     {
         if (self.current == null)
@@ -79,6 +91,7 @@ class Rosella.Json.Builder.DataObject : Rosella.Json.Builder
             self.current[name] = value;
     }
 
+    // Add a floating-point number
     function add_number(string name, float value)
     {
         if (self.current == null)
@@ -89,6 +102,7 @@ class Rosella.Json.Builder.DataObject : Rosella.Json.Builder
             self.current[name] = value;
     }
 
+    // Add a boolean value
     function add_boolean(string name, int value)
     {
         var v = new 'Boolean'(value);
@@ -100,6 +114,7 @@ class Rosella.Json.Builder.DataObject : Rosella.Json.Builder
             self.current[name] = v;
     }
 
+    // Add a null value
     function add_null(string name)
     {
         if (self.current instanceof 'ResizablePMCArray')
@@ -108,5 +123,6 @@ class Rosella.Json.Builder.DataObject : Rosella.Json.Builder
             self.current[name] = null;
     }
 
+    // Return the created structure
     function get_value() { return self.root; }
 }

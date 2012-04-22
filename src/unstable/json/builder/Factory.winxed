@@ -1,3 +1,7 @@
+/* Builder Factory
+    This factory type creates a basic Builder object for assembling a data
+    structure from Parsed JSON
+*/
 class Rosella.Json.Builder.Factory : Rosella.ObjectFactory
 {
     function Factory()

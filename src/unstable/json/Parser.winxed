@@ -1,5 +1,10 @@
+/* JSON Parser Namespace
+    A Rosella.Parse-based parser for JSON strings.
+*/
 namespace Rosella.Json.Parser
 {
+    // Parse a value. A value may be an array, an object, a true/false boolean
+    // value, a number or null.
     function __parse_value(string json, var s, var b, int len, string name, var builder)
     {
         eat_whitespace(s, b);
@@ -61,6 +66,7 @@ namespace Rosella.Json.Parser
         Rosella.Parse.error_unknown_char(c, "parse json value", current_position(len, s, b));
     }
 
+    // Parse an object. The opening '{' should already have been read
     function __parse_object(string json, var s, var b, int len, var builder)
     {
         while(have_more_chars(s, b)) {
@@ -101,6 +107,7 @@ namespace Rosella.Json.Parser
         Rosella.Parse.error_unknown_char(ASCII_NULL, "json object", current_position(len, s, b));
     }
 
+    // Parse an array. The opening '[' shoudl already have been read
     function __parse_array(string json, var s, var b, int len, var builder)
     {
         eat_whitespace(s, b);
