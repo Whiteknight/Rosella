@@ -1,0 +1,48 @@
+/* Data Structure Builder
+    Builder objects are used to construct nested data structures from a JSON
+    string input. This is the abstract parent type of builders and identifies
+    the integerface that all builders must implement.
+*/
+class Rosella.Json.Builder
+{
+    function Builder()
+    {
+        Rosella.Error.error("Rosella.Json.Builder is an abstract parent type and should not be used directly");
+    }
+
+    // Start the build
+    function start() { }
+
+    // Start a new array, with the given name
+    function start_array(string name) { }
+
+    // End the current array
+    function end_array() { }
+
+    // Start a new object, with the given name
+    function start_object(string name) { }
+
+    // End the current object
+    function end_object() { }
+
+    // Add a string, with the given name
+    function add_string(string name, string value) { }
+
+    // Add an integer value, with the given name
+    function add_integer(string name, int value) { }
+
+    // Add a floating point number with the given name
+    function add_number(string name, float value) { }
+
+    // Add a true/false boolean value with the given name
+    function add_boolean(string name, int value) { }
+
+    // Add a null value with the given name
+    function add_null(string name) { }
+
+    // Get the created data structure
+    function get_value()
+    {
+        Rosella.Error.must_subclass(__CLASS__);
+    }
+}
