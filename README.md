@@ -67,23 +67,9 @@ details about all libraries, what they do, and how to use them, see the
 
 ## Stable Libraries
 
-These libraries are considered stable enough for most uses. These are all
-tested and documented.
-
-1.  Core (rosella/core.pbc)
-2.  Action (rosella/action.pbc)
-3.  Container (rosella/container.pbc)
-4.  Test (rosella/test.pbc)
-5.  TAP Harness (rosella/tap_harness.pbc)
-6.  Proxy (rosella/proxy.pbc)
-7.  Mock Object (rosella/mockobject.pbc)
-8.  Event (rosella/event.pbc)
-9.  Winxed (rosella/winxed.pbc)
-10. Memoize (rosella/memoize.pbc)
-11. Query (rosella/query.pbc)
-12. FileSystem (rosella/filesystem.pbc)
-13. Path (rosella/path.pbc)
-14. String (rosella/string.pbc)
+Several libraries are marked "Stable". These are the libraries which are
+considered to be the normal part of Rosella. Stable libraries are considered
+to be stable and usable, are documented and are tested.
 
 ## Libraries in Development
 
