@@ -1,16 +1,10 @@
-namespace Rosella.Random
-{
-    extern function default_uniform_random;
-    extern function default_normal_random;
-}
+$include "Rosella/Core.winxed";
+$include "Rosella/Random.winxed";
 
 // Mersenne Twister example.
 
-function main[main]()
+function mersenne_main()
 {
-    var rosella = load_packfile("rosella/core.pbc");
-    var(Rosella.initialize_rosella)("random");
-
     var rnd = Rosella.Random.default_uniform_random();
 
     print("\n20 random uniformly-distributed integers: ");
@@ -37,7 +31,7 @@ function main[main]()
     }
     say("");
 
-    print("\nHistogram of 500 uniformly-distributed floats: ");
+    say("\nHistogram of 500 uniformly-distributed floats: ");
     int buckets_a[] = [0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0];
     for (int i = 0; i < 500; i++) {
         int idx = rnd.get_range(0, 21);
@@ -60,7 +54,7 @@ function main[main]()
     say("");
 
     rnd = Rosella.Random.default_normal_random(10.00, 3.00);
-    print("\nHistogram of 500 normal-distributed floats: ");
+    say("\nHistogram of 500 normal-distributed floats: ");
     int buckets[] = [0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0];
     for (int i = 0; i < 500; i++) {
         float value = rnd.get_float() + 0.5;
@@ -75,4 +69,10 @@ function main[main]()
             print("#");
         say("");
     }
+}
+
+function main[main]()
+{
+    using mersenne_main;
+    Rosella.Parrot.try_report(mersenne_main);
 }

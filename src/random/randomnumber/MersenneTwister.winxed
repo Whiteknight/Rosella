@@ -51,8 +51,7 @@ class Rosella.Random.RandomNumber.MersenneTwister : Rosella.Random.RandomNumber
             int y = self.mt[mti - 1];
             int z = logical_shift_right(y, 30);
 
-            self.mt[mti] = 1812433253 * (self.mt[mti - 1] ^ z) + mti;
-            self.mt[mti] = self.mt[mti] & INT_MAX;
+            self.mt[mti] = (1812433253 * (y ^ z) + mti) & INT_MAX;
         }
         self.mti = mti;
     }
@@ -108,7 +107,7 @@ class Rosella.Random.RandomNumber.MersenneTwister : Rosella.Random.RandomNumber
     function get_float()
     {
         int y = self.get_int();
-        float z = y / INT_MAX;
+        float z = float(y) / float(INT_MAX);
         return z;
     }
 }
