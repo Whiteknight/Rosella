@@ -175,7 +175,7 @@ namespace Rosella.Xml.Parser
             Rosella.Parse.error_unknown_char(c, "!DOCTYPE header", current_position(len, s, b));
     }
 
-    function __parse_dtd_standalone(string dtd, var s, var b, int len)
+    function __parse_dtd_standalone(string dtd, var s, var b, int len, var dtd_document)
     {
         var dtd_header = new Rosella.Xml.Tag.DtdHeader(0, "");
         while (have_more_chars(s, b)) {
@@ -188,9 +188,8 @@ namespace Rosella.Xml.Parser
             else
                 Rosella.Parse.error_unknown_char(c, "DTD", current_position(len, s, b));
         }
-        var dtd_doc = new Rosella.Xml.DtdDocument();
-        dtd_doc.set_dtd_header(dtd_header);
-        return dtd_doc;
+        dtd_document.set_dtd_header(dtd_header);
+        return dtd_document;
     }
 
     function __parse_dtd_inline_tag(string xml, var s, var b, int len, var dtd_header)

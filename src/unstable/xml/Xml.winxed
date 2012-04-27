@@ -1,5 +1,14 @@
+/* Rosella XML Library
+    This library contains utilities for working with XML, both parsing XML into
+    objects and turning objects into XML. The routines in this namespace are
+    some of the main driver routines for use by client programs.
+*/
 namespace Rosella.Xml
 {
+    /* Public API
+    */
+
+    // Read XML from a file. Return an Xml.Document object
     function read_file(string filename)
     {
         var document = new Rosella.Xml.Document();
@@ -7,6 +16,7 @@ namespace Rosella.Xml
         return document;
     }
 
+    // Read XML from a string. Return an Xml.Document object
     function read_string(string xml)
     {
         var document = new Rosella.Xml.Document();
@@ -14,8 +24,31 @@ namespace Rosella.Xml
         return document;
     }
 
+    // Read a standalone DTD declaration from a string
+    function read_dtd_string(string dtd)
+    {
+        var dtd_doc = new Rosella.Xml.DtdDocument();
+        dtd_doc.read_from_string(dtd);
+        return dtd_doc;
+    }
+
+    // Read a standalone DTD declaration from a file
+    function read_dtd_file(string filename)
+    {
+        var dtd_doc = new Rosella.Xml.DtdDocument();
+        dtd_doc.read_from_file(dtd);
+        return dtd_doc;
+    }
+
+    /* Helper Routines
+    */
+
+    // Parse the XML string into the given document. Optionally perform
+    // verification on the generated structure
     function parse(string xml, var document, int do_verify = true)
     {
+        if (document == null)
+            document = new Rosella.Xml.Document();
         :(xml, var s, var b, int len) = Rosella.Parse.setup_parse(xml);
         Rosella.Xml.Parser.__parse_xml(xml, s, b, len, document);
         if (do_verify)
@@ -23,9 +56,13 @@ namespace Rosella.Xml
         return document;
     }
 
-    function parse_dtd(string dtd)
+    // Parse the DTD string into the given document.
+    function parse_dtd(string dtd, var document)
     {
+        if (document == null)
+            document = new Rosella.Xml.DtdDocument();
         :(dtd, var s, var b, int len) = Rosella.Parse.setup_parse(dtd);
-        return Rosella.Xml.Parser.__parse_dtd_standalone(dtd, s, b, len);
+        Rosella.Xml.Parser.__parse_dtd_standalone(dtd, s, b, len, document);
+        return document;
     }
 }

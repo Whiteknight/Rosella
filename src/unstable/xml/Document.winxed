@@ -77,16 +77,25 @@ class Rosella.Xml.Document
     // be used to feed data into the document.
 }
 
-class Rosella.Xml.DtdDocument
+class Rosella.Xml.DtdDocument : Rosella.Xml.Document
 {
-    var dtd_header;
+    function DtdDocument() { }
 
-    function DtdDocument()
+    function to_xml()
     {
+        // TODO: This
+        return self.dtd_header.to_xml();
     }
 
-    function set_dtd_header(var header)
+    function read_from_file(string filename)
     {
-        self.dtd_header = header;
+        var f = new Rosella.FileSystem.File(filename);
+        string dtd = f.read_all_text();
+        Rosella.Xml.parse(dtd, self);
+    }
+
+    function read_from_string(string dtd)
+    {
+        Rosella.Xml.parse_dtd(dtd, self);
     }
 }
