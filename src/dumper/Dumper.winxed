@@ -43,8 +43,9 @@ class Rosella.Dumper
     var indent;             // The intentation string to use for each level
     //var registry;           // A registry of PMCs to prevent recursion
     var recurse_level;      // The current recursion level
+    var recurse_limit;      // The maximum recurse limit
 
-    const int RECURSE_LIMIT = 6;    // The maximum recursion depth
+    const int DEFAULT_RECURSE_LIMIT = 5;    // The maximum recursion depth
 
     // Constructor
     function Dumper()
@@ -55,6 +56,7 @@ class Rosella.Dumper
         self.misc_dumpers = self.default_misc_dumpers();
         self.fallback_dumper = self.default_fallback_dumper();
         self.indent = "\t";
+        self.recurse_limit = DEFAULT_RECURSE_LIMIT;
     }
 
     // Get the default set of role dumpers
@@ -90,6 +92,11 @@ class Rosella.Dumper
     function default_null_dumper()
     {
         return new Rosella.Dumper.DumpHandler.Null();
+    }
+
+    function set_recurse_limit(int limit)
+    {
+        self.recurse_limit = limit;
     }
 
     // Add a new type dumper to the list
@@ -133,7 +140,7 @@ class Rosella.Dumper
     // Internal dump routine.
     function __dump_recurse(var emit, var obj)
     {
-        if (int(self.recurse_level) > RECURSE_LIMIT) {
+        if (int(self.recurse_level) > int(self.recurse_limit)) {
             if (self.fallback_dumper != null)
                 self.fallback_dumper.dump(self, emit, obj);
             return;
