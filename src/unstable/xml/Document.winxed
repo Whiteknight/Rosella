@@ -68,9 +68,8 @@ class Rosella.Xml.Document
 
     function validate()
     {
-        // TODO: Validate the document. If we have a DTD, verify we satisfy it.
-        // Read out the version and encoding info from the heading and verify
-        // that we match.
+        if (self.dtd_header != null)
+            self.dtd_header.get_dtd_document().validate_xml(self);
     }
 
     // TODO: Store a reference to a DTD document here. The dtd header tag should
@@ -79,6 +78,8 @@ class Rosella.Xml.Document
 
 class Rosella.Xml.DtdDocument : Rosella.Xml.Document
 {
+    var typedefs;
+
     function DtdDocument() { }
 
     function to_xml()
@@ -97,5 +98,19 @@ class Rosella.Xml.DtdDocument : Rosella.Xml.Document
     function read_from_string(string dtd)
     {
         Rosella.Xml.parse_dtd(dtd, self);
+    }
+
+    function add_element_def(string name, var elem)
+    {
+        if (self.typedefs == null)
+            self.typedefs = {};
+        self.typedefs[name] = elem;
+    }
+
+    function add_element_attribute(string elemname, string attrname, var attr)
+    {
+        if (!(exists self.typedefs[elemname]))
+            Rosella.Error.error("!ELEMENT type '%s' is not defined", elemname);
+        self.typedefs[elemname].add_attribute(attrname, attr);
     }
 }

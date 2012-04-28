@@ -158,15 +158,23 @@ class Rosella.Xml.Tag.XmlHeader : Rosella.Xml.Tag
 // use them instead. If both, standard rules for scoping apply.
 class Rosella.Xml.Tag.DtdHeader : Rosella.Xml.Tag
 {
+    var dtd_document;
     var doctype;
     var scope;
     var filename;
-    var typedefs;
 
     function DtdHeader(int pos, string doctype)
     {
         self.doctype = doctype;
         self.Tag(pos, "", "!DOCTYPE");
+    }
+
+    function get_dtd_document()
+    {
+        if (self.dtd_document != null)
+            return self.dtd_document;
+        self.dtd_document = new Rosella.Xml.DtdDocument();
+        return self.dtd_document;
     }
 
     function set_scope(string scope, string filename)
@@ -180,20 +188,6 @@ class Rosella.Xml.Tag.DtdHeader : Rosella.Xml.Tag
         push(sb, "<!DOCTYPE ");
         self.__to_xml_sb_attrs(sb);
         push(sb, ">");
-    }
-
-    function add_element_def(string name, var elem)
-    {
-        if (self.typedefs == null)
-            self.typedefs = {};
-        self.typedefs[name] = elem;
-    }
-
-    function add_element_attribute(string elemname, string attrname, var attr)
-    {
-        if (!(exists self.typedefs[elemname]))
-            Rosella.Error.error("!ELEMENT type '%s' is not defined", elemname);
-        self.typedefs[elemname].add_attribute(attrname, attr);
     }
 
     function add_child(var child)

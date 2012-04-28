@@ -139,7 +139,7 @@ namespace Rosella.Xml.Parser
 
         int c = peek_next(s, b);
         if (c == ASCII_OPEN_BRACKET)
-            return __parse_dtd_header_inline(xml, s, b, len, dtd_header);
+            return __parse_dtd_header_inline(xml, s, b, len, dtd_header.get_dtd_document());
 
         // Should be one of SYSTEM, PUBLIC, etc
         string dtd_scope = Rosella.Xml.Parser.__parse_ident(xml, s, b, len);
@@ -156,7 +156,7 @@ namespace Rosella.Xml.Parser
             Rosella.Xml.Parser.__error_unknown_char(c, "DOCTYPE header", current_position(len, s, b));
     }
 
-    function __parse_dtd_header_inline(string xml, var s, var b, int len, var dtd_header)
+    function __parse_dtd_header_inline(string xml, var s, var b, int len, var dtd_doc)
     {
         int c = get_next(s, b);
         while (have_more_chars(s, b)) {
@@ -165,7 +165,7 @@ namespace Rosella.Xml.Parser
             if (c == ASCII_CLOSE_BRACKET)
                 break;
             if (c == ASCII_LESS_THAN)
-                __parse_dtd_inline_tag(xml, s, b, len, dtd_header);
+                __parse_dtd_inline_tag(xml, s, b, len, dtd_doc);
             else
                 Rosella.Parse.error_unknown_char(c, "!DOCTYPE header", current_position(len, s, b));
         }
@@ -177,27 +177,26 @@ namespace Rosella.Xml.Parser
 
     function __parse_dtd_standalone(string dtd, var s, var b, int len, var dtd_document)
     {
-        var dtd_header = new Rosella.Xml.Tag.DtdHeader(0, "");
         while (have_more_chars(s, b)) {
             eat_whitespace(s, b);
             int c = get_next(s, b);
             if (c == ASCII_NULL)
                 break;
             if (c == ASCII_LESS_THAN)
-                __parse_dtd_inline_tag(dtd, s, b, len, dtd_header);
+                __parse_dtd_inline_tag(dtd, s, b, len, dtd_document);
             else
                 Rosella.Parse.error_unknown_char(c, "DTD", current_position(len, s, b));
         }
-        dtd_document.set_dtd_header(dtd_header);
+        dtd_document.set_dtd_header(dtd_document);
         return dtd_document;
     }
 
-    function __parse_dtd_inline_tag(string xml, var s, var b, int len, var dtd_header)
+    function __parse_dtd_inline_tag(string xml, var s, var b, int len, var dtd_doc)
     {
         int start_pos = current_position(len, s, b);
         int c = get_next(s, b);
         if (c != ASCII_EXCLAMATION_POINT)
-            Rosella.Parse.error_unknown_char(c, "!DOCTYPE inline tag", current_position(len, s, b));
+            Rosella.Parse.error_unknown_char(c, "DTD Document", current_position(len, s, b));
         string tagname = Rosella.Xml.Parser.__parse_ident(xml, s, b, len);
         eat_whitespace(s, b);
         string elemname = Rosella.Xml.Parser.__parse_ident(xml, s, b, len);
@@ -205,7 +204,7 @@ namespace Rosella.Xml.Parser
         switch (tagname) {
             case "ELEMENT":
                 var elem = new Rosella.Xml.Tag.DtdElement(start_pos, elemname);
-                dtd_header.add_element_def(elemname, elem);
+                dtd_doc.add_element_def(elemname, elem);
                 c = peek_next(s, b);
                 if (c == ASCII_E) {
                     string empty = Rosella.Xml.Parser.__parse_ident(xml, s, b, len);
@@ -218,14 +217,14 @@ namespace Rosella.Xml.Parser
                         Rosella.Error.error("Expected 'ANY', got '%s' at position %d", any, current_position(len, s, b));
                     elem.set_child_rule(any);
                 } else if (c == ASCII_OPEN_PAREN)
-                    __parse_dtd_element_children(xml, s, b, len, dtd_header, elem);
+                    __parse_dtd_element_children(xml, s, b, len, dtd_doc, elem);
                 else
                     Rosella.Parse.error_unknown_char(c, "!ELEMENT tag", current_position(len, s, b));
                 break;
             case "ATTLIST":
                 string attrname = Rosella.Xml.Parser.__parse_ident(xml, s, b, len);
                 var attr = new Rosella.Xml.Tag.DtdAttlist(start_pos, attrname);
-                dtd_header.add_element_attribute(elemname, attrname, attr);
+                dtd_doc.add_element_attribute(elemname, attrname, attr);
 
                 eat_whitespace(s, b);
                 c = peek_next(s, b);

@@ -36,7 +36,7 @@ namespace Rosella.Xml
     function read_dtd_file(string filename)
     {
         var dtd_doc = new Rosella.Xml.DtdDocument();
-        dtd_doc.read_from_file(dtd);
+        dtd_doc.read_from_file(filename);
         return dtd_doc;
     }
 
