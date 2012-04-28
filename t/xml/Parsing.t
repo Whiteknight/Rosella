@@ -125,13 +125,26 @@ function __test_data() { return {
     "!ATTLIST with multiple attributes" : <<:
 <?xml version='1.0'?>
 <!DOCTYPE foo [
-    <!ELEMENT bar (#PCDATA, baz)>
-    <!ELEMENT baz (#PCDATA)>
-    <!ATTLIST bar fie CDATA #IMPLIED fum CDATA #FIXED "value">
+    <!ELEMENT foo (#PCDATA)>
+    <!ATTLIST foo bar CDATA #IMPLIED baz CDATA #FIXED "value">
+]>
+<foo></foo>
+:>>
+,
+    "Multiple !ATTLISTs for a single element" : <<:
+<?xml version='1.0'?>
+<!DOCTYPE foo [
+    <!ELEMENT foo (#PCDATA, baz)>
+    <!ATTLIST foo
+                bar CDATA #IMPLIED
+                baz CDATA #FIXED "value">
+    <!ATTLIST foo fie CDATA #REQUIRED>
 ]>
 <bar></bar>
 :>>
 ,
+
+
     // The empty string (Keep this one last)
     "Empty string" : ""
 };}

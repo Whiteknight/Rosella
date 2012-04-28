@@ -228,9 +228,6 @@ namespace Rosella.Xml.Parser
                     Rosella.Parse.error_unknown_char(c, "!ELEMENT tag", current_position(len, s, b));
                 break;
             case "ATTLIST":
-                var attr = new Rosella.Xml.Tag.DtdAttlist(start_pos, elemname);
-                dtd_doc.add_element_attlist(elemname, attr);
-
                 while (true) {
                     c = peek_next(s, b);
                     if (c == ASCII_GREATER_THAN)
@@ -268,7 +265,7 @@ namespace Rosella.Xml.Parser
                         } else
                             Rosella.Parse.error_unknown_char(c, "!ATTLIST tag", current_position(len, s, b));
                     }
-                    attr.add_attr(attrname, attrtype, default_value, default_rule, fixed_value);
+                    dtd_doc.add_element_attribute_def(elemname, attrname, attrtype, default_value, default_rule, fixed_value);
                     eat_whitespace(s, b);
                 }
 

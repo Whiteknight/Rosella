@@ -251,7 +251,7 @@ class Rosella.Xml.Tag.DtdElement
 {
     var children;
     var children_rule;
-    var attributes;
+    var attlist;
     var name;
     var pos;
 
@@ -259,7 +259,6 @@ class Rosella.Xml.Tag.DtdElement
     {
         self.pos = pos;
         self.children = {};
-        self.attributes = [];
         self.name = name;
     }
 
@@ -269,9 +268,11 @@ class Rosella.Xml.Tag.DtdElement
         self.children[name] = modifier;
     }
 
-    function add_attribute(var attr)
+    function add_attribute(string attrname, string attrtype, string default_value, string default_rule, string fixed_value)
     {
-        push(self.attributes, attr);
+        if (self.attlist == null)
+            self.attlist = new Rosella.Xml.Tag.DtdAttlist(self.name);
+        self.attlist.add_attr(attrname, attrtype, default_value, default_rule, fixed_value);
     }
 
     function set_child_rule(string rule)
@@ -307,17 +308,23 @@ class Rosella.Xml.Tag.DtdAttlist
     var default_values;
     var default_rules;
     var fixed_values;
-    var pos;
 
-    function DtdAttlist(int pos, string elemname)
+    function DtdAttlist(string elemname)
     {
-        self.pos = pos;
         self.elemname = elemname;
-        self.attrnames = [];
-        self.attrtypes = [];
-        self.default_values = [];
-        self.default_rules = [];
-        self.fixed_values = [];
+        self.attrtypes = []; // This might need to be non-string for enumerated types
+
+        string attrnames[] = [];
+        self.attrnames = attrnames;
+
+        string default_values[] = [];
+        self.default_values = default_values;
+
+        string default_rules[] = [];
+        self.default_rules = default_rules;
+
+        string fixed_values[] = [];
+        self.fixed_values = fixed_values;
     }
 
     function add_attr(string attrname, string typename, string default_value, string default_rule, string fixed_value)
