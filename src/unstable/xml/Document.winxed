@@ -1,12 +1,17 @@
+/* XML Document Class
+    This class represents a complete XML document with node contents and frontmatter
+*/
 class Rosella.Xml.Document
 {
-    var xml_header;
-    var dtd_header;
-    var root;
-    var errors;
+    var xml_header;     // The <?xml ?> header
+    var dtd_header;     // The <!DOCTYPE > header
+    var root;           // The root element
+    var errors;         // a list of validation errors, if any
 
+    // Constructor
     function Document() { }
 
+    // Add in a XmlHeader or a DtdHeader
     function add_header(var header)
     {
         if (header instanceof Rosella.Xml.Tag.XmlHeader) {
@@ -20,6 +25,7 @@ class Rosella.Xml.Document
         }
     }
 
+    // Add in a DocumentRoot object, during the parse
     function set_documentroot(var root)
     {
         // TODO: What do we do with the other children?
@@ -32,6 +38,7 @@ class Rosella.Xml.Document
         }
     }
 
+    // Set the root element
     function set_root(var roottag)
     {
         if (self.root != null)
@@ -39,11 +46,13 @@ class Rosella.Xml.Document
         self.root = roottag;
     }
 
+    // Get the root element
     function get_document_root()
     {
         return self.root;
     }
 
+    // Serialize this object to XML
     function to_xml()
     {
         var sb = new 'StringBuilder';
@@ -55,12 +64,14 @@ class Rosella.Xml.Document
         return sb;
     }
 
+    // Serialize to xml and write to file
     function write_to_file(string filename)
     {
         string xml = self.to_xml();
         (new Rosella.FileSystem.File(filename)).write_all_text(xml);
     }
 
+    // Read the xml file file and parse it into this document
     function read_from_file(string filename, int do_validate = false)
     {
         var f = new Rosella.FileSystem.File(filename);
@@ -68,11 +79,13 @@ class Rosella.Xml.Document
         Rosella.Xml.parse(xml, self, do_validate);
     }
 
+    // Read the xml from string and parse it into this document
     function read_from_string(string xml, int do_validate = false)
     {
         Rosella.Xml.parse(xml, self, do_validate);
     }
 
+    // Validate this document against its DTD
     function validate()
     {
         if (self.dtd_header != null && self.dtd_header.dtd_document != null)
@@ -80,28 +93,39 @@ class Rosella.Xml.Document
         return self.errors;
     }
 
+    // true if we have performed validation, false otherwise
     function is_validated()
     {
         return self.errors != null;
     }
 
+    // true if we have performed AND passed validation. false otherwise.
     function is_valid()
     {
         return self.errors != null && elements(self.errors) == 0;
     }
 
+    // Visit this document
     function visit(var v)
     {
         return v.visit_doc(self);
     }
 }
 
+/* DTD Document
+    A DTD document contains the rules for elements and their attributes found in
+    an XML document. DTD documents may be specified in an XML document with a
+    !DOCTYPE header. a DTD document may be included inline in the XML document
+    text or may be separate in an external file (or both).
+*/
 class Rosella.Xml.DtdDocument
 {
     var typedefs;
 
+    // Constructor
     function DtdDocument() { }
 
+    // Serialize to an XML representation
     function to_xml()
     {
         var sb = new 'StringBuilder';
@@ -109,18 +133,21 @@ class Rosella.Xml.DtdDocument
         return string(sb);
     }
 
+    // Write this DTD to a .dtd file
     function write_to_file(string filename)
     {
         string xml = self.to_xml();
         (new Rosella.FileSystem.File(filename)).write_all_text(xml);
     }
 
+    // Serialize to XML, adding to the StringBuilder
     function to_xml_sb(var sb, int indent)
     {
         for (string elem in self.typedefs)
             self.typedefs[elem].to_xml_sb(sb, indent);
     }
 
+    // Validate an XML Document
     function validate_xml(var xmldoc)
     {
         if (self.typedefs == null)
@@ -130,6 +157,7 @@ class Rosella.Xml.DtdDocument
         return errs;
     }
 
+    // Read in a DTD from a file
     function read_from_file(string filename)
     {
         var f = new Rosella.FileSystem.File(filename);
@@ -140,11 +168,13 @@ class Rosella.Xml.DtdDocument
         // TODO: Else, list a warning
     }
 
+    // Read in a DTD definition from a string
     function read_from_string(string dtd)
     {
         Rosella.Xml.parse_dtd(dtd, self);
     }
 
+    // Add an !ELEMENT declaration
     function add_element_def(string name, var elem)
     {
         if (self.typedefs == null)
@@ -154,6 +184,7 @@ class Rosella.Xml.DtdDocument
         self.typedefs[name] = elem;
     }
 
+    // Add attribute information from an !ATTLIST declaration
     function add_element_attribute_def(string elemname, string attrname, string attrtype, string default_value, string default_rule, string fixed_value)
     {
         if (!(exists self.typedefs[elemname]))
