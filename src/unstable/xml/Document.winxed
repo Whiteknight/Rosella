@@ -68,12 +68,9 @@ class Rosella.Xml.Document
 
     function validate()
     {
-        if (self.dtd_header != null)
-            self.dtd_header.get_dtd_document().validate_xml(self);
+        if (self.dtd_header != null && self.dtd_header.dtd_document != null)
+            self.dtd_header.dtd_document.validate_xml(self);
     }
-
-    // TODO: Store a reference to a DTD document here. The dtd header tag should
-    // be used to feed data into the document.
 }
 
 class Rosella.Xml.DtdDocument : Rosella.Xml.Document
@@ -82,10 +79,17 @@ class Rosella.Xml.DtdDocument : Rosella.Xml.Document
 
     function DtdDocument() { }
 
-    function to_xml()
+    function to_xml(var sb = new 'StringBuilder')
     {
-        // TODO: This
-        return self.dtd_header.to_xml();
+        for (string elem in self.typedefs)
+            elem.to_xml_sb(sb, 1);
+    }
+
+    function validate_xml(var xmldoc)
+    {
+        if (self.typedefs == null)
+            return;
+        // TODO: Go through the XML document and validate it
     }
 
     function read_from_file(string filename)

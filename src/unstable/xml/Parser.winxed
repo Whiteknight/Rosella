@@ -223,7 +223,7 @@ namespace Rosella.Xml.Parser
                 break;
             case "ATTLIST":
                 string attrname = Rosella.Xml.Parser.__parse_ident(xml, s, b, len);
-                var attr = new Rosella.Xml.Tag.DtdAttlist(start_pos, attrname);
+                var attr = new Rosella.Xml.Tag.DtdAttlist(start_pos, elemname, attrname);
                 dtd_doc.add_element_attribute(elemname, attrname, attr);
 
                 eat_whitespace(s, b);

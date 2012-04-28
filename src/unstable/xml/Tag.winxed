@@ -173,8 +173,23 @@ class Rosella.Xml.Tag.DtdHeader : Rosella.Xml.Tag
     {
         if (self.dtd_document != null)
             return self.dtd_document;
-        self.dtd_document = new Rosella.Xml.DtdDocument();
-        return self.dtd_document;
+        string scope = self.scope;
+        string dtd_document;
+        // TODO: If we have a SYSTEM or PUBLIC DTD, the <?xml ?> header should have
+        // a standalone="no" attribute
+        switch (scope) {
+            case "SYSTEM":
+                dtd_document = Rosella.Xml.read_dtd_file(self.filename);
+                break;
+            case "PUBLIC":
+                // TODO: This is online somewhere, go fetch it
+                Rosella.Error.not_implemented(__FUNCTION__ + " PUBLIC");
+            default:
+                dtd_document = new Rosella.Xml.DtdDocument();
+                break;
+        }
+        self.dtd_document = dtd_document;
+        return dtd_document;
     }
 
     function set_scope(string scope, string filename)
@@ -186,7 +201,29 @@ class Rosella.Xml.Tag.DtdHeader : Rosella.Xml.Tag
     function to_xml_sb(var sb, int indent)
     {
         push(sb, "<!DOCTYPE ");
-        self.__to_xml_sb_attrs(sb);
+        push(sb, self.doctype);
+        push(sb, " ");
+        string scope = self.scope;
+        push(sb, scope);
+        push(sb, " ");
+        switch (scope) {
+            case "SYSTEM":
+                push(sb, "'");
+                push(sb, self.filename);
+                push(sb, "'");
+                break;
+            case "PUBLIC":
+                push(sb, "'");
+                push(sb, self.filename);
+                push(sb, "'");
+                // TODO: The rest of it
+                break;
+        }
+        if (self.dtd_document != null) {
+            push(sb, " [");
+            self.dtd_document.to_xml(sb);
+            push(sb, "]");
+        }
         push(sb, ">");
     }
 
@@ -244,20 +281,34 @@ class Rosella.Xml.Tag.DtdElement
     {
         self.children_rule = rule;
     }
+
+    function to_xml_sb(var sb, int indent)
+    {
+        string indent_str = indent_level(indent);
+        push(sb, indent_str);
+        push(sb, "<!ELEMENT ");
+        push(sb, self.name);
+        // TODO: The rest of it
+        push(sb, ">\n");
+        for (var attr in self.attributes)
+            attr.to_xml_sb(sb, indent);
+    }
 }
 
 class Rosella.Xml.Tag.DtdAttlist
 {
     var name;
+    var elemname;
     var type;
     var default_value;
     var default_rule;
     var pos;
 
-    function DtdAttlist(int pos, string name)
+    function DtdAttlist(int pos, string elemname, string name)
     {
         self.pos = pos;
         self.name = name;
+        self.elemname = elemname;
     }
 
     function set_type(string type)
@@ -284,6 +335,18 @@ class Rosella.Xml.Tag.DtdAttlist
                 Rosella.Error.error("ATTLIST default rule must be one of REQUIRED IMPLIED or FIXED");
         }
         self.default_rule = default_rule;
+    }
+
+    function to_xml_sb(var sb, int indent)
+    {
+        string indent_str = indent_level(indent);
+        push(sb, indent_str);
+        push(sb, "<!ATTLIST ");
+        push(sb, self.elemname);
+        push(sb, " ");
+        push(sb, self.name);
+        // TODO: The rest of it
+        push(sb, ">\n");
     }
 }
 
