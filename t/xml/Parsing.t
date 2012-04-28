@@ -121,6 +121,16 @@ function __test_data() { return {
 <foo/>
 :>>
 ,
+    "!ATTLIST with multiple attributes" : <<:
+<?xml version='1.0'?>
+<!DOCTYPE foo [
+    <!ELEMENT bar (#PCDATA, baz)>
+    <!ELEMENT baz (#PCDATA)>
+    <!ATTLIST bar fie CDATA #IMPLIED fum CDATA #FIXED "value">
+]>
+<bar></bar>
+:>>
+,
     // The empty string (Keep this one last)
     "Empty string" : ""
 };}

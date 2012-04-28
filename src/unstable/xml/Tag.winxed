@@ -259,7 +259,7 @@ class Rosella.Xml.Tag.DtdElement
     {
         self.pos = pos;
         self.children = {};
-        self.attributes = {};
+        self.attributes = [];
         self.name = name;
     }
 
@@ -269,16 +269,9 @@ class Rosella.Xml.Tag.DtdElement
         self.children[name] = modifier;
     }
 
-    function add_attribute(string name, var attr)
+    function add_attribute(var attr)
     {
-        self.attributes[name] = attr;
-    }
-
-    function set_attribute_default_value(string attrname, string value)
-    {
-        if (!(exists self.attributes[attrname]))
-            Rosella.Error.error("Cannot set attribute default value '%s' on non-existant attribute '%s'", value, attrname);
-        // TODO : Keep track of the default value somehow
+        push(self.attributes, attr);
     }
 
     function set_child_rule(string rule)
@@ -301,8 +294,8 @@ class Rosella.Xml.Tag.DtdElement
             separator = ",";
         }
         push(sb, ")>");
-        for (string attr in self.attributes)
-            self.attributes[attr].to_xml_sb(sb, indent);
+        for (var attr in self.attributes)
+            attr.to_xml_sb(sb, indent);
     }
 }
 
@@ -310,44 +303,46 @@ class Rosella.Xml.Tag.DtdElement
 // to cover that case.
 class Rosella.Xml.Tag.DtdAttlist
 {
-    var name;
     var elemname;
-    var type;
-    var default_value;
-    var default_rule;
+    var attrnames;
+    var attrtypes;
+    var default_values;
+    var default_rules;
+    var fixed_values;
     var pos;
 
-    function DtdAttlist(int pos, string elemname, string name)
+    function DtdAttlist(int pos, string elemname)
     {
         self.pos = pos;
-        self.name = name;
         self.elemname = elemname;
+        self.attrnames = [];
+        self.attrtypes = [];
+        self.default_values = [];
+        self.default_rules = [];
+        self.fixed_values = [];
     }
 
-    function set_type(string type)
+    function add_attr(string attrname, string typename, string default_value, string default_rule, string fixed_value)
     {
+        push(self.attrnames, attrname);
+
         // TODO: Validate against a list of possible types:
         // CDATA, ID, IDREF, IDREFS, NMTOKEN, NMTOKENS, ENTITY, ENTITIES, NOTATION
         // or an alternation "(foo|bar|baz)" of these things.
-        self.type = type;
-    }
+        push(self.attrtypes, typename);
+        push(self.default_values, default_value);
 
-    function set_default_value(string default_value)
-    {
-        self.default_value = default_value;
-    }
-
-    function set_default_rule(string default_rule)
-    {
         switch (default_rule) {
             case "REQUIRED":
             case "IMPLIED":
             case "FIXED":
+            case "":
                 break;
             default:
-                Rosella.Error.error("ATTLIST default rule must be one of REQUIRED IMPLIED or FIXED");
+                Rosella.Error.error("ATTLIST default rule must be one of REQUIRED IMPLIED or FIXED ('%s')", default_rule);
         }
-        self.default_rule = default_rule;
+        push(self.fixed_values, fixed_value);
+        push(self.default_rules, default_rule);
     }
 
     function to_xml_sb(var sb, int indent)
@@ -356,12 +351,29 @@ class Rosella.Xml.Tag.DtdAttlist
         push(sb, indent_str);
         push(sb, "<!ATTLIST ");
         push(sb, self.elemname);
-        push(sb, " ");
-        push(sb, self.name);
-        push(sb, " ");
-        push(sb, self.type);
-        push(sb, " #");
-        push(sb, self.default_rule);
+        for (int i = 0; i < elements(self.attrnames); i++) {
+            push(sb, " ");
+            push(sb, self.attrnames[i]);
+            push(sb, " ");
+            push(sb, self.attrtypes[i]);
+            string default_value = self.default_values[i];
+            if (default_value != null && default_value != "") {
+                push(sb, " '");
+                push(sb, default_value);
+                push(sb, "'");
+            }
+            string default_rule = self.default_rules[i];
+            if (default_rule != null && default_rule != "") {
+                push(sb, " #");
+                push(sb, default_rule);
+                if (default_rule == "FIXED") {
+                    push(sb, " '");
+                    string fixed_value = self.fixed_values[i];
+                    push(sb, fixed_value);
+                    push(sb, "'");
+                }
+            }
+        }
         // TODO: The rest of it
         push(sb, ">");
     }

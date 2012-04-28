@@ -124,10 +124,10 @@ class Rosella.Xml.DtdDocument : Rosella.Xml.Document
         self.typedefs[name] = elem;
     }
 
-    function add_element_attribute(string elemname, string attrname, var attr)
+    function add_element_attlist(string elemname, var attr)
     {
         if (!(exists self.typedefs[elemname]))
             Rosella.Error.error("!ELEMENT type '%s' is not defined", elemname);
-        self.typedefs[elemname].add_attribute(attrname, attr);
+        self.typedefs[elemname].add_attribute(attr);
     }
 }

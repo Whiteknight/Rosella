@@ -222,43 +222,56 @@ namespace Rosella.Xml.Parser
                     Rosella.Parse.error_unknown_char(c, "!ELEMENT tag", current_position(len, s, b));
                 break;
             case "ATTLIST":
-                string attrname = Rosella.Xml.Parser.__parse_ident(xml, s, b, len);
-                var attr = new Rosella.Xml.Tag.DtdAttlist(start_pos, elemname, attrname);
-                dtd_doc.add_element_attribute(elemname, attrname, attr);
+                var attr = new Rosella.Xml.Tag.DtdAttlist(start_pos, elemname);
+                dtd_doc.add_element_attlist(elemname, attr);
 
-                eat_whitespace(s, b);
-                c = peek_next(s, b);
-                if (c == ASCII_OPEN_PAREN) {
-                    // TODO: Enumerated attribute values
-                    Rosella.Error.not_implemented("Enumerated attribute values");
-                } else {
-                    string attrtype = Rosella.Xml.Parser.__parse_ident(xml, s, b, len);
-                    attr.set_type(attrtype);
-                }
-                eat_whitespace(s, b);
-                c = get_next(s, b);
-
-                if (c == ASCII_OCTOTHORPE) {
-                    string default_rule = __parse_ident(xml, s, b, len);
-                    attr.set_default_rule(default_rule);
-
-                    // If "FIXED", we need a quoted value too
-                    if (default_rule == "REQUIRED" || default_rule == "IMPLIED")
+                while (true) {
+                    c = peek_next(s, b);
+                    if (c == ASCII_GREATER_THAN)
                         break;
 
+                    string attrname = Rosella.Xml.Parser.__parse_ident(xml, s, b, len);
+                    string attrtype, default_rule, default_value, fixed_value;
                     eat_whitespace(s, b);
-                    c = get_next(s, b);
-                }
+                    c = peek_next(s, b);
+                    if (c == ASCII_OPEN_PAREN) {
+                        // TODO: Enumerated attribute values
+                        Rosella.Error.not_implemented("Enumerated attribute values");
+                    } else {
+                        attrtype = Rosella.Xml.Parser.__parse_ident(xml, s, b, len);
+                    }
+                    eat_whitespace(s, b);
+                    c = peek_next(s, b);
 
-                if (c == ASCII_SINGLE_QUOTE || c == ASCII_DOUBLE_QUOTE) {
-                    string default_value = Rosella.Parse.parse_quoted(c, xml, s, b, len);
-                    attr.set_default_value(default_value);
-                } else
-                    Rosella.Parse.error_unknown_char(c, "!ATTLIST tag", current_position(len, s, b));
+                    if (c == ASCII_OCTOTHORPE) {
+                        c = get_next(s, b);
+                        default_rule = __parse_ident(xml, s, b, len);
+
+                        // If "FIXED", we need a quoted value too
+                        if (default_rule == "FIXED") {
+                            eat_whitespace(s, b);
+                            c = get_next(s, b);
+                            fixed_value = Rosella.Parse.parse_quoted(c, xml, s, b, len);
+                        }
+                        eat_whitespace(s, b);
+                        c = peek_next(s, b);
+                    } else {
+                        if (c == ASCII_SINGLE_QUOTE || c == ASCII_DOUBLE_QUOTE) {
+                            c = get_next(s, b);
+                            default_value = Rosella.Parse.parse_quoted(c, xml, s, b, len);
+                        } else
+                            Rosella.Parse.error_unknown_char(c, "!ATTLIST tag", current_position(len, s, b));
+                    }
+                    attr.add_attr(attrname, attrtype, default_value, default_rule, fixed_value);
+                    eat_whitespace(s, b);
+                }
 
                 break;
             case "ENTITY":
                 Rosella.Error.not_implemented("DTD !ENTITY declarations");
+                break;
+            case "NOTATION":
+                Rosella.Error.not_implemented("DTD !NOTATION declarations");
                 break;
             default:
                 Rosella.Error.error("Unknown inline DTD tag name '%s' at position %d", tagname, current_position(len, s, b));
