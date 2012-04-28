@@ -277,8 +277,8 @@ class Rosella.Xml.Tag.DtdElement
             separator = ",";
         }
         push(sb, ")>");
-        for (var attr in self.attributes)
-            attr.to_xml_sb(sb, indent);
+        if (self.attlist != null)
+            self.attlist.to_xml_sb(sb, indent);
     }
 }
 
