@@ -31,11 +31,11 @@ class Rosella.Xml.Document
         }
     }
 
-    function set_root(var tag)
+    function set_root(var roottag)
     {
         if (self.root != null)
             Rosella.Error.error("document already has root tag");
-        self.root = tag;
+        self.root = roottag;
     }
 
     function get_document_root()
@@ -79,7 +79,7 @@ class Rosella.Xml.Document
     }
 }
 
-class Rosella.Xml.DtdDocument : Rosella.Xml.Document
+class Rosella.Xml.DtdDocument
 {
     var typedefs;
 
@@ -90,6 +90,12 @@ class Rosella.Xml.DtdDocument : Rosella.Xml.Document
         var sb = new 'StringBuilder';
         self.to_xml_sb(sb, 0);
         return string(sb);
+    }
+
+    function write_to_file(string filename)
+    {
+        string xml = self.to_xml();
+        (new Rosella.FileSystem.File(filename)).write_all_text(xml);
     }
 
     function to_xml_sb(var sb, int indent)
