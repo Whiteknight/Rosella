@@ -63,6 +63,16 @@ function __test_data() { return {
 </foo>
 :>>
 ,
+    "!ELEMENT with multiple children" : <<:
+<?xml version='1.0'?>
+<!DOCTYPE foo [
+    <!ELEMENT foo (#CDATA, bar, baz)>
+    <!ELEMENT bar (#CDATA)>
+    <!ELEMENT baz (#CDATA)>
+]>
+<foo><bar/><baz/></foo>
+:>>
+,
     "!ATTLIST with #REQUIRED" : <<:
 <?xml version='1.0'?>
 <!DOCTYPE foo [

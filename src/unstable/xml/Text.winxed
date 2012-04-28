@@ -1,13 +1,17 @@
+/* XML Text Node
+    This type represents raw CDATA text in an XML document
+*/
 class Rosella.Xml.Text
 {
     var text;
-    function Text(string text)
-    {
-        self.text = text;
-    }
 
+    // Constructor
+    function Text(string text) { self.text = text; }
+
+    // Get the raw text string
     function get_text() { return self.text; }
 
+    // Convert this node to XML
     function to_xml()
     {
         var sb = new 'StringBuilder';
@@ -15,6 +19,7 @@ class Rosella.Xml.Text
         return sb;
     }
 
+    // Convert this node to XML, into the given StringBuilder
     function to_xml_sb(var sb, int indent)
     {
         string indent_str = indent_level(indent);
