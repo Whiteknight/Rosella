@@ -21,6 +21,7 @@ function __test_data() { return {
 
     // Tests for headers and frontmatter
     "xml header" : "<?xml version='1.0'?><foo></foo>",
+    "simple dtd header" : "<!DOCTYPE foo>",
     "dtd header" : "<!DOCTYPE foo SYSTEM 'foo.dtd'><foo></foo>",
     "two headers" : "<?xml version='1.0'?><!DOCTYPE foo SYSTEM 'foo.dtd'><foo></foo>",
     "comments between headers" : "<!--test--><?xml version='1.0'?><!--test2--><!DOCTYPE foo SYSTEM 'foo.dtd'><!--test3--><foo></foo>",

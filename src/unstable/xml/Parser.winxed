@@ -138,8 +138,14 @@ namespace Rosella.Xml.Parser
         document.add_header(dtd_header);
 
         int c = peek_next(s, b);
-        if (c == ASCII_OPEN_BRACKET)
-            return __parse_dtd_header_inline(xml, s, b, len, dtd_header.get_dtd_document());
+        if (c == ASCII_GREATER_THAN) {
+            c = get_next(s, b);
+            return;
+        }
+        if (c == ASCII_OPEN_BRACKET) {
+            __parse_dtd_header_inline(xml, s, b, len, dtd_header.get_dtd_document());
+            return;
+        }
 
         // Should be one of SYSTEM, PUBLIC, etc
         string dtd_scope = Rosella.Xml.Parser.__parse_ident(xml, s, b, len);

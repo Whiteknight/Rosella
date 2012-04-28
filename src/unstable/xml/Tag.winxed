@@ -299,8 +299,6 @@ class Rosella.Xml.Tag.DtdElement
     }
 }
 
-// TODO: !ATTLIST actually allows a list of attributes in the same tag. We need
-// to cover that case.
 class Rosella.Xml.Tag.DtdAttlist
 {
     var elemname;
