@@ -1,12 +1,16 @@
+/* XML Tag Class
+    This class represents an XML tag.
+*/
 class Rosella.Xml.Tag
 {
-    var attributes;
-    var children;
-    var xmlns;
-    var name;
-    var end_tag;
-    var pos;
+    var attributes;     // The hash of attribute name/value pairs
+    var children;       // The list of all direct children Tags and Text
+    var xmlns;          // The XML namespace, if any
+    var name;           // The tag name
+    var end_tag;        // The ending tag instance
+    var pos;            // The position in the parse of this tag
 
+    // Constructor
     function Tag(int pos, string xmlns, string name)
     {
         self.pos = pos;
@@ -16,16 +20,22 @@ class Rosella.Xml.Tag
         self.children = [];
     }
 
+    /* Public Interface Methods
+    */
+
+    // Add an attribute name/value pair
     function add_attribute(string name, string value)
     {
         self.attributes[name] = value;
     }
 
+    // Add a child tag
     function add_child(var child)
     {
         push(self.children, child);
     }
 
+    // Add child text
     function add_child_text(string text)
     {
         text = Rosella.String.trim(text);
@@ -33,11 +43,13 @@ class Rosella.Xml.Tag
             self.add_child(new Rosella.Xml.Text(text));
     }
 
+    // Set the end tag
     function set_end(var end_tag)
     {
         self.end_tag = end_tag;
     }
 
+    // Convert this tag and contents to XML
     function to_xml()
     {
         var sb = new 'StringBuilder';
@@ -45,6 +57,7 @@ class Rosella.Xml.Tag
         return sb;
     }
 
+    // Convert this tag and contents to XML, adding it to the StringBuilder
     function to_xml_sb(var sb, int indent)
     {
         string indent_str = indent_level(indent);
@@ -70,6 +83,10 @@ class Rosella.Xml.Tag
         push(sb, ">");
     }
 
+    /* Private Helper Methods
+    */
+
+    // Convert attributes to XML, adding to the StringBuilder
     function __to_xml_sb_attrs(var sb, int indent)
     {
         for (string attr_name in self.attributes) {
@@ -82,6 +99,7 @@ class Rosella.Xml.Tag
         }
     }
 
+    // Convert all children tags to XML, adding them to the StringBuilder
     function __to_xml_sb_children(var sb, int indent)
     {
         for (var child in self.children)
@@ -89,12 +107,14 @@ class Rosella.Xml.Tag
     }
 }
 
-class Rosella.Xml.Tag.EndTag : Rosella.Xml.Tag
+// An ending/closing tag
+class Rosella.Xml.Tag.EndTag
 {
-    var xmlns;
-    var name;
-    var pos;
+    var xmlns;  // The XML namespace, if any
+    var name;   // The tag name
+    var pos;    // The position of the end tag in the XML
 
+    // Constructor
     function EndTag(int pos, string xmlns, string name)
     {
         self.pos = pos;
@@ -102,14 +122,19 @@ class Rosella.Xml.Tag.EndTag : Rosella.Xml.Tag
         self.name = name;
     }
 
+    // End tags do not have attributes
     function add_attribute(string name, string value) { Rosella.Error.error("End tags do not have attributes"); }
 
+    // End tags do not contain children
     function add_child(var child) { Rosella.Error.error("End tags do not have children"); }
 
+    // End tags cannot contain text
     function add_child_text(string text) { Rosella.Error.error("End tags do not contain text"); }
 
+    // End tags do not themselves have end tags
     function set_end(var end_tag) { Rosella.Error.error("End tags do not have end tags"); }
 
+    // Convert this to XML, adding it to the StringBuilder
     function to_xml_sb(var sb, int indent)
     {
         string indent_str = indent_level(indent);
@@ -125,10 +150,15 @@ class Rosella.Xml.Tag.EndTag : Rosella.Xml.Tag
     }
 }
 
+/* XML Header tag
+    For XML headers with <?xml ... ?> syntax
+*/
 class Rosella.Xml.Tag.XmlHeader : Rosella.Xml.Tag
 {
+    // Constructor
     function XmlHeader(int pos) { self.Tag(pos, "", "?xml"); }
 
+    // Convert to XML, adding to the StringBuilder
     function to_xml_sb(var sb, int indent)
     {
         push(sb, "<?xml ");
@@ -136,30 +166,35 @@ class Rosella.Xml.Tag.XmlHeader : Rosella.Xml.Tag
         push(sb, "?>");
     }
 
+    // XML Header tags contain no children
     function add_child(var child) { Rosella.Error.error("XML Header tags do not have child tags"); }
 
+    // XML Header tags contain no text
     function add_child_text(string text) { Rosella.Error.error("XML Header tags may not contain raw text"); }
 
+    // XML Header tags contain no end tags
     function set_end(var end_tag) { Rosella.Error.error("XML Header tags do not have closing tags"); }
 }
 
 
-// TODO: The DtdHeader should generate a DtdDocument. If a path is given it
-// should load the document from the path. If inline tags are given, it should
-// use them instead. If both, standard rules for scoping apply.
+/* DTD Header Tag
+    For tags with <!DOCTYPE ... > syntax
+*/
 class Rosella.Xml.Tag.DtdHeader : Rosella.Xml.Tag
 {
-    var dtd_document;
-    var doctype;
-    var scope;
-    var filename;
+    var dtd_document;       // The DTD Document
+    var doctype;            // The doctype/root name
+    var scope;              // The scope of the document. May be SYSTEM, PUBLIC or "" (embedded/none)
+    var filename;           // If SYSTEM or PUBLIC, the location
 
+    // Constructor
     function DtdHeader(int pos, string doctype)
     {
         self.doctype = doctype;
         self.Tag(pos, "", "!DOCTYPE");
     }
 
+    // Get the DtdDocument object, generating it if necessary
     function get_dtd_document()
     {
         if (self.dtd_document != null)
@@ -168,6 +203,8 @@ class Rosella.Xml.Tag.DtdHeader : Rosella.Xml.Tag
         var dtd_document;
         // TODO: If we have a SYSTEM or PUBLIC DTD, the <?xml ?> header should have
         // a standalone="no" attribute
+        // TODO: If we have SYSTEM or PUBLIC, we may still have inline additions that
+        // override those found in the document. We need to make sure we merge
         switch (scope) {
             case "SYSTEM":
                 dtd_document = Rosella.Xml.read_dtd_file(self.filename);
@@ -183,12 +220,15 @@ class Rosella.Xml.Tag.DtdHeader : Rosella.Xml.Tag
         return dtd_document;
     }
 
+    // Set the scope. May be "SYSTEM" (and filename), "PUBLIC" (and location) or
+    // empty.
     function set_scope(string scope, string filename)
     {
         self.scope = scope;
         self.filename = filename;
     }
 
+    // Convert to XML, adding it to the StringBuilder
     function to_xml_sb(var sb, int indent)
     {
         string indent_str = indent_level(indent);
@@ -222,21 +262,27 @@ class Rosella.Xml.Tag.DtdHeader : Rosella.Xml.Tag
         push(sb, ">");
     }
 
+    // Has no children
     function add_child(var child) { Rosella.Error.error("Inline DTD do not contain children"); }
 
+    // Has no text
     function add_child_text(string text) { Rosella.Error.error("DTD Header tags may not contain raw text"); }
 
+    // Has no ending tag
     function set_end(var end_tag) { Rosella.Error.error("DTD Header tags do not have closing tags"); }
 }
 
+/* A DTD !ELEMENT tag
+*/
 class Rosella.Xml.Tag.DtdElement
 {
-    var children;
-    var children_rule;
-    var attlist;
-    var name;
-    var pos;
+    var children;           // The list of allowed children tags
+    var children_rule;      // rule for children tags
+    var attlist;            // The !ATTLIST with allowed attributes
+    var name;               // The name of the tag
+    var pos;                // The position of this declaration, in the XML
 
+    // Constructor
     function DtdElement(int pos, string name)
     {
         self.pos = pos;
@@ -244,12 +290,14 @@ class Rosella.Xml.Tag.DtdElement
         self.name = name;
     }
 
+    // Add an allowed child type, with quantifier/modifier
     function add_child_type(string name, string modifier)
     {
         // TODO: Handle #CDATA and #PCDATA specially.
         self.children[name] = modifier;
     }
 
+    // Add an attribute declaration
     function add_attribute(string attrname, string attrtype, string default_value, string default_rule, string fixed_value)
     {
         if (self.attlist == null)
@@ -257,11 +305,13 @@ class Rosella.Xml.Tag.DtdElement
         self.attlist.add_attr(attrname, attrtype, default_value, default_rule, fixed_value);
     }
 
+    // Set the rule for children. May be EMPTY or ANY, or none
     function set_child_rule(string rule)
     {
         self.children_rule = rule;
     }
 
+    // Convert this to XML, adding to the StringBuilder
     function to_xml_sb(var sb, int indent)
     {
         string indent_str = indent_level(indent);
@@ -282,20 +332,25 @@ class Rosella.Xml.Tag.DtdElement
     }
 }
 
+/* DTD !ATTLIST Tag
+    This tag represents an !ATTLIST tag in the DTD
+*/
 class Rosella.Xml.Tag.DtdAttlist
 {
-    var elemname;
-    var attrnames;
-    var attrtypes;
-    var default_values;
-    var default_rules;
-    var fixed_values;
+    var elemname;       // The name of the element that this rule applies to
+    var attrnames;      // The list of attribute names
+    var attrtypes;      // The list of attribute types
+    var default_values; // The list of default value strings
+    var default_rules;  // The list of defaulting rules
+    var fixed_values;   // The list of fixed values
 
+    // Constructor
     function DtdAttlist(string elemname)
     {
         self.elemname = elemname;
         self.attrtypes = []; // This might need to be non-string for enumerated types
 
+        // For string arrays, make sure to use an RSA instead of RPA for performance
         string attrnames[] = [];
         self.attrnames = attrnames;
 
@@ -309,6 +364,7 @@ class Rosella.Xml.Tag.DtdAttlist
         self.fixed_values = fixed_values;
     }
 
+    // Add an attribute declaration
     function add_attr(string attrname, string typename, string default_value, string default_rule, string fixed_value)
     {
         push(self.attrnames, attrname);
@@ -332,6 +388,7 @@ class Rosella.Xml.Tag.DtdAttlist
         push(self.default_rules, default_rule);
     }
 
+    // Convert to XML, adding to the StringBuilder
     function to_xml_sb(var sb, int indent)
     {
         string indent_str = indent_level(indent);
@@ -365,17 +422,22 @@ class Rosella.Xml.Tag.DtdAttlist
     }
 }
 
+/* Comment
+    With <!-- ... --> syntax
+*/
 class Rosella.Xml.Tag.Comment
 {
-    var text;
-    var pos;
+    var text;   // The text of the comment
+    var pos;    // The position of the comment in the XML string
 
+    // Constructor
     function Comment(int pos, string comment_text)
     {
         self.text = comment_text;
         self.pos;
     }
 
+    // Convert to XML
     function to_xml()
     {
         var sb = new 'StringBuilder';
@@ -383,6 +445,7 @@ class Rosella.Xml.Tag.Comment
         return sb;
     }
 
+    // Convert to XML, adding to the StringBuilder
     function to_xml_sb(var sb, int indent)
     {
         string indent_str = indent_level(indent);
@@ -393,7 +456,13 @@ class Rosella.Xml.Tag.Comment
     }
 }
 
+/* DocumentRoot
+    This "tag" represents a hidden document root, for cases when we have multiple
+    top-level tags (one root data tag and multiple comments, ideally). Used for
+    parsing and discarded.
+*/
 class Rosella.Xml.Tag.DocumentRoot : Rosella.Xml.Tag
 {
+    // Constructor
     function DocumentRoot() { self.children = []; }
 }
