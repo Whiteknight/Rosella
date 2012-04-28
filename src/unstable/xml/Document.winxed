@@ -45,7 +45,13 @@ class Rosella.Xml.Document
 
     function to_xml()
     {
-        return self.get_document_root().to_xml();
+        var sb = new 'StringBuilder';
+        if (self.xml_header != null)
+            self.xml_header.to_xml_sb(sb, 0);
+        if (self.dtd_header != null)
+            self.dtd_header.to_xml_sb(sb, 0);
+        self.get_document_root().to_xml_sb(sb, 0);
+        return sb;
     }
 
     function write_to_file(string filename)
@@ -79,10 +85,17 @@ class Rosella.Xml.DtdDocument : Rosella.Xml.Document
 
     function DtdDocument() { }
 
-    function to_xml(var sb = new 'StringBuilder')
+    function to_xml()
+    {
+        var sb = new 'StringBuilder';
+        self.to_xml_sb(sb, 0);
+        return string(sb);
+    }
+
+    function to_xml_sb(var sb, int indent)
     {
         for (string elem in self.typedefs)
-            elem.to_xml_sb(sb, 1);
+            self.typedefs[elem].to_xml_sb(sb, indent);
     }
 
     function validate_xml(var xmldoc)
