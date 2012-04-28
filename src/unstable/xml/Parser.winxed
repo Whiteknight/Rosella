@@ -195,8 +195,6 @@ namespace Rosella.Xml.Parser
         while (have_more_chars(s, b)) {
             eat_whitespace(s, b);
             int c = get_next(s, b);
-            if (c == ASCII_NULL)
-                break;
             if (c == ASCII_LESS_THAN)
                 __parse_dtd_inline_tag(dtd, s, b, len, dtd_document);
             else

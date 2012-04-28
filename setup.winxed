@@ -423,7 +423,8 @@ function setup_experimental_libraries(var rosella)
         "xml/Document",
         "xml/Parser",
         "xml/Tag",
-        "xml/Text"
+        "xml/Text",
+        "xml/Visitor"
     );
 }
 

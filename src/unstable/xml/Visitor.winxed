@@ -1,0 +1,78 @@
+class Rosella.Xml.Visitor
+{
+    function visit_doc(var doc)
+    {
+        return self.visit_node(doc.get_document_root());
+    }
+
+    function visit_node(var node, var results = new 'ResizableStringArray')
+    {
+        self.do_visit(node, results);
+        for (var child in node.children) {
+            if (child instanceof Rosella.Xml.Text)
+                continue;
+            self.visit_node(child, results);
+        }
+        return results;
+    }
+
+    function do_visit(var node, var results)
+    {
+        Rosella.Error.must_subclass(__CLASS__);
+    }
+}
+
+class Rosella.Xml.Visitor.Lister : Rosella.Xml.Visitor
+{
+    function Lister() { }
+
+    function do_visit(var node, var results)
+    {
+        string name = node.name;
+        push(results, name);
+    }
+}
+
+class Rosella.Xml.Visitor.DtdValidator : Rosella.Xml.Visitor
+{
+    var dtd_document;
+    function DtdValidator(var dtd)
+    {
+        self.dtd_document = dtd;
+    }
+
+    function visit_doc(var doc)
+    {
+        if (self.dtd_document == null)
+            return null;
+        return self.visit_node(doc.get_document_root());
+    }
+
+    function __add_err_msg(results, string fmt, var args [slurpy])
+    {
+        string msg = sprintf(fmt, args);
+        push(results, msg);
+    }
+
+    function do_visit(var node, var results)
+    {
+        string name = node.name;
+        var dtd = self.dtd_document;
+        if (!(exists dtd.typedefs[name])) {
+            self.__add_err_msg(results, "Tag name '%s' not found in DTD", name);
+            return;
+        }
+        var elem = dtd.typedefs[name];
+        for (string attr in node.attributes) {
+            string value = string(node.attributes[attr]);
+            if (!elem.validate_attribute(attr, value))
+                self.__add_err_msg(results, "Attribute '%s'='%s' is invalid", attr, value);
+        }
+        for (var child in node.children) {
+            if (!elem.validate_child(child)) {
+                string childname = child.name;
+                self.__add_err_msg(results, "Node %s may not be a child of node %s", childname, name);
+            }
+        }
+    }
+}

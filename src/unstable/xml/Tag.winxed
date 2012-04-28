@@ -330,6 +330,30 @@ class Rosella.Xml.Tag.DtdElement
         if (self.attlist != null)
             self.attlist.to_xml_sb(sb, indent);
     }
+
+    function validate_attribute(string name, string value)
+    {
+        if (self.attlist == null)
+            return true;
+        self.attlist.validate_attribute(name, value);
+    }
+
+    function validate_child(var child)
+    {
+        if (self.children_rule != null) {
+            string children_rule = self.children_rule;
+            if (children_rule == "ANY")
+                return true;
+            if (children_rule == "EMPTY")
+                return false;
+        }
+        if (self.children == null)
+            return true;
+        string name = child.name;
+        if (exists self.children[name])
+            return true;        // TODO: Check quantifiers, etc
+        return false;
+    }
 }
 
 /* DTD !ATTLIST Tag

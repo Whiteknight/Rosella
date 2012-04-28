@@ -3,6 +3,7 @@ class Rosella.Xml.Document
     var xml_header;
     var dtd_header;
     var root;
+    var errors;
 
     function Document() { }
 
@@ -60,14 +61,14 @@ class Rosella.Xml.Document
         (new Rosella.FileSystem.File(filename)).write_all_text(xml);
     }
 
-    function read_from_file(string filename, int do_validate = true)
+    function read_from_file(string filename, int do_validate = false)
     {
         var f = new Rosella.FileSystem.File(filename);
         string xml = f.read_all_text();
         Rosella.Xml.parse(xml, self, do_validate);
     }
 
-    function read_from_string(string xml, int do_validate = true)
+    function read_from_string(string xml, int do_validate = false)
     {
         Rosella.Xml.parse(xml, self, do_validate);
     }
@@ -75,7 +76,23 @@ class Rosella.Xml.Document
     function validate()
     {
         if (self.dtd_header != null && self.dtd_header.dtd_document != null)
-            self.dtd_header.dtd_document.validate_xml(self);
+            self.errors = self.dtd_header.dtd_document.validate_xml(self);
+        return self.errors;
+    }
+
+    function is_validated()
+    {
+        return self.errors != null;
+    }
+
+    function is_valid()
+    {
+        return self.errors != null && elements(self.errors) == 0;
+    }
+
+    function visit(var v)
+    {
+        return v.visit_doc(self);
     }
 }
 
@@ -108,7 +125,9 @@ class Rosella.Xml.DtdDocument
     {
         if (self.typedefs == null)
             return;
-        // TODO: Go through the XML document and validate it
+        var validator = new Rosella.Xml.Visitor.DtdValidator(self);
+        var errs = validator.visit_doc(xmldoc);
+        return errs;
     }
 
     function read_from_file(string filename)
@@ -130,6 +149,8 @@ class Rosella.Xml.DtdDocument
     {
         if (self.typedefs == null)
             self.typedefs = {};
+        if (exists self.typedefs[name])
+            Rosella.Error.error("!ELEMENT definitional already provided for '%s'", name);
         self.typedefs[name] = elem;
     }
 
