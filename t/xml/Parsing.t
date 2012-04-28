@@ -5,7 +5,8 @@ function main[main]()
     Rosella.Test.test_vector(
         function(var self, string data) {
             var doc = new Rosella.Xml.Document();
-            doc.read_from_string(data, false);
+            doc.read_from_string(data, false);  // Do not validate here, we are testing
+                                                // The parser, not the validator
             self.assert.not_null(doc);
             self.assert.instance_of(doc, class Rosella.Xml.Document);
         }, __test_data()
@@ -52,6 +53,17 @@ function __test_data() { return {
     "attribute quoted escapes" : "<foo bar='blahblah\\'blahblah'></foo>",
 
     // Tests for !DOCTYPE and children
+    "!DOCTYPE with scope and inlines" : <<:
+<?xml version='1.0'?>
+<!DOCTYPE foo SYSTEM "foo.dtd" [
+    <!ELEMENT foo (bar)>
+    <!ATTLIST foo id CDATA "0">
+]>
+<foo>
+    <bar/>
+</foo>
+:>>
+,
     "!ELEMENT and !ATTLIST" : <<:
 <?xml version='1.0'?>
 <!DOCTYPE foo [

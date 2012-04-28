@@ -120,7 +120,7 @@ namespace Rosella.Xml.Parser
             }
             unshift_int(s, c);
         }
-        Rosella.Xml.Parser.__error_unknown_char(c, "XML Header");
+        Rosella.Parse.error_unknown_char(c, "XML Header", current_position(len, s, b));
     }
 
     function __parse_dtd_header(string xml, var s, var b, int len, var document)
@@ -144,6 +144,10 @@ namespace Rosella.Xml.Parser
         }
         if (c == ASCII_OPEN_BRACKET) {
             __parse_dtd_header_inline(xml, s, b, len, dtd_header.get_dtd_document());
+            eat_whitespace(s, b);
+            c = get_next(s, b);
+            if (c != ASCII_GREATER_THAN)
+                Rosella.Parse.error_unknown_char(c, "!DOCTYPE header with inline declarations", current_position(len, s, b));
             return;
         }
 
@@ -157,9 +161,18 @@ namespace Rosella.Xml.Parser
             dtd_header.set_scope(dtd_scope, filename);
             eat_whitespace(s, b);
         }
+        c = peek_next(s, b);
+        if (c == ASCII_OPEN_BRACKET) {
+            __parse_dtd_header_inline(xml, s, b, len, dtd_header.get_dtd_document());
+            eat_whitespace(s, b);
+            c = get_next(s, b);
+            if (c != ASCII_GREATER_THAN)
+                Rosella.Parse.error_unknown_char(c, "!DOCTYPE header with scope and inline declarations", current_position(len, s, b));
+            return;
+        }
         c = get_next(s, b);
         if (c != ASCII_GREATER_THAN)
-            Rosella.Xml.Parser.__error_unknown_char(c, "DOCTYPE header", current_position(len, s, b));
+            Rosella.Parse.error_unknown_char(c, "DOCTYPE header end", current_position(len, s, b));
     }
 
     function __parse_dtd_header_inline(string xml, var s, var b, int len, var dtd_doc)
@@ -175,10 +188,6 @@ namespace Rosella.Xml.Parser
             else
                 Rosella.Parse.error_unknown_char(c, "!DOCTYPE header", current_position(len, s, b));
         }
-        eat_whitespace(s, b);
-        c = get_next(s, b);
-        if (c != ASCII_GREATER_THAN)
-            Rosella.Parse.error_unknown_char(c, "!DOCTYPE header", current_position(len, s, b));
     }
 
     function __parse_dtd_standalone(string dtd, var s, var b, int len, var dtd_document)
@@ -357,7 +366,7 @@ namespace Rosella.Xml.Parser
                 Rosella.Error.error("Syntax error in tag %s at position %d", tag_name, current_position(len, s, b));
         }
 
-        Rosella.Xml.Parser.__error_unknown_char(c, "tag " + tag_name);
+        Rosella.Parse.error_unknown_char(c, "tag " + tag_name, current_position(len, s, b));
     }
 
     function __parse_comment(string xml, var s, var b, int len)

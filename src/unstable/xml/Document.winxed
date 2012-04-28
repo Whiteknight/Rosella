@@ -114,8 +114,11 @@ class Rosella.Xml.DtdDocument
     function read_from_file(string filename)
     {
         var f = new Rosella.FileSystem.File(filename);
-        string dtd = f.read_all_text();
-        Rosella.Xml.parse(dtd, self);
+        if (f.exists()) {
+            string dtd = f.read_all_text();
+            Rosella.Xml.parse(dtd, self);
+        }
+        // TODO: Else, list a warning
     }
 
     function read_from_string(string dtd)
