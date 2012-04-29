@@ -5,7 +5,14 @@
 */
 class Rosella.Net.UserAgent.SimpleHttp : Rosella.Net.UserAgent
 {
-    function SimpleHttp() { }
+    var use_ipv6;
+
+    function SimpleHttp(int use_ipv6 = false)
+    {
+        // TODO: Find out if the platform supports IPv6 first, and set the
+        // default accordingly.
+        self.use_ipv6 = use_ipv6;
+    }
 
     /* Standard UserAgent Interface
     */
@@ -67,6 +74,12 @@ class Rosella.Net.UserAgent.SimpleHttp : Rosella.Net.UserAgent
     function head(string uri, var headers [named,optional])
     {
         return self.__dispatch_request("HEAD", uri, headers, null);
+    }
+
+    // Determine whether requests through this agent should use ipv6
+    function use_ipv6()
+    {
+        return self.use_ipv6;
     }
 
     /* Private Helper Routines

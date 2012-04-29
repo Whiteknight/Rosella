@@ -55,7 +55,9 @@ class Rosella.Net.Protocol.Http : Rosella.Net.Protocol
     function request(var request, var user_agent)
     {
         :(string host, int port, string fullpath) = Rosella.Net.Http.get_host_information(request, request.get_proxy(), user_agent);
-        var socket = Rosella.Net.tcp_socket_factory().create(host, port);
+        int use_ipv6 = user_agent.use_ipv6();
+        var socket_factory = use_ipv6 ? Rosella.Net.tcp_socket_factory_ipv6() : Rosella.Net.tcp_socket_factory_ipv4();
+        var socket = socket_factory.create(host, port);
 
         if (!self.__send_request(socket, request, fullpath, user_agent))
             return Rosella.Net.Http.Response.__error_network_failure(request);

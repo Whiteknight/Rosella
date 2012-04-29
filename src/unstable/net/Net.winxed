@@ -23,12 +23,21 @@ namespace Rosella.Net
         return Rosella.Net.Http.default_protocol_factory().create(uri);
     }
 
-    // Get the default TCP SocketFactory
-    const string TCP_SOCKET_FACTORY_GLOBAL = "Rosella.Net.tcp_socket_factory";
-    function tcp_socket_factory()
+    // Get the default TCP SocketFactory for IPv4
+    const string IPV4_TCP_SOCKET_FACTORY_GLOBAL = "Rosella.Net.tcp_socket_factory_ipv4";
+    function tcp_socket_factory_ipv4()
     {
-        return Rosella.Globals.autoget_global(TCP_SOCKET_FACTORY_GLOBAL,
-            function() { return new Rosella.Net.SocketFactory("ipv4", "stream", "tcp"); }
+        return Rosella.Globals.autoget_global(IPV4_TCP_SOCKET_FACTORY_GLOBAL,
+            function() { return new Rosella.Net.SocketFactory("ipv4", "stream", "tcp", ""); }
+        );
+    }
+
+    // Get the default TCP SocketFactory for IPv6
+    const string IPV6_TCP_SOCKET_FACTORY_GLOBAL = "Rosella.Net.tcp_socket_factory_ipv6";
+    function tcp_socket_factory_ipv6()
+    {
+        return Rosella.Globals.autoget_global(IPV6_TCP_SOCKET_FACTORY_GLOBAL,
+            function() { return new Rosella.Net.SocketFactory("ipv6", "stream", "tcp", ""); }
         );
     }
 

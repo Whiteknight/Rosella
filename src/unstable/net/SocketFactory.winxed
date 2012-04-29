@@ -8,7 +8,7 @@ class Rosella.Net.SocketFactory : Rosella.ObjectFactory
     var protocol;
 
     // Constructor. Take several human-readable strings to configure settings
-    function SocketFactory(string inet_protocol, string data_protocol, string packet_protocol)
+    function SocketFactory(string inet_protocol, string data_protocol, string packet_protocol, string is_passive)
     {
         int inet, sock, packet;
         switch (inet_protocol) {
@@ -44,7 +44,9 @@ class Rosella.Net.SocketFactory : Rosella.ObjectFactory
                 Rosella.Error.error("Unknown protocol type '%s'", packet_protocol);
         }
 
-        int protocol[] = [inet, sock, packet];
+        int passive = is_passive == "passive";
+
+        int protocol[] = [inet, sock, packet, passive];
         self.protocol = protocol;
         self.ObjectFactory("Socket");
     }
@@ -53,9 +55,19 @@ class Rosella.Net.SocketFactory : Rosella.ObjectFactory
     function create_typed(var type, string host, int port)
     {
         var socket = Rosella.construct(type);
-        socket.socket(self.protocol:[flat]);
-        var addr = socket.sockaddr(host, port);
-        socket.connect(addr);
+        int protocol = int(self.protocol[0]); // PIO_PF_INET or PIO_PF_INET6
+        int family = int(self.protocol[1]);   // PIO_SOCK_STREAM or PIO_SOCK_DGRAM
+        int packet = int(self.protocol[2]);   // PIO_PROTO_TCP or PIO_PROTO_UDP
+        int passive = int(self.protocol[3]);  // true or false
+        socket.socket(protocol, family, packet);
+        var addr = socket.getaddrinfo(host, port, packet, protocol, passive);
+        if (addr == null)
+            Rosella.Error.error("Cannot find record for '%s:%d' (%d, %d, %d)", host, port, protocol, family, packet);
+        try {
+            socket.connect(addr);
+        } catch (e) {
+            Rosella.Error.error("Cannot connect to '%s:%d' (%d, %d, %d): %s", host, port, protocol, family, packet, e.message);
+        }
         return socket;
     }
 }
