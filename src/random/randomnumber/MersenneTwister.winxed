@@ -11,7 +11,7 @@ class Rosella.Random.RandomNumber.MersenneTwister : Rosella.Random.RandomNumber
     const int UPPER_MASK = 0x80000000; // most significant bit
     const int LOWER_MASK = 0x7FFFFFFF; // the rest
 
-    const int INT_MAX = 0xFFFFFFFF;
+    const int INT_MAX = 0x7FFFFFFF;
 
     // Tempering parameters
     const int TEMPERING_MASK_B = 0x9D2C5680;
