@@ -41,6 +41,7 @@ sub unstable_tests() {
     %h{"prototype"} := "NQP";
     %h{"decorate"} := "Winxed";
     %h{"xml"} := "Winxed";
+    %h{"net"} := "Winxed";
     %h;
 }
 
