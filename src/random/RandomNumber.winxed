@@ -19,7 +19,8 @@ class Rosella.Random.RandomNumber
         Rosella.Error.must_subclass(__CLASS__);
     }
 
-    // Gets a random signed integer from [INT_MIN, INT_MAX].
+    // Gets a random integer. The range of permissable integers is defined by
+    // the particular implementation.
     function get_int()
     {
         Rosella.Error.must_subclass(__CLASS__);
