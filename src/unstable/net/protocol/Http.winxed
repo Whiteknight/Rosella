@@ -55,9 +55,7 @@ class Rosella.Net.Protocol.Http : Rosella.Net.Protocol
     function request(var request, var user_agent)
     {
         :(string host, int port, string fullpath) = Rosella.Net.Http.get_host_information(request, request.get_proxy(), user_agent);
-        int use_ipv6 = user_agent.use_ipv6();
-        var socket_factory = use_ipv6 ? Rosella.Net.tcp_socket_factory_ipv6() : Rosella.Net.tcp_socket_factory_ipv4();
-        var socket = socket_factory.create(host, port);
+        var socket = self.__get_socket(host, port, user_agent);
 
         if (!self.__send_request(socket, request, fullpath, user_agent))
             return Rosella.Net.Http.Response.__error_network_failure(request);
@@ -82,6 +80,16 @@ class Rosella.Net.Protocol.Http : Rosella.Net.Protocol
 
     /* Private Helper Routines
     */
+
+    // Get a socket
+    function __get_socket(string host, int port, var user_agent)
+    {
+        // TODO: Once we have an SSL socket factory, take an option whether to
+        // use SSL or not
+        int use_ipv6 = user_agent.use_ipv6();
+        var socket_factory = use_ipv6 ? Rosella.Net.tcp_socket_factory_ipv6() : Rosella.Net.tcp_socket_factory_ipv4();
+        return socket_factory.create(host, port);
+    }
 
     // Receive the HTTP response/status link
     function __receive_status_line(var socket)

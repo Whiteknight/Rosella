@@ -91,7 +91,6 @@ class Rosella.Net.MimeBase64
         base64_buf =: base64;
         int len = elements(base64_buf);
         var base64_cleaned = new 'ByteBuffer';
-        base64_cleaned =: len;          // Presize. This isn't what the final length will be, but it's better than nothing.
 
         var e = self.eight_to_six;
         for (int i = 0; i < len; i++) {

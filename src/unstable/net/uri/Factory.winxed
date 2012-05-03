@@ -53,5 +53,4 @@ class Rosella.Net.Uri.Factory : Rosella.ObjectFactory
         uri.parse(protocol, uristr, s, b, len);
         return uri;
     }
-
 }
