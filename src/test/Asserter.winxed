@@ -122,6 +122,15 @@ class Rosella.Test.Asserter
         }
     }
 
+    function str_equal(string s1, string s2,
+            string message [optional], int has_msg [opt_flag])
+    {
+        if (s1 != s2) {
+            message = self.__default_message(message, has_msg, "strings not equal");
+            self.fail(message);
+        }
+    }
+
     // Determine if the two objects are equal. Expect that they are not
     function not_equal(var o1, var o2,
             string message [optional], int has_msg [opt_flag])
