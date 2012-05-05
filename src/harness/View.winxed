@@ -131,17 +131,15 @@ class Rosella.Harness.View
             });
 
         self.get_all_files_by_status("FAILED")
-            .tap(function(f) {
+            .foreach(function(f) {
                 self.show_file_result_info(f);
                 var r = f.get_result();
                 int total_tests = r.total_tests();
                 int ran_tests = r.ran_tests();
                 if (total_tests != ran_tests)
                     self.sayf("\tBad Plan. Planned %d tests, ran %d", total_tests, ran_tests);
-            })
-            .project(function(f) { return f.result.list_of_failures(); })
-            .foreach(function(f) {
-                self.sayf("  Failed test: %s", f);
+                Rosella.Query.iterable(f.result.list_of_failures())
+                    .foreach(function(name) { self.sayf("  Failed test: %s", name); });
             });
 
         self.show_result_coda("FAIL");
