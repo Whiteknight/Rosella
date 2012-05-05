@@ -19,6 +19,7 @@ sub library_tests() {
     %h{"filesystem"} := "NQP";
     %h{"memoize"} := "NQP";
     %h{"mockobject"} := "NQP";
+    %h{"net"} := "Winxed";
     %h{"parse"} := "Winxed";
     %h{"path"} := "NQP";
     %h{"proxy"} := "NQP";
@@ -41,7 +42,6 @@ sub unstable_tests() {
     %h{"prototype"} := "NQP";
     %h{"decorate"} := "Winxed";
     %h{"xml"} := "Winxed";
-    %h{"net"} := "Winxed";
     %h;
 }
 

@@ -340,6 +340,28 @@ function setup_stable_libraries(var rosella)
         "json/DumpHandler",
         "json/Parser"
     );
+
+    setup_winxed_lib(rosella, "net", ["Core", "Math_Builtins", "Ascii", "Parse_builtins", "Parse", "String", "FileSystem", "Date", "Random"],
+        "net/Includes",
+        "net/Net",
+        "net/Http",
+        "net/RequestResponse",
+        "net/http/Header",
+        "net/http/Request",
+        "net/http/Response",
+        "net/MimeBase64",
+        "net/Protocol",
+        "net/protocol/Factory",
+        "net/protocol/File",
+        "net/protocol/Http",
+        "net/Uri",
+        "net/uri/Factory",
+        "net/uri/File",
+        "net/uri/Http",
+        "net/UserAgent",
+        "net/useragent/SimpleHttp",
+        "net/SocketFactory"
+    );
 }
 
 function setup_experimental_libraries(var rosella)
@@ -393,28 +415,6 @@ function setup_experimental_libraries(var rosella)
         "genetic/Engine",
         "genetic/Mutator",
         "genetic/mutator/Generic"
-    );
-
-    setup_unstable_lib(rosella, "net", ["Core", "Math_Builtins", "Ascii", "Parse_builtins", "Parse", "String", "FileSystem", "Date", "Random"],
-        "net/Includes",
-        "net/Net",
-        "net/Http",
-        "net/RequestResponse",
-        "net/http/Header",
-        "net/http/Request",
-        "net/http/Response",
-        "net/MimeBase64",
-        "net/Protocol",
-        "net/protocol/Factory",
-        "net/protocol/File",
-        "net/protocol/Http",
-        "net/Uri",
-        "net/uri/Factory",
-        "net/uri/File",
-        "net/uri/Http",
-        "net/UserAgent",
-        "net/useragent/SimpleHttp",
-        "net/SocketFactory"
     );
 
     setup_unstable_lib(rosella, "xml", ["Core", "Ascii", "Parse_builtins", "Parse", "String", "FileSystem"],
