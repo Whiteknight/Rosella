@@ -13,7 +13,7 @@ class Rosella.Net.Protocol.Http : Rosella.Net.Protocol
     // This is the "http" protocol
     function protocol_name() { return "http"; }
 
-    // Prepare the request headers. Add in authoritzation, proxy-authorization,
+    // Prepare the request headers. Add in authorization, proxy-authorization,
     // connection and other standard headers that belong in all requests
     function prepare_request(var request, var user_agent)
     {

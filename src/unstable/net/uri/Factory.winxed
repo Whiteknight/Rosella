@@ -44,13 +44,11 @@ class Rosella.Net.Uri.Factory : Rosella.ObjectFactory
     // doing
     function create_typed(var type, string uristr)
     {
-        int s[] = [];
-        var b = get_iterator(uri);
-        int len = length(uri);
-        string protocol = Rosella.Parse.parse_alphanumeric(uri, s, b, len);
+        :(uristr, var s, var b, int len) = Rosella.Parse.setup_parse(uristr);
+        string protocol = Rosella.Parse.parse_alphanumeric(uristr, s, b, len);
 
-        var uri = Rosella.construct(type, uristr);
-        uri.parse(protocol, uristr, s, b, len);
+        var uri = Rosella.construct(type, protocol, uristr);
+        uri.parse(uristr, s, b, len);
         return uri;
     }
 }
