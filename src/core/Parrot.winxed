@@ -27,6 +27,8 @@ namespace Rosella.Parrot
         return __get_config_hash()["osname"] == "windows";
     }
 
+    // TODO: is_darwin()
+
     // Get an array of strings representing a backtrace from the caller
     function get_backtrace_strings()
     {
