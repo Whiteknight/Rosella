@@ -116,7 +116,7 @@ class Rosella.Path
     function get_next_search_string(string full_path, string search_text)
     {
         string separator = self.separator;
-        int idx = search_text.reverse_index(separator, 0);
+        int idx = search_text.reverse_index(separator);
         if (idx == -1)
             return -1, "", search_text;
         int next_idx = idx + length(separator);
