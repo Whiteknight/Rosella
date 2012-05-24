@@ -306,6 +306,7 @@ function setup_stable_libraries(var rosella)
         "date/Date",
         "date/DateFormatter",
         "date/Doomsday",
+        "date/ISO8601_101",
         "date/SpecialDate",
         "date/TimeSpan",
         "date/TimeSpanFormatter"

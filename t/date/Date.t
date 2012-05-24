@@ -326,6 +326,12 @@ class Test_Rosella_Date
         self.assert.equal(ts.days(), 1);
         self.assert.equal(ts.hours(), 1);
     }
+
+    function day_of_year() {
+        var a = new Rosella.Date(2012, 05, 24,  0, 0, 0);
+        int d = a.day_of_year();
+        self.assert.equal(d, 144);
+    }
 }
 
 function main[main]()

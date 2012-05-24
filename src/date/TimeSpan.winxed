@@ -157,7 +157,8 @@ class Rosella.Date.TimeSpan
                 year_d += 1;
         }
 
-        return year_d + d.day_of_year();
+        int base = year_d + d.day_of_year();
+        return base;
     }
 
     function __secs_base(var d)

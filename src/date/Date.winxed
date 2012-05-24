@@ -203,7 +203,7 @@ class Rosella.Date
         if (day < 1 || day > days_in_month)
             Rosella.Error.error("Bad day of month %d. For month %d must be in range [1, %d]", day, month, days_in_month);
         int day_of_year = day - 1;
-        for (int i = 0; i < month; i++)
+        for (int i = 0; i < month - 1; i++)
             day_of_year += int(month_day_counts[i]);
         int weekday = Rosella.Date.get_day_of_week(year, month, day);
 

@@ -1,0 +1,113 @@
+namespace Rosella.Date.ISO8601_101
+{
+    // TODO: Need a format sequence for fractions of a second (millisecond)
+    // TODO: Need to store timezone information and need to have a format
+    //       specifier for it.
+
+    const string DATE_FORMAT = "{yyyy}-{MM}-{dd}T{HH}:{mm}:{ss}.{ms}+{tz}:{tm}";
+    const string SPAN_FORMAT = "P{dd}DT{hh}H{mm}M{ss}S";
+
+    function format_date(var date)
+    {
+        return date.format_string(DATE_FORMAT);
+    }
+
+    function parse_date(string str)
+    {
+        :(str, var s, var b, int len) = Rosella.Parse.start_parse(str);
+
+        int year = Rosella.Parse.parse_integer(str, s, b, len);
+        int c = peek_next(s, b);
+        if (c != ASCII_DASH)
+            return new Rosella.Date(year, 0, 0);
+        c = get_next(s, b);
+
+        int month = Rosella.Parse.parse_integer(str, s, b, len);
+        c = peek_next(s, b);
+        if (c != ASCII_DASH)
+            return new Rosella.Date(year, month, 0);
+        c = get_next(s, b);
+
+        int day = Rosella.Parse.parse_integer(str, s, b, len);
+        c = peek_next(s, b);
+        if (c != ASCII_T)
+            return new Rosella.Date(year, month, day);
+        c = get_next(s, b);
+
+        int hour = Rosella.Parse.parse_integer(str, s, b, len);
+        c = peek_next(s, b);
+        if (c != ASCII_COLON)
+            return new Rosella.Date(year, month, day, hour, 0, 0);
+        c = get_next(s, b);
+
+        int minute = Rosella.Parse.parse_integer(str, s, b, len);
+        c = peek_next(s, b);
+        if (c != ASCII_COLON)
+            return new Rosella.Date(year, month, day, hour, minute, 0);
+        c = get_next(s, b);
+
+        float second = Rosella.Parse.parse_float(str, s, b, len);
+        c = peek_next(s, b);
+        if (c != ASCII_PLUS)
+            return new Rosella.Date(year, month, day, hour, minute, int(second));
+        c = get_next(s, b);
+
+        // TODO: We are parsing out timezone offsets here but aren't storing
+        //       the data anywhere. Store timezone information in the Date
+        //       somewhere.
+
+        int tzhour = Rosella.Parse.parse_integer(str, s, b, len);
+        c = peek_next(s, b);
+        if (c != ASCII_COLON)
+            return new Rosella.Date(year, month, day, hour, minute, second);
+        c = get_next(s, b);
+
+        int tzminute = Rosella.Parse.parse_integer(str, s, b, len);
+        return new Rosella.Date(year, month, day, hour, minute, second);
+    }
+
+    function format_period(var ts)
+    {
+        return ts.format_string(SPAN_FORMAT);
+    }
+
+    function parse_period(var str)
+    {
+        :(str, var s, var b, int len) = Rosella.Parse.start_parse(str);
+        var bigparts = {
+            "Y" : 0,
+            "M" : 0,
+            "D" : 0
+        };
+        int c = get_next(s, b);
+        if (c != ASCII_P)
+            return null;
+        while (has_more(s, b) && c != ASCII_T) {
+            int val = Rosella.Parse.get_integer(str, s, b, len);
+            c = get_next(s, b);
+            string str = codepoint_to_string(c);
+            if (!(exists bigparts[str]))
+                Rosella.Error.error("Cannot parse unit '%s'", str);
+            bigparts[str] = val;
+            c = peek_next(s, b);
+        }
+        if (!has_more(s, b))
+            return new Rosella.Date.TimeSpan(bigparts["Y"], bigparts["M"], bigparts["D"]);
+        c = get_next(s, b);
+        var smparts = {
+            "H" : 0,
+            "M" : 0,
+            "S" : 0
+        };
+
+        while(has_more(s, b)) {
+            int val = Rosella.Parse.get_integer(str, s, b, len);
+            c = get_next(s, b);
+            string str = codepoint_to_string(c);
+            if (!(exists smparts[str]))
+                Rosella.Error.error("Cannot parse unit '%s'", str);
+            smparts[str] = val;
+        }
+        return new Rosella.Date.TimeSpan(bigparts["Y"], bigparts["M"], bigparts["D"], smparts["H"], smparts["M"], smparts["S"]);
+    }
+}
