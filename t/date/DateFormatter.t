@@ -12,7 +12,7 @@ class Test_Rosella_Date_DateFormatter
         var obj = create_new();
 
         var arg_0 = new Rosella.Date(2012, 1, 14, 7, 23, 44);
-        string arg_1 = "yyyy MM dd hh mm ss";
+        string arg_1 = "{yyyy} {MM} {dd} {hh} {mm} {ss}";
         string result = obj.format(arg_0, arg_1);
         self.assert.equal(result, "2012 01 14 07 23 44");
     }

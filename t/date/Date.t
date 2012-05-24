@@ -219,7 +219,7 @@ class Test_Rosella_Date
         self.status.verify("Test Rosella.Date.format_string()");
         var obj = create_new(2012, 03, 04, 10, 13, 10);
 
-        var arg_0 = "yyyy MM dd hh mm ss";
+        var arg_0 = "{yyyy} {MM} {dd} {hh} {mm} {ss}";
         string result = obj.format_string(arg_0);
         self.assert.equal(result, "2012 03 04 10 13 10");
     }

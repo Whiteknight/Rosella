@@ -1,23 +1,3 @@
-inline make_key(int c, int n) return int
-{
-    return c << 2 | n;
-}
-
-inline push_2digit_number(var sb, int i)
-{
-    push(sb, int(i / 10) + ASCII_0);
-    push(sb, int(i % 10) + ASCII_0);
-}
-
-inline push_4digit_number(var sb, int i)
-{
-
-    push(sb, int(i / 1000) + ASCII_0);
-    push(sb, (int(i / 100) % 10) + ASCII_0);
-    push(sb, int(i / 10) + ASCII_0);
-    push(sb, int(i % 10) + ASCII_0);
-}
-
 /* Date String Formatter
     Formats a Date object into a string according to the given formatting string
 */
@@ -30,151 +10,36 @@ class Rosella.Date.DateFormatter : Rosella.StringFormatter
     // TODO: Support additional codes
     function format(var obj, string f)
     {
-        if (contains_substr(f, "yyyy")) f = f.replace("yyyy", format_string("%04d", obj.year()));
-        if (contains_substr(f, "MMMM")) f = f.replace("MMMM", obj.month_name());
-        if (contains_substr(f, "MMM"))  f = f.replace("MMM", substr(obj.month_name(), 0, 3));
-        if (contains_substr(f, "MM"))   f = f.replace("MM", format_string("%02d", obj.month()));
-        if (contains_substr(f, "dd"))   f = f.replace("dd", format_string("%02d", obj.day()));
-        if (contains_substr(f, "AA")) {
+        if (contains_substr(f, "{yyyy}")) f = f.replace("{yyyy}", format_string("%04d", obj.year()));
+        if (contains_substr(f, "{MMMM}")) f = f.replace("{MMMM}", obj.month_name());
+        if (contains_substr(f, "{MMM}"))  f = f.replace("{MMM}", substr(obj.month_name(), 0, 3));
+        if (contains_substr(f, "{MM}"))   f = f.replace("{MM}", format_string("%02d", obj.month()));
+        if (contains_substr(f, "{dd}"))   f = f.replace("{dd}", format_string("%02d", obj.day()));
+        if (contains_substr(f, "{AA}")) {
             int hours = obj.hours();
             if (hours > 12)
-                f = f.replace("AA", "PM");
+                f = f.replace("{AA}", "PM");
             else
-                f = f.replace("AA", "AM");
+                f = f.replace("{AA}", "AM");
         }
-        if (contains_substr(f, "HHH")) {
+        if (contains_substr(f, "{HHH}")) {
             int hours = obj.hours();
             if (hours > 12)
                 hours = hours - 12;
-            f = f.replace("HHH", format_string("%2d", hours));
+            f = f.replace("{HHH}", format_string("%2d", hours));
         }
-        if (contains_substr(f, "HH")) {
+        if (contains_substr(f, "{HH}")) {
             int hours = obj.hours();
             if (hours > 12)
                 hours = hours - 12;
-            f = f.replace("HH", format_string("%d", hours));
+            f = f.replace("{HH}", format_string("%d", hours));
         }
-        if (contains_substr(f, "ww"))   f = f.replace("ww", format_string("%02d", obj.week_day()));
-        if (contains_substr(f, "WW"))   f = f.replace("WW", obj.week_day_name());
-        if (contains_substr(f, "hh"))   f = f.replace("hh", format_string("%02d", obj.hours()));
-        if (contains_substr(f, "mm"))   f = f.replace("mm", format_string("%02d", obj.minutes()));
-        if (contains_substr(f, "ss"))   f = f.replace("ss", format_string("%02d", obj.seconds()));
+        if (contains_substr(f, "{ww}"))   f = f.replace("{ww}", format_string("%02d", obj.week_day()));
+        if (contains_substr(f, "{WW}"))   f = f.replace("{WW}", obj.week_day_name());
+        if (contains_substr(f, "{hh}"))   f = f.replace("{hh}", format_string("%02d", obj.hours()));
+        if (contains_substr(f, "{mm}"))   f = f.replace("{mm}", format_string("%02d", obj.minutes()));
+        if (contains_substr(f, "{ss}"))   f = f.replace("{ss}", format_string("%02d", obj.seconds()));
         return f;
-    }
-
-    function format_experimental(var obj, string f)
-    {
-        int flen = length(f);
-        var sb;
-        ${ new sb, 'StringBuilder', flen };
-        int iyear = obj.year();
-        int imonth = obj.month();
-        int iday = obj.day();
-        int ihour = obj.hours();
-        int iminute = obj.minutes();
-        int isecond = obj.seconds();
-
-        :(f, var s, var b, int len) = Rosella.Parse.setup_parse(f);
-        while(true) {
-            int c = get_next(s, b);
-            if (c == ASCII_NULL)
-                break;
-            if (!codepoint_is_alpha(c)) {
-                add_char_to_builder(sb, c);
-                continue;
-            }
-            int num = Rosella.Parse.parse_repeat(c, f, s, b, len);
-
-            string sval;
-            int ival;
-            switch(c) {
-                case ASCII_y:
-                    if (num == 4) {
-                        push_4digit_number(sb, iyear);
-                        break;
-                    }
-                    self.__format_error(c, num);
-                case ASCII_M:
-                    if (num == 2) {
-                        push_2digit_number(sb, imonth);
-                        break;
-                    } else if (num == 4) {
-                        sval = obj.month_name();
-                        push(sb, sval);
-                        break;
-                    } else if (num == 3) {
-                        sval = obj.month_name();
-                        sval = substr(sval, 0, 3);
-                        push(sb, sval);
-                        break;
-                    }
-                    self.__format_error(c, num);
-                case ASCII_d:
-                    if (num == 2) {
-                        push_2digit_number(sb, iday);
-                        break;
-                    }
-                    self.__format_error(c, num);
-                case ASCII_H:
-                    if (num == 2) {
-                        ival = ihour;
-                        if (ival > 12)
-                            ival = ival - 12;
-                        push_2digit_number(sb, ival);
-                        break;
-                    }
-                    self.__format_error(c, num);
-                case ASCII_h:
-                    if (num == 2) {
-                        push_2digit_number(sb, ihour);
-                        break;
-                    }
-                    self.__format_error(c, num);
-                case ASCII_m:
-                    if (num == 2) {
-                        push_2digit_number(sb, iminute);
-                        break;
-                    }
-                    self.__format_error(c, num);
-                case ASCII_s:
-                    if (num == 2) {
-                        push_2digit_number(sb, isecond);
-                        break;
-                    }
-                    self.__format_error(c, num);
-                case ASCII_w:
-                    if (num == 2) {
-                        ival = obj.week_day();
-                        sval = format_string("%02d", ival);
-                        push(sb, sval);
-                        break;
-                    }
-                    self.__format_error(c, num);
-                case ASCII_W:
-                    if (num == 2) {
-                        sval = obj.week_day_name();
-                        push(sb, sval);
-                        break;
-                    }
-                    self.__format_error(c, num);
-                case ASCII_A:
-                    if (num == 2) {
-                        ival = obj.hours();
-                        sval = ival > 12 ? "PM" : "AM";
-                        push(sb, sval);
-                        break;
-                    }
-                    self.__format_error(c, num);
-                default:
-                    self.__format_error(c, num);
-            }
-        }
-        return sb;
-    }
-
-    function __format_error(int c, int num)
-    {
-        Rosella.Error.error("Unknown date format string %s", repeat_string(chr(c), num));
     }
 
     function format_default(var obj)
