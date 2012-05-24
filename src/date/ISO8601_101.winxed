@@ -4,7 +4,10 @@ namespace Rosella.Date.ISO8601_101
     // TODO: Need to store timezone information and need to have a format
     //       specifier for it.
 
-    const string DATE_FORMAT = "{yyyy}-{MM}-{dd}T{HH}:{mm}:{ss}.{ms}+{tz}:{tm}";
+    // TODO: Use the real format string when we have information about
+    //       milliseconds and timezone
+    //const string DATE_FORMAT = "{yyyy}-{MM}-{dd}T{hh}:{mm}:{ss}.{ms}+{tz}:{tm}";
+    const string DATE_FORMAT = "{yyyy}-{MM}-{dd}T{hh}:{mm}:{ss}";
     const string SPAN_FORMAT = "P{dd}DT{hh}H{mm}M{ss}S";
 
     function format_date(var date)
@@ -14,7 +17,7 @@ namespace Rosella.Date.ISO8601_101
 
     function parse_date(string str)
     {
-        :(str, var s, var b, int len) = Rosella.Parse.start_parse(str);
+        :(str, var s, var b, int len) = Rosella.Parse.setup_parse(str);
 
         int year = Rosella.Parse.parse_integer(str, s, b, len);
         int c = peek_next(s, b);
@@ -46,7 +49,7 @@ namespace Rosella.Date.ISO8601_101
             return new Rosella.Date(year, month, day, hour, minute, 0);
         c = get_next(s, b);
 
-        float second = Rosella.Parse.parse_float(str, s, b, len);
+        float second = Rosella.Parse.parse_number(ASCII_0, str, s, b, len);
         c = peek_next(s, b);
         if (c != ASCII_PLUS)
             return new Rosella.Date(year, month, day, hour, minute, int(second));
@@ -73,7 +76,7 @@ namespace Rosella.Date.ISO8601_101
 
     function parse_period(var str)
     {
-        :(str, var s, var b, int len) = Rosella.Parse.start_parse(str);
+        :(str, var s, var b, int len) = Rosella.Parse.setup_parse(str);
         var bigparts = {
             "Y" : 0,
             "M" : 0,
@@ -83,7 +86,7 @@ namespace Rosella.Date.ISO8601_101
         if (c != ASCII_P)
             return null;
         while (has_more(s, b) && c != ASCII_T) {
-            int val = Rosella.Parse.get_integer(str, s, b, len);
+            int val = Rosella.Parse.parse_integer(str, s, b, len);
             c = get_next(s, b);
             string str = codepoint_to_string(c);
             if (!(exists bigparts[str]))
@@ -101,7 +104,7 @@ namespace Rosella.Date.ISO8601_101
         };
 
         while(has_more(s, b)) {
-            int val = Rosella.Parse.get_integer(str, s, b, len);
+            int val = Rosella.Parse.parse_integer(str, s, b, len);
             c = get_next(s, b);
             string str = codepoint_to_string(c);
             if (!(exists smparts[str]))
