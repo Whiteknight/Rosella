@@ -35,9 +35,9 @@ namespace Rosella.Date
     }
 
     // Get a Date object representing the current instant
-    function now()
+    function now(int is_local = true)
     {
-        return new Rosella.Date(time_ticks());
+        return new Rosella.Date(time_ticks(), is_local);
     }
 
     // Get a Date object representing the minimum representable date. This
@@ -185,9 +185,12 @@ class Rosella.Date
 
     // Construct a new Date given an integer system-epoch time (like from the
     // time_i opcode).
-    function Date(int sys_ms)
+    function Date(int sys_ms, is_local)
     {
-        self.time_array = decodelocaltime(sys_ms);
+        if (is_local)
+            self.time_array = decodelocaltime(sys_ms);
+        else
+            self.time_array = decodetime(sys_ms);
         self.time_raw = sys_ms;
     }
 
