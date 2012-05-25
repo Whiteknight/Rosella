@@ -301,8 +301,7 @@ function setup_stable_libraries(var rosella)
     );
 
     // Library for working with date and time
-    setup_winxed_lib(rosella, "date", ["Core", "Ascii", "Parse_builtins", "Parse"],
-        "date/Includes",
+    setup_lib_separate(rosella, "date",
         "date/Date",
         "date/DateFormatter",
         "date/Doomsday",
@@ -565,6 +564,27 @@ function setup_lib_internal(var rosella, string name, string prefix,
     rosella["pbc_pir"][pbc_lib_name] = pir_lib_name;
     rosella["inst_lib"].push(pbc_lib_name);
     rosella["manifest_includes"].push(pir_lib_name);
+}
+
+function setup_lib_separate(var rosella, string name, var files [slurpy])
+{
+    setup_lib_internal_separate(rosella, name, "src/", files);
+}
+
+function setup_lib_internal_separate(var rosella, string name, string prefix, var files)
+{
+    string pbc_lib_name = "rosella/" + name + ".pbc";
+    rosella["pbc_pbc"][pbc_lib_name] = [];
+
+    for (string file in files) {
+        string pir_name = "rosella/" + file + ".pir";
+        string pbc_name = "rosella/" + file + ".pbc";
+        string winxed_name = prefix + file + ".winxed";
+        rosella["pir_winxed"][pir_name] = winxed_name;
+        rosella["pbc_pir"][pbc_name] = pir_name;
+        push(rosella["pbc_pbc"][pbc_lib_name], pbc_name);
+    }
+    rosella["inst_lib"].push(pbc_lib_name);
 }
 
 function setup_lib_constants(var rosella, string name, string prefix, var args)

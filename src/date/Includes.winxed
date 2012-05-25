@@ -1,6 +1,11 @@
 $loadlib "sys_ops";
 $include_const "tm.pasm";
 
+$include "src/include/Core.winxed";
+$include "src/include/Ascii.winxed";
+$include "src/include/Parse_builtins.winxed";
+$include "src/include/Parse.winxed";
+
 inline decodetime(int sys_time) return var
 {
     var d;

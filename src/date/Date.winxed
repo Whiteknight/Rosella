@@ -1,3 +1,5 @@
+$include "src/date/Includes.winxed";
+
 /* Rosella Date Library
     The Date library provides utilities for working with dates and times. It is
     not guaranteed to produce perfectly accurate results in all cases for all

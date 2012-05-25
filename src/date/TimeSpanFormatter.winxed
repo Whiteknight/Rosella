@@ -1,3 +1,5 @@
+$include "src/date/Includes.winxed";
+
 /* TimeSpan String Formatter
     Formats a TimeSpan object into a string according to the given formatting
     string

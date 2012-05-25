@@ -1,3 +1,5 @@
+$include "src/date/Includes.winxed";
+
 namespace Rosella.Date.ISO8601_101
 {
     // TODO: Need a format sequence for fractions of a second (millisecond)

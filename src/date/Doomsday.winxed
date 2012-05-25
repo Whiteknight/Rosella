@@ -1,3 +1,5 @@
+$include "src/date/Includes.winxed";
+
 namespace Rosella.Date.Doomsday
 {
     // doomsdays[N] is the day of month N that falls on a doomsday.
