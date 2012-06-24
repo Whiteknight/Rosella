@@ -17,11 +17,19 @@ class Rosella.Xml.Tag.Collection
         return self.tags;
     }
 
-    function get_children_named(string name)
+    function get_children_named(string name, var attrs [slurpy,named])
     {
         var c = new Rosella.Xml.Tag.Collection();
         for (var t in self.tags)
-            t.get_children_collection(function(var _t) { return _t.name == name; }, c);
+            t.get_children_collection(Rosella.Xml.Tag.child_tag_finder_name_attrs(name, attrs), c);
+        return c;
+    }
+
+    function get_children(var attrs = null)
+    {
+        var c = new Rosella.Xml.Tag.Collection();
+        for (var t in self.tags)
+            t.get_children_collection(Rosella.Xml.Tag.child_tag_finder_attrs(attrs), c);
         return c;
     }
 }

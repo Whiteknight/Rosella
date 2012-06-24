@@ -1,3 +1,34 @@
+namespace Rosella.Xml.Tag
+{
+    function child_tag_finder_name_attrs(string name, var attrs)
+    {
+        return function(var t) {
+            if (t.name != name)
+                return false;
+            if (attrs != null && elements(attrs) > 0) {
+                for (string attr_name in attrs) {
+                    if (!(exists t.attributes[attr_name]) || t.attributes[attr_name] != attrs[attr_name])
+                        return false;
+                }
+            }
+            return true;
+        };
+    }
+
+    function child_tag_finder_attrs(var attrs)
+    {
+        return function(var t) {
+            if (attrs != null && elements(attrs) > 0) {
+                for (string attr_name in attrs) {
+                    if (!(exists t.attributes[attr_name]) || t.attributes[attr_name] != attrs[attr_name])
+                        return false;
+                }
+            }
+            return true;
+        };
+    }
+}
+
 /* XML Tag Class
     This class represents an XML tag.
 */
@@ -90,7 +121,7 @@ class Rosella.Xml.Tag
         push(sb, ">");
     }
 
-    function get_children(var f)
+    function get_children(var f = null)
     {
         var c = new Rosella.Xml.Tag.Collection();
         self.get_children_collection(f, c);
@@ -112,9 +143,14 @@ class Rosella.Xml.Tag
         }
     }
 
-    function get_children_named(string n)
+    function get_children_named(string n, var attrs [slurpy,named])
     {
-        return self.get_children(function (var t) { return t.name == n; });
+        return self.get_children(Rosella.Xml.Tag.child_tag_finder_name_attrs(n, attrs));
+    }
+
+    function get_children_by_attr(var attrs)
+    {
+        return self.get_children(Rosella.Xml.Tag.child_tag_finder_attrs(attrs));
     }
 
     /* Private Helper Methods
