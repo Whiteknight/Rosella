@@ -1,0 +1,27 @@
+class Rosella.Xml.Tag.Collection
+{
+    var tags;
+
+    function Collection()
+    {
+        self.tags = [];
+    }
+
+    function add_tag(var t)
+    {
+        push(self.tags, t);
+    }
+
+    function tags()
+    {
+        return self.tags;
+    }
+
+    function get_children_named(string name)
+    {
+        var c = new Rosella.Xml.Tag.Collection();
+        for (var t in self.tags)
+            t.get_children_collection(function(var _t) { return _t.name == name; }, c);
+        return c;
+    }
+}

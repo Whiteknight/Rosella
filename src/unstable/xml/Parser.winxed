@@ -58,7 +58,6 @@ namespace Rosella.Xml.Parser
             string str = string(sb);
             if (current_tag != null)
                 current_tag.add_child_text(str);
-            Rosella.IO.sayf("Done reading text after tag");
         }
         if (elements(tag_stack) > 0)
             Rosella.Error.error("Syntax error, mismatched tags. There are %d unclosed tags at position %d", elements(tag_stack), current_position(len, s, b));

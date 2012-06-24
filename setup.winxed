@@ -424,6 +424,7 @@ function setup_experimental_libraries(var rosella)
         "xml/Document",
         "xml/Parser",
         "xml/Tag",
+        "xml/tag/Collection",
         "xml/Text",
         "xml/Visitor"
     );

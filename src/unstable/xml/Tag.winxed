@@ -57,6 +57,13 @@ class Rosella.Xml.Tag
         return sb;
     }
 
+    function get_inner_xml()
+    {
+        var sb = new 'StringBuilder';
+        self.__to_xml_sb_children(sb, 0);
+        return sb;
+    }
+
     // Convert this tag and contents to XML, adding it to the StringBuilder
     function to_xml_sb(var sb, int indent)
     {
@@ -81,6 +88,33 @@ class Rosella.Xml.Tag
         }
         push(sb, self.name);
         push(sb, ">");
+    }
+
+    function get_children(var f)
+    {
+        var c = new Rosella.Xml.Tag.Collection();
+        self.get_children_collection(f, c);
+        return c;
+    }
+
+    function get_children_collection(var f, var c)
+    {
+        if (self.children == null)
+            return;
+        for (var child in self.children) {
+            if (f == null)
+                c.add_tag(child);
+            else {
+                 var result = f(child);
+                 if (result)
+                    c.add_tag(child);
+            }
+        }
+    }
+
+    function get_children_named(string n)
+    {
+        return self.get_children(function (var t) { return t.name == n; });
     }
 
     /* Private Helper Methods
