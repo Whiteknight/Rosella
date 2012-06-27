@@ -6,7 +6,7 @@ class Rosella.Xml.Text
     var text;
 
     // Constructor
-    function Text(string text) { self.text = text; }
+    function Text(string text) { self.text = Rosella.String.trim(text); }
 
     // Get the raw text string
     function get_text() { return self.text; }
