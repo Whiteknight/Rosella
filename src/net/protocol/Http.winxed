@@ -56,6 +56,7 @@ class Rosella.Net.Protocol.Http : Rosella.Net.Protocol
     {
         :(string host, int port, string fullpath) = Rosella.Net.Http.get_host_information(request, request.get_proxy(), user_agent);
         var socket = self.__get_socket(host, port, user_agent);
+        socket.encoding("fixed_8");
 
         if (!self.__send_request(socket, request, fullpath, user_agent))
             return Rosella.Net.Http.Response.__error_network_failure(request);
@@ -178,8 +179,11 @@ class Rosella.Net.Protocol.Http : Rosella.Net.Protocol
             int chunk_length = Rosella.String.to_integer(line, 16);
             if (chunk_length == 0)
                 break;
-            string raw = socket.read(chunk_length);
-            push(buf, raw);
+            while (chunk_length > 0) {
+                string raw = socket.read(chunk_length);
+                chunk_length -= length(raw);
+                push(buf, raw);
+            }
             socket.readline();
             user_agent.request_progress_tick();
         }
