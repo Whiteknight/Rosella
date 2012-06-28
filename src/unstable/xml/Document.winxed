@@ -80,9 +80,9 @@ class Rosella.Xml.Document
     }
 
     // Read the xml from string and parse it into this document
-    function read_from_string(string xml, int do_validate = false)
+    function read_from_string(string xml, int do_validate = false, int strict = true)
     {
-        Rosella.Xml.parse(xml, self, do_validate);
+        Rosella.Xml.parse(xml, self, do_validate, strict);
     }
 
     // Validate this document against its DTD

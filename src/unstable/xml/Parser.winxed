@@ -1,6 +1,6 @@
 namespace Rosella.Xml.Parser
 {
-    function __parse_xml(string xml, var s, var b, int len, var document)
+    function __parse_xml(string xml, var s, var b, int len, var document, int strict)
     {
         var tag_stack = [];
         var current_tag = new Rosella.Xml.Tag.DocumentRoot();
@@ -32,8 +32,29 @@ namespace Rosella.Xml.Parser
                 if (is_close) {
                     if (tag.xmlns != current_tag.xmlns)
                         Rosella.Error.error("Syntax error, mismatched tags. Tag namespaces and/or names do not match at position %d", current_position(len, s, b));
-                    if (tag.name != current_tag.name)
-                        Rosella.Error.error("Syntax error, mismatched tags. Found closing tag '%s' at position %d but current tag is '%s'", tag.name, current_position(len, s, b), current_tag.name);
+                    if (tag.name != current_tag.name) {
+                        if (strict)
+                            Rosella.Error.error("Syntax error, mismatched tags. Found closing tag '%s' at position %d but current tag is '%s'", tag.name, current_position(len, s, b), current_tag.name);
+                        else {
+                            /* If we're not in strict mode, we can try to search
+                               up the tag for the matching open tag and just
+                               deal with it. */
+                            current_tag = null;
+                            while(elements(tag_stack) > 0) {
+                                var dead_tag = tag_stack.pop();
+                                if (dead_tag instanceof Rosella.Xml.Tag.DocumentRoot) {
+                                    current_tag = dead_tag;
+                                    break;
+                                }
+                                if (dead_tag.name == tag.name) {
+                                    dead_tag.set_end(tag);
+                                    current_tag = tag_stack.pop();
+                                    break;
+                                }
+                            }
+                            continue;
+                        }
+                    }
                     current_tag.set_end(tag);
                     current_tag = tag_stack.pop();
                     continue;

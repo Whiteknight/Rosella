@@ -17,10 +17,10 @@ namespace Rosella.Xml
     }
 
     // Read XML from a string. Return an Xml.Document object
-    function read_string(string xml)
+    function read_string(string xml, int strict = true)
     {
         var document = new Rosella.Xml.Document();
-        document.read_from_string(xml, false);
+        document.read_from_string(xml, false, strict);
         return document;
     }
 
@@ -45,12 +45,12 @@ namespace Rosella.Xml
 
     // Parse the XML string into the given document. Optionally perform
     // verification on the generated structure
-    function parse(string xml, var document, int do_verify = true)
+    function parse(string xml, var document, int do_verify = true, int strict = true)
     {
         if (document == null)
             document = new Rosella.Xml.Document();
         :(xml, var s, var b, int len) = Rosella.Parse.setup_parse(xml);
-        Rosella.Xml.Parser.__parse_xml(xml, s, b, len, document);
+        Rosella.Xml.Parser.__parse_xml(xml, s, b, len, document, strict);
         if (do_verify)
             document.validate();
         return document;
