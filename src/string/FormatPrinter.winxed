@@ -2,7 +2,7 @@
     This class implements a variant of .NET-style String.Format formatting. It
     is like an alternate syntax/semantic for sprintf.
 */
-class Rosella.String.FormatPrinter
+class Rosella.String.FormatPrinter : Rosella.StringFormatter
 {
     var default_formatter;
 
@@ -24,12 +24,12 @@ class Rosella.String.FormatPrinter
         Rosella.StringFormatter.register_role_formatter(role, converter);
     }
 
-    // Format the string
-    function format(string fmt, var args [slurpy])
+    // Format the string using an array of arguments
+    function format(var args, string fmt)
     {
         int cclass_numeric = Rosella.String.get_character_class("numeric");
         string raw_args[] = [];
-        var cache = {};
+        var cache = Rosella.get_string_string_hash();
 
         string output_array[] = [];
         int fmt_len = length(fmt);
@@ -65,8 +65,54 @@ class Rosella.String.FormatPrinter
         return join("", output_array);
     }
 
+    // Format the string, using a single argument object.
+    function format_obj(var obj, string fmt)
+    {
+        int cclass_numeric = Rosella.String.get_character_class("numeric");
+        string raw_args[] = [];
+        var cache = Rosella.get_string_string_hash();
+
+        string output_array[] = [];
+        int fmt_len = length(fmt);
+        int out_idx = 0;
+        int cur_idx = 0;
+        int next_idx = 0;
+
+        while(cur_idx < fmt_len) {
+            cur_idx = next_idx;
+            next_idx = index_of_substr_from(fmt, "{", cur_idx);
+            if (cur_idx != next_idx)
+                output_array[out_idx++] = substr(fmt, cur_idx, next_idx - cur_idx);
+
+            if (next_idx == -1) {
+                output_array[out_idx++] = substr(fmt, cur_idx);
+                break;
+            }
+            // Else, we've found a format sequence.
+            next_idx++;
+            if (fmt[next_idx] == "{") {
+                output_array[out_idx++] = "{";
+                continue;
+            }
+            int ptr = index_of_substr_from(fmt, "}", next_idx);
+            if (ptr == -1) {
+                output_array[out_idx++] = substr(fmt, cur_idx);
+                break;
+            }
+            string attr_name = self.__get_obj_attribute(fmt, next_idx, ptr);
+            next_idx = ptr + 1;
+            output_array[out_idx++] = self.__get_obj_value(obj, cache, attr_name);
+        }
+        return join("", output_array);
+    }
+
     /* Internal Helper Methods
     */
+
+    function __get_obj_attribute(string fmt, int start_idx, int end_idx)
+    {
+        return substr(fmt, start_idx, end_idx - start_idx);
+    }
 
     // Get index/format information from a {...} sequence
     function __get_placeholder(string fmt, int start_idx, int end_idx)
@@ -80,6 +126,25 @@ class Rosella.String.FormatPrinter
             return int(p[0]), "s";
         if (p == 2)
             return int(p[0]), string(p[1]);
+    }
+
+    function __get_obj_value(var obj, var cache, string attr)
+    {
+        if (exists cache[attr])
+            return cache[attr];
+        string value = null;
+        try {
+            value = obj.*attr;
+        } catch(e){ }
+        if (value == null) {
+            try {
+                value = obj.*attr();
+            } catch(e) { }
+        }
+        if (value == null)
+            value = "";
+        cache[attr] = value;
+        return value;
     }
 
     // Get the (possibly cached) string value for the given argument with the

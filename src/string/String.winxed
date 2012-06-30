@@ -143,6 +143,26 @@ namespace Rosella.String
         return Winxed_Builtins.sprintf(format, args);
     }
 
+    const string DEFAULT_FORMAT_PRINTER = "Rosella.String.format_printer";
+    function format_printer()
+    {
+        return Rosella.Globals.autoget_global(DEFAULT_FORMAT_PRINTER,
+            function() {
+                return new Rosella.String.FormatPrinter();
+            }
+        );
+    }
+
+    function format(string format, var args [slurpy])
+    {
+        return format_printer().format(args, format);
+    }
+
+    function format_obj(string format, var obj)
+    {
+        return format_printer().format_obj(obj, format);
+    }
+
     // Pad the start of the string with the given substring. Default
     // pad is " "
     function pad_start(string str, int total_width, string char = " ")
