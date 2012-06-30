@@ -21,22 +21,23 @@ class Rosella.Rss.Feed.Item
         return self.xmlitem.first_child("description").inner_text();
     }
 
-    function link()
+    function link(string value)
     {
         if (value != null)
             self.xmlitem.first_child("link").set_child_text(value);
         return self.xmlitem.first_child("link").inner_text();
     }
 
-    function guid()
+    function guid(string value)
     {
         if (value != null)
             self.xmlitem.first_child("guid").set_child_text(value);
         return self.xmlitem.first_child("guid").inner_text();
     }
 
-    function pub_date()
+    function pub_date(var value)
     {
+        // TODO: Use the right format string here
         if (value != null)
             self.xmlitem.first_child("pubDate").set_child_text(value);
         return self.xmlitem.first_child("pubDate").inner_text();

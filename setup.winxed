@@ -428,6 +428,16 @@ function setup_experimental_libraries(var rosella)
         "xml/Text",
         "xml/Visitor"
     );
+
+    setup_unstable_lib(rosella, "rss", ["Core", "Xml", "Net"],
+        "rss/Rss",
+        "rss/Feed",
+        "rss/feed/Channel",
+        "rss/feed/Item",
+        "rss/Reader",
+        "rss/Writer"
+    );
+
 }
 
 function setup_utilities(var rosella)
