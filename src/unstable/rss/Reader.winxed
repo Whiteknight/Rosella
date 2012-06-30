@@ -1,0 +1,17 @@
+class Rosella.Rss.Reader
+{
+    function read_url(string url)
+    {
+        var ua = new Rosella.Net.UserAgent.SimpleHttp();
+        string feed = ua.get(url);
+        return read_string(feed);
+    }
+
+    function read_string(string feed)
+    {
+        var xmldoc = Rosella.Xml.read_string(feed);
+        var feedobj = new Rosella.Rss.Feed();
+        feedobj.set_xml_doc(xmldoc);
+        return feedobj;
+    }
+}

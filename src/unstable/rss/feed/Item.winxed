@@ -1,0 +1,44 @@
+class Rosella.Rss.Feed.Item
+{
+    var xmlitem;
+
+    function Item(var xmltag)
+    {
+        self.xmlitem = xmltag;
+    }
+
+    function title(string title = null)
+    {
+        if (title != null)
+            self.xmlitem.first_child("title").set_child_text(title);
+        return self.xmlitem.first_child("title").inner_text();
+    }
+
+    function description(string value)
+    {
+        if (value != null)
+            self.xmlitem.first_child("description").set_child_text(value);
+        return self.xmlitem.first_child("description").inner_text();
+    }
+
+    function link()
+    {
+        if (value != null)
+            self.xmlitem.first_child("link").set_child_text(value);
+        return self.xmlitem.first_child("link").inner_text();
+    }
+
+    function guid()
+    {
+        if (value != null)
+            self.xmlitem.first_child("guid").set_child_text(value);
+        return self.xmlitem.first_child("guid").inner_text();
+    }
+
+    function pub_date()
+    {
+        if (value != null)
+            self.xmlitem.first_child("pubDate").set_child_text(value);
+        return self.xmlitem.first_child("pubDate").inner_text();
+    }
+}

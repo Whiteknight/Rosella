@@ -1,0 +1,42 @@
+class Rosella.Rss.Writer
+{
+    var xmldoc;
+
+    function Writer()
+    {
+        self.xmldoc = new Rosella.Xml.Document();
+        var root = new Rosella.Xml.Tag(0, "", "rss");
+        xmldoc.set_root(root);
+    }
+
+    function add_channel(string title, string desc, string link, var last_build = null, var pub_date = null, int ttl = 1000)
+    {
+        if (last_build == null)
+            last_build = Rosella.Date.now();
+        if (pub_date == null)
+            pub_date = Rosella.Date.now();
+        var channel = new Rosella.Xml.Tag(0, "", "channel");
+        channel.add_children_from_hash({
+            "title": title,
+            "description": desc,
+            "link": link,
+            "lastBuildDate": self.format_date(last_build),
+            "pubDate": self.format_date(pub_date),
+            "ttl": ttl
+        });
+        self.xmldoc.get_document_root().add_tag(channel);
+        return new Rosella.Rss.Feed.Channel(channel);
+    }
+
+    function write_to_string()
+    {
+        return self.xmldoc.to_xml();
+    }
+
+    function write_to_file(string filepath)
+    {
+        var file = new Rosella.FileSystem.File(filepath);
+        string text = self.xmldoc.to_xml();
+        file.write_all_text(text);
+    }
+}

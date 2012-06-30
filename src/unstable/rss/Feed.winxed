@@ -1,0 +1,20 @@
+class Rosella.Rss.Feed
+{
+    var xmldoc;
+
+    function Feed() { }
+
+    function set_xml_doc(var doc)
+    {
+        self.xmldoc = doc;
+    }
+
+    function channels()
+    {
+        if (self.xmldoc == null)
+            return null;
+        return self.xmldoc.get_document_element()
+            .get_children_named("channel")
+            .map(function(channel) { return new Rosella.Rss.Feed.Channel(channel); });
+    }
+}
