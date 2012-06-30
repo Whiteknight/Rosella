@@ -51,6 +51,7 @@ function __test_data() { return {
     "attribute unquoted" : "<foo bar=baz></foo>",
     "attribute boolean" : "<foo bar></foo>",
     "attribute quoted escapes" : "<foo bar='blahblah\\'blahblah'></foo>",
+    "attribute with colon" : "<foo xmlns:bar='blahblahblah'></foo>",
 
     // Tests for !DOCTYPE and children
     "!DOCTYPE with scope and inlines" : <<:

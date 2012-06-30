@@ -451,7 +451,9 @@ namespace Rosella.Xml.Parser
         var sb = new 'StringBuilder';
         while(have_more_chars(s, b)) {
             int c = get_next(s, b);
-            if (!is_name_char(c)) {
+            // TODO: Handle qualified attribute names better, since they should
+            //       only have one colon at most
+            if (!is_name_char(c) && c != ASCII_COLON) {
                 unshift_int(s, c);
                 break;
             }
