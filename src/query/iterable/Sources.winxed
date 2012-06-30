@@ -6,7 +6,8 @@ class Rosella.Query.Iterable.Source : Rosella.Query.Iterable
     // Determine if the iterator contains more
     function has_more()
     {
-        return get_bool(self.iterator);
+        // If the iterator is null, we haven't set it yet from the data
+        return self.iterator == null || get_bool(self.iterator);
     }
 
     function on_data(var f)
@@ -43,6 +44,10 @@ class Rosella.Query.Iterable.Array : Rosella.Query.Iterable.Source
     function next()
     {
         var i = self.iterator;
+        if (i == null) {
+            i = get_iterator(self.data);
+            self.iterator = i;
+        }
         if (!get_bool(i))
             self.__empty();
         var data = shift_pmc(i);
@@ -53,6 +58,10 @@ class Rosella.Query.Iterable.Array : Rosella.Query.Iterable.Source
     function next_and_more()
     {
         var i = self.iterator;
+        if (i == null) {
+            i = get_iterator(self.data);
+            self.iterator = i;
+        }
         if (!get_bool(i))
             self.__empty();
         var data = shift_pmc(i);

@@ -29,7 +29,7 @@ class Rosella.Xml.Document
     function set_documentroot(var root)
     {
         // TODO: What do we do with the other children?
-        for (var child in root.children)
+        for (var child in root.children.data)
         {
             if (child instanceof Rosella.Xml.Tag) {
                 self.set_root(child);

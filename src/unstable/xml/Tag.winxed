@@ -48,7 +48,7 @@ class Rosella.Xml.Tag
         self.xmlns = xmlns;
         self.name = name;
         self.attributes = {};
-        self.children = [];
+        self.children = new Rosella.Xml.Tag.Collection();
     }
 
     /* Public Interface Methods
@@ -63,7 +63,7 @@ class Rosella.Xml.Tag
     // Add a child tag
     function add_child(var child)
     {
-        push(self.children, child);
+        self.children.add_tag(child);
     }
 
     // Add child text
@@ -123,6 +123,8 @@ class Rosella.Xml.Tag
 
     function get_children(var f = null)
     {
+        if (f == null)
+            return new Rosella.Xml.Tag.Collection(self.children.data);
         var c = new Rosella.Xml.Tag.Collection();
         self.get_children_collection(f, c);
         return c;
@@ -130,9 +132,9 @@ class Rosella.Xml.Tag
 
     function get_children_collection(var f, var c)
     {
-        if (self.children == null)
+        if (!self.children.has_more())
             return;
-        for (var child in self.children) {
+        for (var child in self.children.data) {
             if (f == null)
                 c.add_tag(child);
             else {
@@ -172,7 +174,7 @@ class Rosella.Xml.Tag
     // Convert all children tags to XML, adding them to the StringBuilder
     function __to_xml_sb_children(var sb, int indent)
     {
-        for (var child in self.children)
+        for (var child in self.children.data)
             child.to_xml_sb(sb, indent);
     }
 }
@@ -558,5 +560,5 @@ class Rosella.Xml.Tag.Comment
 class Rosella.Xml.Tag.DocumentRoot : Rosella.Xml.Tag
 {
     // Constructor
-    function DocumentRoot() { self.children = []; }
+    function DocumentRoot() { self.children = new Rosella.Xml.Tag.Collection(); }
 }

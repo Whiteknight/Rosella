@@ -418,7 +418,7 @@ function setup_experimental_libraries(var rosella)
         "genetic/mutator/Generic"
     );
 
-    setup_unstable_lib(rosella, "xml", ["Core", "Ascii", "Parse_builtins", "Parse", "String", "FileSystem"],
+    setup_unstable_lib(rosella, "xml", ["Core", "Ascii", "Parse_builtins", "Parse", "String", "FileSystem", "Query"],
         "xml/Includes",
         "xml/Xml",
         "xml/Document",

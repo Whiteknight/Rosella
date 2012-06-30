@@ -1,26 +1,25 @@
-class Rosella.Xml.Tag.Collection
+class Rosella.Xml.Tag.Collection : Rosella.Query.Iterable.Array
 {
-    var tags;
-
-    function Collection()
+    function Collection(var tags = [])
     {
-        self.tags = [];
+        self.data = tags;
     }
 
     function add_tag(var t)
     {
-        push(self.tags, t);
+        push(self.data, t);
+        self.iterator = null;
     }
 
     function tags()
     {
-        return self.tags;
+        return self.data;
     }
 
     function get_children_named(string name, var attrs [slurpy,named])
     {
         var c = new Rosella.Xml.Tag.Collection();
-        for (var t in self.tags)
+        for (var t in self.data)
             t.get_children_collection(Rosella.Xml.Tag.child_tag_finder_name_attrs(name, attrs), c);
         return c;
     }
