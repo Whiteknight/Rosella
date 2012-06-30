@@ -155,17 +155,18 @@ class Rosella.Xml.Tag
         return self.get_children(Rosella.Xml.Tag.child_tag_finder_attrs(attrs));
     }
 
-    function first_child(string name = null)
+    function first_child(string name = null, var attrs [slurpy,named])
     {
-        if (!self.children.has_more())
+        if (name == null) {
+            if (self.children.has_more())
+                return self.children.data[0];
             return null;
-        if (name == null)
-            return self.children.data[0];
-        for (var tag in self.children.data) {
-            if (tag.name == name)
-                return tag;
         }
-        return null;
+
+        var children = self.get_children_named(name, attrs:[flat,named]);
+        if (!children.has_more())
+            return null;
+        return children.data[0];
     }
 
 
