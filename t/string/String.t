@@ -137,6 +137,14 @@ class Test::String {
         $!status.unimplemented("Test this");
     }
 
+    method format() {
+        $!status.unimplemented("Test this");
+    }
+
+    method format_obj() {
+        $!status.unimplemented("Test this");
+    }
+
     method to_upper() {
         my $s := "this is a test";
         my $result := Rosella::String::to_upper($s);
