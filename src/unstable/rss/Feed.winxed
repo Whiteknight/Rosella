@@ -13,7 +13,7 @@ class Rosella.Rss.Feed
     {
         if (self.xmldoc == null)
             return null;
-        return self.xmldoc.get_document_element()
+        return self.xmldoc.get_document_root()
             .get_children_named("channel")
             .map(function(channel) { return new Rosella.Rss.Feed.Channel(channel); });
     }
