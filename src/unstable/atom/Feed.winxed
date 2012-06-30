@@ -1,0 +1,49 @@
+class Rosella.Atom.Feed
+{
+    var xmldoc;
+
+    function Feed() { }
+
+    function set_xml_doc(var doc)
+    {
+        self.xmldoc = doc;
+        self.feedroot = doc.get_document_element();
+    }
+
+    function title()
+    {
+        return self.feedroot.first_child("title").inner_text();
+    }
+
+    function subtitle()
+    {
+        return self.feedroot.first_child("subtitle").inner_text();
+    }
+
+    function description()
+    {
+        return self.feedroot.first_child("description").inner_text();
+    }
+
+    function links()
+    {
+        return self.feedroot.get_children_named("link");
+    }
+
+    function updated()
+    {
+        return self.feedroot.first_child("updated").inner_text();
+    }
+
+    function id()
+    {
+        return self.feedroot.first_child("id").inner_text();
+    }
+
+    function entries()
+    {
+        return self.feedroot
+            .get_children_named("entry")
+            .map(function(entry) { return new Rosella.Atom.Feed.Entry(entry); });
+    }
+}

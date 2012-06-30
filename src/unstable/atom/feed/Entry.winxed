@@ -1,0 +1,48 @@
+class Rosella.Atom.Feed.Entry
+{
+    var xmlitem;
+
+    function Entry(var xmltag)
+    {
+        self.xmlitem = xmltag;
+    }
+
+    function title(string title = null)
+    {
+        if (title != null)
+            self.xmlitem.first_child("title").set_child_text(title);
+        return self.xmlitem.first_child("title").inner_text();
+    }
+
+    function summary(string value)
+    {
+        if (value != null)
+            self.xmlitem.first_child("summary").set_child_text(value);
+        return self.xmlitem.first_child("summary").inner_text();
+    }
+
+    function links()
+    {
+        // TODO: Setter
+        return self.xmlitem.get_children_named("link");
+    }
+
+    function id(string value)
+    {
+        if (value != null)
+            self.xmlitem.first_child("id").set_child_text(value);
+        return self.xmlitem.first_child("id").inner_text();
+    }
+
+    function updated(var value)
+    {
+        if (value != null)
+            self.xmlitem.first_child("pubDate").set_child_text(value);
+        return self.xmlitem.first_child("pubDate").inner_text();
+    }
+
+    function author(string name, string email)
+    {
+        // TODO
+    }
+}
