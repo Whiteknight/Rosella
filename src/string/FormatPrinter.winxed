@@ -133,14 +133,20 @@ class Rosella.String.FormatPrinter : Rosella.StringFormatter
         if (exists cache[attr])
             return cache[attr];
         string value = null;
-        try {
-            value = obj.*attr;
-        } catch(e){ }
-        if (value == null) {
+        if (does(obj, "hash")) {
+            if (exists obj[attr])
+                value = obj[attr];
+        } else {
             try {
-                value = obj.*attr();
-            } catch(e) { }
+                value = obj.*attr;
+            } catch(e){ }
+            if (value == null) {
+                try {
+                    value = obj.*attr();
+                } catch(e) { }
+            }
         }
+
         if (value == null)
             value = "";
         cache[attr] = value;
