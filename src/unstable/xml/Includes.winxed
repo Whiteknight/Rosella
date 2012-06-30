@@ -1,15 +1,18 @@
 const string INDENT_STR = "  ";
 
+// Get a string representing the indentation
 inline indent_level(int i) return string
 {
     return "\n" + repeat_string(INDENT_STR, i);
 }
 
+// Determine if the char is a valid XML identifier character
 inline is_name_char(int c) return int
 {
     return codepoint_is_alphanumeric(c) || c == ASCII_UNDERSCORE || c == ASCII_DASH;
 }
 
+// Throw an error if we attempt to read out of bounds
 inline error_on_out_of_bounds(int c, var buffer, int j)
 {
     if (c == 0) {

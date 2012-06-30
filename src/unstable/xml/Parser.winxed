@@ -1,5 +1,12 @@
+/* Recursive Descent XML Parser
+    This namespace implements the parser for XML. It is a home-brewed recursive
+    descent parser using the Rosella Parse library primitives.
+    These routines should not be used directly. Use the parse driver routines
+    in the Rosella.Xml namespace instead.
+*/
 namespace Rosella.Xml.Parser
 {
+    // Top-level xml parser routine. Start parsing the document
     function __parse_xml(string xml, var s, var b, int len, var document, int strict)
     {
         var tag_stack = [];
@@ -86,6 +93,8 @@ namespace Rosella.Xml.Parser
         return document;
     }
 
+    // Parse the document frontmatter, such as the XML and possibly the DTD
+    // headers.
     function __parse_frontmatter(string xml, var s, var b, int len, var document, var root)
     {
         while(have_more_chars(s, b)) {
@@ -119,6 +128,7 @@ namespace Rosella.Xml.Parser
         }
     }
 
+    // Parse the <?xml ... ?> tag
     function __parse_xml_header(string xml, var s, var b, int len, var document)
     {
         eat_whitespace(s, b);
@@ -143,6 +153,7 @@ namespace Rosella.Xml.Parser
         Rosella.Parse.error_unknown_char(c, "XML Header", current_position(len, s, b));
     }
 
+    // Parse the <!DOCTYPE ... > tag
     function __parse_dtd_header(string xml, var s, var b, int len, var document)
     {
         int pos = current_position(len, s, b);
@@ -195,6 +206,7 @@ namespace Rosella.Xml.Parser
             Rosella.Parse.error_unknown_char(c, "DOCTYPE header end", current_position(len, s, b));
     }
 
+    // Parse the DTD header as part of an XML document
     function __parse_dtd_header_inline(string xml, var s, var b, int len, var dtd_doc)
     {
         int c = get_next(s, b);
@@ -210,6 +222,7 @@ namespace Rosella.Xml.Parser
         }
     }
 
+    // Parse a standalone DTD document
     function __parse_dtd_standalone(string dtd, var s, var b, int len, var dtd_document)
     {
         while (have_more_chars(s, b)) {
@@ -224,6 +237,7 @@ namespace Rosella.Xml.Parser
         return dtd_document;
     }
 
+    // Parse the DD header as part of an XML document.
     function __parse_dtd_inline_tag(string xml, var s, var b, int len, var dtd_doc)
     {
         int start_pos = current_position(len, s, b);
@@ -312,6 +326,7 @@ namespace Rosella.Xml.Parser
             Rosella.Parse.error_unknown_char(c, "DTD tag", current_position(len, s, b));
     }
 
+    // Parse the contents of the <!ELEMENT tag
     function __parse_dtd_element_children(string xml, var s, var  b, int len, var dtd_header, var elem)
     {
         // TODO: Handle alternations (foo|bar|baz)[<modifier>], ...
@@ -337,6 +352,7 @@ namespace Rosella.Xml.Parser
         Rosella.Parse.error_unknown_char(ASCII_NULL, "!ELEMENT child_list", current_position(len, s, b));
     }
 
+    // Parse a tag
     function __parse_tag(string xml, var s, var b, int len)
     {
         int pos = current_position(len, s, b);
@@ -387,6 +403,7 @@ namespace Rosella.Xml.Parser
         Rosella.Parse.error_unknown_char(c, "tag " + tag_name, current_position(len, s, b));
     }
 
+    // Parse a comment <!-- ... -->
     function __parse_comment(string xml, var s, var b, int len)
     {
         int pos = current_position(len, s, b);
@@ -415,6 +432,7 @@ namespace Rosella.Xml.Parser
         Rosella.Error.error("Unterminated comment at end of document");
     }
 
+    // Parse key="value" attributes
     function __parse_attributes(string xml, var s, var b, int len, var xtag)
     {
         while (have_more_chars(s, b)) {
@@ -453,6 +471,7 @@ namespace Rosella.Xml.Parser
         }
     }
 
+    // Parse an identifier
     function __parse_ident(string xml, var s, var b, int len)
     {
         var sb = new 'StringBuilder';

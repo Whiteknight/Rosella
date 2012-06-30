@@ -1,5 +1,7 @@
 namespace Rosella.Xml.Tag
 {
+    // Helper function. Return a function that can be used to find children
+    // matching a given name and attributes
     function child_tag_finder_name_attrs(string name, var attrs)
     {
         return function(var t) {
@@ -15,6 +17,8 @@ namespace Rosella.Xml.Tag
         };
     }
 
+    // Helper function. Return a function that can be used to find children
+    // matching a given set of attributes
     function child_tag_finder_attrs(var attrs)
     {
         return function(var t) {
