@@ -92,7 +92,7 @@ class Rosella.Xml.Tag
     {
         var sb = new 'StringBuilder';
         self.__to_xml_sb_children(sb, 0);
-        return sb;
+        return Rosella.String.trim(sb);
     }
 
     // Convert this tag and contents to XML, adding it to the StringBuilder
@@ -154,6 +154,20 @@ class Rosella.Xml.Tag
     {
         return self.get_children(Rosella.Xml.Tag.child_tag_finder_attrs(attrs));
     }
+
+    function first_child(string name = null)
+    {
+        if (!self.children.has_more())
+            return null;
+        if (name == null)
+            return self.children.data[0];
+        for (var tag in self.children.data) {
+            if (tag.name == name)
+                return tag;
+        }
+        return null;
+    }
+
 
     /* Private Helper Methods
     */

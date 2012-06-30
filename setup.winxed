@@ -429,7 +429,7 @@ function setup_experimental_libraries(var rosella)
         "xml/Visitor"
     );
 
-    setup_unstable_lib(rosella, "rss", ["Core", "Xml", "Net", "File"],
+    setup_unstable_lib(rosella, "rss", ["Core", "Xml", "Net", "FileSystem"],
         "rss/Rss",
         "rss/Feed",
         "rss/feed/Channel",
@@ -438,7 +438,7 @@ function setup_experimental_libraries(var rosella)
         "rss/Writer"
     );
 
-    setup_unstable_lib(rosella, "atom", ["Core", "Xml", "Net", "File"],
+    setup_unstable_lib(rosella, "atom", ["Core", "Xml", "Net", "FileSystem"],
         "atom/Atom",
         "atom/Feed",
         "atom/feed/Entry",

@@ -1,28 +1,29 @@
 class Rosella.Atom.Feed
 {
     var xmldoc;
+    var feedroot;
 
     function Feed() { }
 
     function set_xml_doc(var doc)
     {
         self.xmldoc = doc;
-        self.feedroot = doc.get_document_element();
+        self.feedroot = doc.get_document_root();
     }
 
     function title()
     {
-        return self.feedroot.first_child("title").inner_text();
+        return self.feedroot.first_child("title").get_inner_xml();
     }
 
     function subtitle()
     {
-        return self.feedroot.first_child("subtitle").inner_text();
+        return self.feedroot.first_child("subtitle").get_inner_xml();
     }
 
     function description()
     {
-        return self.feedroot.first_child("description").inner_text();
+        return self.feedroot.first_child("description").get_inner_xml();
     }
 
     function links()
@@ -32,12 +33,12 @@ class Rosella.Atom.Feed
 
     function updated()
     {
-        return self.feedroot.first_child("updated").inner_text();
+        return self.feedroot.first_child("updated").get_inner_xml();
     }
 
     function id()
     {
-        return self.feedroot.first_child("id").inner_text();
+        return self.feedroot.first_child("id").get_inner_xml();
     }
 
     function entries()
