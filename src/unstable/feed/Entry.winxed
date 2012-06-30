@@ -1,0 +1,162 @@
+class Rosella.Feed.Entry
+{
+    var xmlitem;
+
+    function Entry(var xmltag)
+    {
+        self.xmlitem = xmltag;
+    }
+
+    function __xml_get_set(string name, string value, int set)
+    {
+        if (set)
+            self.xmlitem.first_child(name).set_child_text(value);
+        return self.xmlitem.first_child(name).get_inner_xml();
+    }
+}
+
+class Rosella.Feed.Entry.Atom
+{
+    function Atom(var xmltag)
+    {
+        self.Entry(xmltag);
+    }
+
+    function title(string value [optional], int has_value [opt_flag])
+    {
+        return self.__xml_get_set("title", value, has_value);
+    }
+
+    function summary(string value [optional], int has_value [opt_flag])
+    {
+        return self.__xml_get_set("summary", value, has_value);
+    }
+
+    function links()
+    {
+        // TODO: Setter
+        return self.xmlitem.get_children_named("link");
+    }
+
+    function id(string value [optional], int has_value [opt_flag])
+    {
+        return self.__xml_get_set("id", value, has_value);
+    }
+
+    function content(string value [optional], int has_value [opt_flag])
+    {
+        return self.__xml_get_set("content", value, has_value);
+    }
+
+    function updated(string value [optional], int has_value [opt_flag])
+    {
+        return self.__xml_get_set("pubDate", value, has_value);
+    }
+
+    function author(string name, string email)
+    {
+        // TODO
+    }
+}
+
+class Rosella.Feed.Entry.RssChannel
+{
+    var channelxml;
+
+    function RssChannel(var xmltag)
+    {
+        self.channelxml = xmltag;
+    }
+
+    function title(string value [optional], int has_value [opt_flag])
+    {
+        return self.__xml_get_set("channel", value, has_value);
+    }
+
+    function description(string value [optional], int has_value [opt_flag])
+    {
+        return self.__xml_get_set("description", value, has_value);
+    }
+
+    function link(string value [optional], int has_value [opt_flag])
+    {
+        return self.__xml_get_set("link", value, has_value);
+    }
+
+    function last_build_date(string value [optional], int has_value [opt_flag])
+    {
+        return self.__xml_get_set("lastBuildDate", value, has_value);
+    }
+
+    function pub_date(string value [optional], int has_value [opt_flag])
+    {
+        return self.__xml_get_set("pubDate", value, has_value);
+    }
+
+    function ttl(string value [optional], int has_value [opt_flag])
+    {
+        return self.__xml_get_set("ttl", value, has_value);
+    }
+
+    function items()
+    {
+        return self.channelxml
+            .get_children_named("item")
+            .map(function(item) { return new Rosella.Feed.Entry.Rss(item); });
+    }
+
+    function add_item(string title, string desc, string link, string guid, var pub_date = null)
+    {
+        if (pub_date == null)
+            pub_date = Rosella.Date.now();
+        var item = new Rosella.Xml.Tag(0, "", "item");
+        self.channelxml.add_tag(item);
+        return item;
+    }
+
+    function __xml_get_set(string name, string value, int set)
+    {
+        if (set)
+            self.xmlitem.first_child(name).set_child_text(value);
+        return self.xmlitem.first_child(name).get_inner_xml();
+    }
+}
+
+class Rosella.Feed.Entry.Rss
+{
+    function Rss(var xmltag)
+    {
+        self.Entry(xmltag);
+    }
+
+    function title(string value [optional], int has_value [opt_flag])
+    {
+        return self.__xml_get_set("title", value, has_value);
+    }
+
+    function description(string value [optional], int has_value [opt_flag])
+    {
+        return self.__xml_get_set("description", value, has_value);
+    }
+
+    function link(string value [optional], int has_value [opt_flag])
+    {
+        return self.__xml_get_set("link", value, has_value);
+    }
+
+    function guid(string value [optional], int has_value [opt_flag])
+    {
+        return self.__xml_get_set("guid", value, has_value);
+    }
+
+    function pub_date(string value [optional], int has_value [opt_flag])
+    {
+        // TODO: Use the right format string here
+        return self.__xml_get_set("pubDate", value, has_value);
+    }
+
+    function creator(string value [optional], int has_value [opt_flag])
+    {
+        return self.__xml_get_set("dc:creator", value, has_value);
+    }
+}

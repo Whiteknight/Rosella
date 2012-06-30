@@ -1,0 +1,119 @@
+namespace Rosella.Feed
+{
+    function read_url(string url)
+    {
+        var ua = new Rosella.Net.UserAgent.SimpleHttp();
+        var feed = ua.get(url);
+        return read_string(feed.content);
+    }
+
+    function read_string(string feed)
+    {
+        var xmldoc = Rosella.Xml.read_string(feed);
+        return feed_factory().create(xmldoc);
+    }
+
+    const string DEFAULT_FEED_FACTORY = "Rosella.Feed.feed_factory";
+    function feed_factory()
+    {
+        return Rosella.Globals.autoget_global(DEFAULT_FEED_FACTORY,
+            function() {
+                return new Rosella.Feed.Factory();
+            }
+        );
+    }
+}
+
+class Rosella.Feed
+{
+    var xmldoc;
+
+    function set_xml_doc(var doc)
+    {
+        self.xmldoc = doc;
+    }
+}
+
+class Rosella.Feed.Factory : Rosella.ObjectFactory
+{
+    function create(var xmldoc)
+    {
+        string name = xmldoc.get_document_root().name;
+        var feed = null;
+        if (name == "rss")
+            feed = self.create_typed(class Rosella.Feed.Rss, xmldoc);
+        if (name == "atom")
+            feed =  self.create_typed(class Rosella.Feed.Atom, xmldoc);
+        if (feed == null)
+            Rosella.Error.error("Cannot create a feed of unknown type %s", name);
+        feed.set_xml_doc(xmldoc);
+        return feed;
+    }
+}
+
+class Rosella.Feed.Rss : Rosella.Feed
+{
+    function Rss() { }
+
+    function channels()
+    {
+        if (self.xmldoc == null)
+            return null;
+        return self.xmldoc.get_document_root()
+            .get_children_named("channel")
+            .map(function(channel) { return new Rosella.Feed.Entry.RssChannel(channel); });
+    }
+
+    function entries()
+    {
+        if (self.xmldoc == null)
+            return null;
+        return self.xmldoc.get_document_root()
+            .get_children_named("channel")
+            .get_children_named("item")
+            .map(function(item) { return new Rosella.Feed.Entry.Rss(item); });
+    }
+}
+
+class Rosella.Feed.Atom : Rosella.Feed
+{
+    function Atom() { }
+
+    function title()
+    {
+        return self.xmldoc.get_document_root().first_child("title").get_inner_xml();
+    }
+
+    function subtitle()
+    {
+        return self.xmldoc.get_document_root().first_child("subtitle").get_inner_xml();
+    }
+
+    function description()
+    {
+        return self.xmldoc.get_document_root().first_child("description").get_inner_xml();
+    }
+
+    function links()
+    {
+        return self.xmldoc.get_document_root().get_children_named("link");
+    }
+
+    function updated()
+    {
+        return self.xmldoc.get_document_root().first_child("updated").get_inner_xml();
+    }
+
+    function id()
+    {
+        return self.xmldoc.get_document_root().first_child("id").get_inner_xml();
+    }
+
+    function entries()
+    {
+        return self.xmldoc.get_document_root()
+            .get_children_named("entry")
+            .map(function(entry) { return new Rosella.Feed.Entry.Atom(entry); });
+    }
+}
+

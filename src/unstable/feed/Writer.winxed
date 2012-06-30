@@ -1,0 +1,83 @@
+class Rosella.Feed.Writer
+{
+    var xmldoc;
+
+    function Writer(var root)
+    {
+        self.xmldoc = new Rosella.Xml.Document();
+        self.xmldoc.set_root(root);
+    }
+
+    function write_to_string()
+    {
+        return self.xmldoc.to_xml();
+    }
+
+    function write_to_file(string filepath)
+    {
+        var file = new Rosella.FileSystem.File(filepath);
+        string text = self.xmldoc.to_xml();
+        file.write_all_text(text);
+    }
+
+    // TODO: Come up with a standard interface for adding entries
+}
+
+class Rosella.Feed.Writer.Factory : Rosella.ObjectFactory
+{
+    function create(string name)
+    {
+        if (name == "rss")
+            return self.create_typed(class Rosella.Feed.Writer.Rss);
+        if (name == "atom")
+            return self.create_typed(class Rosella.Feed.Writer.Atom);
+        Rosella.Error.error("Unknown feed type %s", name);
+    }
+}
+
+class Rosella.Feed.Writer.Atom
+{
+    function Atom()
+    {
+        var root = new Rosella.Xml.Tag(0, "", "feed");
+        root.add_attribute("xmlns", "http://www.w3.org/2005/Atom");
+        self.Writer(root);
+    }
+
+    function add_entry(string title, var links, string id, string summary, string author, string email, var updated = null)
+    {
+        if (updated == null)
+            updated = Rosella.Date.now();
+        var entry = new Rosella.Xml.Tag(0, "", "entry");
+        self.channelxml.add_tag(entry);
+        return new Rosella.Feed.Entry.Atom(entry);
+    }
+}
+
+class Rosella.Feed.Writer.Rss
+{
+    function Rss()
+    {
+        var root = new Rosella.Xml.Tag(0, "", "rss");
+        self.Writer(root);
+    }
+
+    function add_channel(string title, string desc, string link, var last_build = null, var pub_date = null, int ttl = 1000)
+    {
+        if (last_build == null)
+            last_build = Rosella.Date.now();
+        if (pub_date == null)
+            pub_date = Rosella.Date.now();
+        var channel = new Rosella.Xml.Tag(0, "", "channel");
+        channel.add_children_from_hash({
+            "title": title,
+            "description": desc,
+            "link": link,
+            "lastBuildDate": self.format_date(last_build),
+            "pubDate": self.format_date(pub_date),
+            "ttl": ttl
+        });
+        self.xmldoc.get_document_root().add_tag(channel);
+        return new Rosella.Feed.Entry.RssChannel(channel);
+    }
+}
