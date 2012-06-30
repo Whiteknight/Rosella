@@ -7,6 +7,11 @@
 */
 namespace Rosella.String
 {
+    function null_or_empty(string s)
+    {
+        return s == null || length(s) == 0;
+    }
+
     // Look up the character class ID number by name.
     function get_character_class(string name)
     {
