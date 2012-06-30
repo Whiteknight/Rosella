@@ -36,9 +36,9 @@ namespace Rosella.Xml.Parser
                         if (strict)
                             Rosella.Error.error("Syntax error, mismatched tags. Found closing tag '%s' at position %d but current tag is '%s'", tag.name, current_position(len, s, b), current_tag.name);
                         else {
-                            /* If we're not in strict mode, we can try to search
-                               up the tag for the matching open tag and just
-                               deal with it. */
+                            /* If we're not in strict mode, we can try to search up the tag for the matching open tag and just
+                               deal with it. In reality, SGML allows stand-alone tags in some places and these semantics will be
+                               wrong. */
                             current_tag = null;
                             while(elements(tag_stack) > 0) {
                                 var dead_tag = tag_stack.pop();
@@ -423,13 +423,20 @@ namespace Rosella.Xml.Parser
             if (!is_name_char(c))
                 break;
 
+            string attr_ns = "";
             string attr_name = Rosella.Xml.Parser.__parse_ident(xml, s, b, len);
             eat_whitespace(s, b);
 
             c = get_next(s, b);
+            if (c == ASCII_COLON) {
+                attr_ns = attr_name;
+                attr_name = Rosella.Xml.Parser.__parse_ident(xml, s, b, len);
+                eat_whitespace(s, b);
+                c = get_next(s, b);
+            }
             if (c != ASCII_EQUALS) {
                 unshift_int(s, c);
-                xtag.add_attribute(attr_name, "true");
+                xtag.add_attribute(attr_ns, attr_name, "true");
                 eat_whitespace(s, b);
                 continue;
             }
@@ -437,11 +444,11 @@ namespace Rosella.Xml.Parser
             c = get_next(s, b);
             if (c == ASCII_SINGLE_QUOTE || c == ASCII_DOUBLE_QUOTE) {
                 string attr_value = Rosella.Parse.parse_quoted(c, xml, s, b, len);
-                xtag.add_attribute(attr_name, attr_value);
+                xtag.add_attribute(attr_ns, attr_name, attr_value);
             } else {
                 unshift_int(s, c);
                 string attr_value = Rosella.Xml.Parser.__parse_ident(xml, s, b, len);
-                xtag.add_attribute(attr_name, attr_value);
+                xtag.add_attribute(attr_ns, attr_name, attr_value);
             }
         }
     }
@@ -451,9 +458,7 @@ namespace Rosella.Xml.Parser
         var sb = new 'StringBuilder';
         while(have_more_chars(s, b)) {
             int c = get_next(s, b);
-            // TODO: Handle qualified attribute names better, since they should
-            //       only have one colon at most
-            if (!is_name_char(c) && c != ASCII_COLON) {
+            if (!is_name_char(c)) {
                 unshift_int(s, c);
                 break;
             }

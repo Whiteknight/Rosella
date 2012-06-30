@@ -55,8 +55,9 @@ class Rosella.Xml.Tag
     */
 
     // Add an attribute name/value pair
-    function add_attribute(string name, string value)
+    function add_attribute(string ns, string name, string value)
     {
+        // TODO: Do what with the namespace?
         self.attributes[name] = value;
     }
 
@@ -210,7 +211,7 @@ class Rosella.Xml.Tag.EndTag
     }
 
     // End tags do not have attributes
-    function add_attribute(string name, string value) { Rosella.Error.error("End tags do not have attributes"); }
+    function add_attribute(string ns, string name, string value) { Rosella.Error.error("End tags do not have attributes"); }
 
     // End tags do not contain children
     function add_child(var child) { Rosella.Error.error("End tags do not have children"); }
