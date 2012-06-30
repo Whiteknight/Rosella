@@ -1,0 +1,35 @@
+namespace Rosella.Xml {
+    extern function read_string;
+    extern function read_dtd_string;
+    extern function read_dtd_file;
+    extern function parse;
+    extern function parse_dtd;
+}
+
+namespace Rosella.Xml.Parser { }
+
+namespace Rosella.Xml.Tag {
+    extern function child_tag_finder_attrs;
+}
+
+class Rosella.Xml.Document;
+class Rosella.Xml.DtdDocument;
+class Rosella.Xml.Tag;
+class Rosella.Xml.Tag.EndTag;
+class Rosella.Xml.Tag.XmlHeader;
+class Rosella.Xml.Tag.DtdHeader;
+class Rosella.Xml.Tag.DtdElement;
+class Rosella.Xml.Tag.DtdAttlist;
+class Rosella.Xml.Tag.Comment;
+class Rosella.Xml.Tag.DocumentRoot;
+class Rosella.Xml.Tag.Collection;
+class Rosella.Xml.Text;
+class Rosella.Xml.Visitor;
+class Rosella.Xml.Visitor.Lister;
+class Rosella.Xml.Visitor.DtdValidator;
+
+
+function __include_xml [anon,init,load] ()
+{
+    Rosella.load_bytecode_file('rosella/xml.pbc', 'load');
+}
