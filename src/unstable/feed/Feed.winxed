@@ -28,6 +28,11 @@ class Rosella.Feed
 {
     var xmldoc;
 
+    function Feed(var xmldoc)
+    {
+        self.xmldoc = xmldoc;
+    }
+
     function set_xml_doc(var doc)
     {
         self.xmldoc = doc;
@@ -36,6 +41,8 @@ class Rosella.Feed
 
 class Rosella.Feed.Factory : Rosella.ObjectFactory
 {
+    function Factory() { }
+
     function create(var xmldoc)
     {
         string name = xmldoc.get_document_root().name;
@@ -53,7 +60,10 @@ class Rosella.Feed.Factory : Rosella.ObjectFactory
 
 class Rosella.Feed.Rss : Rosella.Feed
 {
-    function Rss() { }
+    function Rss(var xmldoc)
+    {
+        self.Feed(xmldoc);
+    }
 
     function channels()
     {
@@ -77,7 +87,10 @@ class Rosella.Feed.Rss : Rosella.Feed
 
 class Rosella.Feed.Atom : Rosella.Feed
 {
-    function Atom() { }
+    function Atom(var xmldoc)
+    {
+        self.Feed(xmldoc);
+    }
 
     function title()
     {
