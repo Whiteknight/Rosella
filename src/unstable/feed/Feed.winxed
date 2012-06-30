@@ -49,7 +49,7 @@ class Rosella.Feed.Factory : Rosella.ObjectFactory
         var feed = null;
         if (name == "rss")
             feed = self.create_typed(class Rosella.Feed.Rss, xmldoc);
-        if (name == "atom")
+        if (name == "feed")
             feed =  self.create_typed(class Rosella.Feed.Atom, xmldoc);
         if (feed == null)
             Rosella.Error.error("Cannot create a feed of unknown type %s", name);
