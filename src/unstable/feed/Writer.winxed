@@ -49,7 +49,17 @@ class Rosella.Feed.Writer.Atom
         if (updated == null)
             updated = Rosella.Date.now();
         var entry = new Rosella.Xml.Tag(0, "", "entry");
-        self.channelxml.add_tag(entry);
+        self.xmldoc.get_document_root().add_tag(entry);
+        entry.add_children_from_hash({
+            "title": title,
+            "links": links,
+            "id": id,
+            "summary": summary,
+            "author": {
+                "name": author,
+                "email": email
+            }
+        });
         return new Rosella.Feed.Entry.Atom(entry);
     }
 }

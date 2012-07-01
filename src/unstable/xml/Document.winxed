@@ -9,7 +9,13 @@ class Rosella.Xml.Document
     var errors;         // a list of validation errors, if any
 
     // Constructor
-    function Document() { }
+    function Document(string root_name = null)
+    {
+        if (root_name != null) {
+            var tag = new Rosella.Xml.Tag(0, "", root_name);
+            self.set_root(tag);
+        }
+    }
 
     // Add in a XmlHeader or a DtdHeader
     function add_header(var header)

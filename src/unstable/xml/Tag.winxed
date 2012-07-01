@@ -79,6 +79,45 @@ class Rosella.Xml.Tag
             self.add_child(new Rosella.Xml.Text(text));
     }
 
+    function add_children(string ns, string name, var contents)
+    {
+        Rosella.Query.array_or_hash(contents,
+            function(var a) {
+                for (var i in a) {
+                    self.add_children(ns, name, i);
+                }
+            },
+            function(var h) {
+                var tag = new Rosella.Xml.Tag(0, ns, name);
+                tag.add_children_from_hash(h);
+                self.add_child(tag);
+            },
+            function(var s) {
+                var tag = new Rosella.Xml.Tag(0, ns, name);
+                tag.add_child_text(string(contents));
+                self.add_child(tag);
+            }
+        );
+    }
+
+    function add_children_from_hash(var hash)
+    {
+        for (string tag_name in hash) {
+            var contents = hash[tag_name];
+            var p = split(":", tag_name);
+            int num_p = elements(p);
+            string tag_ns = "";
+            if (p <= 0 || p > 2)
+                Rosella.Error.error("Cannot create tag named '%s'", tag_name);
+            if (p == 2) {
+                tag_ns = string(p[0]);
+                tag_name = string(p[1]);
+            }
+
+            self.add_children(tag_ns, tag_name, contents);
+        }
+    }
+
     // Set the end tag
     function set_end(var end_tag)
     {
