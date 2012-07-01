@@ -74,6 +74,7 @@ class Rosella.Xml.Tag
     // Add child text
     function add_child_text(string text)
     {
+        // TODO: If the last child tag is a Text node, we should be able to append
         text = Rosella.String.trim(text);
         if (text != null && text != "")
             self.add_child(new Rosella.Xml.Text(text));
@@ -153,9 +154,8 @@ class Rosella.Xml.Tag
         push(sb, self.name);
         self.__to_xml_sb_attrs(sb, indent);
         push(sb, ">");
-        self.__to_xml_sb_children(sb, indent + 1);
-
-        push(sb, indent_str);
+        if (self.__to_xml_sb_children(sb, indent + 1))
+            push(sb, indent_str);
         push(sb, "</");
         if (ns != "") {
             push(sb, ns);
@@ -213,6 +213,21 @@ class Rosella.Xml.Tag
         return children.data[0];
     }
 
+    function last_child(string name = null, var attrs [slurpy,named])
+    {
+        if (name == null) {
+            int elems = elements(self.children.data);
+            if (elems > 0)
+                return self.children.data[elems - 1];
+            return null;
+        }
+
+        var children = self.get_children_named(name, attrs:[flat,named]);
+        int elems = elements(children.data);
+        if (elems > 0)
+            return children.data[elems - 1];
+        return null;
+    }
 
     /* Private Helper Methods
     */
@@ -230,11 +245,20 @@ class Rosella.Xml.Tag
         }
     }
 
-    // Convert all children tags to XML, adding them to the StringBuilder
+    // Convert all children tags to XML, adding them to the StringBuilder.
+    // Return whether we should have a newline after this or not
     function __to_xml_sb_children(var sb, int indent)
     {
-        for (var child in self.children.data)
+        var c = self.children.data;
+        if (elements(c) == 0)
+            return false;
+        if (elements(c) == 1 && c[0] instanceof Rosella.Xml.Text) {
+            push(sb, c[0].text);
+            return false;
+        }
+        for (var child in c)
             child.to_xml_sb(sb, indent);
+        return true;
     }
 }
 
