@@ -100,9 +100,9 @@ class Rosella.String.FormatPrinter : Rosella.StringFormatter
                 output_array[out_idx++] = substr(fmt, cur_idx);
                 break;
             }
-            string attr_name = self.__get_obj_attribute(fmt, next_idx, ptr);
+            :(string attr_name, string f) = self.__get_obj_attribute(fmt, next_idx, ptr);
             next_idx = ptr + 1;
-            output_array[out_idx++] = self.__get_obj_value(obj, cache, attr_name);
+            output_array[out_idx++] = self.__get_obj_value(obj, cache, attr_name, f);
         }
         return join("", output_array);
     }
@@ -112,7 +112,15 @@ class Rosella.String.FormatPrinter : Rosella.StringFormatter
 
     function __get_obj_attribute(string fmt, int start_idx, int end_idx)
     {
-        return substr(fmt, start_idx, end_idx - start_idx);
+        string f = substr(fmt, start_idx, end_idx - start_idx);
+        var p = split(":", f);
+        int num_p = elements(p);
+
+        if (p == 1)
+            return string(p[0]), "s";
+        if (p == 2)
+            return string(p[0]), string(p[1]);
+        Rosella.Error.error("Invalid format '%s'", f);
     }
 
     // Get index/format information from a {...} sequence
@@ -129,29 +137,40 @@ class Rosella.String.FormatPrinter : Rosella.StringFormatter
             return int(p[0]), string(p[1]);
     }
 
-    function __get_obj_value(var obj, var cache, string attr)
+    function __get_obj_value(var obj, var cache, string attr, string fmt)
     {
-        if (exists cache[attr])
-            return cache[attr];
-        string value = null;
+        // If we have it in cache, return it
+        string key = attr + ":" + fmt;
+        if (exists cache[key])
+            return cache[key];
+
+        // Get the value from the object. It may be a hash value, an attribute
+        // or a 0-arity method call return value
+        var value = null;
+        int has_value = false;
         if (does(obj, "hash")) {
-            if (exists obj[attr])
+            if (exists obj[attr]) {
                 value = obj[attr];
+                has_value = true;
+            }
         } else {
             try {
                 value = obj.*attr;
+                has_value = true;
             } catch(e){ }
-            if (value == null) {
+            if (has_value == false) {
                 try {
                     value = obj.*attr();
+                    has_value = true;
                 } catch(e) { }
             }
         }
-
-        if (value == null)
-            value = "";
-        cache[attr] = value;
-        return value;
+        if (!has_value) {
+            cache[key] = "";
+            return "";
+        }
+        string formatted = self.__convert_format(value, fmt);
+        return formatted;
     }
 
     // Get the (possibly cached) string value for the given argument with the
@@ -162,11 +181,16 @@ class Rosella.String.FormatPrinter : Rosella.StringFormatter
         if (exists cache[key])
             return cache[key];
         var obj = args[idx];
+        string value = self.__convert_format(obj, fmt);
+        cache[key] = value;
+        return value;
+    }
+
+    function __convert_format(var obj, string fmt)
+    {
         var converter = Rosella.StringFormatter.get_formatter(obj);
         if (converter == null)
             converter = self.default_formatter;
-        string value = converter.format(obj, fmt);
-        cache[key] = value;
-        return value;
+        return converter.format(obj, fmt);
     }
 }

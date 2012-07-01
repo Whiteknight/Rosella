@@ -19,4 +19,24 @@ class Test::String::FormatPrinter {
     method format_obj() {
         $!status.unimplemented("TODO");
     }
+
+    method format_obj_hash() {
+        my %hash;
+        %hash<foo> := "FOO";
+        %hash<bar> := "BAR";
+        %hash<baz> := "BAZ";
+
+        my $value := Rosella::String::format_obj('X{foo}Y{bar}Z{baz}W', %hash);
+        $!assert.equal($value, "XFOOYBARZBAZW");
+    }
+
+    method format_obj_formats() {
+        my %hash;
+        %hash<foo> := 1;
+        %hash<bar> := 2;
+        %hash<baz> := 3;
+
+        my $value := Rosella::String::format_obj('{foo:02d}-{bar:04d}-{baz:4s}', %hash);
+        $!assert.equal($value, "01-0002-   3");
+    }
 }
