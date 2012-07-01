@@ -20,11 +20,12 @@ class Rosella.Xml.Document
     // Add in a XmlHeader or a DtdHeader
     function add_header(var header)
     {
-        if (header instanceof Rosella.Xml.Tag.XmlHeader) {
-            if (self.xml_header != null)
-                Rosella.Error.error("Document already contains an XML Header");
+        // Just overwrite the existing xml header. The parser prevents us from
+        // having more than one when parsing a file or string. Sometimes we can
+        // generate a default if we haven't explicitly set one yet.
+        if (header instanceof Rosella.Xml.Tag.XmlHeader)
             self.xml_header = header;
-        } else if (header instanceof Rosella.Xml.Tag.DtdHeader) {
+        else if (header instanceof Rosella.Xml.Tag.DtdHeader) {
             if (self.dtd_header != null)
                 Rosella.Error.error("Document already contains a DTD Header");
             self.dtd_header = header;
@@ -62,12 +63,19 @@ class Rosella.Xml.Document
     function to_xml()
     {
         var sb = new 'StringBuilder';
-        if (self.xml_header != null)
-            self.xml_header.to_xml_sb(sb, 0);
+        self.get_xml_header().to_xml_sb(sb, 0);
         if (self.dtd_header != null)
             self.dtd_header.to_xml_sb(sb, 0);
         self.get_document_root().to_xml_sb(sb, 0);
         return sb;
+    }
+
+    function get_xml_header() {
+        if (self.xml_header == null) {
+            self.xml_header = new Rosella.Xml.Tag.XmlHeader(0);
+            self.xml_header.add_attribute("", "version", "1.0");
+        }
+        return self.xml_header;
     }
 
     // Serialize to xml and write to file
