@@ -110,6 +110,7 @@ class Rosella.String.FormatPrinter : Rosella.StringFormatter
     /* Internal Helper Methods
     */
 
+    // Get the attribute/format from a {...} sequence
     function __get_obj_attribute(string fmt, int start_idx, int end_idx)
     {
         string f = substr(fmt, start_idx, end_idx - start_idx);
@@ -137,6 +138,8 @@ class Rosella.String.FormatPrinter : Rosella.StringFormatter
             return int(p[0]), string(p[1]);
     }
 
+    // Get a formatted value for format_obj. Take an attr/method name and a
+    // format string to pass to the default converter of that type
     function __get_obj_value(var obj, var cache, string attr, string fmt)
     {
         // If we have it in cache, return it
@@ -186,6 +189,9 @@ class Rosella.String.FormatPrinter : Rosella.StringFormatter
         return value;
     }
 
+    // Format an object according to the given format. Search for the formatter
+    // associated with that object type, or use the default formatter if none
+    // are available
     function __convert_format(var obj, string fmt)
     {
         var converter = Rosella.StringFormatter.get_formatter(obj);
