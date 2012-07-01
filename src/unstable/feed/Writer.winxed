@@ -35,13 +35,27 @@ class Rosella.Feed.Writer.Factory : Rosella.ObjectFactory
     }
 }
 
-class Rosella.Feed.Writer.Atom
+class Rosella.Feed.Writer.Atom : Rosella.Feed.Writer
 {
     function Atom()
     {
         var root = new Rosella.Xml.Tag(0, "", "feed");
-        root.add_attribute("xmlns", "http://www.w3.org/2005/Atom");
+        root.add_attribute("", "xmlns", "http://www.w3.org/2005/Atom");
         self.Writer(root);
+    }
+
+    function set_feed_details(string title, string subtitle, var links, string id, var updated = null)
+    {
+        if (updated == null)
+            updated = Rosella.Date.now();
+        self.xmldoc.get_document_root()
+            .add_children_from_hash({
+                "title": title,
+                "subtitle": subtitle,
+                "link": links,
+                "id": id,
+                "updated": self.__format_date(updated)
+            });
     }
 
     function add_entry(string title, var links, string id, string summary, string author, string email, var updated = null)
@@ -49,22 +63,30 @@ class Rosella.Feed.Writer.Atom
         if (updated == null)
             updated = Rosella.Date.now();
         var entry = new Rosella.Xml.Tag(0, "", "entry");
-        self.xmldoc.get_document_root().add_tag(entry);
+        self.xmldoc.get_document_root().add_child(entry);
         entry.add_children_from_hash({
             "title": title,
-            "links": links,
+            "link": links == null ? [] : links,
             "id": id,
             "summary": summary,
             "author": {
                 "name": author,
                 "email": email
-            }
+            },
+            "updated": self.__format_date(updated)
         });
+        // TODO: If we have multiple link fields, we need to set unique rel=""
+        // attributes on them
         return new Rosella.Feed.Entry.Atom(entry);
+    }
+
+    function __format_date(var d)
+    {
+        return d.format_string("{yyyy}-{MM}-{dd}T{HH}:{mm}:{ss}Z");
     }
 }
 
-class Rosella.Feed.Writer.Rss
+class Rosella.Feed.Writer.Rss : Rosella.Feed.Writer
 {
     function Rss()
     {
