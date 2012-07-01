@@ -31,4 +31,14 @@ class Rosella.Xml.Tag.Collection : Rosella.Query.Iterable.Array
             t.get_children_collection(Rosella.Xml.Tag.child_tag_finder_attrs(attrs), c);
         return c;
     }
+
+    function item_at(int idx)
+    {
+        return self.data[idx];
+    }
+
+    function get_pmc_keyed_int(int idx)
+    {
+        return self.data[idx];
+    }
 }
