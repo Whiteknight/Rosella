@@ -98,6 +98,7 @@ class Rosella.Feed.Writer.Rss : Rosella.Feed.Writer
     function Rss()
     {
         var root = new Rosella.Xml.Tag(0, "", "rss");
+        root.add_attribute("", "version", "2.0");
         self.Writer(root);
     }
 
