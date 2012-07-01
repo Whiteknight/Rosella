@@ -160,12 +160,12 @@ namespace Rosella.String
 
     function format(string format, var args [slurpy])
     {
-        return format_printer().format(args, format);
+        return format_printer().format_array(args, format);
     }
 
     function format_obj(string format, var obj)
     {
-        return format_printer().format_obj(obj, format);
+        return format_printer().format(obj, format);
     }
 
     // Pad the start of the string with the given substring. Default

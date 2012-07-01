@@ -6,21 +6,21 @@ INIT {
 Rosella::Test::test(Test::String::FormatPrinter);
 
 class Test::String::FormatPrinter {
-    method format() {
+    method format_array() {
         my $value := Rosella::String::format('{0} worl{1}', "hello,", "d!");
         $!assert.equal($value, "hello, world!");
     }
 
-    method format_brace() {
+    method format_array_brace() {
         my $value := Rosella::String::format('{{}{{}');
         $!assert.equal($value, '{}{}');
     }
 
-    method format_obj() {
+    method format() {
         $!status.unimplemented("TODO");
     }
 
-    method format_obj_hash() {
+    method format_hash() {
         my %hash;
         %hash<foo> := "FOO";
         %hash<bar> := "BAR";
@@ -30,7 +30,7 @@ class Test::String::FormatPrinter {
         $!assert.equal($value, "XFOOYBARZBAZW");
     }
 
-    method format_obj_formats() {
+    method format_subformats() {
         my %hash;
         %hash<foo> := 1;
         %hash<bar> := 2;
