@@ -112,11 +112,16 @@ class Rosella.Feed.Writer.Rss : Rosella.Feed.Writer
             "title": title,
             "description": desc,
             "link": link,
-            "lastBuildDate": self.format_date(last_build),
-            "pubDate": self.format_date(pub_date),
+            "lastBuildDate": self.__format_date(last_build),
+            "pubDate": self.__format_date(pub_date),
             "ttl": ttl
         });
-        self.xmldoc.get_document_root().add_tag(channel);
+        self.xmldoc.get_document_root().add_child(channel);
         return new Rosella.Feed.Entry.RssChannel(channel);
+    }
+
+    function __format_date(var d)
+    {
+        return d.format_string("{WWW}, {dd} {MMM} {yyyy} {hh}:{mm}:{ss} +0000");
     }
 }

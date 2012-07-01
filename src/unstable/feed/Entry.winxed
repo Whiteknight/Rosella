@@ -110,7 +110,14 @@ class Rosella.Feed.Entry.RssChannel
         if (pub_date == null)
             pub_date = Rosella.Date.now();
         var item = new Rosella.Xml.Tag(0, "", "item");
-        self.channelxml.add_tag(item);
+        item.add_children_from_hash({
+            "title": title,
+            "description": desc,
+            "link": link,
+            "guid": guid,
+            "pubDate": self.__format_date(pub_date)
+        });
+        self.channelxml.add_child(item);
         return item;
     }
 
@@ -119,6 +126,11 @@ class Rosella.Feed.Entry.RssChannel
         if (set)
             self.xmlitem.first_child(name).set_child_text(value);
         return self.xmlitem.first_child(name).get_inner_xml();
+    }
+
+    function __format_date(var d)
+    {
+        return d.format_string("{WWW}, {dd} {MMM} {yyyy} {hh}:{mm}:{ss} +0000");
     }
 }
 
