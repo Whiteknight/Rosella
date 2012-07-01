@@ -416,9 +416,12 @@ class Rosella.Date
     }
 
     // Get the week-day (string name)
-    function week_day_name()
+    function week_day_name(int chars = -1)
     {
-        return Rosella.Date.all_week_days()[int(self.week_day())];
+        string name = Rosella.Date.all_week_days()[int(self.week_day())];
+        if (chars == -1)
+            return name;
+        return substr(name, 0, chars);
     }
 
     /* Month
@@ -453,9 +456,12 @@ class Rosella.Date
     }
 
     // Get the name of the month
-    function month_name()
+    function month_name(int chars = -1)
     {
-        return Rosella.Date.all_months()[int(self.month() - 1)];
+        string name = Rosella.Date.all_months()[int(self.month() - 1)];
+        if (chars == -1)
+            return name;
+        return substr(name, 0, chars);
     }
 
     /* Year
