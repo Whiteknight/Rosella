@@ -1,10 +1,17 @@
+/* Visitor Class
+    Visitors traverse through the XML Document object, visiting each node
+    depth-first and performing some sort of callback behavior on each.
+*/
 class Rosella.Xml.Visitor
 {
+    // Visit the document object
     function visit_doc(var doc)
     {
         return self.visit_node(doc.get_document_root());
     }
 
+    // Vist a node, performing the callback and then recursing to visit all
+    // children
     function visit_node(var node, var results = new 'ResizableStringArray')
     {
         self.do_visit(node, results);
@@ -22,6 +29,10 @@ class Rosella.Xml.Visitor
     }
 }
 
+/* Listing Visitor
+    This visitor simply lists the tag names of all tags in the document. Useful
+    primarily as a learning example.
+*/
 class Rosella.Xml.Visitor.Lister : Rosella.Xml.Visitor
 {
     function Lister() { }
@@ -33,6 +44,11 @@ class Rosella.Xml.Visitor.Lister : Rosella.Xml.Visitor
     }
 }
 
+/* DTD Validation Visitor
+    This visitor traverses the XML tree comparing the various nodes and their
+    relationships to a provided DTD document. It returns an indication of
+    whether the XML is valid and, if not, it provides an array of error messages
+*/
 class Rosella.Xml.Visitor.DtdValidator : Rosella.Xml.Visitor
 {
     var dtd_document;
