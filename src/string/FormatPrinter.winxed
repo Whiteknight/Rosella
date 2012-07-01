@@ -51,6 +51,7 @@ class Rosella.String.FormatPrinter : Rosella.StringFormatter
             next_idx++;
             if (fmt[next_idx] == "{") {
                 output_array[out_idx++] = "{";
+                next_idx++;
                 continue;
             }
             int ptr = index_of_substr_from(fmt, "}", next_idx);

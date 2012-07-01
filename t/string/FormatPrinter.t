@@ -11,6 +11,11 @@ class Test::String::FormatPrinter {
         $!assert.equal($value, "hello, world!");
     }
 
+    method format_brace() {
+        my $value := Rosella::String::format('{{}{{}');
+        $!assert.equal($value, '{}{}');
+    }
+
     method format_obj() {
         $!status.unimplemented("TODO");
     }
