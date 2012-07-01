@@ -56,6 +56,8 @@ class Rosella.Feed.Writer.Atom : Rosella.Feed.Writer
                 "id": id,
                 "updated": self.__format_date(updated)
             });
+        if (elements(links) > 0)
+            self.xmldoc.get_document_root().first_child("link").add_attribute("", "rel", "self");
     }
 
     function add_entry(string title, var links, string id, string summary, string author, string email, var updated = null)
@@ -75,8 +77,13 @@ class Rosella.Feed.Writer.Atom : Rosella.Feed.Writer
             },
             "updated": self.__format_date(updated)
         });
-        // TODO: If we have multiple link fields, we need to set unique rel=""
-        // attributes on them
+        int num_links = elements(links);
+        if (links != null && num_links > 1) {
+            var link_tags = entry.get_children_named("link");
+            link_tags.item_at(1).add_attribute("", "rel", "alternate");
+            if (num_links > 2)
+                link_tags.item_at(2).add_attribute("", "rel", "edit");
+        }
         return new Rosella.Feed.Entry.Atom(entry);
     }
 
