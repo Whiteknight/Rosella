@@ -7,6 +7,7 @@
 */
 namespace Rosella.String
 {
+    // Determine if the string is null or empty
     function null_or_empty(string s)
     {
         return s == null || length(s) == 0;
