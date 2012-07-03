@@ -337,8 +337,10 @@ class Rosella.Query.Iterable : Rosella.IteratorBase
     {
         if (!self.has_more())
             return false;
-        :(var v, int m) = self.next_and_more();
         if (f != null) {
+            // TODO: This is broken. We're consuming v and not saving it. Next
+            // time we try to read, we're going to be missing a value.
+            :(var v, int m) = self.next_and_more();
             if (f(v))
                 return true;
             while (m == true) {
