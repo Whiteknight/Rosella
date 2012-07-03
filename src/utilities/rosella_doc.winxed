@@ -1,0 +1,77 @@
+// Main entry point. Parse the arguments and call the main function
+function main[main](var args)
+{
+    Rosella.Query.install_to_parrot_types();
+    var p = new Rosella.CommandLine.Program(args.shift());
+    p.default_mode().set_function(mk_header_main)
+        .require_positional("libpath", 0);
+    p.add_mode("help").set_flag("--help").set_function(show_help);
+    p.on_error(show_help);
+    p.run(args);
+}
+
+// Main driver routine. Read the .pbc files and output the include text
+function mk_header_main(var args)
+{
+    string libpath = args["libpath"];
+    var module = Rosella.Reflect.Module.load(libpath);
+
+    Rosella.IO.sayf("---");
+    Rosella.IO.sayf("layout: rosella");
+    Rosella.IO.sayf("title: Rosella ");
+    Rosella.IO.sayf("---\n");
+    Rosella.IO.sayf("## Overview\n");
+    Rosella.IO.sayf("## Concepts\n");
+    Rosella.IO.sayf("## Namespaces\n");
+
+    // Print out namespaces and their public functions
+    var funcs_by_ns = module.functions_by_ns();
+    for (string ns in funcs_by_ns) {
+        var funcs = funcs_by_ns[ns]
+            .iterable()
+            .map(function(f) { return string(f); })
+            .filter(function(f) { return substr(f, 0, 1) != "_"; });
+        if (funcs.any()) {
+            Rosella.IO.sayf("### %s\n", ns);
+            funcs.foreach(function(f) { Rosella.IO.sayf("* `%s`: ", f); });
+            Rosella.IO.sayf("");
+        }
+    }
+
+    // Print out classes
+    Rosella.IO.sayf("## Classes\n");
+    module
+        .classes()
+        .iterable()
+        .map(function(kvp) { return kvp.key(); })
+        .foreach(function(c) { Rosella.IO.sayf("### %s\n", c); });
+
+    Rosella.IO.sayf("## Winxed Include Files\n");
+    Rosella.IO.sayf("## Examples\n");
+    Rosella.IO.sayf("### Winxed\n");
+    Rosella.IO.sayf("### NQP-rx\n");
+    Rosella.IO.sayf("## Users\n");
+}
+
+// Show the help message
+function show_help(var args)
+{
+    if (__DEBUG__ && args instanceof 'Exception') {
+        say(args.message);
+        for (string bt in args.backtrace_strings())
+            say(bt);
+    }
+    string text = <<:
+%s <libname>
+    Create a documentation file, in Markdown format, for a Rosella library.
+
+:>>
+;
+
+    string program_name;
+    if (args == null || args instanceof 'Exception')
+        program_name = "rosella_doc";
+    else
+        program_name = (new Rosella.FileSystem.FilePath(args.program_name())).short_name();
+    Rosella.IO.sayf(text, program_name, program_name);
+}

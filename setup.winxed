@@ -466,6 +466,10 @@ function setup_utilities(var rosella)
         "templatecc" : {
             "install_name" : "rosella_templatecc",
             "includes" : ["Core", "CommandLine", "Template"]
+        },
+        "rosella_doc" : {
+            "install_name" : "rosella_doc",
+            "includes" : ["Core", "CommandLine", "FileSystem", "Query", "Reflect"]
         }
     };
     string src_prefix = "src/utilities/";
