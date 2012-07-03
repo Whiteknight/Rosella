@@ -5,17 +5,21 @@ title: Rosella Xml
 
 ## Overview
 
+The Rosella Xml library is used to read and write data in XML markup format.
+
 ## Concepts
 
 ## Namespaces
 
 ### Rosella.Xml
 
-* `read_string`:
-* `read_dtd_string`:
-* `read_dtd_file`:
-* `parse`:
-* `parse_dtd`:
+The `Rosella.Xml` namespace contains some important driver routines for parsing
+existing XML documents.
+
+* `read_string`: Read a string of XML and return an Xml.Document
+* `read_file`:  Read XML from a file. Return an Xml.Document
+* `read_dtd_string`: Read a DTD document from a string
+* `read_dtd_file`: Read a DTD document from a file
 
 ### Rosella.Xml.Tag
 
