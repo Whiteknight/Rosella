@@ -363,6 +363,17 @@ function setup_stable_libraries(var rosella)
         "net/useragent/SimpleHttp",
         "net/SocketFactory"
     );
+
+    setup_winxed_lib(rosella, "xml", ["Core", "Ascii", "Parse_builtins", "Parse", "String", "FileSystem", "Query"],
+        "xml/Includes",
+        "xml/Xml",
+        "xml/Document",
+        "xml/Parser",
+        "xml/Tag",
+        "xml/tag/Collection",
+        "xml/Text",
+        "xml/Visitor"
+    );
 }
 
 function setup_experimental_libraries(var rosella)
@@ -416,17 +427,6 @@ function setup_experimental_libraries(var rosella)
         "genetic/Engine",
         "genetic/Mutator",
         "genetic/mutator/Generic"
-    );
-
-    setup_unstable_lib(rosella, "xml", ["Core", "Ascii", "Parse_builtins", "Parse", "String", "FileSystem", "Query"],
-        "xml/Includes",
-        "xml/Xml",
-        "xml/Document",
-        "xml/Parser",
-        "xml/Tag",
-        "xml/tag/Collection",
-        "xml/Text",
-        "xml/Visitor"
     );
 
     setup_unstable_lib(rosella, "feed", ["Core", "Xml", "Net", "FileSystem"],

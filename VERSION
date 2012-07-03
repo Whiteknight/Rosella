@@ -8,6 +8,7 @@ date: 1 Stable
 decorate: 0 Beta
 dumper: 1 Stable
 event: 4 Alpha
+feed: 0 Alpha
 filesystem: 1 Stable
 harness: 3 Stable
 json: 1 Stable
@@ -27,4 +28,4 @@ string: 1 Stable
 template: 1 Stable
 test: 4 Stable
 winxed: 2 Stable
-xml: 0 Alpha
+xml: 1 Stable
