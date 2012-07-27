@@ -202,21 +202,30 @@ class Rosella.Test.Asserter
     // Expect that the given block, when executed, throws an exception.
     function throws(var block, string message [optional], int has_msg [opt_flag])
     {
+        int has_thrown = 0;
         try {
             block();
+        } catch(_e) {
+            has_thrown = 1;
+        }
+        if (!has_thrown) {
             message = self.__default_message(message, has_msg, "does not throw");
             self.fail(message);
-        } catch() {}
+        }
     }
 
     // Expect that the given block, when executed, does not throw any exceptions
     function throws_nothing(var block, string message [optional], int has_msg [opt_flag])
     {
+        var thrown_exception= null;
         try {
             block();
         } catch(e) {
+            thrown_exception = e;
+        }
+        if (thrown_exception != null) {
             message = self.__default_message(message, has_msg, "block throws");
-            self.fail(message, e:[named("exception")]);
+            self.fail(message, thrown_exception:[named("exception")]);
         }
     }
 

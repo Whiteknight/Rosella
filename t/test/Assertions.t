@@ -89,6 +89,40 @@ class AssertionTest {
         });
     }
 
+    # .throws() and .throws_nothing()
+
+    method test_throws_pass() {
+        $!assert.expect_pass({
+            $!assert.throws({
+                die("Expected exception");
+            });
+        });
+    }
+
+    method test_throws_fail() {
+        $!assert.expect_fail({
+            $!assert.throws({
+                my $x := 5;
+            });
+        });
+    }
+
+    method test_throws_nothing_pass() {
+        $!assert.expect_pass({
+            $!assert.throws_nothing({
+                my $x := 5;
+            });
+        });
+    }
+
+    method test_throws_nothing_fail() {
+        $!assert.expect_fail({
+            $!assert.throws_nothing({
+                die("Unexpected exception");
+            });
+        });
+    }
+
     # Matchers
 
     method is_match_arrays() {
