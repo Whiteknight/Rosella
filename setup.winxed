@@ -339,7 +339,8 @@ function setup_stable_libraries(var rosella)
         "json/builder/DataObject",
         "json/Dumper",
         "json/DumpHandler",
-        "json/Parser"
+        "json/Parser",
+        "json/ParseResult"
     );
 
     setup_winxed_lib(rosella, "net", ["Core", "Math_Builtins", "Ascii", "Parse_builtins", "Parse", "String", "FileSystem", "Date", "Random"],

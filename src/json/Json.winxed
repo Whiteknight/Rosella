@@ -2,23 +2,39 @@
     This library contains utilities for reading and writing JSON data strings.
 */
 // TODO: Add a routine to minify an existing snippet of JSON
-// TODO: Add a routine to validate an existing snippet of JSON
 namespace Rosella.Json
 {
     // Dump the given data object to JSON
-    function to_json(var obj)
+    function to_json(var obj, int minify = false)
     {
-        var dumper = new Rosella.Json.Dumper();
+        var dumper = new Rosella.Json.Dumper(minify);
         return dumper.dump(obj);
     }
 
-    // Parse a string of JSON and return a data object
+    // Parse a string of JSON and return a ParseResult with status, error messages
+    // and the generated data object.
     function parse(string json, var builder = default_builder_factory().create())
     {
-        :(json, var s, var b, int len) = Rosella.Parse.setup_parse(json);
-        builder.start();
-        Rosella.Json.Parser.__parse_value(json, s, b, len, "", builder);
-        return builder.get_value();
+        return parse_internal(json, builder);
+    }
+
+    // Parse a string of JSON and return the generated data object
+    function parse_simple(string json, var builder = default_builder_factory().create())
+    {
+        var result = parse_internal(json, builder);
+        if (result)
+            return result.get_value();
+        else
+            return null;
+    }
+
+    // Parse a string of JSON. Return a boolean true/false for whether the
+    // string of JSON is valid
+    function validate(string json)
+    {
+        var builder = default_builder_factory().create();
+        var result = parse_internal(json, builder);
+        return (result ? true : false);
     }
 
     // A factory for creating a Builder
@@ -34,5 +50,19 @@ namespace Rosella.Json
     function set_default_builder_factory(var obj)
     {
         Rosella.Globals.register_global(DEFAULT_BUILDER_FACTORY, obj);
+    }
+
+    function parse_internal(string json, var builder)
+    {
+        :(json, var s, var b, int len) = Rosella.Parse.setup_parse(json);
+        var result = new Rosella.Json.ParseResult(builder);
+        try {
+            Rosella.Json.Parser.__parse_value(json, s, b, len, "", builder);
+            result.set_result(true);
+        } catch (e) {
+            result.set_result(false);
+            result.add_message(string(e));
+        }
+        return result;
     }
 }

@@ -17,7 +17,25 @@ class Test_Rosella_Json
         using Rosella.Json.parse;
 
         string arg_0 = "{'foo' : 1, 'bar' : 2, 'baz' : 3, 'fie': [4, 5, true, false, null]}";
-        var result = parse(arg_0);
+        var result = parse(arg_0).get_value();
+        self.assert.equal(elements(result), 4);
+        self.assert.equal(result["foo"], 1);
+        self.assert.equal(result["bar"], 2);
+        self.assert.equal(result["baz"], 3);
+        self.assert.equal(result["fie"][0], 4);
+        self.assert.equal(result["fie"][1], 5);
+        self.assert.equal(result["fie"][2], true);
+        self.assert.equal(result["fie"][3], false);
+        self.assert.is_null(result["fie"][4]);
+    }
+
+    function parse_simple()
+    {
+        self.status.verify("Test Rosella.Json.parse()");
+        using Rosella.Json.parse_simple;
+
+        string arg_0 = "{'foo' : 1, 'bar' : 2, 'baz' : 3, 'fie': [4, 5, true, false, null]}";
+        var result = parse_simple(arg_0);
         self.assert.equal(elements(result), 4);
         self.assert.equal(result["foo"], 1);
         self.assert.equal(result["bar"], 2);

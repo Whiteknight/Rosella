@@ -1,0 +1,41 @@
+class Rosella.Json.ParseResult
+{
+    var result;
+    var messages;
+    var builder;
+
+    function ParseResult(var builder)
+    {
+        self.result = false;
+        self.messages = [];
+        self.builder = builder;
+        builder.start();
+    }
+
+    function set_result(int result)
+    {
+        self.result = result;
+    }
+
+    function add_message(string msg)
+    {
+        push(self.messages, msg);
+    }
+
+    function get_bool[vtable]()
+    {
+        return int(self.result);
+    }
+
+    function messages()
+    {
+        return self.messages;
+    }
+
+    function get_value()
+    {
+        if (int(self.result) == false)
+            return null;
+        return self.builder.get_value();
+    }
+}
