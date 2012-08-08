@@ -83,7 +83,12 @@ class Rosella.Template.Handler.Children : Rosella.Template.Handler
     // Add a child node.
     function add_child(var node)
     {
-        push(self.children, node);
+        if (node == null)
+            Rosella.Error.error("Cannot add null child");
+        if (self.can_have_children())
+            push(self.children, node);
+        else
+            Rosella.Error.error("Cannot add child node");
     }
 
     // Render the contents of all children

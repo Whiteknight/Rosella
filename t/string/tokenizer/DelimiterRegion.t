@@ -31,6 +31,8 @@ class Test::String::Tokenizer::DelimiterRegion {
             my $t := Rosella::construct(Rosella::String::Tokenizer::DelimiterRegion, "foo");
             $t.add_region("<", ">", "bar");
             $t.add_data("this is <b");
+            $t.get_token.data;
+            $t.get_token.data;
         });
     }
 }
