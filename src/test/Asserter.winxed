@@ -12,11 +12,11 @@
 class Rosella.Test.Asserter
 {
     // Routine to get a default message, if none is provided
-    function __default_message(string msg, int has_msg, string def)
+    function __default_message(string msg, int has_msg, string def, var args [slurpy])
     {
         if (has_msg)
             return msg;
-        return def;
+        return sprintf(def, args);
     }
 
     // Unconditional fail. Throws a Rosella.Test.Failure
@@ -126,7 +126,7 @@ class Rosella.Test.Asserter
             string message [optional], int has_msg [opt_flag])
     {
         if (s1 != s2) {
-            message = self.__default_message(message, has_msg, "strings not equal");
+            message = self.__default_message(message, has_msg, "strings '%s' != '%s'", s1, s2);
             self.fail(message);
         }
     }
