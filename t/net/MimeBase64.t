@@ -26,6 +26,13 @@ class Test_Rosella_Net_MimeBase64
         string result = obj.decode(arg_0);
         self.assert.str_equal(result, t);
     }
+
+    function multibyte_chars()
+    {
+        string s = "\x{a2}";
+        string e = Rosella.Net.default_mime_encoder().encode(s);
+        self.assert.str_equal(e, "wqI=");
+    }
 }
 
 function initialize_test[anon](var context)
