@@ -72,7 +72,7 @@ class Rosella.Net.UserAgent
             return;
         var lines = split("\n", text);
         for (string line in lines)
-            self.dbghandle.print("< " + line + "\n");
+            self.dbghandle.print("> " + line + "\n");
     }
 
     function display_input(string text)
@@ -85,6 +85,6 @@ class Rosella.Net.UserAgent
         if (lines_max > 1 && length(lines[lines_max - 1]) == 0)
             lines.pop();
         for (string line in lines)
-            self.dbghandle.print("> " + line + "\n");
+            self.dbghandle.print("< " + line + "\n");
     }
 }
