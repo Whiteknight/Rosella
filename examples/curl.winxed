@@ -1,0 +1,56 @@
+$include "Rosella/Core.winxed";
+$include "Rosella/CommandLine.winxed";
+$include "Rosella/Net.winxed";
+
+function curl_main(var args)
+{
+    string url = args["url"];
+    string http_mode = args["-X"];
+    if (http_mode == null || http_mode == "")
+        http_mode = "GET";
+    int verbose = args["-v"];
+
+    var ua = new Rosella.Net.UserAgent.SimpleHttp();
+    if (verbose)
+        ua.set_dbg_handle(getstdout());
+    var response;
+    switch (http_mode) {
+        //case "HEAD":
+        case "GET":
+        case "DELETE":
+            response = ua.request(http_mode, url);
+            if (!verbose)
+                say(response.content);
+            break;
+        case "PUT":
+        case "POST":
+            var post_args = args["-p"];
+            // TODO: Get a list of files
+            response = ua.request("POST", url, post_args, null);
+            if (!verbose)
+                say(response.content);
+            break;
+        default:
+            Rosella.Error.error("Unknown http mode '%s'", http_mode);
+    }
+}
+
+function main[main](var args)
+{
+    using curl_main;
+    var p = new Rosella.CommandLine.Program(args.shift());
+    p.default_mode().set_function(curl_main)
+        .require_positional("url", 0)
+        .optional_args({
+            "-v" : "f",
+            "-X" : "s",
+            "-p" : "h"
+        });
+    p.add_mode("help").set_flag("--help").set_function(usage_and_exit);
+    p.on_error(usage_and_exit);
+    p.run(args);
+}
+
+function usage_and_exit(var args)
+{
+}
