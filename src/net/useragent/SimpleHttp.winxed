@@ -1,3 +1,28 @@
+namespace Rosella.Net.UserAgent.SimpleHttp
+{
+    function setup_post(var form_fields, var files)
+    {
+        return function(r) {
+            if (form_fields != null && elements(form_fields) > 0) {
+                for (string field_name in form_fields)
+                    r.add_form_field(field_name, form_fields[field_name]);
+            }
+
+            if (files != null && elements(files) > 0) {
+                for (string file_name in files)
+                    r.add_form_field_filename(file_name, files[file_name]);
+            }
+        };
+    }
+
+    function setup_put(string content)
+    {
+        return function(r) {
+            r.set_content(content);
+        };
+    }
+}
+
 /* Basic HTTP User Agent
     This UserAgent encapsulates logic for making HTTP requests. It exposes
     methods for making different types of requests. It returns Http.Response
@@ -30,6 +55,16 @@ class Rosella.Net.UserAgent.SimpleHttp : Rosella.Net.UserAgent
     /* HTTP Request Methods
     */
 
+    function request(string mode, string uri, var form_fields = null, var files = null, var headers [named, optional])
+    {
+        var cb = null;
+        if (mode == "POST")
+            cb = Rosella.Net.UserAgent.SimpleHttp.setup_post(form_fields, files);
+        if (mode == "PUT")
+            cb = Rosella.Net.UserAgent.SimpleHttp.setup_put(string(form_fields));
+        return self.__dispatch_request(mode, uri, headers, cb);
+    }
+
     // Perform an HTTP GET
     function get(string uri, var headers [named,optional])
     {
@@ -39,29 +74,13 @@ class Rosella.Net.UserAgent.SimpleHttp : Rosella.Net.UserAgent
     // Perform an HTTP POST
     function post(string uri, var form_fields, var files = null, var headers [named,optional])
     {
-        return self.__dispatch_request("POST", uri, headers,
-            function(r) {
-                if (form_fields != null && elements(form_fields) > 0) {
-                    for (string field_name in form_fields)
-                        r.add_form_field(field_name, form_fields[field_name]);
-                }
-
-                if (files != null && elements(files) > 0) {
-                    for (string file_name in files)
-                        r.add_form_field_filename(file_name, files[file_name]);
-                }
-            }
-        );
+        return self.__dispatch_request("POST", uri, headers, Rosella.Net.UserAgent.SimpleHttp.setup_post(form_fields, files));
     }
 
     // Perform an HTTP PUT
     function put(string uri, string content, var headers [named,optional])
     {
-        return self.__dispatch_request("PUT", uri, headers,
-            function(r) {
-                r.set_content(content);
-            }
-        );
+        return self.__dispatch_request("PUT", uri, headers, Rosella.Net.UserAgent.SimpleHttp.setup_put(content));
     }
 
     // Perform an HTTP DELETE
@@ -84,6 +103,7 @@ class Rosella.Net.UserAgent.SimpleHttp : Rosella.Net.UserAgent
 
     /* Private Helper Routines
     */
+
 
     // Dispatch the request.
     function __dispatch_request(string request_method, string uri_raw, var headers, var setup_request)
