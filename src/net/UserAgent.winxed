@@ -42,7 +42,11 @@ class Rosella.Net.UserAgent
     function request_progress_tick() { }
 
     // The request is complete
-    function request_complete() { }
+    function request_complete()
+    {
+        self.display_info("Request complete");
+    }
+
 
     // A hash of protocols supported. If null, nothing is supported
     function supported_protocols() { return null; }
@@ -86,5 +90,15 @@ class Rosella.Net.UserAgent
             lines.pop();
         for (string line in lines)
             self.dbghandle.print("< " + line + "\n");
+    }
+
+    function display_info(string text, var args [slurpy])
+    {
+        if (self.dbghandle == null)
+            return;
+        text = sprintf(text, args);
+        var lines = split("\n", text);
+        for (string line in lines)
+            self.dbghandle.print("* " + line + "\n");
     }
 }

@@ -76,6 +76,7 @@ class Rosella.Net.Protocol.Http : Rosella.Net.Protocol
         user_agent.request_complete();
 
         socket.close();
+        user_agent.display_info("Connection to %s port %d closed.", host, port);
         return response;
     }
 
@@ -87,9 +88,12 @@ class Rosella.Net.Protocol.Http : Rosella.Net.Protocol
     {
         // TODO: Once we have an SSL socket factory, take an option whether to
         // use SSL or not
+        user_agent.display_info("About to connect to %s port %d", host, port);
         int use_ipv6 = user_agent.use_ipv6();
         var socket_factory = use_ipv6 ? Rosella.Net.tcp_socket_factory_ipv6() : Rosella.Net.tcp_socket_factory_ipv4();
-        return socket_factory.create(host, port);
+        var socket = socket_factory.create(host, port);
+        user_agent.display_info("\tConnected to %s port %d", host, port);
+        return socket;
     }
 
     // Receive the HTTP response/status link
@@ -192,6 +196,7 @@ class Rosella.Net.Protocol.Http : Rosella.Net.Protocol
                 break;
             while (chunk_length > 0) {
                 string raw = socket.read(chunk_length);
+                user_agent.display_input(raw);
                 chunk_length -= length(raw);
                 push(buf, raw);
             }
