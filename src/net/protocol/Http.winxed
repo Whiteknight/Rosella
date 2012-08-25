@@ -62,12 +62,12 @@ class Rosella.Net.Protocol.Http : Rosella.Net.Protocol
             return Rosella.Net.Http.Response.__error_network_failure(request);
         user_agent.request_sent();
 
-        :(int ok, var response) = self.__receive_status_line(socket);
+        :(int ok, var response) = self.__receive_status_line(user_agent, socket);
         if (ok != 1)
             return response;
         user_agent.request_progress(PERCENT_REQUEST_SENT);
 
-        var header_lines = self.__receive_header(socket);
+        var header_lines = self.__receive_header(user_agent, socket);
         response.header().set_header_lines(header_lines);
         user_agent.request_progress(PERCENT_HEADERS_RECEIVED);
 
@@ -93,9 +93,10 @@ class Rosella.Net.Protocol.Http : Rosella.Net.Protocol
     }
 
     // Receive the HTTP response/status link
-    function __receive_status_line(var socket)
+    function __receive_status_line(var user_agent, var socket)
     {
         string status_line = socket.readline();
+        user_agent.display_input(status_line);
         status_line = Rosella.String.trim_end(status_line);
         int idx = index_of_substr(status_line, " ");
 
@@ -114,11 +115,12 @@ class Rosella.Net.Protocol.Http : Rosella.Net.Protocol
     }
 
     // Receive the response header. Return it as an array of lines
-    function __receive_header(var socket)
+    function __receive_header(var user_agent, var socket)
     {
         string header_lines[] = [];
         while (true) {
             string raw = socket.readline();
+            user_agent.display_input(raw);
             raw = Rosella.String.trim_end(raw);
             if (raw == null || raw == "")
                 break;
@@ -132,10 +134,16 @@ class Rosella.Net.Protocol.Http : Rosella.Net.Protocol
     {
         string content = request.get_content();
         string header_raw = Rosella.Net.Http.format_request_header(request.get_method(), fullpath, request.header());
-        if (socket.puts(header_raw) < 0)
+        int puts_result = socket.puts(header_raw);
+        user_agent.display_output(header_raw);
+
+        if (puts_result < 0)
             return false;
+
         if (content != null && content != "") {
-            if (socket.puts(content) < 0)
+            puts_result = socket.puts(content);
+            user_agent.display_output(content);
+            if (puts_result < 0)
                 return false;
         }
         return true;
@@ -149,6 +157,7 @@ class Rosella.Net.Protocol.Http : Rosella.Net.Protocol
         if (content_length == 0) {
             while(true) {
                 string raw = socket.recv();
+                user_agent.display_input(raw);
                 if (raw == null || raw == "")
                     break;
                 recv_length += length(raw);
@@ -158,6 +167,7 @@ class Rosella.Net.Protocol.Http : Rosella.Net.Protocol
         } else {
             while (recv_length < content_length) {
                 string raw = socket.recv();
+                user_agent.display_input(raw);
                 if (raw == "")
                     break;
                 recv_length += length(raw);
@@ -173,6 +183,7 @@ class Rosella.Net.Protocol.Http : Rosella.Net.Protocol
         int hex_class = Rosella.String.get_character_class("hexadecimal");
         while(true) {
             string line = socket.readline();
+            user_agent.display_input(line);
             int line_length = length(line);
             int substr_idx = Rosella.String.first_not_cclass(line, hex_class);
             line = substr(line, 0, substr_idx);
@@ -187,7 +198,7 @@ class Rosella.Net.Protocol.Http : Rosella.Net.Protocol
             socket.readline();
             user_agent.request_progress_tick();
         }
-        var header_lines = self.__receive_header(socket);
+        var header_lines = self.__receive_header(user_agent, socket);
         response.header().set_header_lines(header_lines);
     }
 

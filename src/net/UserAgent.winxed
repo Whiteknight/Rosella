@@ -8,6 +8,8 @@
 */
 class Rosella.Net.UserAgent
 {
+    var dbghandle;
+
     // Constructor
     function UserAgent() { }
 
@@ -54,5 +56,35 @@ class Rosella.Net.UserAgent
         if (exists supported_protocols[protocol])
             return int(supported_protocols[protocol]);
         return false;
+    }
+
+    /* Debugging Interface
+    */
+
+    function set_dbg_handle(var handle)
+    {
+        self.dbghandle = handle;
+    }
+
+    function display_output(string text)
+    {
+        if (self.dbghandle == null)
+            return;
+        var lines = split("\n", text);
+        for (string line in lines)
+            self.dbghandle.print("< " + line + "\n");
+    }
+
+    function display_input(string text)
+    {
+        if (self.dbghandle == null)
+            return;
+
+        var lines = split("\n", text);
+        int lines_max = elements(lines);
+        if (lines_max > 1 && length(lines[lines_max - 1]) == 0)
+            lines.pop();
+        for (string line in lines)
+            self.dbghandle.print("> " + line + "\n");
     }
 }
