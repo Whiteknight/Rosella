@@ -27,6 +27,11 @@ class Rosella.CommandLine.Program
         };
     }
 
+    function arguments(var raw_defs)
+    {
+        self.arg_defs = new Rosella.CommandLine.ArgumentDefs(raw_defs);
+    }
+
     // Set a function to execute on errors
     function on_error(var e)
     {
@@ -50,7 +55,9 @@ class Rosella.CommandLine.Program
     // Execute the program with the given args
     function run(var raw_args)
     {
-        var args = new Rosella.CommandLine.Arguments(self, raw_args);
+        var args = new Rosella.CommandLine.Arguments(self);
+        args.parse(raw_args, args.get_definitions());
+
         var main_func = null;
         try {
             for (var mode in self.modes)

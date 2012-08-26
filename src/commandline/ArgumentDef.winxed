@@ -1,0 +1,72 @@
+class Rosella.CommandLine.ArgumentDef
+{
+    var raw_defs;
+    var prepared_defs;
+
+    function ArgumentDef(var raw_defs)
+    {
+        self.raw_defs = raw_defs;
+    }
+
+    function get_definitions()
+    {
+        if (self.prepared_defs != null)
+            return self.prepared_defs;
+
+        var arg_defs = Rosella.get_string_string_hash();
+        var raw_defs = self.raw_defs;
+        if (does(raw_defs, "hash"))
+            self.__prepare_arg_defs_hash(raw_defs, arg_defs);
+        else if (does(raw_defs, "array"))
+            self.__prepare_arg_defs_array(raw_defs, arg_defs);
+        else
+            Rosella.Error.error("Unknown argument definition type '%s'", typeof(raw_defs));
+        self.prepared_defs = arg_defs;
+        return arg_defs;
+    }
+
+    /* We can handle defs of the following types:
+        foo         f
+        foo=s       f=s
+        foo=[]      f=[]
+        foo={}      f={}
+    */
+    function __prepare_arg_defs_hash(var defs, var arg_defs)
+    {
+        for (string arg_def in defs) {
+            var parts = split("=", arg_def);
+
+            // Get the name of the argument
+            string raw_arg_name = parts[0];
+            string arg_name;
+            if (length(raw_arg_name) == 1)
+                arg_name = "-" + raw_arg_name;
+            else
+                arg_name = "--" + raw_arg_name;
+
+            // Now get a flag that tells us how to work with it.
+            string flag = "f";
+            if (elements(parts) == 2) {
+                string second_part = parts[1];
+                switch(second_part) {
+                    case "s":
+                    case "[]":
+                    case "{}":
+                        flag = parts[1];
+                        break;
+                    default:
+                        Rosella.Error.error("Unknown argument type for '%s': '%s'", raw_arg_name, second_part);
+                }
+            }
+
+            arg_defs[arg_name] = flag;
+        }
+    }
+
+    // TODO: If we get an array of arrays, try to copy old-style
+    // GetOpt::Obj format
+    function __prepare_arg_defs_array(var defs, var arg_defs)
+    {
+
+    }
+}

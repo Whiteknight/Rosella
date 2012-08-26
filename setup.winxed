@@ -283,6 +283,7 @@ function setup_stable_libraries(var rosella)
     // Working with commandline arguments
     setup_winxed_lib(rosella, "commandline", ["Core", "String"],
         "commandline/Arguments",
+        "commandline/ArgumentDef",
         "commandline/Program",
         "commandline/ProgramMode"
     );

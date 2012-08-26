@@ -24,65 +24,6 @@ class Rosella.CommandLine.Arguments
         return self.program.program_name;
     }
 
-    function prepare_arg_defs(var defs)
-    {
-        var arg_defs = Rosella.get_string_string_hash();
-        self.raw_defs = defs;
-        if (does(defs, "hash"))
-            self.__prepare_arg_defs_hash(defs, arg_defs);
-        else if (does(defs, "array"))
-            self.__prepare_arg_defs_array(defs, arg_defs);
-        else
-            Rosella.Error.error("Unknown argument definition type '%s'", typeof(defs));
-        self.arg_defs = arg_defs;
-        return arg_defs;
-    }
-
-    /* We can handle defs of the following types:
-        foo         f
-        foo=s       f=s
-        foo=[]      f=[]
-        foo={}      f={}
-    */
-    function __prepare_arg_defs_hash(var defs, var arg_defs)
-    {
-        for (string arg_def in defs) {
-            var parts = split("=", arg_def);
-
-            // Get the name of the argument
-            string raw_arg_name = parts[0];
-            string arg_name;
-            if (length(raw_arg_name) == 1)
-                arg_name = "-" + raw_arg_name;
-            else
-                arg_name = "--" + raw_arg_name;
-
-            // Now get a flag that tells us how to work with it.
-            string flag = "f";
-            if (elements(parts) == 2) {
-                string second_part = parts[1];
-                switch(second_part) {
-                    case "s":
-                    case "[]":
-                    case "{}":
-                        flag = parts[1];
-                        break;
-                    default:
-                        Rosella.Error.error("Unknown argument type for '%s': '%s'", raw_arg_name, second_part);
-                }
-            }
-
-            arg_defs[arg_name] = flag;
-        }
-    }
-
-    // TODO: If we get an array of arrays, try to copy old-style
-    // GetOpt::Obj format
-    function __prepare_arg_defs_array(var defs, var arg_defs)
-    {
-
-    }
-
     function __get_def(string name, var defs)
     {
         if (exists defs[name])
@@ -116,10 +57,9 @@ class Rosella.CommandLine.Arguments
         return elements(lookahead) > 0 || i < elements(args);
     }
 
-    function parse(var args, var raw_arg_defs)
+    function parse(var args, var arg_defs)
     {
         string lookahead[] = [];
-        var arg_defs = self.prepare_arg_defs(raw_arg_defs);
         var named_cache = {};
         string remainders[];
         string positionals[] = [];
@@ -132,7 +72,7 @@ class Rosella.CommandLine.Arguments
             // remainders list
             if (arg == "--") {
                 remainders = [];
-                for (i++; i < elements(args); i++)
+                for (; i < elements(args); i++)
                     push(remainders, args[i]);
                 break;
             }
@@ -195,7 +135,10 @@ class Rosella.CommandLine.Arguments
                     var parts = split("=", arg);
                     if (elements(parts) != 2)
                         Rosella.Error.error("Unexpected syntax for pair '%s': '%s'", arg_name, arg);
-                    h[string(parts[0])] = parts[1];
+                    string val_name = parts[0];
+                    string value = parts[1];
+                    h[val_name] = value;
+                    say(h[val_name]);
                     break;
             }
         }
