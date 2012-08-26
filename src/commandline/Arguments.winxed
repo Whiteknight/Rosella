@@ -8,7 +8,6 @@ class Rosella.CommandLine.Arguments
     var remainder;      // The list of all arguments after -- which are not parsed
     var named_cache;    // The cache of already-parsed args
     var pos_cache;      // All positional arguments
-    var raw_defs;       // Cache of raw argument definitions
     var raw_args;       // The raw argument list
     var arg_defs;       // Processed arg definitions
 
@@ -22,6 +21,11 @@ class Rosella.CommandLine.Arguments
     function program_name()
     {
         return self.program.program_name;
+    }
+
+    function get_arguments_string()
+    {
+        return join(" ", self.raw_args);
     }
 
     function __get_def(string name, var defs)
@@ -57,8 +61,9 @@ class Rosella.CommandLine.Arguments
         return elements(lookahead) > 0 || i < elements(args);
     }
 
-    function parse(var args, var arg_defs)
+    function parse(var args, var arg_defs_obj)
     {
+        var arg_defs = arg_defs_obj.get_definitions();
         string lookahead[] = [];
         var named_cache = {};
         string remainders[];
@@ -157,27 +162,12 @@ class Rosella.CommandLine.Arguments
         self.pos_cache = positionals;
         self.remainder = remainders;
         self.raw_args = args;
+        self.arg_defs = arg_defs_obj;
     }
 
-    function get_description()
+    function get_argument_definitions()
     {
-        int max = 0;
-        for (string arg in self.raw_defs) {
-            int len = length(arg);
-            if (len > max)
-                max = len;
-        }
-        max += 4;
-        var sb = new 'StringBuilder';
-        for (string arg in self.raw_defs) {
-            string desc = self.raw_defs[arg];
-            push(sb, "    ");
-            push(sb, arg);
-            push(sb, repeat_string(" ", max - length(arg)));
-            push(sb, desc);
-            push(sb, "\n");
-        }
-        return sb;
+        return self.arg_defs;
     }
 
     // Get the remaining args

@@ -8,6 +8,47 @@ class Rosella.CommandLine.ArgumentDef
         self.raw_defs = raw_defs;
     }
 
+    function get_description(var sb = new 'StringBuilder')
+    {
+        // TODO: Prepend a usage string with program name
+        var raw_defs = self.raw_defs;
+        if (does(raw_defs, "hash"))
+            self.__get_description_hash(raw_defs, sb);
+        else if (does(raw_defs, "array"))
+            self.__get_description_array(raw_defs, sb);
+        else
+            Rosella.Error.error("Unknown argument definition type '%s'", typeof(raw_defs));
+        return sb;
+    }
+
+    function __get_description_hash(var raw_defs, var sb)
+    {
+        int max = 0;
+        for (string arg in raw_defs) {
+            int len = length(arg);
+            if (len > max)
+                max = len;
+        }
+        max += 4;
+
+        for (string arg in raw_defs) {
+            string desc = raw_defs[arg];
+            push(sb, "    ");
+
+            // TODO: add dashes. -X and --xxx instead of X and xxx
+            push(sb, arg);
+            push(sb, repeat_string(" ", max - length(arg)));
+            push(sb, desc);
+            push(sb, "\n");
+        }
+        return sb;
+    }
+
+    function __get_description_array(var raw_defs, var sb)
+    {
+        // TODO
+    }
+
     function get_definitions()
     {
         if (self.prepared_defs != null)

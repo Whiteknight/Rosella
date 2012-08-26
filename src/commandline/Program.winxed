@@ -56,7 +56,8 @@ class Rosella.CommandLine.Program
     function run(var raw_args)
     {
         var args = new Rosella.CommandLine.Arguments(self);
-        args.parse(raw_args, args.get_definitions());
+        say(typeof(self.arg_defs));
+        args.parse(raw_args, self.arg_defs);
 
         var main_func = null;
         try {
