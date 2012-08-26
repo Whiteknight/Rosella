@@ -4,20 +4,18 @@
 */
 class Rosella.CommandLine.Arguments
 {
-    var program;    // The Program object
-    var args;       // The list of pre-sorted arguments
-    var remainder;  // The list of all arguments after -- which are not parsed
-    var cache;      // The cache of already-parsed args
+    var program;        // The Program object
+    var remainder;      // The list of all arguments after -- which are not parsed
+    var named_cache;    // The cache of already-parsed args
+    var pos_cache;      // All positional arguments
+    var raw_defs;       // Cache of raw argument definitions
+    var raw_args;       // The raw argument list
+    var arg_defs;       // Processed arg definitions
 
     // Constructor. Take the list of arguments and do a fast presort on them.
-    function Arguments(var program, var args)
+    function Arguments(var program)
     {
         self.program = program;
-        var a = [];
-        for (var arg in args)
-            push(a, arg);
-        self.cache = {};
-        self.presort(a);
     }
 
     // Get the program name
@@ -26,239 +24,217 @@ class Rosella.CommandLine.Arguments
         return self.program.program_name;
     }
 
-    // Pre-sort the list of arguments to break up compound arguments into a
-    // common form. For instance the pattern "--foo=bar" is broken up into
-    // "--foo bar". Having all arguments in a common form helps with parsing
-    // later.
-    function presort(var args)
+    function prepare_arg_defs(var defs)
     {
-        self.remainder = [];
-        var sorted = [];
-        int do_process = true;
-        for (string a in args) {
-            if (do_process && length(a) >= 2 && substr(a, 0, 1) == "-" && substr(a, 1, 1) != "-") {
-                if (length(a) >= 4 && substr(a, 2, 1) == '=') {
-                    push(sorted, substr(a, 0, 2));
-                    push(sorted, substr(a, 3));
-                    continue;
-                }
-                for (int i = 1; i < length(a); i++)
-                    push(sorted, "-" + substr(a, i, 1));
-                continue;
-            }
-            if (do_process && length(a) >= 3 && substr(a, 0, 2) == "--" && substr(a, 2, 1) != "-") {
-                int eq_idx = indexof(a, "=");
-                if (eq_idx != -1) {
-                    var parts = split("=", a);
-                    for (string b in parts)
-                        push(sorted, b);
-                } else
-                    push(sorted, a);
-                continue;
-            }
-            if (indexof(a, "=") != -1) {
-                var parts = split("=", a);
-                for (string b in parts)
-                    push(sorted, b);
-                continue;
-            }
-            if (do_process && length(a) == 2 && a == "--") {
-                do_process = false;
-                continue;
-            }
-            if (do_process)
-                push(sorted, a);
+        var arg_defs = Rosella.get_string_string_hash();
+        self.raw_defs = defs;
+        if (does(defs, "hash"))
+            self.__prepare_arg_defs_hash(defs, arg_defs);
+        else if (does(defs, "array"))
+            self.__prepare_arg_defs_array(defs, arg_defs);
+        else
+            Rosella.Error.error("Unknown argument definition type '%s'", typeof(defs));
+        self.arg_defs = arg_defs;
+        return arg_defs;
+    }
+
+    /* We can handle defs of the following types:
+        foo         f
+        foo=s       f=s
+        foo=[]      f=[]
+        foo={}      f={}
+    */
+    function __prepare_arg_defs_hash(var defs, var arg_defs)
+    {
+        for (string arg_def in defs) {
+            var parts = split("=", arg_def);
+
+            // Get the name of the argument
+            string raw_arg_name = parts[0];
+            string arg_name;
+            if (length(raw_arg_name) == 1)
+                arg_name = "-" + raw_arg_name;
             else
-                push(self.remainder, a);
-        }
-        self.args = sorted;
-    }
+                arg_name = "--" + raw_arg_name;
 
-    // Fetch a flag. A flag is a named argument like "--help" or "-V"
-    // which may be specified or not, but does not take a value. Flags are
-    // boolean (int)
-    function fetch_flag(string name, int keep)
-    {
-        int found = false;
-        for (int i = 0; i < elements(self.args); i++) {
-            string a = self.args[i];
-            if (a == "")
-                continue;
-            if (a == name) {
-                if (!found) {
-                    found = true;
-                    if (keep)
-                        self.args[i] = "";
-                } else
-                    Rosella.Error.invalid(__FUNCTION__, "Argument '%s' specified more than once", name);
+            // Now get a flag that tells us how to work with it.
+            string flag = "f";
+            if (elements(parts) == 2) {
+                string second_part = parts[1];
+                switch(second_part) {
+                    case "s":
+                    case "[]":
+                    case "{}":
+                        flag = parts[1];
+                        break;
+                    default:
+                        Rosella.Error.error("Unknown argument type for '%s': '%s'", raw_arg_name, second_part);
+                }
             }
+
+            arg_defs[arg_name] = flag;
         }
-        self.cache[name] = found;
-        return found;
     }
 
-    // Fetch a scalar value, such as "--foo=bar" or "--foo bar"
-    function fetch_scalar(string name, int keep)
+    // TODO: If we get an array of arrays, try to copy old-style
+    // GetOpt::Obj format
+    function __prepare_arg_defs_array(var defs, var arg_defs)
     {
-        int found = false;
-        string value = "";
-        for (int i = 0; i < elements(self.args) - 1; i++) {
-            string a = self.args[i];
-            if (a == "")
-                continue;
-            if (a == name) {
-                if (!found)
-                    found = true;
+
+    }
+
+    function __get_def(string name, var defs)
+    {
+        if (exists defs[name])
+            return defs[name];
+        Rosella.Error.error("Unknown argument '%s'", name);
+    }
+
+    function __get_next(var args, int i, var lookahead)
+    {
+        int single = true;
+        string arg;
+        if (elements(lookahead) > 0)
+            arg = lookahead.shift();
+        else {
+            arg = args[i];
+            i++;
+        }
+
+        int idx = indexof(arg, ":");
+        if (idx != -1) {
+            var parts = split(":", arg);
+            arg = parts[0];
+            unshift(lookahead, parts[1]);
+            single = false;
+        }
+        return arg, i, single;
+    }
+
+    function __has_more(var args, int i, var lookahead)
+    {
+        return elements(lookahead) > 0 || i < elements(args);
+    }
+
+    function parse(var args, var raw_arg_defs)
+    {
+        string lookahead[] = [];
+        var arg_defs = self.prepare_arg_defs(raw_arg_defs);
+        var named_cache = {};
+        string remainders[];
+        string positionals[] = [];
+
+        int i = 0;
+        while (self.__has_more(args, i, lookahead)) {
+            :(string arg, i, int single) = self.__get_next(args, i, lookahead);
+
+            // All arguments after "--" are not parsed. Add them all to the
+            // remainders list
+            if (arg == "--") {
+                remainders = [];
+                for (i++; i < elements(args); i++)
+                    push(remainders, args[i]);
+                break;
+            }
+
+            string arg_name = "";
+
+            // An arg of the form "--foo", "--foo bar", "--foo:bar",
+            // "--foo bar=baz", "--foo:bar=baz"
+            if (substr(arg, 0, 2) == "--")
+                arg_name = arg;
+
+            // An arg of the form "-X", "-Xfoo", "-X foo", "-f:bar", "-Xfoo=bar",
+            // "-X foo=bar", "-X:foo=bar"
+            else if (substr(arg, 0, 1) == "-") {
+                if (length(arg) > 2) {
+                    arg_name = substr(arg, 0, 2);
+                    string extra = substr(arg, 2);
+                    unshift(lookahead, extra);
+                } else if (length(arg) == 2)
+                    arg_name = arg;
                 else
-                    Rosella.Error.invalid(__FUNCTION__, "Argument '%s' specified more than once", name);
-                value = self.args[i + 1];
-                if (keep) {
-                    self.args[i] = "";
-                    self.args[i + 1] = "";
-                }
-                i++;
+                    Rosella.Error.error("Unknown argument format '%s'", arg);
             }
-        }
-        self.cache[name] = value;
-        return value;
-    }
 
-    // Fetch a scalar list such as "--foo=bar --foo=baz", returns all values
-    // together in an array
-    function fetch_scalar_list(string name, int keep)
-    {
-        var value = [];
-        for (int i = 0; i < elements(self.args) - 1; i++) {
-            string a = self.args[i];
-            if (a == "")
+
+            // A positional arg
+            else {
+                push(positionals, arg);
                 continue;
-            if (a == name && self.args[i + 1] != "") {
-                push(value, self.args[i + 1]);
-                if (keep) {
-                    self.args[i] = "";
-                    self.args[i + 1] = "";
-                }
-                i++;
             }
-        }
-        self.cache[name] = value;
-        return value;
-    }
 
-    // Fetch a pair such as "--foo=bar=baz" or "--foo bar=baz" or "--foo bar baz"
-    // Returns a 1-element hash with the name and the value
-    function fetch_pair(string name, int keep)
-    {
-        int found = false;
-        string key = "";
-        string value = "";
-        for (int i = 0; i < elements(self.args) - 2; i++) {
-            string a = self.args[i];
-            if (a == "")
-                continue;
-            if (a == name && self.args[i + 1] != "" && self.args[i + 2] != "") {
-                if (!found) {
-                    found = true;
-                    key = self.args[i + 1];
-                    value = self.args[i + 2];
-                    if (keep) {
-                        self.args[i] = "";
-                        self.args[i + 1] = "";
-                        self.args[i + 2] = "";
-                    }
-                    i += 2;
-                } else
-                    Rosella.Error.invalid(__FUNCTION__, "Argument '%s' specified more than once", name);
-            }
-        }
-        var ret = { };
-        ret[key] = value;
-        self.cache[name] = ret;
-        return ret;
-    }
-
-    // Fetch all pairs of the form "--foo=bar=baz" or "--foo bar=baz" or
-    // "--foo bar baz". Returns them all as a hash
-    function fetch_pair_hash(string name, int keep)
-    {
-        var values = {};
-        for (int i = 0; i < elements(self.args) - 2; i++) {
-            string a = self.args[i];
-            if (a == "")
-                continue;
-            if (a == name && self.args[i + 1] != "" && self.args[i + 2] != "") {
-                string key = self.args[i + 1];
-                string value = self.args[i + 2];
-                if (keep) {
-                    self.args[i] = "";
-                    self.args[i + 1] = "";
-                    self.args[i + 2] = "";
-                }
-                values[key] = value;
-                i += 2;
-            }
-        }
-        self.cache[name] = values;
-        return values;
-    }
-
-    // Fetch a list of all remaining args which have not yet been parsed
-    function fetch_unparsed(string name, int keep)
-    {
-        var args = [];
-        for (int i = 0; i < elements(self.args); i++) {
-            string a = self.args[i];
-            if (a == "")
-                continue;
-            push(args, a);
-            if (keep)
-                self.args[i] = "";
-        }
-        self.cache[name] = args;
-        return args;
-    }
-
-    // Fetch the first of the remaining arguments, and store it as a string.
-    // Does not fetch flags such as -V or --foo
-    function fetch_value(string name)
-    {
-        string value = "";
-        for (int i = 0; i < elements(self.args); i++) {
-            string a = self.args[i];
-            if (a == "" || (length(a) >= 2 && substr(a, 0, 1) == "-") || (length(a) >= 3 && substr(a, 0, 2) == "--"))
-                continue;
-            value = a;
-            break;
-        }
-        self.cache[name] = value;
-        return value;
-    }
-
-    // Fetch a positional argument, which may be a flag or anything else.
-    function fetch_positional(string name, int keep, int idx = -1)
-    {
-        string arg = "";
-        if (idx >= 0) {
-            if (idx >= elements(self.args)) {
-                self.cache[name] = "";
-                return "";
-            }
-            arg = self.args[idx];
-            if (keep)
-                self.args[idx] = "";
-        } else {
-            for (int i = 0; i < elements(self.args); i++) {
-                string a = self.args[i];
-                if (a != "") {
-                    arg = a;
-                    if (keep)
-                        self.args[i] = "";
+            string def = self.__get_def(arg_name, arg_defs);
+            switch(def) {
+                case "f":
+                    if (single == false)
+                        Rosella.Error.error("Unexpected scalar value for flag '%s'", arg_name);
+                    named_cache[arg_name] = true;
                     break;
-                }
+                case "s":
+                    :(arg, i, single) = self.__get_next(args, i, lookahead);
+                    if (single == false)
+                        Rosella.Error.error("Unknown syntax for argument '%s'", arg_name);
+                    named_cache[arg_name] = var(arg);
+                    break;
+                case "[]":
+                    :(arg, i, single) = self.__get_next(args, i, lookahead);
+                    if (single == false)
+                        Rosella.Error.error("Unexpected pair value for list '%s'", arg_name);
+                    if (!(exists named_cache[arg_name]))
+                        named_cache[arg_name] = new 'ResizableStringArray';
+                    push(named_cache[arg_name], arg);
+                    break;
+                case "{}":
+                    :(arg, i, single) = self.__get_next(args, i, lookahead);
+                    if (single == false)
+                        Rosella.Error.error("Unexpected pair value for list '%s'", arg_name);
+                    if (!(exists named_cache[arg_name]))
+                        named_cache[arg_name] = Rosella.get_string_string_hash();
+                    var h = named_cache[arg_name];
+                    var parts = split("=", arg);
+                    if (elements(parts) != 2)
+                        Rosella.Error.error("Unexpected syntax for pair '%s': '%s'", arg_name, arg);
+                    h[string(parts[0])] = parts[1];
+                    break;
             }
         }
-        self.cache[name] = arg;
-        return arg;
+
+        // Loop over the arg_defs, adding false values for any missing flags
+        for (string arg_name in arg_defs) {
+            string arg_flag = arg_defs[arg_name];
+            if (arg_flag == "f") {
+                if (!(exists named_cache[arg_name]))
+                    named_cache[arg_name] = false;
+            }
+        }
+
+        // Finally, store values into object fields
+        self.named_cache = named_cache;
+        self.pos_cache = positionals;
+        self.remainder = remainders;
+        self.raw_args = args;
+    }
+
+    function get_description()
+    {
+        int max = 0;
+        for (string arg in self.raw_defs) {
+            int len = length(arg);
+            if (len > max)
+                max = len;
+        }
+        max += 4;
+        var sb = new 'StringBuilder';
+        for (string arg in self.raw_defs) {
+            string desc = self.raw_defs[arg];
+            push(sb, "    ");
+            push(sb, arg);
+            push(sb, repeat_string(" ", max - length(arg)));
+            push(sb, desc);
+            push(sb, "\n");
+        }
+        return sb;
     }
 
     // Get the remaining args
@@ -271,31 +247,20 @@ class Rosella.CommandLine.Arguments
     // parsing
     function raw_args()
     {
-        return self.args;
-    }
-
-    // Return true if there are arguments remaining which have not been parsed.
-    function has_unparsed_args()
-    {
-        for (int i = 0; i < elements(self.args); i++) {
-            string a = self.args[i];
-            if (a != "")
-                return true;
-        }
-        return false;
+        return self.raw_args;
     }
 
     function get_integer_keyed[vtable](string name)
     {
-        if (exists self.cache[name])
-            return self.cache[name];
-        return [];
+        if (exists self.pos_cache[name])
+            return self.pos_cache[name];
+        return false;
     }
 
     // Once parsed, provide keyed access to the cache
     function get_string_keyed[vtable](string name)
     {
-        if (exists self.cache[name])
+        if (exists self.named_cache[name])
             // TODO: Check if it's a string. Lists and hashes shouldn't be
             //       accessed like this
             return self.cache[name];
@@ -305,8 +270,15 @@ class Rosella.CommandLine.Arguments
     // Once parsed, provide keyed access to the cache
     function get_pmc_keyed[vtable](string name)
     {
-        if (exists self.cache[name])
-            return self.cache[name];
-        return [];
+        if (exists self.named_cache[name])
+            return self.named_cache[name];
+        return null;
+    }
+
+    function get_string_keyed_int[vtable](int idx)
+    {
+        if (elements(self.pos_cache) > idx)
+            return self.pos_cache[idx];
+        return "";
     }
 }

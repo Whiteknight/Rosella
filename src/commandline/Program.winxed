@@ -10,6 +10,7 @@ class Rosella.CommandLine.Program
 {
     var program_name;   // The string name of the program
     var default_mode;   // The default ProgramMode
+    var arg_defs;       // Hash of all argument definitions
     var on_error;       // The error handler callback
     var modes;          // A hash of named program modes
 
