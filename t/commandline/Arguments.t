@@ -269,6 +269,48 @@ class Test_Rosella_CommandLine_Arguments
         self.assert.equal(obj["--iii"], {"FOO":"A", "BAR":"B"});
         self.assert.is_null(obj["--does-not-exist"]);
     }
+
+    function argument_order()
+    {
+        self.status.verify("Parse flags and positionals in any order");
+        var obj = create_new();
+        var arg_defs = create_arg_defs();
+
+        string raw_args[] = [
+            "-A",
+            "foo"
+        ];
+        obj.parse(raw_args, arg_defs);
+        self.assert.equal(int(obj["-A"]), true);
+        self.assert.equal(int(obj["--fff"]), false);
+        self.assert.equal(obj[0], "foo");
+
+        raw_args = [
+            "foo",
+            "-A",
+            "--fff",
+            "bar"
+        ];
+        obj = create_new();
+        obj.parse(raw_args, arg_defs);
+        self.assert.equal(int(obj["-A"]), true);
+        self.assert.equal(int(obj["--fff"]), true);
+        self.assert.equal(obj[0], "foo");
+        self.assert.equal(obj[1], "bar");
+
+        raw_args = [
+            "foo",
+            "bar",
+            "-A",
+            "--fff"
+        ];
+        obj = create_new();
+        obj.parse(raw_args, arg_defs);
+        self.assert.equal(int(obj["-A"]), true);
+        self.assert.equal(int(obj["--fff"]), true);
+        self.assert.equal(obj[0], "foo");
+        self.assert.equal(obj[1], "bar");
+    }
 }
 
 function main[main]()
