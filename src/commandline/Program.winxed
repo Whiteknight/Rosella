@@ -56,28 +56,11 @@ class Rosella.CommandLine.Program
     function run(var raw_args)
     {
         var args = new Rosella.CommandLine.Arguments(self);
-        say(typeof(self.arg_defs));
         args.parse(raw_args, self.arg_defs);
 
-        var main_func = null;
-        try {
-            for (var mode in self.modes)
-            {
-                if (mode.can_accept(args)) {
-                    mode.fetch_all_args(args);
-                    main_func = mode.main_function();
-                    break;
-                }
-            }
-            if (main_func == null) {
-                main_func = self.default_mode.main_function();
-                if (main_func != null)
-                    self.default_mode.fetch_all_args(args);
-            }
-        } catch (e) {
-            self.try_handle_error(e);
-            return;
-        }
+        var mode = self.__find_mode(args);
+        mode.fetch_all_args(args);
+        var main_func = mode.main_function();
         if (main_func == null) {
             self.try_handle_error(null);
             return;
@@ -92,6 +75,16 @@ class Rosella.CommandLine.Program
         });
         if (has_ec)
             exit(exit_code);
+    }
+
+    function __find_mode(var args)
+    {
+        for (var mode in self.modes)
+        {
+            if (mode.can_accept(args))
+                return mode;
+        }
+        return self.defaule_mode;
     }
 
     // On error, try to execute the error handler, if any.
