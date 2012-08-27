@@ -17,48 +17,18 @@ class Rosella.CommandLine.Arguments
         self.program = program;
     }
 
+    /* Public API Functions
+    */
+
     // Get the program name
-    function program_name()
+    function program()
     {
-        return self.program.program_name;
+        return self.program;
     }
 
     function get_arguments_string()
     {
         return join(" ", self.raw_args);
-    }
-
-    function __get_def(string name, var defs)
-    {
-        if (exists defs[name])
-            return defs[name];
-        Rosella.Error.error("Unknown argument '%s'", name);
-    }
-
-    function __get_next(var args, int i, var lookahead)
-    {
-        int single = true;
-        string arg;
-        if (elements(lookahead) > 0)
-            arg = lookahead.shift();
-        else {
-            arg = args[i];
-            i++;
-        }
-
-        int idx = indexof(arg, ":");
-        if (idx != -1) {
-            var parts = split(":", arg);
-            arg = parts[0];
-            unshift(lookahead, parts[1]);
-            single = false;
-        }
-        return arg, i, single;
-    }
-
-    function __has_more(var args, int i, var lookahead)
-    {
-        return elements(lookahead) > 0 || i < elements(args);
     }
 
     function parse(var args, var arg_defs_obj)
@@ -183,6 +153,9 @@ class Rosella.CommandLine.Arguments
         return self.raw_args;
     }
 
+    /* VTABLEs
+    */
+
     function get_integer_keyed[vtable](string name)
     {
         if (exists self.pos_cache[name])
@@ -213,5 +186,41 @@ class Rosella.CommandLine.Arguments
         if (elements(self.pos_cache) > idx)
             return self.pos_cache[idx];
         return "";
+    }
+
+    /* Private Helper Methods
+    */
+
+    function __get_def(string name, var defs)
+    {
+        if (exists defs[name])
+            return defs[name];
+        Rosella.Error.error("Unknown argument '%s'", name);
+    }
+
+    function __get_next(var args, int i, var lookahead)
+    {
+        int single = true;
+        string arg;
+        if (elements(lookahead) > 0)
+            arg = lookahead.shift();
+        else {
+            arg = args[i];
+            i++;
+        }
+
+        int idx = indexof(arg, ":");
+        if (idx != -1) {
+            var parts = split(":", arg);
+            arg = parts[0];
+            unshift(lookahead, parts[1]);
+            single = false;
+        }
+        return arg, i, single;
+    }
+
+    function __has_more(var args, int i, var lookahead)
+    {
+        return elements(lookahead) > 0 || i < elements(args);
     }
 }
