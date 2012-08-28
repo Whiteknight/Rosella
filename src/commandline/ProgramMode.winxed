@@ -13,9 +13,10 @@ class Rosella.CommandLine.ProgramMode
     // TODO: Take a list of handles to use as the interpreter default during
     // execution
 
-    var name;                   // The name of the mode
-    var func;                   // The function to call
-    var conditions;             // The conditions that determine if we use this mode
+    var name;           // The name of the mode
+    var func;           // The function to call
+    var conditions;     // The conditions that determine if we use this mode
+    var usage;          // Usage string for this mode
 
     // Constructor. Each ProgramMode has a name
     function ProgramMode(string name)
@@ -28,6 +29,20 @@ class Rosella.CommandLine.ProgramMode
     {
         self.func = func;
         return self;
+    }
+
+    function set_usage(string usage)
+    {
+        self.usage = usage;
+        return self;
+    }
+
+    function get_usage()
+    {
+        var usage = self.usage;
+        if (usage == null)
+            return "";
+        return string(usage);
     }
 
     // Called by the Program class internally. This function determines if the
@@ -56,6 +71,7 @@ class Rosella.CommandLine.ProgramMode
             self.conditions = [];
         var condition = new Rosella.CommandLine.ModeCondition.FlagSet(name);
         push(self.conditions, condition);
+        return self;
     }
 
     function require_value(string name, string value)
@@ -64,6 +80,7 @@ class Rosella.CommandLine.ProgramMode
             self.conditions = [];
         var condition = new Rosella.CommandLine.ModeCondition.ScalarValue(name, value);
         push(self.conditions, condition);
+        return self;
     }
 
     function require_condition(var f)
@@ -72,5 +89,6 @@ class Rosella.CommandLine.ProgramMode
             self.conditions = [];
         var condition = new Rosella.CommandLine.ModeCondition.GenericFunc(f);
         push(self.conditions, condition);
+        return self;
     }
 }

@@ -9,7 +9,6 @@ class Rosella.CommandLine.Arguments
     var named_cache;    // The cache of already-parsed args
     var pos_cache;      // All positional arguments
     var raw_args;       // The raw argument list
-    var arg_defs;       // Processed arg definitions
 
     // Constructor. Take the list of arguments and do a fast presort on them.
     function Arguments(var program)
@@ -126,12 +125,6 @@ class Rosella.CommandLine.Arguments
         self.pos_cache = positionals;
         self.remainder = remainders;
         self.raw_args = args;
-        self.arg_defs = arg_defs_obj;
-    }
-
-    function get_argument_definitions()
-    {
-        return self.arg_defs;
     }
 
     // Get the remaining args
