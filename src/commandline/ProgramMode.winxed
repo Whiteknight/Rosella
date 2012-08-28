@@ -15,16 +15,12 @@ class Rosella.CommandLine.ProgramMode
 
     var name;                   // The name of the mode
     var func;                   // The function to call
-    var condition;              // The condition that determines if we use this mode
-    var required_positionals;   // The required positionals
-    var required_args;          // The required arguments
-    var optional_args;          // The optional arguments
+    var conditions;             // The conditions that determine if we use this mode
 
     // Constructor. Each ProgramMode has a name
     function ProgramMode(string name)
     {
         self.name = name;
-        self.required_positionals = {};
     }
 
     // Set the main function to call when this mode is activated
@@ -34,137 +30,47 @@ class Rosella.CommandLine.ProgramMode
         return self;
     }
 
-    // Set a flag that must be present on the commandline for this mode to be
-    // selected
-    function set_flag(string name)
-    {
-        self.condition = [name, ""];
-        return self;
-    }
-
-    // Set a name/value pair that must be present for this program mode to be
-    // selected
-    function set_flag(string name, string value)
-    {
-        self.condition = [name, value];
-        return self;
-    }
-
-    // Require a positional argument at the given position. All positional
-    // arguments must appear before all named and slurpy arguments
-    function require_positional(string name, int position)
-    {
-        self.required_positionals[name] = position;
-        return self;
-    }
-
-    function require_positional(string name)
-    {
-        self.required_positionals[name] = -1;
-        return self;
-    }
-
-    // Take a hash of arguments and the type of values that they require. This
-    // hash represents arguments that must appear on the command-line for this
-    // program mode to be satisfied
-    function require_args(var args)
-    {
-        self.required_args = args;
-        return self;
-    }
-
-    // Take a hash of arguments and the value types that they require. This hash
-    // represents a series of arguments which are optional and do not need to be
-    // provided.
-    function optional_args(var args)
-    {
-        self.optional_args = args;
-        return self;
-    }
-
     // Called by the Program class internally. This function determines if the
     // given list of arguments satisfies the list of required arguments for this
     // ProgramMode. If so, the mode will be activated and executed
     function can_accept(var args)
     {
-        if (self.condition == null)
+        if (self.conditions == null)
             return true;
-
-        string c_name = self.condition[0];
-        string c_value = self.condition[1];
-        if (c_value == "") {
-            int have_flag = args.fetch_flag(c_name, 0);
-            return have_flag;
-        } else {
-            string flag_value = args.fetch_scalar(c_name, 0);
-            return flag_value == c_value;
+        for (var condition in self.conditions) {
+            if (!condition.is_satisfied(args))
+                return false;
         }
-    }
-
-    // Attempt to match the positionals. If the keep argument is true, the
-    // arguments will be parsed completely and values will be extracted.
-    // Otherwise, we will just look and not parse. Notice that some subtle
-    // errors during parsing may not be found during simple matching.
-    function match_positionals(var args, int keep)
-    {
-        for (string key in self.required_positionals) {
-            int idx = int(self.required_positionals[key]);
-            string arg;
-            if (idx < 0)
-                arg = args.fetch_positional(key, keep);
-            else
-                arg = args.fetch_positional(key, keep, idx);
-            if (arg == "")
-                Rosella.Error.invalid(__FUNCTION__, "Can not find positional argument '%s' (%d)", key, idx);
-        }
-    }
-
-    // Attempt to match the named args. If the keep argument is true the
-    // arguments will be parsed completely and values will be extracted. Once
-    // extracted, we cannot go back and attempt to match other ProgramModes
-    function match_args(var args, var arg_defs, int keep)
-    {
-        if (arg_defs == null || elements(arg_defs) == 0)
-            return true;
-
-        for (string key in arg_defs) {
-            string def = arg_defs[key];
-
-            if (def == "f")
-                args.fetch_flag(key, keep);
-            else if (def == "s")
-                args.fetch_scalar(key, keep);
-            else if (def == "l")
-                args.fetch_scalar_list(key, keep);
-            else if (def == "p")
-                args.fetch_pair(key, keep);
-            else if (def == "h")
-                args.fetch_pair_hash(key, keep);
-            else if (def == "*")
-                args.fetch_unparsed(key, keep);
-        }
-    }
-
-    // This ProgramMode has been activated. Fully-parse all arguments and
-    // extract values
-    function fetch_all_args(var args)
-    {
-        if (args == null)
-            return;
-        if (self.condition != null) {
-            string c_name = self.condition[0];
-            args.fetch_flag(c_name, 1);
-        }
-        self.match_args(args, self.required_args, 1);
-        self.match_args(args, self.optional_args, 1);
-        self.match_positionals(args, 1);
-        if (args.has_unparsed_args())
-            Rosella.Error.invalid(__FUNCTION__, "Unrecognized arguments: %s", join(" ", args.fetch_unparsed("args", 0)));
+        return true;
     }
 
     // Get the main function to dispatch to.
     function main_function()
     {
         return self.func;
+    }
+
+    function require_flag(string name)
+    {
+        if (self.conditions == null)
+            self.conditions = [];
+        var condition = new Rosella.CommandLine.ModeCondition.FlagSet(name);
+        push(self.conditions, condition);
+    }
+
+    function require_value(string name, string value)
+    {
+        if (self.conditions == null)
+            self.conditions = [];
+        var condition = new Rosella.CommandLine.ModeCondition.ScalarValue(name, value);
+        push(self.conditions, condition);
+    }
+
+    function require_condition(var f)
+    {
+        if (self.conditions == null)
+            self.conditions = [];
+        var condition = new Rosella.CommandLine.ModeCondition.GenericFunc(f);
+        push(self.conditions, condition);
     }
 }

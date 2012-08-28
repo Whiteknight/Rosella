@@ -18,7 +18,7 @@ class Rosella.CommandLine.Program
     function Program(string program_name)
     {
         self.program_name = program_name;
-        self.modes = [];
+        self.modes = {};
         self.default_mode = new Rosella.CommandLine.ProgramMode("default");
         self.on_error = function(var e) {
             say("Error parsing arguments");
@@ -29,7 +29,7 @@ class Rosella.CommandLine.Program
 
     function arguments(var raw_defs)
     {
-        self.arg_defs = new Rosella.CommandLine.ArgumentDefs(raw_defs);
+        self.arg_defs = new Rosella.CommandLine.ArgumentDef(raw_defs);
     }
 
     // Set a function to execute on errors
@@ -42,7 +42,7 @@ class Rosella.CommandLine.Program
     function add_mode(string name)
     {
         var mode = new Rosella.CommandLine.ProgramMode(name);
-        push(self.modes, mode);
+        self.modes[name] = mode;
         return mode;
     }
 
@@ -55,11 +55,12 @@ class Rosella.CommandLine.Program
     // Execute the program with the given args
     function run(var raw_args)
     {
+        // TODO: Take some optional parameters, such as handles to use for
+        // overriding standard handles, other options.
         var args = new Rosella.CommandLine.Arguments(self);
         args.parse(raw_args, self.arg_defs);
 
         var mode = self.__find_mode(args);
-        mode.fetch_all_args(args);
         var main_func = mode.main_function();
         if (main_func == null) {
             self.try_handle_error(null);
@@ -79,12 +80,12 @@ class Rosella.CommandLine.Program
 
     function __find_mode(var args)
     {
-        for (var mode in self.modes)
-        {
+        for (string modename in self.modes) {
+            var mode = self.modes[modename];
             if (mode.can_accept(args))
                 return mode;
         }
-        return self.defaule_mode;
+        return self.default_mode;
     }
 
     // On error, try to execute the error handler, if any.
@@ -93,11 +94,10 @@ class Rosella.CommandLine.Program
         var on_error = self.on_error;
         if (on_error == null) {
             if (e == null)
-                Rosella.Error.invalid(__FUNCTION__, "Invalid parameter combination");
+                Rosella.Error.error("Unknown error during dispatch");
             else
                 throw e;
         }
         on_error(e);
     }
 }
-

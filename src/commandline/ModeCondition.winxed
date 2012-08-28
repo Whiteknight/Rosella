@@ -1,0 +1,62 @@
+class Rosella.CommandLine.ModeCondition
+{
+    function is_satisfied(var args)
+    {
+        return false;
+    }
+}
+
+class Rosella.CommandLine.ModeCondition.FlagSet : Rosella.CommandLine.ModeCondition
+{
+    var flagname;
+
+    function FlagSet(string flagname)
+    {
+        self.flagname = flagname;
+    }
+
+    function is_satisfied(var args)
+    {
+        string flagname = string(self.flagname);
+        int value = args[flagname];
+        return value;
+    }
+}
+
+class Rosella.CommandLine.ModeCondition.ScalarValue : Rosella.CommandLine.ModeCondition
+{
+    var name;
+    var value;
+
+    function ScalarValue(string name, string value)
+    {
+        self.name = name;
+        self.value = value;
+    }
+
+    function is_satisfied(var args)
+    {
+        string name = self.name;
+        string expectedvalue = self.value;
+        string actualvalue = args[name];
+        if (expectedvalue == actualvalue)
+            return true;
+        return false;
+    }
+}
+
+class Rosella.CommandLine.ModeCondition.GenericFunc : Rosella.CommandLine.ModeCondition
+{
+    var func;
+
+    function GenericFunc(var f)
+    {
+        self.func = f;
+    }
+
+    function is_satisfied(var args)
+    {
+        var f = self.func;
+        return f(args);
+    }
+}
