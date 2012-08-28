@@ -1,62 +1,73 @@
-namespace Rosella { namespace Benchmark
+class Rosella.Benchmark.Result
 {
-    class Result
+    var benchmark;
+    var name;
+    var action;
+    var starttime;
+    var endtime;
+
+
+    function Result(var benchmark, string name, var action, float starttime, float endtime)
     {
-        var time;
-        var percent;
-        var percent_diff;
-        var data;
-
-        function Result(float time, float percent, float percent_diff, var data)
-        {
-            self.time = time;
-            self.percent = percent;
-            self.percent_diff = percent_diff;
-            self.data = data;
-        }
-
-        function set_base_time(float base)
-        {
-            using Rosella.Benchmark.percent_of_base;
-            using Rosella.Benchmark.percent_difference;
-
-            self.percent = percent_of_base(base, self.time);
-            self.percent_diff = percent_difference(base, self.time);
-        }
-
-        function time()
-        {
-            return self.time;
-        }
-
-        function percent()
-        {
-            return self.percent;
-        }
-
-        function percent_diff()
-        {
-            return self.percent_diff;
-        }
-
-        function data()
-        {
-            return self.data;
-        }
-
-        function get_string[vtable]()
-        {
-            if (self.percent_diff == null || float(self.percent_diff) == 0.0 || float(self.percent_diff) == 100.0)
-                return sprintf("%fs - %%%f", [self.time, self.percent]);
-            string sign = "+";
-            float diff = self.percent_diff;
-            if (diff < 0.0) {
-                sign = "-";
-                diff = abs_f(diff);
-            }
-            return sprintf("%fs - %%%f (%s%%%f compared to base)",
-                [self.time, self.percent, sign, diff]
-            );
-        }
+        self.benchmark = benchmark;
+        self.name = name;
+        self.action = action;
+        self.starttime = starttime;
+        self.endtime = endtime;
     }
-}}
+
+    function name()
+    {
+        return self.name;
+    }
+
+    function action()
+    {
+        return self.action;
+    }
+
+    function start_time()
+    {
+        return self.starttime;
+    }
+
+    function end_time()
+    {
+        return self.endtime;
+    }
+
+    function total_time()
+    {
+        return float(self.endtime) - float(self.starttime);
+    }
+
+    function total_difference(var base = null)
+    {
+        if (base == null)
+            base = self.benchmark.control_result;
+        return self.total_time() - base.total_time();
+    }
+
+    function percent_of_base(var base = null)
+    {
+        if (base == null)
+            base = self.benchmark.control_result;
+        float time = self.total_time();
+        float base_time = base.total_time();
+        return percent_of_base(base_time, time);
+    }
+
+    function percent_difference(var base = null)
+    {
+        if (base == null)
+            base = self.benchmark.control_result;
+        float time = self.total_time();
+        float base_time = base.total_time();
+        return percent_difference(base_time, time);
+    }
+
+    function sign_compared_to_base()
+    {
+        // TODO: Return "+" if higher than base, "-" otherwise
+    }
+}

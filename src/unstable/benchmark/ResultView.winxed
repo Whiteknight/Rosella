@@ -1,0 +1,18 @@
+class Rosella.Benchmark.ResultView
+{
+    var handle;
+
+    function ResultView(var handle = getstdout()) { self.handle = handle; }
+
+    function display_result(string name, var result)
+    {
+        string s = Rosella.Benchmark.default_result_formatter().format_default(result);
+        self.handle.print(s + "\n");
+    }
+
+    function display_all(var results)
+    {
+        for (string r_name in results)
+            self.display_result(r_name, results[r_name]);
+    }
+}

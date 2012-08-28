@@ -1,0 +1,27 @@
+class Rosella.Benchmark.ResultFormatter : Rosella.StringFormatter
+{
+    function ResultFormatter() { }
+
+    function format(var obj, string f)
+    {
+        if (contains_substr(f, "{name}"))  f = f.replace("{name}",  obj.name()));
+        if (contains_substr(f, "{time}"))  f = f.replace("{time}",  format_string(FMT_RAW_TIME,   obj.total_time()));
+        if (contains_substr(f, "{start}")) f = f.replace("{start}", format_string(FMT_RAW_TIME,   obj.start_time()));
+        if (contains_substr(f, "{end}"))   f = f.replace("{end}",   format_string(FMT_RAW_TIME,   obj.end_time()));
+        if (contains_substr(f, "{%base}")) f = f.replace("{%base}", format_string(FMT_PERCENTAGE, obj.precent_of_base()));
+        if (contains_substr(f, "{%diff}")) f = f.replace("{%diff}", format_string(FMT_PERCENTAGE, obj.percent_difference()));
+        if (contains_substr(f, "{sign}"))  f = f.replace("{sign}",  obj.sign_compared_to_base()));
+        return f;
+    }
+
+    // Create a string from the object using a default formatting rule
+    function format_default(var obj)
+    {
+        return self.format(obj, "{name}: {time}s - {%base} ({sign}{%diff} of base)");
+    }
+
+    function format_default_base(var obj)
+    {
+        return self.format(obj, "{name}: {time}s");
+    }
+}

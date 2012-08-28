@@ -1,0 +1,15 @@
+// includes for Benchmark
+
+inline percent_of_base(float base, float t)
+{
+    return (t / base) * 100;
+}
+
+inline percent_difference(float base, float t)
+{
+    float diff = t - base;
+    return (diff / base) * 100;
+}
+
+const string FMT_RAW_TIME = "%f";
+const string FMT_PERCENTAGE = "%%%f";
