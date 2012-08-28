@@ -120,11 +120,15 @@ inline get_codepoint(string s, int i) return int
 
 inline codepoint_is_whitespace(int c) return int
 {
-    return (c == ASCII_SPACE || c == ASCII_TAB || c == ASCII_CARRIAGE_RETURN || c == ASCII_LINE_FEED || c == ASCII_VERTICAL_TAB);
+    // TODO: Are there whitespace characters above the ASCII range that need to be considered?
+    return (c == ASCII_SPACE || c == ASCII_TAB || c == ASCII_CARRIAGE_RETURN
+         || c == ASCII_LINE_FEED || c == ASCII_VERTICAL_TAB);
 }
 
 inline codepoint_is_alphanumeric(int c) return int
 {
+    // TODO: This function is explicitly NOT unicode safe. We need to be able to
+    // identify alphanumerics above the ASCII range
     return ((c >= ASCII_0 && c <= ASCII_9) ||
             (c >= ASCII_A && c <= ASCII_Z) ||
             (c >= ASCII_a && c <= ASCII_z));
@@ -149,6 +153,8 @@ inline codepoint_is_hexadecimal(int c) return int
 
 inline codepoint_is_alpha(int c) return int
 {
+    // TODO: This function is explicitly NOT unicode safe. We need to be able to
+    // identify alphabetic characters above the ASCII range
     return ((c >= ASCII_A && c <= ASCII_Z) ||
             (c >= ASCII_a && c <= ASCII_z));
 }
