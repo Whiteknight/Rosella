@@ -39,6 +39,8 @@ class Rosella.CommandLine.ProgramMode
 
     function get_usage()
     {
+        // TODO: Can we try to autogenerate this from the list of conditions,
+        // if we don't have one set?
         var usage = self.usage;
         if (usage == null)
             return "";
