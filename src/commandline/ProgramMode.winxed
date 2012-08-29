@@ -41,7 +41,7 @@ class Rosella.CommandLine.ProgramMode
     // Get the complete usage message, as a combination of the Program usage
     // message, usage messages for the different modes, and usage messages
     // for all argument definitions.
-    function get_usage(string program_name, var sb)
+    function get_usage(string program_name, var sb = new 'StringBuilder')
     {
         var usage = self.usage;
         if (usage != null) {
@@ -58,6 +58,7 @@ class Rosella.CommandLine.ProgramMode
                 condition.get_description(sb);
             push(sb, " <OPTIONS>\n");
         }
+        return sb;
     }
 
     // Called by the Program class internally. This function determines if the

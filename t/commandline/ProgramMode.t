@@ -17,51 +17,19 @@ class Test_Rosella_CommandLine_ProgramMode
         var result = obj.set_function(arg_0);
     }
 
-    function set_flag_1()
+    function set_usage()
     {
-        self.status.verify("Test Rosella.CommandLine.ProgramMode.set_flag()");
-        var obj = new Rosella.CommandLine.ProgramMode("");
-
-        string arg_0 = "";
-        var result = obj.set_flag(arg_0);
+        // TODO: This is very fragile, I don't like matching exact strings, especially
+        // when there's whitespace involved.
+        var obj = new Rosella.CommandLine.ProgramMode("foo");
+        obj.set_usage("This is a test");
+        string usage = obj.get_usage("foo");
+        self.assert.str_equal(usage, "       foo This is a test\n");
     }
 
-    function set_flag_2()
+    function get_usage()
     {
-        self.status.verify("Test Rosella.CommandLine.ProgramMode.set_flag()");
-        var obj = new Rosella.CommandLine.ProgramMode("");
-
-        string arg_0 = "";
-        string arg_1 = "";
-        var result = obj.set_flag(arg_0, arg_1);
-    }
-
-    function require_positional()
-    {
-        self.status.verify("Test Rosella.CommandLine.ProgramMode.require_positional()");
-        var obj = new Rosella.CommandLine.ProgramMode("");
-
-        string arg_0 = "";
-        int arg_1 = 0;
-        var result = obj.require_positional(arg_0, arg_1);
-    }
-
-    function require_args()
-    {
-        self.status.verify("Test Rosella.CommandLine.ProgramMode.require_args()");
-        var obj = new Rosella.CommandLine.ProgramMode("");
-
-        var arg_0 = null;
-        var result = obj.require_args(arg_0);
-    }
-
-    function optional_args()
-    {
-        self.status.verify("Test Rosella.CommandLine.ProgramMode.optional_args()");
-        var obj = new Rosella.CommandLine.ProgramMode("");
-
-        var arg_0 = null;
-        var result = obj.optional_args(arg_0);
+        self.status.unimplemented("Need to set up some conditions to test with");
     }
 
     function can_accept()
@@ -73,42 +41,27 @@ class Test_Rosella_CommandLine_ProgramMode
         var result = obj.can_accept(arg_0);
     }
 
-    function match_positionals()
-    {
-        self.status.verify("Test Rosella.CommandLine.ProgramMode.match_positionals()");
-        var obj = new Rosella.CommandLine.ProgramMode("");
-
-        var arg_0 = null;
-        int arg_1 = 0;
-        var result = obj.match_positionals(arg_0, arg_1);
-    }
-
-    function match_args()
-    {
-        self.status.verify("Test Rosella.CommandLine.ProgramMode.match_args()");
-        var obj = new Rosella.CommandLine.ProgramMode("");
-
-        var arg_0 = null;
-        var arg_1 = null;
-        int arg_2 = 0;
-        var result = obj.match_args(arg_0, arg_1, arg_2);
-    }
-
-    function fetch_all_args()
-    {
-        self.status.verify("Test Rosella.CommandLine.ProgramMode.fetch_all_args()");
-        var obj = new Rosella.CommandLine.ProgramMode("");
-
-        var arg_0 = null;
-        var result = obj.fetch_all_args(arg_0);
-    }
-
     function main_function()
     {
         self.status.verify("Test Rosella.CommandLine.ProgramMode.main_function()");
         var obj = new Rosella.CommandLine.ProgramMode("");
 
         var result = obj.main_function();
+    }
+
+    function require_flag()
+    {
+        self.status.unimplemented("This");
+    }
+
+    function require_value()
+    {
+        self.status.unimplemented("This");
+    }
+
+    function require_condition()
+    {
+        self.status.unimplemented("This");
     }
 }
 
