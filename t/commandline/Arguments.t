@@ -58,22 +58,6 @@ class Test_Rosella_CommandLine_Arguments
         });
     }
 
-    function get_argument_definitions()
-    {
-        self.status.verify("Test Rosella.CommandLine.Arguments.get_argument_definitions()");
-        var obj = create_new();
-        var arg_defs = create_arg_defs();
-
-        string raw_args[] = [
-            "-A",
-            "--",
-            "Aye", "Bee", "Cee"
-        ];
-
-        obj.parse(raw_args, arg_defs);
-        self.assert.same(arg_defs, obj.get_argument_definitions());
-    }
-
     function remainder()
     {
         self.status.verify("Test Rosella.CommandLine.Arguments.remainder()");
@@ -310,6 +294,59 @@ class Test_Rosella_CommandLine_Arguments
         self.assert.equal(int(obj["--fff"]), true);
         self.assert.equal(obj[0], "foo");
         self.assert.equal(obj[1], "bar");
+    }
+
+    function combination_args()
+    {
+        var obj = create_new();
+        var arg_defs = new Rosella.CommandLine.ArgumentDef({
+            "A" : "A",
+            "B" : "B",
+            "C" : "C",
+            "D" : "D"
+        });
+
+        obj.parse(["-A", "-BC"], arg_defs);
+        self.assert.equal(int(obj["-A"]), true);
+        self.assert.equal(int(obj["-B"]), true);
+        self.assert.equal(int(obj["-C"]), true);
+        self.assert.equal(int(obj["-D"]), false);
+
+        obj = create_new();
+        obj.parse(["-ABCD"], arg_defs);
+        self.assert.equal(int(obj["-A"]), true);
+        self.assert.equal(int(obj["-B"]), true);
+        self.assert.equal(int(obj["-C"]), true);
+        self.assert.equal(int(obj["-D"]), true);
+
+        obj = create_new();
+        obj.parse(["-AD"], arg_defs);
+        self.assert.equal(int(obj["-A"]), true);
+        self.assert.equal(int(obj["-B"]), false);
+        self.assert.equal(int(obj["-C"]), false);
+        self.assert.equal(int(obj["-D"]), true);
+
+        obj = create_new();
+        obj.parse(["-BCD"], arg_defs);
+        self.assert.equal(int(obj["-A"]), false);
+        self.assert.equal(int(obj["-B"]), true);
+        self.assert.equal(int(obj["-C"]), true);
+        self.assert.equal(int(obj["-D"]), true);
+    }
+
+    function unknown_args()
+    {
+        var obj = create_new();
+        var arg_defs = new Rosella.CommandLine.ArgumentDef({
+            "A" : "A",
+            "B" : "B",
+            "C" : "C",
+            "D" : "D"
+        });
+
+        self.assert.throws(function() {
+            obj.parse(["-A", "-BC", "-X"], arg_defs);
+        });
     }
 }
 
