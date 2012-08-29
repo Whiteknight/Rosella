@@ -133,8 +133,7 @@ class Rosella.CommandLine.Arguments
         return self.remainder;
     }
 
-    // Get the raw list of args. Notice that this list is destroyed during
-    // parsing
+    // Get the raw list of args.
     function raw_args()
     {
         return self.raw_args;
@@ -150,7 +149,6 @@ class Rosella.CommandLine.Arguments
         return false;
     }
 
-    // Once parsed, provide keyed access to the cache
     function get_string_keyed[vtable](string name)
     {
         if (exists self.named_cache[name])
@@ -160,7 +158,6 @@ class Rosella.CommandLine.Arguments
         return "";
     }
 
-    // Once parsed, provide keyed access to the cache
     function get_pmc_keyed[vtable](string name)
     {
         if (exists self.named_cache[name])

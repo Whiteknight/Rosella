@@ -31,12 +31,16 @@ class Rosella.CommandLine.ProgramMode
         return self;
     }
 
+    // Set a custom usage message
     function set_usage(string usage)
     {
         self.usage = usage;
         return self;
     }
 
+    // Get the complete usage message, as a combination of the Program usage
+    // message, usage messages for the different modes, and usage messages
+    // for all argument definitions.
     function get_usage(string program_name, var sb)
     {
         var usage = self.usage;
@@ -76,6 +80,7 @@ class Rosella.CommandLine.ProgramMode
         return self.func;
     }
 
+    // Require the existence of a flag
     function require_flag(string name)
     {
         if (self.conditions == null)
@@ -85,6 +90,7 @@ class Rosella.CommandLine.ProgramMode
         return self;
     }
 
+    // Require a specific scalar value
     function require_value(string name, string value)
     {
         if (self.conditions == null)
@@ -94,6 +100,7 @@ class Rosella.CommandLine.ProgramMode
         return self;
     }
 
+    // Require a predicate function to return true
     function require_condition(var f)
     {
         if (self.conditions == null)
@@ -104,6 +111,8 @@ class Rosella.CommandLine.ProgramMode
     }
 }
 
+// Default program mode, similar to a normal mode but with no preconditions
+// and a more generic usage message
 class Rosella.CommandLine.ProgramMode.Default : Rosella.CommandLine.ProgramMode
 {
     function Default() { self.name = ""; }

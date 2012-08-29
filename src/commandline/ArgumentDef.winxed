@@ -1,13 +1,28 @@
+/* Argument Definitions.
+    Represents the forward declarations of the different arguments. These
+    definitions are used during argument processing to parse out expected
+    arguments.
+*/
 class Rosella.CommandLine.ArgumentDef
 {
-    var raw_defs;
-    var prepared_defs;
+    // TODO: We might consider breaking this up into different strategy subclasses
+    // depending on raw_defs format, and adding a factory to choose between
+    // them
 
+    var raw_defs;       // The raw argument definitions from the user
+    var prepared_defs;  // The prepared/processed argument definitions
+
+    // Constructor
     function ArgumentDef(var raw_defs)
     {
         self.raw_defs = raw_defs;
     }
 
+    /* Public Methods
+    */
+
+    // Get a description or help message. This message will show all argument
+    // definitions and the description message associated with each
     function get_description(var sb = new 'StringBuilder')
     {
         // TODO: Prepend a usage string with program name
@@ -21,6 +36,29 @@ class Rosella.CommandLine.ArgumentDef
         return sb;
     }
 
+    // Process the input definitions format into a format suitable to use for
+    // argument processing.
+    function get_definitions()
+    {
+        if (self.prepared_defs != null)
+            return self.prepared_defs;
+
+        var arg_defs = Rosella.get_string_string_hash();
+        var raw_defs = self.raw_defs;
+        if (does(raw_defs, "hash"))
+            self.__prepare_arg_defs_hash(raw_defs, arg_defs);
+        else if (does(raw_defs, "array"))
+            self.__prepare_arg_defs_array(raw_defs, arg_defs);
+        else
+            Rosella.Error.error("Unknown argument definition type '%s'", typeof(raw_defs));
+        self.prepared_defs = arg_defs;
+        return arg_defs;
+    }
+
+    /* Private Helper Methods
+    */
+
+    // Get a description message for a new-style def hash
     function __get_description_hash(var raw_defs, var sb)
     {
         int max = 0;
@@ -51,26 +89,10 @@ class Rosella.CommandLine.ArgumentDef
         return sb;
     }
 
+    // Get a description message for an old-style array of arrays
     function __get_description_array(var raw_defs, var sb)
     {
         // TODO
-    }
-
-    function get_definitions()
-    {
-        if (self.prepared_defs != null)
-            return self.prepared_defs;
-
-        var arg_defs = Rosella.get_string_string_hash();
-        var raw_defs = self.raw_defs;
-        if (does(raw_defs, "hash"))
-            self.__prepare_arg_defs_hash(raw_defs, arg_defs);
-        else if (does(raw_defs, "array"))
-            self.__prepare_arg_defs_array(raw_defs, arg_defs);
-        else
-            Rosella.Error.error("Unknown argument definition type '%s'", typeof(raw_defs));
-        self.prepared_defs = arg_defs;
-        return arg_defs;
     }
 
     /* We can handle defs of the following types:
@@ -79,6 +101,7 @@ class Rosella.CommandLine.ArgumentDef
         foo=[]      f=[]
         foo={}      f={}
     */
+    // Get a processed definition hash for a new-style hash
     function __prepare_arg_defs_hash(var defs, var arg_defs)
     {
         for (string arg_def in defs) {
@@ -111,10 +134,9 @@ class Rosella.CommandLine.ArgumentDef
         }
     }
 
-    // TODO: If we get an array of arrays, try to copy old-style
-    // GetOpt::Obj format
+    // Get a processed definition hash for an old-style array of arrays
     function __prepare_arg_defs_array(var defs, var arg_defs)
     {
-
+        // TODO
     }
 }

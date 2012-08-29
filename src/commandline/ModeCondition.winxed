@@ -1,15 +1,24 @@
+/* A condition for a ProgramMode
+    Each ProgramMode besides the default mode may have one or more conditions
+    that must be met before that ProgramMode can be activated. This is the
+    abstract parent class of specialized conditions.
+*/
 class Rosella.CommandLine.ModeCondition
 {
+    // Determine if this condition is satisifed by the given list of parsed
+    // arguments
     function is_satisfied(var args)
     {
         return false;
     }
 
+    // Get a description of this condition, for use in a help/usage message
     function get_description(var sb)
     {
     }
 }
 
+// Condition that requires the presence of a given flag
 class Rosella.CommandLine.ModeCondition.FlagSet : Rosella.CommandLine.ModeCondition
 {
     var flagname;
@@ -34,6 +43,7 @@ class Rosella.CommandLine.ModeCondition.FlagSet : Rosella.CommandLine.ModeCondit
     }
 }
 
+// Condition that requires a given scalar-valued flag
 class Rosella.CommandLine.ModeCondition.ScalarValue : Rosella.CommandLine.ModeCondition
 {
     var name;
@@ -66,6 +76,7 @@ class Rosella.CommandLine.ModeCondition.ScalarValue : Rosella.CommandLine.ModeCo
     }
 }
 
+// Condition that uses a user-specified predicate function
 class Rosella.CommandLine.ModeCondition.GenericFunc : Rosella.CommandLine.ModeCondition
 {
     var func;
