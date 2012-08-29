@@ -8,9 +8,6 @@
 */
 class Rosella.CommandLine.Program
 {
-    // TODO: Fix on_error semantics, so we aren't possibly passing an exception to
-    // a help function instead of an Arguments object.
-
     // TODO: Add an ability to pass arguments to the main routine flag instead of
     // in a single Arguments object.
 
@@ -27,11 +24,6 @@ class Rosella.CommandLine.Program
         self.program_name = program_name;
         self.modes = {};
         self.default_mode = new Rosella.CommandLine.ProgramMode.Default();
-        self.on_error = function(var e) {
-            say("Error parsing arguments");
-            if (e != null)
-                say(e.message);
-        };
     }
 
     /* Public Methods
@@ -76,12 +68,18 @@ class Rosella.CommandLine.Program
         // TODO: Take some optional parameters, such as handles to use for
         // overriding standard handles, other options.
         var args = new Rosella.CommandLine.Arguments(self);
-        args.parse(raw_args, self.arg_defs);
+        try {
+            args.parse(raw_args, self.arg_defs);
+        } catch (e) {
+            say(e);
+            self.try_handle_error(args);
+            return;
+        }
 
         var mode = self.__find_mode(args);
         var main_func = mode.main_function();
         if (main_func == null) {
-            self.try_handle_error(null);
+            self.try_handle_error(args);
             return;
         }
 
@@ -96,17 +94,23 @@ class Rosella.CommandLine.Program
             exit(exit_code);
     }
 
-    function get_help_text()
+    function get_usage_text(var sb = new 'StringBuilder')
     {
-        var sb = new 'StringBuilder';
         string name = self.program_name;
 
         self.default_mode.get_usage(name, sb);
-
         for (string modename in self.modes) {
             var mode = self.modes[modename];
             mode.get_usage(name, sb);
         }
+        return sb;
+    }
+
+    function get_help_text()
+    {
+        var sb = new 'StringBuilder';
+        self.get_usage_text(sb);
+        push(sb, "\n");
         if (self.description != null) {
             string desc = self.description;
             push(sb, desc);
@@ -130,16 +134,12 @@ class Rosella.CommandLine.Program
     }
 
     // On error, try to execute the error handler, if any.
-    function try_handle_error(var e)
+    function try_handle_error(var args)
     {
         var on_error = self.on_error;
         if (on_error == null) {
-            if (e == null) {
-                // If we fail to dispatch, just dump the usage message
-                say(self.get_help_text());
-            } else
-                throw e;
-        }
-        on_error(e);
+            say(self.get_usage_text());
+        } else
+            on_error(args);
     }
 }

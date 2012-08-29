@@ -13,8 +13,7 @@ function main[main](var args)
     p.default_mode()
         .set_function(test_all_main)
         .set_usage("<lang> <library> <folder>");
-    p.add_mode("help").require_flag("help").set_function(usage_and_exit);
-    p.on_error(usage_and_exit);
+    p.add_mode("help").require_flag("help").set_function(function(var args) { say(p.get_help_message()); });
     p.run(args);
 }
 
@@ -57,17 +56,6 @@ function test_all_main(var args)
             classfile.write_all_text(output);
             Rosella.IO.sayf("\tBuilt Class test file %s", string(classfile));
         });
-}
-
-// Help handler. Show usage information on --help or error
-function usage_and_exit(var args)
-{
-    if (__DEBUG__ && args instanceof 'Exception') {
-        say(args.message);
-        for (string bt in args.backtrace_strings())
-            say(bt);
-    }
-    say(args.program.get_help_text());
 }
 
 // Get the Directory object for the given namespace
