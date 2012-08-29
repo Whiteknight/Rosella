@@ -24,15 +24,22 @@ class Rosella.CommandLine.ArgumentDef
     function __get_description_hash(var raw_defs, var sb)
     {
         int max = 0;
+        var fixed_defs = {};
         for (string arg in raw_defs) {
-            int len = length(arg);
+            var parts = split("=", arg);
+            string arg_name = parts[0];
+            string prefix = (length(arg_name) == 1) ? "-" : "--";
+            arg_name = prefix + arg;
+            fixed_defs[arg_name] = raw_defs[arg];
+
+            int len = length(arg_name);
             if (len > max)
                 max = len;
         }
         max += 4;
 
-        for (string arg in raw_defs) {
-            string desc = raw_defs[arg];
+        for (string arg in fixed_defs) {
+            string desc = fixed_defs[arg];
             push(sb, "    ");
 
             // TODO: add dashes. -X and --xxx instead of X and xxx

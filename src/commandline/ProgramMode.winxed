@@ -37,14 +37,23 @@ class Rosella.CommandLine.ProgramMode
         return self;
     }
 
-    function get_usage()
+    function get_usage(string program_name, var sb)
     {
-        // TODO: Can we try to autogenerate this from the list of conditions,
-        // if we don't have one set?
         var usage = self.usage;
-        if (usage == null)
-            return "";
-        return string(usage);
+        if (usage != null) {
+            push(sb, "       ");
+            push(sb, program_name);
+            push(sb, " ");
+            push(sb, string(usage));
+            push(sb, "\n");
+        }
+        else if (self.conditions != null) {
+            push(sb, "       ");
+            push(sb, program_name);
+            for (var condition in self.conditions)
+                condition.get_description(sb);
+            push(sb, " <OPTIONS>\n");
+        }
     }
 
     // Called by the Program class internally. This function determines if the
@@ -92,5 +101,46 @@ class Rosella.CommandLine.ProgramMode
         var condition = new Rosella.CommandLine.ModeCondition.GenericFunc(f);
         push(self.conditions, condition);
         return self;
+    }
+}
+
+class Rosella.CommandLine.ProgramMode.Default : Rosella.CommandLine.ProgramMode
+{
+    function Default() { self.name = ""; }
+
+    function get_usage(string program_name, var sb)
+    {
+        var usage = self.usage;
+        if (usage != null) {
+            push(sb, "Usage: ");
+            push(sb, program_name);
+            push(sb, " ");
+            push(sb, string(usage));
+            push(sb, "\n");
+        } else {
+            push(sb, "Usage: ");
+            push(sb, program_name);
+            push(sb, " <OPTIONS>\n");
+        }
+    }
+
+    function require_flag(string name)
+    {
+        Rosella.Error.error("May not add prerequisite conditions to the default program mode");
+    }
+
+    function require_value(string name, string value)
+    {
+        Rosella.Error.error("May not add prerequisite conditions to the default program mode");
+    }
+
+    function require_condition(var f)
+    {
+        Rosella.Error.error("May not add prerequisite conditions to the default program mode");
+    }
+
+    function can_accept(var args)
+    {
+        return true;
     }
 }

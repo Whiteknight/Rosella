@@ -20,7 +20,7 @@ class Rosella.CommandLine.Program
     {
         self.program_name = program_name;
         self.modes = {};
-        self.default_mode = new Rosella.CommandLine.ProgramMode("default");
+        self.default_mode = new Rosella.CommandLine.ProgramMode.Default();
         self.on_error = function(var e) {
             say("Error parsing arguments");
             if (e != null)
@@ -115,25 +115,11 @@ class Rosella.CommandLine.Program
         var sb = new 'StringBuilder';
         string name = self.program_name;
 
-        string usage = self.default_mode.get_usage();
-        if (usage == null || usage == "")
-            usage = "<OPTIONS>";
-        push(sb, "Usage: ");
-        push(sb, name);
-        push(sb, " ");
-        push(sb, usage);
-        push(sb, "\n");
+        self.default_mode.get_usage(name, sb);
 
         for (string modename in self.modes) {
             var mode = self.modes[modename];
-            usage = mode.get_usage();
-            if (usage != null && usage != "") {
-                push(sb, "Usage: ");
-                push(sb, name);
-                push(sb, " ");
-                push(sb, usage);
-                push(sb, "\n");
-            }
+            mode.get_usage(name, sb);
         }
         if (self.description != null) {
             string desc = self.description;

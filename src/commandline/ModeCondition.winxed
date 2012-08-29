@@ -4,6 +4,10 @@ class Rosella.CommandLine.ModeCondition
     {
         return false;
     }
+
+    function get_description(var sb)
+    {
+    }
 }
 
 class Rosella.CommandLine.ModeCondition.FlagSet : Rosella.CommandLine.ModeCondition
@@ -20,6 +24,13 @@ class Rosella.CommandLine.ModeCondition.FlagSet : Rosella.CommandLine.ModeCondit
         string flagname = string(self.flagname);
         int value = args[flagname];
         return value;
+    }
+
+    function get_description(var sb)
+    {
+        string flagname = self.flagname;
+        push(sb, " ");
+        push(sb, flagname);
     }
 }
 
@@ -43,20 +54,39 @@ class Rosella.CommandLine.ModeCondition.ScalarValue : Rosella.CommandLine.ModeCo
             return true;
         return false;
     }
+
+    function get_description(var sb)
+    {
+        string name = self.name;
+        string value = self.value;
+        push(sb, " ");
+        push(sb, name);
+        push(sb, "=");
+        push(sb, value);
+    }
 }
 
 class Rosella.CommandLine.ModeCondition.GenericFunc : Rosella.CommandLine.ModeCondition
 {
     var func;
+    var desc;
 
-    function GenericFunc(var f)
+    function GenericFunc(var f, string desc)
     {
         self.func = f;
+        self.desc = desc;
     }
 
     function is_satisfied(var args)
     {
         var f = self.func;
         return f(args);
+    }
+
+    function get_description(var sb)
+    {
+        string desc = self.desc;
+        push(sb, " ");
+        push(sb, desc);
     }
 }
