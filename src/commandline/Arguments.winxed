@@ -9,6 +9,7 @@ class Rosella.CommandLine.Arguments
     var named_cache;    // The cache of already-parsed args
     var pos_cache;      // All positional arguments
     var raw_args;       // The raw argument list
+    var arg_defs;
 
     // Constructor. Take the list of arguments and do a fast presort on them.
     function Arguments(var program)
@@ -134,6 +135,7 @@ class Rosella.CommandLine.Arguments
         self.pos_cache = positionals;
         self.remainder = remainders;
         self.raw_args = args;
+        self.arg_defs = arg_defs;
     }
 
     // Get the remaining args
@@ -153,7 +155,7 @@ class Rosella.CommandLine.Arguments
 
     function get_integer_keyed[vtable](string name)
     {
-        :(name, string def) = self.program.arg_defs.get_definition(name);
+        :(name, string def) = self.arg_defs.get_definition(name);
         if (def != "b" && def != "i")
             Rosella.Error.error("Argument '%s' is not an integer or boolean", name);
         if (exists self.named_cache[name])
@@ -163,7 +165,7 @@ class Rosella.CommandLine.Arguments
 
     function get_string_keyed[vtable](string name)
     {
-        :(name, string def) = self.program.arg_defs.get_definition(name);
+        :(name, string def) = self.arg_defs.get_definition(name);
         if (def != "s")
             Rosella.Error.error("Argument '%s' is not a string", name);
         if (exists self.named_cache[name])
@@ -173,7 +175,7 @@ class Rosella.CommandLine.Arguments
 
     function get_number_keyed[vtable](string name)
     {
-        :(name, string def) = self.program.arg_defs.get_definition(name);
+        :(name, string def) = self.arg_defs.get_definition(name);
         if (def != "f")
             Rosella.Error.error("Argument '%s' is not a floating point number", name);
         if (exists self.named_cache[name])
@@ -183,7 +185,7 @@ class Rosella.CommandLine.Arguments
 
     function get_pmc_keyed[vtable](string name)
     {
-        :(name, string def) = self.program.arg_defs.get_definition(name);
+        :(name, string def) = self.arg_defs.get_definition(name);
         if (exists self.named_cache[name])
             return self.named_cache[name];
         return null;

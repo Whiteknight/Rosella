@@ -100,8 +100,9 @@ class Test_Rosella_CommandLine_Arguments
         ];
 
         obj.parse(raw_args, arg_defs);
-        self.assert.equal(int(obj["-A"]), true);
-        self.assert.equal(int(obj["--fff"]), false);
+        self.assert.equal(int(obj["A"]), true);
+        self.assert.equal(int(obj["A"]), true);
+        self.assert.equal(int(obj["fff"]), false);
     }
 
     function get_string_keyed()
@@ -117,8 +118,8 @@ class Test_Rosella_CommandLine_Arguments
         ];
 
         obj.parse(raw_args, arg_defs);
-        self.assert.equal(string(obj["-B"]), "foo");
-        self.assert.equal(string(obj["--ggg"]), "bar");
+        self.assert.equal(string(obj["B"]), "foo");
+        self.assert.equal(string(obj["ggg"]), "bar");
     }
 
     function get_pmc_keyed()
@@ -134,8 +135,8 @@ class Test_Rosella_CommandLine_Arguments
         ];
 
         obj.parse(raw_args, arg_defs);
-        self.assert.is_match(obj["-C"], ["foo", "bar"]);
-        self.assert.is_match(obj["--hhh"], ["baz", "fie"]);
+        self.assert.is_match(obj["C"], ["foo", "bar"]);
+        self.assert.is_match(obj["hhh"], ["baz", "fie"]);
     }
 
     function get_string_keyed_int()
@@ -178,9 +179,8 @@ class Test_Rosella_CommandLine_Arguments
         ];
 
         obj.parse(raw_args, arg_defs);
-        self.assert.equal(int(obj["-A"]), true);
-        self.assert.equal(int(obj["--fff"]), false);
-        self.assert.equal(int(obj["--does-not-exist"]), false);
+        self.assert.equal(int(obj["A"]), true);
+        self.assert.equal(int(obj["fff"]), false);
     }
 
     function get_scalar()
@@ -194,9 +194,8 @@ class Test_Rosella_CommandLine_Arguments
             "--ggg", "bar"
         ];
         obj.parse(raw_args, arg_defs);
-        self.assert.equal(obj["-B"], "foo");
-        self.assert.equal(obj["--ggg"], "bar");
-        self.assert.is_null(obj["--does-not-exist"]);
+        self.assert.equal(obj["B"], "foo");
+        self.assert.equal(obj["ggg"], "bar");
 
         // "-Bfoo"
         raw_args = [
@@ -204,7 +203,7 @@ class Test_Rosella_CommandLine_Arguments
         ];
         obj = create_new();
         obj.parse(raw_args, arg_defs);
-        self.assert.equal(obj["-B"], "foo");
+        self.assert.equal(obj["B"], "foo");
 
         // "-B:foo" and "--ggg:bar"
         raw_args = [
@@ -213,8 +212,8 @@ class Test_Rosella_CommandLine_Arguments
         ];
         obj = create_new();
         obj.parse(raw_args, arg_defs);
-        self.assert.equal(obj["-B"], "foo");
-        self.assert.equal(obj["--ggg"], "bar");
+        self.assert.equal(obj["B"], "foo");
+        self.assert.equal(obj["ggg"], "bar");
     }
 
     function get_list()
@@ -231,9 +230,8 @@ class Test_Rosella_CommandLine_Arguments
         ];
 
         obj.parse(raw_args, arg_defs);
-        self.assert.is_match(obj["-C"], ["foo", "bar", "baz"]);
-        self.assert.is_match(obj["--hhh"], ["FOO", "BAR"]);
-        self.assert.is_null(obj["--does-not-exist"]);
+        self.assert.is_match(obj["C"], ["foo", "bar", "baz"]);
+        self.assert.is_match(obj["hhh"], ["FOO", "BAR"]);
     }
 
     function get_hash()
@@ -249,9 +247,8 @@ class Test_Rosella_CommandLine_Arguments
             "--iii:BAR=B"
         ];
         obj.parse(raw_args, arg_defs);
-        self.assert.is_match(obj["-D"], {"foo":"A", "bar":"B", "baz":"C"});
-        self.assert.equal(obj["--iii"], {"FOO":"A", "BAR":"B"});
-        self.assert.is_null(obj["--does-not-exist"]);
+        self.assert.is_match(obj["D"], {"foo":"A", "bar":"B", "baz":"C"});
+        self.assert.equal(obj["iii"], {"FOO":"A", "BAR":"B"});
     }
 
     function argument_order()
@@ -265,8 +262,8 @@ class Test_Rosella_CommandLine_Arguments
             "foo"
         ];
         obj.parse(raw_args, arg_defs);
-        self.assert.equal(int(obj["-A"]), true);
-        self.assert.equal(int(obj["--fff"]), false);
+        self.assert.equal(int(obj["A"]), true);
+        self.assert.equal(int(obj["fff"]), false);
         self.assert.equal(obj[0], "foo");
 
         raw_args = [
@@ -277,8 +274,8 @@ class Test_Rosella_CommandLine_Arguments
         ];
         obj = create_new();
         obj.parse(raw_args, arg_defs);
-        self.assert.equal(int(obj["-A"]), true);
-        self.assert.equal(int(obj["--fff"]), true);
+        self.assert.equal(int(obj["A"]), true);
+        self.assert.equal(int(obj["fff"]), true);
         self.assert.equal(obj[0], "foo");
         self.assert.equal(obj[1], "bar");
 
@@ -290,8 +287,8 @@ class Test_Rosella_CommandLine_Arguments
         ];
         obj = create_new();
         obj.parse(raw_args, arg_defs);
-        self.assert.equal(int(obj["-A"]), true);
-        self.assert.equal(int(obj["--fff"]), true);
+        self.assert.equal(int(obj["A"]), true);
+        self.assert.equal(int(obj["fff"]), true);
         self.assert.equal(obj[0], "foo");
         self.assert.equal(obj[1], "bar");
     }
@@ -307,31 +304,44 @@ class Test_Rosella_CommandLine_Arguments
         });
 
         obj.parse(["-A", "-BC"], arg_defs);
-        self.assert.equal(int(obj["-A"]), true);
-        self.assert.equal(int(obj["-B"]), true);
-        self.assert.equal(int(obj["-C"]), true);
-        self.assert.equal(int(obj["-D"]), false);
+        self.assert.equal(int(obj["A"]), true);
+        self.assert.equal(int(obj["B"]), true);
+        self.assert.equal(int(obj["C"]), true);
+        self.assert.equal(int(obj["D"]), false);
 
         obj = create_new();
         obj.parse(["-ABCD"], arg_defs);
-        self.assert.equal(int(obj["-A"]), true);
-        self.assert.equal(int(obj["-B"]), true);
-        self.assert.equal(int(obj["-C"]), true);
-        self.assert.equal(int(obj["-D"]), true);
+        self.assert.equal(int(obj["A"]), true);
+        self.assert.equal(int(obj["B"]), true);
+        self.assert.equal(int(obj["C"]), true);
+        self.assert.equal(int(obj["D"]), true);
 
         obj = create_new();
         obj.parse(["-AD"], arg_defs);
-        self.assert.equal(int(obj["-A"]), true);
-        self.assert.equal(int(obj["-B"]), false);
-        self.assert.equal(int(obj["-C"]), false);
-        self.assert.equal(int(obj["-D"]), true);
+        self.assert.equal(int(obj["A"]), true);
+        self.assert.equal(int(obj["B"]), false);
+        self.assert.equal(int(obj["C"]), false);
+        self.assert.equal(int(obj["D"]), true);
 
         obj = create_new();
         obj.parse(["-BCD"], arg_defs);
-        self.assert.equal(int(obj["-A"]), false);
-        self.assert.equal(int(obj["-B"]), true);
-        self.assert.equal(int(obj["-C"]), true);
-        self.assert.equal(int(obj["-D"]), true);
+        self.assert.equal(int(obj["A"]), false);
+        self.assert.equal(int(obj["B"]), true);
+        self.assert.equal(int(obj["C"]), true);
+        self.assert.equal(int(obj["D"]), true);
+    }
+
+    function arg_does_not_exist()
+    {
+        var obj = create_new();
+        var arg_defs = new Rosella.CommandLine.ArgumentDef({
+            "A" : "A"
+        });
+
+        obj.parse(["-A"], arg_defs);
+        self.assert.throws(function() {
+            int a = obj["does-not-exist"];
+        });
     }
 
     function unknown_args()
