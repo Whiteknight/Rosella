@@ -3,11 +3,17 @@ function main[main](var args)
 {
     Rosella.Query.install_to_parrot_types();
     var p = new Rosella.CommandLine.Program(args.shift());
-    p.default_mode().set_function(test_all_main)
-        .require_positional("language", 0)
-        .require_positional("libpath", 1)
-        .require_positional("folder", 2);
-    p.add_mode("help").set_flag("--help").set_function(usage_and_exit);
+    p
+        .define_arguments({
+            "help|h" : "Show the help message"
+        })
+        .set_description("Create tests for all classes and namespaces in <library>. Output all tests\n" +
+                         "to <folder>. Tests will be in language <lang>. <lang> is probably one of\n" +
+                         "'winxed' or 'nqp' or others if you have suitable templates installed.");
+    p.default_mode()
+        .set_function(test_all_main)
+        .set_usage("<lang> <library> <folder>");
+    p.add_mode("help").require_flag("help").set_function(usage_and_exit);
     p.on_error(usage_and_exit);
     p.run(args);
 }
@@ -15,9 +21,9 @@ function main[main](var args)
 // Main handler. Pull out the arguments by name and run the program.
 function test_all_main(var args)
 {
-    string libpath = args["libpath"];
-    string lang = args["language"];
-    string folder = args["folder"];
+    string libpath = args[1];
+    string lang = args[0];
+    string folder = args[2];
     var module = Rosella.Reflect.Module.load(libpath);
     var engine = new Rosella.Template.Engine();
 
@@ -61,20 +67,7 @@ function usage_and_exit(var args)
         for (string bt in args.backtrace_strings())
             say(bt);
     }
-    string prog_name;
-    if (args == null || args instanceof 'Exception')
-        prog_name = "rosella_test_all_lib";
-    else
-        prog_name = (new Rosella.FileSystem.FilePath(args.program_name())).short_name();
-    string fmt = <<:
-Usage: %s <lang> <library> <folder>
-
-Create tests for all classes and namespaces in <library>. Output all tests
-to <folder>. Tests will be in language <lang>. <lang> is probably one of
-'winxed' or 'nqp' or others if you have suitable templates installed.
-:>>
-;
-    Rosella.IO.sayf(fmt, prog_name);
+    say(args.program.get_help_text());
 }
 
 // Get the Directory object for the given namespace

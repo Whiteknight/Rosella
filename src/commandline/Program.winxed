@@ -8,6 +8,12 @@
 */
 class Rosella.CommandLine.Program
 {
+    // TODO: Fix on_error semantics, so we aren't possibly passing an exception to
+    // a help function instead of an Arguments object.
+
+    // TODO: Add an ability to pass arguments to the main routine flag instead of
+    // in a single Arguments object.
+
     var program_name;   // The string name of the program
     var default_mode;   // The default ProgramMode
     var arg_defs;       // Hash of all argument definitions
