@@ -7,7 +7,8 @@ function main[main](var args)
         "help|h" : "Show help message",
         "class|c" : "Dump classes",
         "namespace|n" : "Dump namespaces",
-        "function|f" : "Dump functions (implies -n)"
+        "function|f" : "Dump functions (implies -n)",
+        "all|a" : "Dump everything"
     });
     p.default_mode().set_function(dump_pbc_main);
     p.add_mode("help").require_flag("h").set_function(usage_and_exit);
@@ -23,9 +24,10 @@ function usage_and_exit(var args)
 function dump_pbc_main(var args)
 {
     string libpath = args[0];
-    int dump_classes = args["class"];
-    int dump_namespaces = args["namespace"];
-    int dump_functions = args["function"];
+    int dump_all = args["all"];
+    int dump_classes = dump_all || args["class"];
+    int dump_namespaces = dump_all || args["namespace"];
+    int dump_functions = dump_all || args["function"];
 
     // TODO: Dump some header information in all modes
 
