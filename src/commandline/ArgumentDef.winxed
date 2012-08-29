@@ -9,6 +9,8 @@ class Rosella.CommandLine.ArgumentDef
     // depending on raw_defs format, and adding a factory to choose between
     // them
 
+    // TODO: We need to support "foo|f" and "foo|f=X" (where --foo is an alias for -f)
+
     var raw_defs;       // The raw argument definitions from the user
     var prepared_defs;  // The prepared/processed argument definitions
 
@@ -25,7 +27,6 @@ class Rosella.CommandLine.ArgumentDef
     // definitions and the description message associated with each
     function get_description(var sb = new 'StringBuilder')
     {
-        // TODO: Prepend a usage string with program name
         var raw_defs = self.raw_defs;
         if (does(raw_defs, "hash"))
             self.__get_description_hash(raw_defs, sb);
@@ -80,7 +81,6 @@ class Rosella.CommandLine.ArgumentDef
             string desc = fixed_defs[arg];
             push(sb, "    ");
 
-            // TODO: add dashes. -X and --xxx instead of X and xxx
             push(sb, arg);
             push(sb, repeat_string(" ", max - length(arg)));
             push(sb, desc);

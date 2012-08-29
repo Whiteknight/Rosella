@@ -25,6 +25,8 @@ class Rosella.CommandLine.Arguments
         return self.program;
     }
 
+    // TODO: Handle the case where: -abc = -a -b -c, where -a, -b and -c are all flags
+
     function parse(var args, var arg_defs_obj)
     {
         var arg_defs = arg_defs_obj.get_definitions();
