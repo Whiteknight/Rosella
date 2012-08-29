@@ -25,8 +25,6 @@ class Rosella.CommandLine.Arguments
         return self.program;
     }
 
-    // TODO: Handle the case where: -abc = -a -b -c, where -a, -b and -c are all flags
-
     function parse(var args, var arg_defs_obj)
     {
         var arg_defs = arg_defs_obj.get_definitions();
@@ -49,6 +47,7 @@ class Rosella.CommandLine.Arguments
             }
 
             string arg_name = "";
+            int has_extra = false;
 
             // An arg of the form "--foo", "--foo bar", "--foo:bar",
             // "--foo bar=baz", "--foo:bar=baz"
@@ -56,18 +55,18 @@ class Rosella.CommandLine.Arguments
                 arg_name = arg;
 
             // An arg of the form "-X", "-Xfoo", "-X foo", "-f:bar", "-Xfoo=bar",
-            // "-X foo=bar", "-X:foo=bar"
+            // "-X foo=bar", "-X:foo=bar" or "-XYZ" (where -X, -Y, -Z are flags)
             else if (substr(arg, 0, 1) == "-") {
                 if (length(arg) > 2) {
                     arg_name = substr(arg, 0, 2);
                     string extra = substr(arg, 2);
                     unshift(lookahead, extra);
+                    has_extra = true;
                 } else if (length(arg) == 2)
                     arg_name = arg;
                 else
                     Rosella.Error.error("Unknown argument format '%s'", arg);
             }
-
 
             // A positional arg
             else {
@@ -81,6 +80,18 @@ class Rosella.CommandLine.Arguments
                     if (single == false)
                         Rosella.Error.error("Unexpected scalar value for flag '%s'", arg_name);
                     named_cache[arg_name] = true;
+                    if (has_extra) {
+                        // If we have an arg of the form -xyz, and all of them
+                        // are flags, break them apart and set them each
+                        // individually -x -y -z
+                        :(arg, i, single) = self.__get_next(args, i, lookahead);
+                        if (!single)
+                            Rosella.Error.error("Unknown syntax for flag '%s'", arg_name);
+                        for (int i = 0; i < length(arg); i++) {
+                            string extra_arg = substr(arg, i, 1);
+                            unshift(lookahead, "-" + extra_arg);
+                        }
+                    }
                     break;
                 case "s":
                     :(arg, i, single) = self.__get_next(args, i, lookahead);
@@ -110,6 +121,8 @@ class Rosella.CommandLine.Arguments
                     string value = parts[1];
                     h[val_name] = value;
                     break;
+                default:
+                    Rosella.Error.error("Unknown argument '%s'", arg_name);
             }
         }
 
