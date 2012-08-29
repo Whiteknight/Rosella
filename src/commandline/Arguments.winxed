@@ -25,9 +25,8 @@ class Rosella.CommandLine.Arguments
         return self.program;
     }
 
-    function parse(var args, var arg_defs_obj)
+    function parse(var args, var arg_defs)
     {
-        var arg_defs = arg_defs_obj.get_definitions();
         string lookahead[] = [];
         var named_cache = {};
         string remainders[];
@@ -52,18 +51,18 @@ class Rosella.CommandLine.Arguments
             // An arg of the form "--foo", "--foo bar", "--foo:bar",
             // "--foo bar=baz", "--foo:bar=baz"
             if (substr(arg, 0, 2) == "--")
-                arg_name = arg;
+                arg_name = substr(arg, 2);
 
             // An arg of the form "-X", "-Xfoo", "-X foo", "-f:bar", "-Xfoo=bar",
             // "-X foo=bar", "-X:foo=bar" or "-XYZ" (where -X, -Y, -Z are flags)
             else if (substr(arg, 0, 1) == "-") {
                 if (length(arg) > 2) {
-                    arg_name = substr(arg, 0, 2);
+                    arg_name = substr(arg, 1, 1);
                     string extra = substr(arg, 2);
                     unshift(lookahead, extra);
                     has_extra = true;
                 } else if (length(arg) == 2)
-                    arg_name = arg;
+                    arg_name = substr(arg, 1, 1);
                 else
                     Rosella.Error.error("Unknown argument format '%s'", arg);
             }
@@ -74,9 +73,9 @@ class Rosella.CommandLine.Arguments
                 continue;
             }
 
-            string def = self.__get_def(arg_name, arg_defs);
+            :(arg_name, string def) = arg_defs.get_definition(arg_name);
             switch(def) {
-                case "f":
+                case "b":
                     if (single == false)
                         Rosella.Error.error("Unexpected scalar value for flag '%s'", arg_name);
                     named_cache[arg_name] = true;
@@ -93,6 +92,10 @@ class Rosella.CommandLine.Arguments
                         }
                     }
                     break;
+                case "i":
+                    Rosella.Error.unimplemented(__FUNCTION__ + " 'i'");
+                case "f":
+                    Rosella.Error.unimplemented(__FUNCTION__ + " 'f'");
                 case "s":
                     :(arg, i, single) = self.__get_next(args, i, lookahead);
                     if (single == false)
@@ -126,15 +129,6 @@ class Rosella.CommandLine.Arguments
             }
         }
 
-        // Loop over the arg_defs, adding false values for any missing flags
-        for (string arg_name in arg_defs) {
-            string arg_flag = arg_defs[arg_name];
-            if (arg_flag == "f") {
-                if (!(exists named_cache[arg_name]))
-                    named_cache[arg_name] = false;
-            }
-        }
-
         // Finally, store values into object fields
         self.named_cache = named_cache;
         self.pos_cache = positionals;
@@ -159,6 +153,9 @@ class Rosella.CommandLine.Arguments
 
     function get_integer_keyed[vtable](string name)
     {
+        :(name, string def) = self.program.arg_defs.get_definition(name);
+        if (def != "b" && def != "i")
+            Rosella.Error.error("Argument '%s' is not an integer or boolean", name);
         if (exists self.named_cache[name])
             return self.named_cache[name];
         return false;
@@ -166,15 +163,27 @@ class Rosella.CommandLine.Arguments
 
     function get_string_keyed[vtable](string name)
     {
+        :(name, string def) = self.program.arg_defs.get_definition(name);
+        if (def != "s")
+            Rosella.Error.error("Argument '%s' is not a string", name);
         if (exists self.named_cache[name])
-            // TODO: Check if it's a string. Lists and hashes shouldn't be
-            //       accessed like this
             return self.named_cache[name];
         return "";
     }
 
+    function get_number_keyed[vtable](string name)
+    {
+        :(name, string def) = self.program.arg_defs.get_definition(name);
+        if (def != "f")
+            Rosella.Error.error("Argument '%s' is not a floating point number", name);
+        if (exists self.named_cache[name])
+            return self.named_cache[name];
+        return 0.0;
+    }
+
     function get_pmc_keyed[vtable](string name)
     {
+        :(name, string def) = self.program.arg_defs.get_definition(name);
         if (exists self.named_cache[name])
             return self.named_cache[name];
         return null;
@@ -197,23 +206,17 @@ class Rosella.CommandLine.Arguments
     /* Private Helper Methods
     */
 
-    function __get_def(string name, var defs)
-    {
-        if (exists defs[name])
-            return defs[name];
-        Rosella.Error.error("Unknown argument '%s'", name);
-    }
-
     function __get_next(var args, int i, var lookahead)
     {
         int single = true;
         string arg;
         if (elements(lookahead) > 0)
             arg = lookahead.shift();
-        else {
+        else if (i < elements(args)){
             arg = args[i];
             i++;
-        }
+        } else
+            Rosella.Error.error("Additional arg expected");
 
         int idx = indexof(arg, ":");
         if (idx != -1) {

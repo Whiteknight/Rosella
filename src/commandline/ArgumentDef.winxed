@@ -9,10 +9,9 @@ class Rosella.CommandLine.ArgumentDef
     // depending on raw_defs format, and adding a factory to choose between
     // them
 
-    // TODO: We need to support "foo|f" and "foo|f=X" (where --foo is an alias for -f)
-
     var raw_defs;       // The raw argument definitions from the user
     var prepared_defs;  // The prepared/processed argument definitions
+    var aliases;        // Map of aliased argument names
 
     // Constructor
     function ArgumentDef(var raw_defs)
@@ -22,6 +21,18 @@ class Rosella.CommandLine.ArgumentDef
 
     /* Public Methods
     */
+
+    function get_definition(string arg_name)
+    {
+        :(var arg_defs, var aliases) = self.__get_definitions();
+        if (exists arg_defs[arg_name])
+            return arg_name, arg_defs[arg_name];
+        if (exists aliases[arg_name]) {
+            string alias = aliases[arg_name];
+            return alias, arg_defs[alias];
+        }
+        Rosella.Error.error("Unknown argument '%s'", arg_name);
+    }
 
     // Get a description or help message. This message will show all argument
     // definitions and the description message associated with each
@@ -39,21 +50,25 @@ class Rosella.CommandLine.ArgumentDef
 
     // Process the input definitions format into a format suitable to use for
     // argument processing.
-    function get_definitions()
+    function __get_definitions()
     {
         if (self.prepared_defs != null)
-            return self.prepared_defs;
+            return self.prepared_defs, self.aliases;
 
         var arg_defs = Rosella.get_string_string_hash();
+        var aliases  = Rosella.get_string_string_hash();
         var raw_defs = self.raw_defs;
+
         if (does(raw_defs, "hash"))
-            self.__prepare_arg_defs_hash(raw_defs, arg_defs);
+            self.__prepare_arg_defs_hash(raw_defs, arg_defs, aliases);
         else if (does(raw_defs, "array"))
-            self.__prepare_arg_defs_array(raw_defs, arg_defs);
+            self.__prepare_arg_defs_array(raw_defs, arg_defs, aliases);
         else
             Rosella.Error.error("Unknown argument definition type '%s'", typeof(raw_defs));
+
         self.prepared_defs = arg_defs;
-        return arg_defs;
+        self.aliases = aliases;
+        return arg_defs, aliases;
     }
 
     /* Private Helper Methods
@@ -96,47 +111,74 @@ class Rosella.CommandLine.ArgumentDef
     }
 
     /* We can handle defs of the following types:
+        foo|f       f|foo|foobar, etc
         foo         f
-        foo=s       f=s
+        foo=s       f=s   (b, i, f, @ or % too)
         foo=[]      f=[]
         foo={}      f={}
     */
     // Get a processed definition hash for a new-style hash
-    function __prepare_arg_defs_hash(var defs, var arg_defs)
+    function __prepare_arg_defs_hash(var defs, var arg_defs, var aliases)
     {
         for (string arg_def in defs) {
-            var parts = split("=", arg_def);
-
-            // Get the name of the argument
-            string raw_arg_name = parts[0];
             string arg_name;
-            if (length(raw_arg_name) == 1)
-                arg_name = "-" + raw_arg_name;
-            else
-                arg_name = "--" + raw_arg_name;
+            string arg_type = "b";  // Default is a boolean flag
+            var raw_aliases = null;
 
-            // Now get a flag that tells us how to work with it.
-            string flag = "f";
-            if (elements(parts) == 2) {
-                string second_part = parts[1];
-                switch(second_part) {
-                    case "s":
-                    case "[]":
-                    case "{}":
-                        flag = parts[1];
-                        break;
-                    default:
-                        Rosella.Error.error("Unknown argument type for '%s': '%s'", raw_arg_name, second_part);
-                }
+            // Separate on the '=' the name(s) from the type
+            int eql_idx = index_of_substr(arg_def, "=");
+            if (eql_idx != -1) {
+                arg_type = substr(arg_def, eql_idx + 1);
+                arg_def = substr(arg_def, 0, eql_idx);
             }
 
-            arg_defs[arg_name] = flag;
+            // Different aliases for the same option are separated by '|'.
+            // Get the list of them and take one of them to be the canonical
+            // arg_name.
+            if (index_of_substr(arg_def, "|") != -1) {
+                raw_aliases = split("|", arg_def);
+                arg_name = raw_aliases.pop();
+            } else
+                arg_name = arg_def;
+
+            // Verify that the type is acceptable
+            arg_type = self.__verify_arg_type(arg_name, arg_type);
+
+            // Add all aliases to the list of aliases
+            arg_defs[arg_name] = arg_type;
+            if (raw_aliases != null) {
+                for (string alias in raw_aliases)
+                    aliases[alias] = arg_name;
+            }
         }
     }
 
     // Get a processed definition hash for an old-style array of arrays
-    function __prepare_arg_defs_array(var defs, var arg_defs)
+    function __prepare_arg_defs_array(var defs, var arg_defs, var aliases)
     {
         // TODO
+    }
+
+    function __verify_arg_type(string arg_name, string arg_type)
+    {
+        switch (arg_type) {
+            case "b":   // Boolean Flag
+            case "s":   // String
+            case "i":   // Integer
+            case "f":   // Float
+            case "[]":  // Array
+            case "{}":  // Hash
+                // These are OK
+                break;
+            case "@":   // Old-style Array
+                arg_type = "[]";
+                break;
+            case "%":   // Old-style Hash
+                arg_type = "{}";
+                break;
+            default:
+                Rosella.Error.error("Unknown argument type for '%s': '%s'", arg_name, arg_type);
+        }
+        return arg_type;
     }
 }
