@@ -101,3 +101,39 @@ class Rosella.CommandLine.ModeCondition.GenericFunc : Rosella.CommandLine.ModeCo
         push(sb, desc);
     }
 }
+
+class Rosella.CommandLine.ModeCondition.RequiredPositionals : Rosella.CommandLine.ModeCondition
+{
+    var required_args;
+    var can_have_more;
+
+    function RequiredPositionals(int can_have_more, var args)
+    {
+        self.required_args = args;
+        self.can_have_more = can_have_more;
+    }
+
+    function is_satisfied(var args)
+    {
+        say(self.can_have_more);
+        say(elements(self.required_args));
+        say(elements(args.pos_cache));
+        Rosella.Dumper.dump(args.pos_cache);
+        if (self.can_have_more) {
+            return elements(args.pos_cache) >= elements(self.required_args);
+        } else {
+            return elements(args.pos_cache) == elements(self.required_args);
+        }
+    }
+
+    function get_description(var sb)
+    {
+        for (string arg in self.required_args) {
+            push(sb, " <");
+            push(sb, arg);
+            push(sb, ">");
+        }
+        if (self.can_have_more)
+            push(sb, " ...");
+    }
+}

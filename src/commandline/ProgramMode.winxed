@@ -10,14 +10,13 @@ class Rosella.CommandLine.ProgramMode
     // TODO: Take a list of handles to use as the interpreter default during
     // execution
 
-    // TODO: Add a mechanism to require a certain number of positional arguments
-
     // TODO: Add an aliasing ability to give names to positional arguments
 
-    var name;           // The name of the mode
-    var func;           // The function to call
-    var conditions;     // The conditions that determine if we use this mode
-    var usage;          // Usage string for this mode
+    var name;                   // The name of the mode
+    var func;                   // The function to call
+    var conditions;             // The conditions that determine if we use this mode
+    var usage;                  // Usage string for this mode
+    var required_positionals;   // Required positionsl
 
     // Constructor. Each ProgramMode has a name
     function ProgramMode(string name)
@@ -108,6 +107,15 @@ class Rosella.CommandLine.ProgramMode
         if (self.conditions == null)
             self.conditions = [];
         var condition = new Rosella.CommandLine.ModeCondition.GenericFunc(f);
+        push(self.conditions, condition);
+        return self;
+    }
+
+    function require_positionals(int can_have_more, var args [slurpy])
+    {
+        if (self.conditions == null)
+            self.conditions = [];
+        var condition = new Rosella.CommandLine.ModeCondition.RequiredPositionals(can_have_more, args);
         push(self.conditions, condition);
         return self;
     }
