@@ -31,7 +31,7 @@ class Rosella.CommandLine.Program
 
     function define_arguments(var raw_defs)
     {
-        self.arg_defs = new Rosella.CommandLine.ArgumentDef(raw_defs);
+        self.arg_defs = Rosella.CommandLine.ArgumentDef.get_argument_definition(raw_defs);
         return self;
     }
 

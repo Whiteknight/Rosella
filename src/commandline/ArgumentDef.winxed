@@ -1,3 +1,20 @@
+namespace Rosella.CommandLine.ArgumentDef
+{
+    function get_argument_definition(var raw_defs)
+    {
+        var arg_defs;
+        if (does(raw_defs, "hash"))
+            arg_defs = new Rosella.CommandLine.ArgumentDef.NewStyleHash();
+        else if (does(raw_defs, "array"))
+            arg_defs = new Rosella.CommandLine.ArgumentDef.OldStyleArray();
+        else
+            Rosella.Error.error("Unknown argument type %s", typeof(raw_defs));
+
+        arg_defs.set_definitions(raw_defs);
+        return arg_defs;
+    }
+}
+
 /* Argument Definitions.
     Represents the forward declarations of the different arguments. These
     definitions are used during argument processing to parse out expected
@@ -5,22 +22,20 @@
 */
 class Rosella.CommandLine.ArgumentDef
 {
-    // TODO: We might consider breaking this up into different strategy subclasses
-    // depending on raw_defs format, and adding a factory to choose between
-    // them
-
     var raw_defs;       // The raw argument definitions from the user
     var prepared_defs;  // The prepared/processed argument definitions
     var aliases;        // Map of aliased argument names
 
     // Constructor
-    function ArgumentDef(var raw_defs)
-    {
-        self.raw_defs = raw_defs;
-    }
+    function ArgumentDef() { }
 
     /* Public Methods
     */
+
+    function set_definitions(var raw_defs)
+    {
+        self.raw_defs = raw_defs;
+    }
 
     function get_definition(string arg_name)
     {
@@ -38,13 +53,7 @@ class Rosella.CommandLine.ArgumentDef
     // definitions and the description message associated with each
     function get_description(var sb = new 'StringBuilder')
     {
-        var raw_defs = self.raw_defs;
-        if (does(raw_defs, "hash"))
-            self.__get_description_hash(raw_defs, sb);
-        else if (does(raw_defs, "array"))
-            self.__get_description_array(raw_defs, sb);
-        else
-            Rosella.Error.error("Unknown argument definition type '%s'", typeof(raw_defs));
+        self.__get_description_internal(sb);
         return sb;
     }
 
@@ -59,12 +68,7 @@ class Rosella.CommandLine.ArgumentDef
         var aliases  = Rosella.get_string_string_hash();
         var raw_defs = self.raw_defs;
 
-        if (does(raw_defs, "hash"))
-            self.__prepare_arg_defs_hash(raw_defs, arg_defs, aliases);
-        else if (does(raw_defs, "array"))
-            self.__prepare_arg_defs_array(raw_defs, arg_defs, aliases);
-        else
-            Rosella.Error.error("Unknown argument definition type '%s'", typeof(raw_defs));
+        self.__prepare_arg_defs(raw_defs, arg_defs, aliases);
 
         self.prepared_defs = arg_defs;
         self.aliases = aliases;
@@ -74,41 +78,43 @@ class Rosella.CommandLine.ArgumentDef
     /* Private Helper Methods
     */
 
-    // Get a description message for a new-style def hash
-    function __get_description_hash(var raw_defs, var sb)
+    function __verify_arg_type(string arg_name, string arg_type)
     {
-        int max = 0;
-        var fixed_defs = {};
-        for (string arg in raw_defs) {
-            var parts = split("=", arg);
-            string arg_name = parts[0];
-            string prefix = (length(arg_name) == 1) ? "-" : "--";
-            arg_name = prefix + arg;
-            fixed_defs[arg_name] = raw_defs[arg];
-
-            int len = length(arg_name);
-            if (len > max)
-                max = len;
+        switch (arg_type) {
+            case "b":   // Boolean Flag
+            case "s":   // String
+            case "i":   // Integer
+            case "f":   // Float
+            case "[]":  // Array
+            case "{}":  // Hash
+                // These are OK
+                break;
+            case "@":   // Old-style Array
+                arg_type = "[]";
+                break;
+            case "%":   // Old-style Hash
+                arg_type = "{}";
+                break;
+            default:
+                Rosella.Error.error("Unknown argument type for '%s': '%s'", arg_name, arg_type);
         }
-        max += 4;
-
-        for (string arg in fixed_defs) {
-            string desc = fixed_defs[arg];
-            push(sb, "    ");
-
-            push(sb, arg);
-            push(sb, repeat_string(" ", max - length(arg)));
-            push(sb, desc);
-            push(sb, "\n");
-        }
-        return sb;
+        return arg_type;
     }
 
-    // Get a description message for an old-style array of arrays
-    function __get_description_array(var raw_defs, var sb)
+    function __prepare_arg_defs(var defs, var arg_defs, var aliases)
     {
-        // TODO
+        Rosella.Error.must_subclass(__FUNCTION__);
     }
+
+    function __get_description_internal(var sb)
+    {
+        Rosella.Error.must_subclass(__FUNCTION__);
+    }
+}
+
+class Rosella.CommandLine.ArgumentDef.NewStyleHash : Rosella.CommandLine.ArgumentDef
+{
+    function NewStyleHash() { }
 
     /* We can handle defs of the following types:
         foo|f       f|foo|foobar, etc
@@ -117,8 +123,8 @@ class Rosella.CommandLine.ArgumentDef
         foo=[]      f=[]
         foo={}      f={}
     */
-    // Get a processed definition hash for a new-style hash
-    function __prepare_arg_defs_hash(var defs, var arg_defs, var aliases)
+
+    function __prepare_arg_defs(var defs, var arg_defs, var aliases)
     {
         for (string arg_def in defs) {
             string arg_name;
@@ -153,32 +159,49 @@ class Rosella.CommandLine.ArgumentDef
         }
     }
 
-    // Get a processed definition hash for an old-style array of arrays
-    function __prepare_arg_defs_array(var defs, var arg_defs, var aliases)
+    function __get_description_internal(var sb)
     {
-        // TODO
+        var raw_defs = self.raw_defs;
+        int max = 0;
+        var fixed_defs = {};
+        for (string arg in raw_defs) {
+            var parts = split("=", arg);
+            string arg_name = parts[0];
+            string prefix = (length(arg_name) == 1) ? "-" : "--";
+            arg_name = prefix + arg;
+            fixed_defs[arg_name] = raw_defs[arg];
+
+            int len = length(arg_name);
+            if (len > max)
+                max = len;
+        }
+        max += 4;
+
+        for (string arg in fixed_defs) {
+            string desc = fixed_defs[arg];
+            push(sb, "    ");
+
+            push(sb, arg);
+            push(sb, repeat_string(" ", max - length(arg)));
+            push(sb, desc);
+            push(sb, "\n");
+        }
+    }
+}
+
+class Rosella.CommandLine.ArgumentDef.OldStyleArray : Rosella.CommandLine.ArgumentDef
+{
+    function OldStyleArray() { }
+
+    function __get_description_internal(var sb)
+    {
+        var raw_defs = self.raw_defs;
+        // TODO: This
     }
 
-    function __verify_arg_type(string arg_name, string arg_type)
+    // Get a processed definition hash for an old-style array of arrays
+    function __prepare_arg_defs(var defs, var arg_defs, var aliases)
     {
-        switch (arg_type) {
-            case "b":   // Boolean Flag
-            case "s":   // String
-            case "i":   // Integer
-            case "f":   // Float
-            case "[]":  // Array
-            case "{}":  // Hash
-                // These are OK
-                break;
-            case "@":   // Old-style Array
-                arg_type = "[]";
-                break;
-            case "%":   // Old-style Hash
-                arg_type = "{}";
-                break;
-            default:
-                Rosella.Error.error("Unknown argument type for '%s': '%s'", arg_name, arg_type);
-        }
-        return arg_type;
+        // TODO
     }
 }
