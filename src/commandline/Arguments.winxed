@@ -74,7 +74,7 @@ class Rosella.CommandLine.Arguments
                 continue;
             }
 
-            :(arg_name, string def) = arg_defs.get_definition(arg_name);
+            :(arg_name, string def) = arg_defs.get_definition(null, arg_name);
             switch(def) {
                 case "b":
                     if (single == false)
@@ -138,6 +138,17 @@ class Rosella.CommandLine.Arguments
         self.arg_defs = arg_defs;
     }
 
+    function alias_positionals(req_pos)
+    {
+        int num_req = elements(req_pos);
+        if (elements(self.pos_cache) < num_req)
+            Rosella.Error.error("Expected %d positionals to alias. Have %d instead", num_req, elements(self.pos_cache));
+        for (int i = 0; i < elements(req_pos); i++) {
+            string name = req_pos[i];
+            self.named_cache[name] = self.pos_cache[i];
+        }
+    }
+
     // Get the remaining args
     function remainder()
     {
@@ -155,7 +166,7 @@ class Rosella.CommandLine.Arguments
 
     function get_integer_keyed[vtable](string name)
     {
-        :(name, string def) = self.arg_defs.get_definition(name);
+        :(name, string def) = self.arg_defs.get_definition(self.named_cache, name);
         if (def != "b" && def != "i")
             Rosella.Error.error("Argument '%s' is not an integer or boolean", name);
         if (exists self.named_cache[name])
@@ -165,7 +176,7 @@ class Rosella.CommandLine.Arguments
 
     function get_string_keyed[vtable](string name)
     {
-        :(name, string def) = self.arg_defs.get_definition(name);
+        :(name, string def) = self.arg_defs.get_definition(self.named_cache, name);
         if (def != "s")
             Rosella.Error.error("Argument '%s' is not a string", name);
         if (exists self.named_cache[name])
@@ -175,7 +186,7 @@ class Rosella.CommandLine.Arguments
 
     function get_number_keyed[vtable](string name)
     {
-        :(name, string def) = self.arg_defs.get_definition(name);
+        :(name, string def) = self.arg_defs.get_definition(self.named_cache, name);
         if (def != "f")
             Rosella.Error.error("Argument '%s' is not a floating point number", name);
         if (exists self.named_cache[name])
@@ -185,7 +196,7 @@ class Rosella.CommandLine.Arguments
 
     function get_pmc_keyed[vtable](string name)
     {
-        :(name, string def) = self.arg_defs.get_definition(name);
+        :(name, string def) = self.arg_defs.get_definition(self.named_cache, name);
         if (exists self.named_cache[name])
             return self.named_cache[name];
         return null;

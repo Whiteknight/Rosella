@@ -37,7 +37,7 @@ class Rosella.CommandLine.ArgumentDef
         self.raw_defs = raw_defs;
     }
 
-    function get_definition(string arg_name)
+    function get_definition(var args, string arg_name)
     {
         :(var arg_defs, var aliases) = self.__get_definitions();
         if (exists arg_defs[arg_name])
@@ -46,6 +46,11 @@ class Rosella.CommandLine.ArgumentDef
             string alias = aliases[arg_name];
             return alias, arg_defs[alias];
         }
+
+        // If we have a parsed arg in the cache, but no def, just assume it
+        // was added by some other means.
+        if (args != null && exists args[arg_name])
+            return arg_name, "s";
         Rosella.Error.error("Unknown argument '%s'", arg_name);
     }
 

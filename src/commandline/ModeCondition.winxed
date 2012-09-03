@@ -115,10 +115,6 @@ class Rosella.CommandLine.ModeCondition.RequiredPositionals : Rosella.CommandLin
 
     function is_satisfied(var args)
     {
-        say(self.can_have_more);
-        say(elements(self.required_args));
-        say(elements(args.pos_cache));
-        Rosella.Dumper.dump(args.pos_cache);
         if (self.can_have_more) {
             return elements(args.pos_cache) >= elements(self.required_args);
         } else {

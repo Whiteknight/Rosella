@@ -4,19 +4,21 @@ function create_new(var p_args [slurpy])
     return new Rosella.CommandLine.Arguments(null);
 }
 
-function create_arg_defs()
+function create_arg_defs(var raw_arg_defs = null)
 {
-    var raw_arg_defs = {
-        "A"      : "The A flag",
-        "B=s"    : "The B scalar",
-        "C=[]"   : "The C list",
-        "D={}"   : "The D hash",
-        "fff"    : "The F flag",
-        "ggg=s"  : "The G scalar",
-        "hhh=[]" : "The H list",
-        "iii={}" : "The I hash"
-    };
-    return new Rosella.CommandLine.ArgumentDef(raw_arg_defs);
+    if (raw_arg_defs == null) {
+        raw_arg_defs = {
+            "A"      : "The A flag",
+            "B=s"    : "The B scalar",
+            "C=[]"   : "The C list",
+            "D={}"   : "The D hash",
+            "fff"    : "The F flag",
+            "ggg=s"  : "The G scalar",
+            "hhh=[]" : "The H list",
+            "iii={}" : "The I hash"
+        };
+    }
+    return Rosella.CommandLine.ArgumentDef.get_argument_definition(raw_arg_defs);
 }
 
 class Test_Rosella_CommandLine_Arguments
@@ -296,7 +298,7 @@ class Test_Rosella_CommandLine_Arguments
     function combination_args()
     {
         var obj = create_new();
-        var arg_defs = new Rosella.CommandLine.ArgumentDef({
+        var arg_defs = create_arg_defs({
             "A" : "A",
             "B" : "B",
             "C" : "C",
@@ -334,7 +336,7 @@ class Test_Rosella_CommandLine_Arguments
     function arg_does_not_exist()
     {
         var obj = create_new();
-        var arg_defs = new Rosella.CommandLine.ArgumentDef({
+        var arg_defs = create_arg_defs({
             "A" : "A"
         });
 
@@ -347,7 +349,7 @@ class Test_Rosella_CommandLine_Arguments
     function unknown_args()
     {
         var obj = create_new();
-        var arg_defs = new Rosella.CommandLine.ArgumentDef({
+        var arg_defs = create_arg_defs({
             "A" : "A",
             "B" : "B",
             "C" : "C",

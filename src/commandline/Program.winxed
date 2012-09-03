@@ -83,6 +83,8 @@ class Rosella.CommandLine.Program
             return;
         }
 
+        mode.alias_positionals(args);
+
         int exit_code = 0;
         int has_ec = false;
         Rosella.Parrot.try_report(function () {

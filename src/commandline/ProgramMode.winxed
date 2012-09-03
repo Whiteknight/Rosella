@@ -113,11 +113,21 @@ class Rosella.CommandLine.ProgramMode
 
     function require_positionals(int can_have_more, var args [slurpy])
     {
+        if (self.required_positionals != null)
+            Rosella.Error.error("Cannot specify more than one list of required positionals");
         if (self.conditions == null)
             self.conditions = [];
         var condition = new Rosella.CommandLine.ModeCondition.RequiredPositionals(can_have_more, args);
         push(self.conditions, condition);
+        self.required_positionals = args;
         return self;
+    }
+
+    function alias_positionals(var args)
+    {
+        var req_pos = self.required_positionals;
+        if (req_pos != null)
+            args.alias_positionals(self.required_positionals);
     }
 }
 
