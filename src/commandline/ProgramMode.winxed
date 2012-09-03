@@ -5,13 +5,6 @@
 */
 class Rosella.CommandLine.ProgramMode
 {
-    // TODO: Take an integer to use as the default exit code
-
-    // TODO: Take a list of handles to use as the interpreter default during
-    // execution
-
-    // TODO: Add an aliasing ability to give names to positional arguments
-
     var name;                   // The name of the mode
     var func;                   // The function to call
     var conditions;             // The conditions that determine if we use this mode

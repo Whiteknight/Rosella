@@ -8,8 +8,8 @@
 */
 class Rosella.CommandLine.Program
 {
-    // TODO: Add an ability to pass arguments to the main routine flag instead of
-    // in a single Arguments object.
+    // TODO: Take a list of handles to use as the interpreter default during
+    // execution
 
     var program_name;   // The string name of the program
     var default_mode;   // The default ProgramMode
@@ -65,8 +65,6 @@ class Rosella.CommandLine.Program
     // Execute the program with the given args
     function run(var raw_args)
     {
-        // TODO: Take some optional parameters, such as handles to use for
-        // overriding standard handles, other options.
         var args = new Rosella.CommandLine.Arguments(self);
         try {
             args.parse(raw_args, self.arg_defs);
