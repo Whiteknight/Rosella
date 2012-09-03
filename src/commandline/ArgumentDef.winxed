@@ -58,7 +58,8 @@ class Rosella.CommandLine.ArgumentDef
     // definitions and the description message associated with each
     function get_description(var sb = new 'StringBuilder')
     {
-        self.__get_description_internal(sb);
+        // TODO: Take a list of positional aliases and include those
+        self.__get_description_internal(self.raw_defs, sb);
         return sb;
     }
 
@@ -164,9 +165,8 @@ class Rosella.CommandLine.ArgumentDef.NewStyleHash : Rosella.CommandLine.Argumen
         }
     }
 
-    function __get_description_internal(var sb)
+    function __get_description_internal(var raw_defs, var sb)
     {
-        var raw_defs = self.raw_defs;
         int max = 0;
         var fixed_defs = {};
         for (string arg in raw_defs) {
@@ -194,19 +194,55 @@ class Rosella.CommandLine.ArgumentDef.NewStyleHash : Rosella.CommandLine.Argumen
     }
 }
 
+// An array of simple text definitions, like GetOpt::Obj uses
 class Rosella.CommandLine.ArgumentDef.OldStyleArray : Rosella.CommandLine.ArgumentDef
 {
     function OldStyleArray() { }
 
-    function __get_description_internal(var sb)
+    function __get_description_internal(var raw_defs, var sb)
     {
-        var raw_defs = self.raw_defs;
-        // TODO: This
+        for (int i = 0; i < elements(raw_defs); i++) {
+            string arg = raw_defs[i];
+            push(sb, "    ");
+            push(sb, arg);
+            push(sb, "\n");
+        }
     }
 
     // Get a processed definition hash for an old-style array of arrays
     function __prepare_arg_defs(var defs, var arg_defs, var aliases)
     {
-        // TODO
+        for (int i = i; i < elements(defs); i++) {
+            string arg_def = defs[i];
+            string arg_name;
+            string arg_type = "b";  // Default is a boolean flag
+            var raw_aliases = null;
+
+            // Separate on the ':' the name(s) from the type
+            int eql_idx = index_of_substr(arg_def, ":");
+            if (eql_idx != -1) {
+                arg_type = substr(arg_def, eql_idx + 1);
+                arg_def = substr(arg_def, 0, eql_idx);
+            }
+
+            // Different aliases for the same option are separated by '|'.
+            // Get the list of them and take one of them to be the canonical
+            // arg_name.
+            if (index_of_substr(arg_def, "|") != -1) {
+                raw_aliases = split("|", arg_def);
+                arg_name = raw_aliases.pop();
+            } else
+                arg_name = arg_def;
+
+            // Verify that the type is acceptable
+            arg_type = self.__verify_arg_type(arg_name, arg_type);
+
+            // Add all aliases to the list of aliases
+            arg_defs[arg_name] = arg_type;
+            if (raw_aliases != null) {
+                for (string alias in raw_aliases)
+                    aliases[alias] = arg_name;
+            }
+        }
     }
 }
