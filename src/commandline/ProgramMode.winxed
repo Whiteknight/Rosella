@@ -71,6 +71,9 @@ class Rosella.CommandLine.ProgramMode
     // Get the main function to dispatch to.
     function main_function()
     {
+        var main_func = self.func;
+        if (main_func == null)
+            Rosella.Error.error("Main function for mode %s not set", self.name);
         return self.func;
     }
 
@@ -130,7 +133,7 @@ class Rosella.CommandLine.ProgramMode.Default : Rosella.CommandLine.ProgramMode
 {
     function Default() { self.name = ""; }
 
-    function get_usage(string program_name, var sb)
+    function get_usage(string program_name, var sb = new 'StringBuilder')
     {
         var usage = self.usage;
         if (usage != null) {
@@ -139,11 +142,15 @@ class Rosella.CommandLine.ProgramMode.Default : Rosella.CommandLine.ProgramMode
             push(sb, " ");
             push(sb, string(usage));
             push(sb, "\n");
-        } else {
+        }
+        else if (self.conditions != null) {
             push(sb, "Usage: ");
             push(sb, program_name);
+            for (var condition in self.conditions)
+                condition.get_description(sb);
             push(sb, " <OPTIONS>\n");
         }
+        return sb;
     }
 
     function require_flag(string name)

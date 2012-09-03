@@ -12,7 +12,7 @@ function main[main](var args)
                          "'winxed' or 'nqp' or others if you have suitable templates installed.");
     p.default_mode()
         .set_function(test_all_main)
-        .set_usage("<lang> <library> <folder>");
+        .require_positionals(false, "lang", "library", "folder");
     p.add_mode("help").require_flag("help").set_function(function(var args) { say(p.get_help_message()); });
     p.run(args);
 }

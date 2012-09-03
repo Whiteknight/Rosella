@@ -66,22 +66,19 @@ class Rosella.CommandLine.Program
     function run(var raw_args)
     {
         var args = new Rosella.CommandLine.Arguments(self);
+        var main_func;
         try {
             args.parse(raw_args, self.arg_defs);
+
+            var mode = self.__find_mode(args);
+            main_func = mode.main_function();
+
+            mode.alias_positionals(args);
         } catch (e) {
             say(e);
             self.try_handle_error(args);
             return;
         }
-
-        var mode = self.__find_mode(args);
-        var main_func = mode.main_function();
-        if (main_func == null) {
-            self.try_handle_error(args);
-            return;
-        }
-
-        mode.alias_positionals(args);
 
         int exit_code = 0;
         int has_ec = false;

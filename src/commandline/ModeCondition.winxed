@@ -16,6 +16,13 @@ class Rosella.CommandLine.ModeCondition
     function get_description(var sb)
     {
     }
+
+    function __get_flag_name(string name)
+    {
+        if (length(name) == 1)
+            return "-" + name;
+        return "--" + name;
+    }
 }
 
 // Condition that requires the presence of a given flag
@@ -39,7 +46,7 @@ class Rosella.CommandLine.ModeCondition.FlagSet : Rosella.CommandLine.ModeCondit
     {
         string flagname = self.flagname;
         push(sb, " ");
-        push(sb, flagname);
+        push(sb, self.__get_flag_name(flagname));
     }
 }
 
@@ -70,7 +77,7 @@ class Rosella.CommandLine.ModeCondition.ScalarValue : Rosella.CommandLine.ModeCo
         string name = self.name;
         string value = self.value;
         push(sb, " ");
-        push(sb, name);
+        push(sb, self.__get_flag_name(name));
         push(sb, "=");
         push(sb, value);
     }
