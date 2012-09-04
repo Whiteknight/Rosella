@@ -61,16 +61,16 @@ namespace Rosella.Parrot
         var p;
         var n;
         try {
-            :(p [slurpy], n [slurpy,named]) = sub();
+            /*:(p [slurpy], n [slurpy,named]) = */sub();
         } catch (e) {
             var fmt = Rosella.Parrot.exception_formatter();
-            handle.print(fmt.format_default(e));
+            out.print(fmt.format_default(e));
         }
 
         if (handles != null)
             Rosella.IO.swap_handles(handles);
 
-        return p:[flat], n:[flat,named];
+        /*return p:[flat], n:[flat,named];*/
     }
 
     // private routine. Format backtrace information into an array of
