@@ -23,7 +23,7 @@ namespace Rosella
         return h;
     }
 
-    function get_integer_string_hash()
+    function get_int_string_hash()
     {
         var h = int_keyed_hash();
         h.set_value_type(DATATYPE_STRING);

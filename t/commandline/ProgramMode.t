@@ -46,7 +46,12 @@ class Test_Rosella_CommandLine_ProgramMode
         self.status.verify("Test Rosella.CommandLine.ProgramMode.main_function()");
         var obj = new Rosella.CommandLine.ProgramMode("");
 
-        var result = obj.main_function();
+        // If we haven't set a function, this should throw an exception
+        self.assert.throws(function() {
+            var result = obj.main_function();
+        });
+
+        // TODO: test it when we set a function
     }
 
     function require_flag()

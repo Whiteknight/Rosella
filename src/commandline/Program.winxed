@@ -72,8 +72,6 @@ class Rosella.CommandLine.Program
 
             var mode = self.__find_mode(args);
             main_func = mode.main_function();
-
-            mode.alias_positionals(args);
         } catch (e) {
             say(e);
             self.try_handle_error(args);

@@ -50,6 +50,29 @@ class Rosella.CommandLine.ModeCondition.FlagSet : Rosella.CommandLine.ModeCondit
     }
 }
 
+class Rosella.CommandLine.ModeCondition.ScalarExists : Rosella.CommandLine.ModeCondition
+{
+    var scalarname;
+
+    function ScalarExists(string scalarname)
+    {
+        self.scalarname = scalarname;
+    }
+
+    function is_satisfied(var args)
+    {
+        if (args.is_set(self.scalarname))
+            return true;
+        return false;
+    }
+
+    function get_description(var sb)
+    {
+        // TODO: This!
+    }
+}
+
+
 // Condition that requires a given scalar-valued flag
 class Rosella.CommandLine.ModeCondition.ScalarValue : Rosella.CommandLine.ModeCondition
 {
@@ -109,6 +132,7 @@ class Rosella.CommandLine.ModeCondition.GenericFunc : Rosella.CommandLine.ModeCo
     }
 }
 
+/*
 class Rosella.CommandLine.ModeCondition.RequiredPositionals : Rosella.CommandLine.ModeCondition
 {
     var required_args;
@@ -138,5 +162,17 @@ class Rosella.CommandLine.ModeCondition.RequiredPositionals : Rosella.CommandLin
         }
         if (self.can_have_more)
             push(sb, " ...");
+    }
+}
+*/
+
+class Rosella.CommandLine.ModeCondition.NumPositionals : Rosella.CommandLine.ModeCondition
+{
+    var min_positionals;
+    var max_positionals;
+
+    function NumPositionals(int min, int max)
+    {
+        // TODO: This
     }
 }

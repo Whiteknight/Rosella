@@ -28,6 +28,7 @@ class Rosella.CommandLine.ArgumentDef
     var raw_defs;       // The raw argument definitions from the user
     var prepared_defs;  // The prepared/processed argument definitions
     var aliases;        // Map of aliased argument names
+    var pos_aliases;    // Map of idx->name for positionals
 
     // Constructor
     function ArgumentDef() { }
@@ -42,18 +43,12 @@ class Rosella.CommandLine.ArgumentDef
 
     function get_definition(var args, string arg_name)
     {
-        :(var arg_defs, var aliases) = self.__get_definitions();
+        :(var arg_defs, var aliases, var pos_aliases) = self.__get_definitions();
+        if (exists aliases[arg_name])
+            arg_name = aliases[arg_name];
         if (exists arg_defs[arg_name])
             return arg_name, arg_defs[arg_name];
-        if (exists aliases[arg_name]) {
-            string alias = aliases[arg_name];
-            return alias, arg_defs[alias];
-        }
 
-        // If we have a parsed arg in the cache, but no def, just assume it
-        // was added by some other means.
-        if (args != null && exists args[arg_name])
-            return arg_name, "s";
         Rosella.Error.error("Unknown argument '%s'", arg_name);
     }
 
@@ -66,22 +61,30 @@ class Rosella.CommandLine.ArgumentDef
         return sb;
     }
 
+    function get_positional_aliases()
+    {
+        :(var arg_defs, var aliases, var pos_aliases) = self.__get_definitions();
+        return pos_aliases;
+    }
+
     // Process the input definitions format into a format suitable to use for
     // argument processing.
     function __get_definitions()
     {
         if (self.prepared_defs != null)
-            return self.prepared_defs, self.aliases;
+            return self.prepared_defs, self.aliases, self.pos_aliases;
 
         var arg_defs = Rosella.get_string_string_hash();
         var aliases  = Rosella.get_string_string_hash();
+        var pos_aliases = Rosella.get_int_string_hash();
         var raw_defs = self.raw_defs;
 
-        self.__prepare_arg_defs(raw_defs, arg_defs, aliases);
+        self.__prepare_arg_defs(raw_defs, arg_defs, aliases, pos_aliases);
 
         self.prepared_defs = arg_defs;
         self.aliases = aliases;
-        return arg_defs, aliases;
+        self.pos_aliases = pos_aliases;
+        return arg_defs, aliases, pos_aliases;
     }
 
     /* Private Helper Methods
@@ -89,6 +92,15 @@ class Rosella.CommandLine.ArgumentDef
 
     function __verify_arg_type(string arg_name, string arg_type)
     {
+        if (arg_type == "[]" || arg_type == "{}")
+            return arg_type, -1;
+
+        int idx = -1;
+        if (length(arg_type) >= 2) {
+            arg_type = substr(arg_type, 0, 1);
+            idx = int(substr(arg_type, 1));
+        }
+
         switch (arg_type) {
             case "b":   // Boolean Flag
             case "s":   // String
@@ -107,10 +119,10 @@ class Rosella.CommandLine.ArgumentDef
             default:
                 Rosella.Error.error("Unknown argument type for '%s': '%s'", arg_name, arg_type);
         }
-        return arg_type;
+        return arg_type, idx;
     }
 
-    function __prepare_arg_defs(var defs, var arg_defs, var aliases)
+    function __prepare_arg_defs(var defs, var arg_defs, var aliases, var pos_aliases)
     {
         Rosella.Error.must_subclass(__FUNCTION__);
     }
@@ -129,15 +141,17 @@ class Rosella.CommandLine.ArgumentDef.NewStyleHash : Rosella.CommandLine.Argumen
         foo|f       f|foo|foobar, etc
         foo         f
         foo=s       f=s   (b, i, f, @ or % too)
+        foo=sX      f=sX  (s, b, i, f. X = 0, 1, 2, ...)
         foo=[]      f=[]
         foo={}      f={}
     */
 
-    function __prepare_arg_defs(var defs, var arg_defs, var aliases)
+    function __prepare_arg_defs(var defs, var arg_defs, var aliases, var pos_aliases)
     {
         for (string arg_def in defs) {
             string arg_name;
             string arg_type = "b";  // Default is a boolean flag
+            int arg_idx = -1;       // Index for positionals
             var raw_aliases = null;
 
             // Separate on the '=' the name(s) from the type
@@ -157,7 +171,7 @@ class Rosella.CommandLine.ArgumentDef.NewStyleHash : Rosella.CommandLine.Argumen
                 arg_name = arg_def;
 
             // Verify that the type is acceptable
-            arg_type = self.__verify_arg_type(arg_name, arg_type);
+            :(arg_type, int idx) = self.__verify_arg_type(arg_name, arg_type);
 
             // Add all aliases to the list of aliases
             arg_defs[arg_name] = arg_type;
@@ -165,6 +179,9 @@ class Rosella.CommandLine.ArgumentDef.NewStyleHash : Rosella.CommandLine.Argumen
                 for (string alias in raw_aliases)
                     aliases[alias] = arg_name;
             }
+
+            if (idx != -1)
+                pos_aliases[idx] = arg_name;
         }
     }
 
@@ -238,7 +255,7 @@ class Rosella.CommandLine.ArgumentDef.OldStyleArray : Rosella.CommandLine.Argume
                 arg_name = arg_def;
 
             // Verify that the type is acceptable
-            arg_type = self.__verify_arg_type(arg_name, arg_type);
+            :(arg_type, int idx) = self.__verify_arg_type(arg_name, arg_type);
 
             // Add all aliases to the list of aliases
             arg_defs[arg_name] = arg_type;

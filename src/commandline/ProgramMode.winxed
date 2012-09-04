@@ -107,23 +107,14 @@ class Rosella.CommandLine.ProgramMode
         return self;
     }
 
-    function require_positionals(int can_have_more, var args [slurpy])
+    // Require that a scalar value be provided with any value
+    function require_scalar(string name)
     {
-        if (self.required_positionals != null)
-            Rosella.Error.error("Cannot specify more than one list of required positionals");
         if (self.conditions == null)
             self.conditions = [];
-        var condition = new Rosella.CommandLine.ModeCondition.RequiredPositionals(can_have_more, args);
+        var condition = new Rosella.CommandLine.ModeCondition.ScalarExists(name);
         push(self.conditions, condition);
-        self.required_positionals = args;
         return self;
-    }
-
-    function alias_positionals(var args)
-    {
-        var req_pos = self.required_positionals;
-        if (req_pos != null)
-            args.alias_positionals(self.required_positionals);
     }
 }
 

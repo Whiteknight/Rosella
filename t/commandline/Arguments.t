@@ -360,6 +360,30 @@ class Test_Rosella_CommandLine_Arguments
             obj.parse(["-A", "-BC", "-X"], arg_defs);
         });
     }
+
+    function aliased_positionals()
+    {
+        var arg_defs = create_arg_defs({
+            "A=s" : "A",
+            "B=s0" : "B"
+        });
+
+        // Test that an aliased positional, passed as a positional, can be accessed
+        // by name or idx
+        var obj = create_new();
+        obj.parse(["foo", "-Abar"], arg_defs);
+        self.assert.str_equal(obj["A"], "bar");
+        self.assert.str_equal(obj["B"], "foo");
+        self.assert.str_equal(obj[0], "foo");
+
+        // Next, test that an aliased positional, passed by name, can only be
+        // accessed by name
+        obj = create_new();
+        obj.parse(["-Bfoo", "-Abar"], arg_defs);
+        self.assert.str_equal(obj["A"], "bar");
+        self.assert.str_equal(obj["B"], "foo");
+        self.assert.str_equal(obj[0], "");
+    }
 }
 
 function main[main]()

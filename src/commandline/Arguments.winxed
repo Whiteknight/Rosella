@@ -32,6 +32,7 @@ class Rosella.CommandLine.Arguments
         var named_cache = {};
         string remainders[];
         string positionals[] = [];
+        var pos_aliases = arg_defs.get_positional_aliases();
 
         int i = 0;
         while (self.__has_more(args, i, lookahead)) {
@@ -70,8 +71,18 @@ class Rosella.CommandLine.Arguments
 
             // A positional arg
             else {
+                int idx = elements(positionals);
                 push(positionals, arg);
-                continue;
+
+                // If we have an alias name for this positional, set the arg_name
+                // and push the value back to the lookahead so we can process it
+                // like normal.
+                if (exists pos_aliases[idx]) {
+                    arg_name = pos_aliases[idx];
+                    unshift(lookahead, arg);
+                }
+                else
+                    continue;
             }
 
             :(arg_name, string def) = arg_defs.get_definition(null, arg_name);
@@ -138,17 +149,6 @@ class Rosella.CommandLine.Arguments
         self.arg_defs = arg_defs;
     }
 
-    function alias_positionals(req_pos)
-    {
-        int num_req = elements(req_pos);
-        if (elements(self.pos_cache) < num_req)
-            Rosella.Error.error("Expected %d positionals to alias. Have %d instead", num_req, elements(self.pos_cache));
-        for (int i = 0; i < elements(req_pos); i++) {
-            string name = req_pos[i];
-            self.named_cache[name] = self.pos_cache[i];
-        }
-    }
-
     // Get the remaining args
     function remainder()
     {
@@ -159,6 +159,14 @@ class Rosella.CommandLine.Arguments
     function raw_args()
     {
         return self.raw_args;
+    }
+
+    function is_set(string name)
+    {
+        :(name, string def) = self.arg_defs.get_definition(self.named_cache, name);
+        if (exists self.named_cache[name])
+            return true;
+        return false;
     }
 
     /* VTABLEs
