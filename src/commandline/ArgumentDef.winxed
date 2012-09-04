@@ -22,9 +22,6 @@ namespace Rosella.CommandLine.ArgumentDef
 */
 class Rosella.CommandLine.ArgumentDef
 {
-    // TODO: Can we take positional aliases here in some way, with the rest of
-    // the named argument defs for unified processing and description generation?
-
     var raw_defs;       // The raw argument definitions from the user
     var prepared_defs;  // The prepared/processed argument definitions
     var aliases;        // Map of aliased argument names
@@ -56,7 +53,6 @@ class Rosella.CommandLine.ArgumentDef
     // definitions and the description message associated with each
     function get_description(var sb = new 'StringBuilder')
     {
-        // TODO: Take a list of positional aliases and include those
         self.__get_description_internal(self.raw_defs, sb);
         return sb;
     }

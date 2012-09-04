@@ -68,7 +68,9 @@ class Rosella.CommandLine.ModeCondition.ScalarExists : Rosella.CommandLine.ModeC
 
     function get_description(var sb)
     {
-        // TODO: This!
+        string name = self.scalarname;
+        push(sb, " ");
+        push(sb, self.__get_flag_name(name));
     }
 }
 
@@ -173,6 +175,25 @@ class Rosella.CommandLine.ModeCondition.NumPositionals : Rosella.CommandLine.Mod
 
     function NumPositionals(int min, int max)
     {
-        // TODO: This
+        self.min_positionals = min;
+        self.max_positionals = max;
+    }
+
+    function is_satisfied(var args)
+    {
+        int min = int(self.min_positionals);
+        int max = int(self.max_positionals);
+        int n = elements(args.pos_cache);
+
+        if (min != -1 && n < min)
+            return false;
+        if (max != -1 && n > max)
+            return false;
+        return true;
+    }
+
+    function get_description(var sb)
+    {
+        //push(sb, " ...");
     }
 }
