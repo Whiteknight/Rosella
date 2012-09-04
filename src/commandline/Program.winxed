@@ -8,15 +8,13 @@
 */
 class Rosella.CommandLine.Program
 {
-    // TODO: Take a list of handles to use as the interpreter default during
-    // execution
-
     var program_name;   // The string name of the program
     var default_mode;   // The default ProgramMode
     var arg_defs;       // Hash of all argument definitions
     var on_error;       // The error handler callback
     var modes;          // A hash of named program modes
     var description;    // Program help description
+    var handles;        // Standard IO handles to use for program execution
 
     // Constructor
     function Program(string program_name)
@@ -39,6 +37,18 @@ class Rosella.CommandLine.Program
     {
         self.description = desc;
         return self;
+    }
+
+    function set_handles(var stdin, var stdout, var stderr)
+    {
+        var handles = {};
+        if (stdin != null)
+            handles["stdin"] = stdin;
+        if (stdout != null)
+            handles["stdout"] = stdout;
+        if (stderr != null)
+            handles["stderr"] = stderr;
+        self.handles = handles;
     }
 
     // Set a function to execute on errors
@@ -84,7 +94,7 @@ class Rosella.CommandLine.Program
             :(int ec [optional], int hec [opt_flag]) = main_func(args);
             exit_code = ec;
             has_ec = hec;
-        });
+        }, self.handles);
         if (has_ec)
             exit(exit_code);
     }
