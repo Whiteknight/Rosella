@@ -25,9 +25,9 @@ function dump_pbc_main(var args)
 {
     string libpath = args[0];
     int dump_all = args["all"];
-    int dump_classes = dump_all || args["class"];
-    int dump_namespaces = dump_all || args["namespace"];
-    int dump_functions = dump_all || args["function"];
+    int dump_classes = dump_all || int(args["class"]);
+    int dump_namespaces = dump_all || int(args["namespace"]);
+    int dump_functions = dump_all || int(args["function"]);
 
     // TODO: Dump some header information in all modes
 
