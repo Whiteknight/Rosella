@@ -45,18 +45,32 @@ namespace Rosella.Parrot
     }
 
     // Execute a function. Catch any exceptions and print the message and
-    // backtrace out to a specified handle. If no handle is specified,
-    // use stdout.
-    function try_report(var sub, var handle = null)
+    // backtrace out to a specified handle. Swap out the standard handles,
+    // if alternatives are provided. Return whatever values the function
+    // returns
+    function try_report(var sub, var handles = null)
     {
-        if (handle == null)
-            handle = getstdout();
+        var out = null;
+        if (handles != null && exists handles["stderr"])
+            out = handles["stderr"];
+        else
+            out = getstdout();
+        if (handles != null)
+            handles = Rosella.IO.swap_handles(handles);
+
+        var p;
+        var n;
         try {
-            sub();
+            :(p [slurpy], n [slurpy,named]) = sub();
         } catch (e) {
             var fmt = Rosella.Parrot.exception_formatter();
             handle.print(fmt.format_default(e));
         }
+
+        if (handles != null)
+            Rosella.IO.swap_handles(handles);
+
+        return p:[flat], n:[flat,named];
     }
 
     // private routine. Format backtrace information into an array of
