@@ -1,0 +1,95 @@
+// Main entry point. Parse arguments and dispatch to the main handler
+function main[main](var args)
+{
+    Rosella.Query.install_to_parrot_types();
+    var p = new Rosella.CommandLine.Program(args.shift());
+    p.define_arguments({
+        "help|h" : "Show help message",
+        "class|c" : "Dump classes",
+        "namespace|n" : "Dump namespaces",
+        "function|f" : "Dump functions (implies -n)",
+        "all|a" : "Dump everything",
+        "quiet|q" : "Print only requested items",
+        "header|e" : "Dump module header"
+    });
+    p.default_mode().set_function(dump_pbc_main);
+    p.add_mode("help").require_flag("h").set_function(usage_and_exit);
+    p.on_error(usage_and_exit);
+    p.run(args);
+}
+
+function usage_and_exit(var args)
+{
+    say(args.program.get_help_text());
+}
+
+function dump_pbc_main(var args)
+{
+    string libpath = args[0];
+    int dump_all = args["all"];
+    int dump_classes = dump_all || int(args["class"]);
+    int dump_namespaces = dump_all || int(args["namespace"]);
+    int dump_functions = dump_all || int(args["function"]);
+    int quiet = int(args["quiet"]);         // TODO
+    int dump_header = dump_all || int(args["header"]);
+
+    // We should be able to do something like:
+    //      rosella_dump_pbc foo.pbc --quiet --classes | xargs rosella_test_template test lang foo.pbc
+    //      rosella_dump_pbc foo.pbc --quiet --ns | xargs rosella_test_template test lang foo.pbc
+
+    var module = Rosella.Reflect.Module.load(libpath);
+
+    if (dump_header) {
+        // TODO: What other info can we put here?
+        Rosella.IO.sayf("%s", module);
+    }
+
+    if (dump_namespaces) {
+        say("Namespaces:");
+        if (dump_functions) {
+            dump_functions = false;
+            module.functions_by_ns()
+                .iterable()
+                .filter(function(kvp) { return elements(kvp.value()) > 0; })
+                .foreach(function(kvp) {
+                    string nsname = kvp.key();
+                    Rosella.IO.sayf("\t%s", nsname);
+                    kvp.value().iterable().foreach(function(sub) {
+                        Rosella.IO.sayf("\t\t%s", string(sub));
+                    });
+                });
+        } else {
+            module.functions_by_ns()
+                .iterable()
+                .filter(function(kvp) { return elements(kvp.value()) > 0; })
+                .foreach(function(kvp) {
+                    var subs = kvp.value();
+                    string nsname = kvp.key();
+                    Rosella.IO.sayf("\t%s", nsname);
+                });
+        }
+    }
+
+    if (dump_functions) {
+        say("Functions: ");
+        module.functions_by_ns()
+            .iterable()
+            .filter(function(kvp) { return elements(kvp.value()) > 0; })
+            .foreach(function(kvp) {
+                string nsname = kvp.key();
+                kvp.value().iterable().foreach(function(sub) {
+                    Rosella.IO.sayf("\t\t%s.%s", nsname, string(sub));
+                });
+            });
+    }
+
+    if (dump_classes) {
+        say("Classes:");
+        module.classes()
+            .iterable()
+            .foreach(function(kvp) {
+                string classname = kvp.key();
+                Rosella.IO.sayf("\t%s", classname);
+            });
+    }
+}

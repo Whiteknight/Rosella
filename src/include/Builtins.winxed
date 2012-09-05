@@ -199,6 +199,8 @@ inline repeat_string(string s, int c) return string
     return value;
 }
 
+// TODO: The needle/haystack argument ordering of index is opposite for what it
+// is with split. Consider standardizing
 inline index_of_substr(string s, string n) return int
 {
     int value;

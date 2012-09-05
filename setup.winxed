@@ -283,6 +283,8 @@ function setup_stable_libraries(var rosella)
     // Working with commandline arguments
     setup_winxed_lib(rosella, "commandline", ["Core", "String"],
         "commandline/Arguments",
+        "commandline/ArgumentDef",
+        "commandline/ModeCondition",
         "commandline/Program",
         "commandline/ProgramMode"
     );
@@ -471,6 +473,10 @@ function setup_utilities(var rosella)
         "rosella_doc" : {
             "install_name" : "rosella_doc",
             "includes" : ["Core", "CommandLine", "FileSystem", "Query", "Reflect"]
+        },
+        "dump_pbc" : {
+            "install_name" : "rosella_dump_pbc",
+            "includes" : ["Core", "FileSystem", "String", "CommandLine", "Query", "Reflect"]
         }
     };
     string src_prefix = "src/utilities/";

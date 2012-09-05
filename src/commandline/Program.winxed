@@ -10,33 +10,59 @@ class Rosella.CommandLine.Program
 {
     var program_name;   // The string name of the program
     var default_mode;   // The default ProgramMode
+    var arg_defs;       // Hash of all argument definitions
     var on_error;       // The error handler callback
     var modes;          // A hash of named program modes
+    var description;    // Program help description
+    var handles;        // Standard IO handles to use for program execution
 
     // Constructor
     function Program(string program_name)
     {
         self.program_name = program_name;
-        self.modes = [];
-        self.default_mode = new Rosella.CommandLine.ProgramMode("default");
-        self.on_error = function(var e) {
-            say("Error parsing arguments");
-            if (e != null)
-                say(e.message);
-        };
+        self.modes = {};
+        self.default_mode = new Rosella.CommandLine.ProgramMode.Default();
+    }
+
+    /* Public Methods
+    */
+
+    function define_arguments(var raw_defs)
+    {
+        self.arg_defs = Rosella.CommandLine.ArgumentDef.get_argument_definition(raw_defs);
+        return self;
+    }
+
+    function set_description(string desc)
+    {
+        self.description = desc;
+        return self;
+    }
+
+    function set_handles(var stdin, var stdout, var stderr)
+    {
+        var handles = {};
+        if (stdin != null)
+            handles["stdin"] = stdin;
+        if (stdout != null)
+            handles["stdout"] = stdout;
+        if (stderr != null)
+            handles["stderr"] = stderr;
+        self.handles = handles;
     }
 
     // Set a function to execute on errors
     function on_error(var e)
     {
         self.on_error = e;
+        return self;
     }
 
     // Add a new ProgramMode with the given name
     function add_mode(string name)
     {
         var mode = new Rosella.CommandLine.ProgramMode(name);
-        push(self.modes, mode);
+        self.modes[name] = mode;
         return mode;
     }
 
@@ -49,28 +75,16 @@ class Rosella.CommandLine.Program
     // Execute the program with the given args
     function run(var raw_args)
     {
-        var args = new Rosella.CommandLine.Arguments(self, raw_args);
-        var main_func = null;
+        var args = new Rosella.CommandLine.Arguments(self);
+        var main_func;
         try {
-            for (var mode in self.modes)
-            {
-                if (mode.can_accept(args)) {
-                    mode.fetch_all_args(args);
-                    main_func = mode.main_function();
-                    break;
-                }
-            }
-            if (main_func == null) {
-                main_func = self.default_mode.main_function();
-                if (main_func != null)
-                    self.default_mode.fetch_all_args(args);
-            }
+            args.parse(raw_args, self.arg_defs);
+
+            var mode = self.__find_mode(args);
+            main_func = mode.main_function();
         } catch (e) {
-            self.try_handle_error(e);
-            return;
-        }
-        if (main_func == null) {
-            self.try_handle_error(null);
+            say(e);
+            self.try_handle_error(args);
             return;
         }
 
@@ -80,22 +94,57 @@ class Rosella.CommandLine.Program
             :(int ec [optional], int hec [opt_flag]) = main_func(args);
             exit_code = ec;
             has_ec = hec;
-        });
+        }, self.handles);
         if (has_ec)
             exit(exit_code);
     }
 
+    function get_usage_text(var sb = new 'StringBuilder')
+    {
+        string name = self.program_name;
+
+        self.default_mode.get_usage(name, sb);
+        for (string modename in self.modes) {
+            var mode = self.modes[modename];
+            mode.get_usage(name, sb);
+        }
+        return sb;
+    }
+
+    function get_help_text()
+    {
+        var sb = new 'StringBuilder';
+        self.get_usage_text(sb);
+        push(sb, "\n");
+        if (self.description != null) {
+            string desc = self.description;
+            push(sb, desc);
+            push(sb, "\n");
+        }
+        push(sb, "\n");
+        return self.arg_defs.get_description(sb);
+    }
+
+    /* Private Methods
+    */
+
+    function __find_mode(var args)
+    {
+        for (string modename in self.modes) {
+            var mode = self.modes[modename];
+            if (mode.can_accept(args))
+                return mode;
+        }
+        return self.default_mode;
+    }
+
     // On error, try to execute the error handler, if any.
-    function try_handle_error(var e)
+    function try_handle_error(var args)
     {
         var on_error = self.on_error;
         if (on_error == null) {
-            if (e == null)
-                Rosella.Error.invalid(__FUNCTION__, "Invalid parameter combination");
-            else
-                throw e;
-        }
-        on_error(e);
+            say(self.get_usage_text());
+        } else
+            on_error(args);
     }
 }
-

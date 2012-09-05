@@ -1,0 +1,267 @@
+namespace Rosella.CommandLine.ArgumentDef
+{
+    function get_argument_definition(var raw_defs)
+    {
+        var arg_defs;
+        if (does(raw_defs, "hash"))
+            arg_defs = new Rosella.CommandLine.ArgumentDef.NewStyleHash();
+        else if (does(raw_defs, "array"))
+            arg_defs = new Rosella.CommandLine.ArgumentDef.OldStyleArray();
+        else
+            Rosella.Error.error("Unknown argument type %s", typeof(raw_defs));
+
+        arg_defs.set_definitions(raw_defs);
+        return arg_defs;
+    }
+}
+
+/* Argument Definitions.
+    Represents the forward declarations of the different arguments. These
+    definitions are used during argument processing to parse out expected
+    arguments.
+*/
+class Rosella.CommandLine.ArgumentDef
+{
+    // TODO: Give a way to slurp up all positionals after position X with a
+    // single alias name.
+
+    var raw_defs;       // The raw argument definitions from the user
+    var prepared_defs;  // The prepared/processed argument definitions
+    var aliases;        // Map of aliased argument names
+    var pos_aliases;    // Map of idx->name for positionals
+
+    // Constructor
+    function ArgumentDef() { }
+
+    /* Public Methods
+    */
+
+    function set_definitions(var raw_defs)
+    {
+        self.raw_defs = raw_defs;
+    }
+
+    function get_definition(var args, string arg_name)
+    {
+        :(var arg_defs, var aliases, var pos_aliases) = self.__get_definitions();
+        if (exists aliases[arg_name])
+            arg_name = aliases[arg_name];
+        if (exists arg_defs[arg_name])
+            return arg_name, arg_defs[arg_name];
+
+        Rosella.Error.error("Unknown argument '%s'", arg_name);
+    }
+
+    // Get a description or help message. This message will show all argument
+    // definitions and the description message associated with each
+    function get_description(var sb = new 'StringBuilder')
+    {
+        self.__get_description_internal(self.raw_defs, sb);
+        return sb;
+    }
+
+    function get_positional_aliases()
+    {
+        :(var arg_defs, var aliases, var pos_aliases) = self.__get_definitions();
+        return pos_aliases;
+    }
+
+    // Process the input definitions format into a format suitable to use for
+    // argument processing.
+    function __get_definitions()
+    {
+        if (self.prepared_defs != null)
+            return self.prepared_defs, self.aliases, self.pos_aliases;
+
+        var arg_defs = Rosella.get_string_string_hash();
+        var aliases  = Rosella.get_string_string_hash();
+        var pos_aliases = Rosella.get_int_string_hash();
+        var raw_defs = self.raw_defs;
+
+        self.__prepare_arg_defs(raw_defs, arg_defs, aliases, pos_aliases);
+
+        self.prepared_defs = arg_defs;
+        self.aliases = aliases;
+        self.pos_aliases = pos_aliases;
+        return arg_defs, aliases, pos_aliases;
+    }
+
+    /* Private Helper Methods
+    */
+
+    function __verify_arg_type(string arg_name, string arg_type)
+    {
+        if (arg_type == "[]" || arg_type == "{}")
+            return arg_type, -1;
+
+        int idx = -1;
+        if (length(arg_type) >= 2) {
+            arg_type = substr(arg_type, 0, 1);
+            idx = int(substr(arg_type, 1));
+        }
+
+        switch (arg_type) {
+            case "b":   // Boolean Flag
+            case "s":   // String
+            case "i":   // Integer
+            case "f":   // Float
+            case "[]":  // Array
+            case "{}":  // Hash
+                // These are OK
+                break;
+            case "@":   // Old-style Array
+                arg_type = "[]";
+                break;
+            case "%":   // Old-style Hash
+                arg_type = "{}";
+                break;
+            default:
+                Rosella.Error.error("Unknown argument type for '%s': '%s'", arg_name, arg_type);
+        }
+        return arg_type, idx;
+    }
+
+    function __prepare_arg_defs(var defs, var arg_defs, var aliases, var pos_aliases)
+    {
+        Rosella.Error.must_subclass(__FUNCTION__);
+    }
+
+    function __get_description_internal(var sb)
+    {
+        Rosella.Error.must_subclass(__FUNCTION__);
+    }
+}
+
+class Rosella.CommandLine.ArgumentDef.NewStyleHash : Rosella.CommandLine.ArgumentDef
+{
+    function NewStyleHash() { }
+
+    /* We can handle defs of the following types:
+        foo|f       f|foo|foobar, etc
+        foo         f
+        foo=s       f=s   (b, i, f, @ or % too)
+        foo=sX      f=sX  (s, b, i, f. X = 0, 1, 2, ...)
+        foo=[]      f=[]
+        foo={}      f={}
+    */
+
+    function __prepare_arg_defs(var defs, var arg_defs, var aliases, var pos_aliases)
+    {
+        for (string arg_def in defs) {
+            string arg_name;
+            string arg_type = "b";  // Default is a boolean flag
+            int arg_idx = -1;       // Index for positionals
+            var raw_aliases = null;
+
+            // Separate on the '=' the name(s) from the type
+            int eql_idx = index_of_substr(arg_def, "=");
+            if (eql_idx != -1) {
+                arg_type = substr(arg_def, eql_idx + 1);
+                arg_def = substr(arg_def, 0, eql_idx);
+            }
+
+            // Different aliases for the same option are separated by '|'.
+            // Get the list of them and take one of them to be the canonical
+            // arg_name.
+            if (index_of_substr(arg_def, "|") != -1) {
+                raw_aliases = split("|", arg_def);
+                arg_name = raw_aliases.pop();
+            } else
+                arg_name = arg_def;
+
+            // Verify that the type is acceptable
+            :(arg_type, int idx) = self.__verify_arg_type(arg_name, arg_type);
+
+            // Add all aliases to the list of aliases
+            arg_defs[arg_name] = arg_type;
+            if (raw_aliases != null) {
+                for (string alias in raw_aliases)
+                    aliases[alias] = arg_name;
+            }
+
+            if (idx != -1)
+                pos_aliases[idx] = arg_name;
+        }
+    }
+
+    function __get_description_internal(var raw_defs, var sb)
+    {
+        int max = 0;
+        var fixed_defs = {};
+        for (string arg in raw_defs) {
+            var parts = split("=", arg);
+            string arg_name = parts[0];
+            string prefix = (length(arg_name) == 1) ? "-" : "--";
+            arg_name = prefix + arg;
+            fixed_defs[arg_name] = raw_defs[arg];
+
+            int len = length(arg_name);
+            if (len > max)
+                max = len;
+        }
+        max += 4;
+
+        for (string arg in fixed_defs) {
+            string desc = fixed_defs[arg];
+            push(sb, "    ");
+
+            push(sb, arg);
+            push(sb, repeat_string(" ", max - length(arg)));
+            push(sb, desc);
+            push(sb, "\n");
+        }
+    }
+}
+
+// An array of simple text definitions, like GetOpt::Obj uses
+class Rosella.CommandLine.ArgumentDef.OldStyleArray : Rosella.CommandLine.ArgumentDef
+{
+    function OldStyleArray() { }
+
+    function __get_description_internal(var raw_defs, var sb)
+    {
+        for (int i = 0; i < elements(raw_defs); i++) {
+            string arg = raw_defs[i];
+            push(sb, "    ");
+            push(sb, arg);
+            push(sb, "\n");
+        }
+    }
+
+    // Get a processed definition hash for an old-style array of arrays
+    function __prepare_arg_defs(var defs, var arg_defs, var aliases)
+    {
+        for (int i = i; i < elements(defs); i++) {
+            string arg_def = defs[i];
+            string arg_name;
+            string arg_type = "b";  // Default is a boolean flag
+            var raw_aliases = null;
+
+            // Separate on the ':' the name(s) from the type
+            int eql_idx = index_of_substr(arg_def, ":");
+            if (eql_idx != -1) {
+                arg_type = substr(arg_def, eql_idx + 1);
+                arg_def = substr(arg_def, 0, eql_idx);
+            }
+
+            // Different aliases for the same option are separated by '|'.
+            // Get the list of them and take one of them to be the canonical
+            // arg_name.
+            if (index_of_substr(arg_def, "|") != -1) {
+                raw_aliases = split("|", arg_def);
+                arg_name = raw_aliases.pop();
+            } else
+                arg_name = arg_def;
+
+            // Verify that the type is acceptable
+            :(arg_type, int idx) = self.__verify_arg_type(arg_name, arg_type);
+
+            // Add all aliases to the list of aliases
+            arg_defs[arg_name] = arg_type;
+            if (raw_aliases != null) {
+                for (string alias in raw_aliases)
+                    aliases[alias] = arg_name;
+            }
+        }
+    }
+}

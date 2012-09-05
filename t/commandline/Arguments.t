@@ -1,7 +1,24 @@
 // Automatically generated test for Class Rosella.CommandLine.Arguments
 function create_new(var p_args [slurpy])
 {
-    return new Rosella.CommandLine.Arguments(null, p_args);
+    return new Rosella.CommandLine.Arguments(null);
+}
+
+function create_arg_defs(var raw_arg_defs = null)
+{
+    if (raw_arg_defs == null) {
+        raw_arg_defs = {
+            "A"      : "The A flag",
+            "B=s"    : "The B scalar",
+            "C=[]"   : "The C list",
+            "D={}"   : "The D hash",
+            "fff"    : "The F flag",
+            "ggg=s"  : "The G scalar",
+            "hhh=[]" : "The H list",
+            "iii={}" : "The I hash"
+        };
+    }
+    return Rosella.CommandLine.ArgumentDef.get_argument_definition(raw_arg_defs);
 }
 
 class Test_Rosella_CommandLine_Arguments
@@ -9,171 +26,363 @@ class Test_Rosella_CommandLine_Arguments
     function test_new()
     {
         // Test simple constructor. For most individual method tests, use create_new() above
-        var obj = new Rosella.CommandLine.Arguments(null, []);
+        var obj = new Rosella.CommandLine.Arguments(null);
         self.assert.not_null(obj);
         self.assert.instance_of(obj, class Rosella.CommandLine.Arguments);
     }
 
-    function program_name()
+    function program()
     {
-        self.status.verify("Test Rosella.CommandLine.Arguments.program_name()");
+        self.status.verify("Test Rosella.CommandLine.Arguments.program()");
         var p = new Rosella.CommandLine.Program("foo");
-        var obj = new Rosella.CommandLine.Arguments(p, []);
+        var obj = new Rosella.CommandLine.Arguments(p);
 
-        string result = obj.program_name();
-        self.assert.equal(result, "foo");
+        var result = obj.program();
+        self.assert.same(result, p);
     }
 
-    function presort()
+    function parse()
     {
-        self.status.verify("Test Rosella.CommandLine.Arguments.presort()");
+        self.status.verify("Test Rosella.CommandLine.Arguments.parse()");
         var obj = create_new();
+        var arg_defs = create_arg_defs();
 
-        var arg_0 = null;
-        obj.presort(arg_0);
-    }
+        string raw_args[] = [
+            "-A",
+            "--",
+            "Aye", "Bee", "Cee"
+        ];
 
-    function fetch_flag()
-    {
-        self.status.verify("Test Rosella.CommandLine.Arguments.fetch_flag()");
-        var obj = create_new("-x", "-y", "--foo");
-
-        string arg_0 = "-x";
-        int arg_1 = 0;
-        int result = obj.fetch_flag(arg_0, arg_1);
-        self.assert.equal(result, 1);
-
-        arg_0 = "-z";
-        result = obj.fetch_flag(arg_0, arg_1);
-        self.assert.equal(result, 0);
-
-        arg_0 = "--foo";
-        result = obj.fetch_flag(arg_0, arg_1);
-        self.assert.equal(result, 1);
-
-        arg_0 = "--bar";
-        result = obj.fetch_flag(arg_0, arg_1);
-        self.assert.equal(result, 0);
-    }
-
-    function fetch_scalar()
-    {
-        self.status.verify("Test Rosella.CommandLine.Arguments.fetch_scalar()");
-        var obj = create_new("--foo", "bar", "--baz=fie");
-
-        string arg_0 = "--foo";
-        int arg_1 = 0;
-        string result = obj.fetch_scalar(arg_0, arg_1);
-        self.assert.equal(result, "bar");
-
-        arg_0 = "--baz";
-        result = obj.fetch_scalar(arg_0, arg_1);
-        self.assert.equal(result, "fie");
-
-        arg_0 = "--whatever";
-        result = obj.fetch_scalar(arg_0, arg_1);
-        self.assert.equal(result, "");
-    }
-
-    function fetch_scalar_list()
-    {
-        self.status.verify("Test Rosella.CommandLine.Arguments.fetch_scalar_list()");
-        var obj = create_new("-x", "a", "-x", "b", "-x", "c", "-y", "d");
-
-        string arg_0 = "-x";
-        int arg_1 = 0;
-        var result = obj.fetch_scalar_list(arg_0, arg_1);
-        self.assert.equal(elements(result), 3);
-        self.assert.equal(result[0], "a");
-        self.assert.equal(result[1], "b");
-        self.assert.equal(result[2], "c");
-
-        arg_0 = "-y";
-        result = obj.fetch_scalar_list(arg_0, arg_1);
-        self.assert.equal(elements(result), 1);
-        self.assert.equal(result[0], "d");
-
-        arg_0 = "-z";
-        result = obj.fetch_scalar_list(arg_0, arg_1);
-        self.assert.equal(elements(result), 0);
-    }
-
-    function fetch_pair()
-    {
-        self.status.verify("Test Rosella.CommandLine.Arguments.fetch_pair()");
-        var obj = create_new("--foo", "a", "b");
-
-        string arg_0 = "--foo";
-        int arg_1 = 0;
-        var result = obj.fetch_pair(arg_0, arg_1);
-        self.assert.equal(elements(result), 1);
-        self.assert.equal(result["a"], "b");
-    }
-
-    function fetch_pair_hash()
-    {
-        self.status.verify("Test Rosella.CommandLine.Arguments.fetch_pair_hash()");
-        var obj = create_new("--foo=a=b", "--foo=c=d");
-
-        string arg_0 = "--foo";
-        int arg_1 = 0;
-        var result = obj.fetch_pair_hash(arg_0, arg_1);
-        self.assert.equal(elements(result), 2);
-        self.assert.equal(result["a"], "b");
-        self.assert.equal(result["c"], "d");
-    }
-
-    function fetch_unparsed()
-    {
-        self.status.verify("Test Rosella.CommandLine.Arguments.fetch_unparsed()");
-        var obj = create_new();
-
-        string arg_0 = "";
-        var arg_1 = 0;
-        var result = obj.fetch_unparsed(arg_0, arg_1);
-    }
-
-    function fetch_value()
-    {
-        self.status.verify("Test Rosella.CommandLine.Arguments.fetch_value()");
-        var obj = create_new();
-
-        string arg_0 = "";
-        var result = obj.fetch_value(arg_0);
-    }
-
-    function fetch_positional()
-    {
-        self.status.verify("Test Rosella.CommandLine.Arguments.fetch_positional()");
-        var obj = create_new();
-
-        string arg_0 = "";
-        int arg_1 = 0;
-        var result = obj.fetch_positional(arg_0, arg_1);
+        // We test parsed results in other methods. Here, just prove that it
+        // doesn't error out.
+        self.assert.throws_nothing(function() {
+            obj.parse(raw_args, arg_defs);
+        });
     }
 
     function remainder()
     {
         self.status.verify("Test Rosella.CommandLine.Arguments.remainder()");
         var obj = create_new();
+        var arg_defs = create_arg_defs();
 
-        var result = obj.remainder();
+        string raw_args[] = [
+            "-A",
+            "--",
+            "Aye", "Bee", "Cee"
+        ];
+
+        obj.parse(raw_args, arg_defs);
+        self.assert.is_match(obj.remainder(), ["Aye", "Bee", "Cee"]);
     }
 
     function raw_args()
     {
-        self.status.verify("Test Rosella.CommandLine.Arguments.raw_args()");
+        self.status.verify("Test Rosella.CommandLine.Arguments.get_argument_string()");
         var obj = create_new();
+        var arg_defs = create_arg_defs();
 
-        var result = obj.raw_args();
+        string raw_args[] = [
+            "-A",
+            "--",
+            "Aye", "Bee", "Cee"
+        ];
+
+        obj.parse(raw_args, arg_defs);
+        self.assert.same(obj.raw_args(), raw_args);
     }
 
-    function has_unparsed_args()
+    function get_integer_keyed()
     {
-        self.status.verify("Test Rosella.CommandLine.Arguments.has_unparsed_args()");
         var obj = create_new();
+        var arg_defs = create_arg_defs();
 
-        var result = obj.has_unparsed_args();
+        string raw_args[] = [
+            "-A"
+        ];
+
+        obj.parse(raw_args, arg_defs);
+        self.assert.equal(int(obj["A"]), true);
+        self.assert.equal(int(obj["A"]), true);
+        self.assert.equal(int(obj["fff"]), false);
+    }
+
+    function get_string_keyed()
+    {
+        var obj = create_new();
+        var arg_defs = create_arg_defs();
+
+        string raw_args[] = [
+            "-B",
+            "foo",
+            "--ggg",
+            "bar"
+        ];
+
+        obj.parse(raw_args, arg_defs);
+        self.assert.equal(string(obj["B"]), "foo");
+        self.assert.equal(string(obj["ggg"]), "bar");
+    }
+
+    function get_pmc_keyed()
+    {
+        var obj = create_new();
+        var arg_defs = create_arg_defs();
+
+        string raw_args[] = [
+            "-C", "foo",
+            "-C", "bar",
+            "--hhh", "baz",
+            "--hhh", "fie"
+        ];
+
+        obj.parse(raw_args, arg_defs);
+        self.assert.is_match(obj["C"], ["foo", "bar"]);
+        self.assert.is_match(obj["hhh"], ["baz", "fie"]);
+    }
+
+    function get_string_keyed_int()
+    {
+        var obj = create_new();
+        var arg_defs = create_arg_defs();
+
+        string raw_args[] = [
+            "foo", "bar", "baz"
+        ];
+
+        obj.parse(raw_args, arg_defs);
+        self.assert.equal(string(obj[0]), "foo");
+        self.assert.equal(string(obj[1]), "bar");
+        self.assert.equal(string(obj[2]), "baz");
+    }
+
+    function get_pmc_keyed_int()
+    {
+        var obj = create_new();
+        var arg_defs = create_arg_defs();
+
+        string raw_args[] = [
+            "foo", "bar", "baz"
+        ];
+
+        obj.parse(raw_args, arg_defs);
+        self.assert.equal(obj[0], "foo");
+        self.assert.equal(obj[1], "bar");
+        self.assert.equal(obj[2], "baz");
+    }
+
+    function get_flag()
+    {
+        var obj = create_new();
+        var arg_defs = create_arg_defs();
+
+        string raw_args[] = [
+            "-A"
+        ];
+
+        obj.parse(raw_args, arg_defs);
+        self.assert.equal(int(obj["A"]), true);
+        self.assert.equal(int(obj["fff"]), false);
+    }
+
+    function get_scalar()
+    {
+        var obj = create_new();
+        var arg_defs = create_arg_defs();
+
+        //"-B foo" and "--ggg bar"
+        string raw_args[] = [
+            "-B", "foo",
+            "--ggg", "bar"
+        ];
+        obj.parse(raw_args, arg_defs);
+        self.assert.equal(obj["B"], "foo");
+        self.assert.equal(obj["ggg"], "bar");
+
+        // "-Bfoo"
+        raw_args = [
+            "-Bfoo"
+        ];
+        obj = create_new();
+        obj.parse(raw_args, arg_defs);
+        self.assert.equal(obj["B"], "foo");
+
+        // "-B:foo" and "--ggg:bar"
+        raw_args = [
+            "-B:foo",
+            "--ggg:bar"
+        ];
+        obj = create_new();
+        obj.parse(raw_args, arg_defs);
+        self.assert.equal(obj["B"], "foo");
+        self.assert.equal(obj["ggg"], "bar");
+    }
+
+    function get_list()
+    {
+        var obj = create_new();
+        var arg_defs = create_arg_defs();
+
+        string raw_args[] = [
+            "-C", "foo",
+            "-Cbar",
+            "-C:baz",
+            "--hhh", "FOO",
+            "--hhh:BAR"
+        ];
+
+        obj.parse(raw_args, arg_defs);
+        self.assert.is_match(obj["C"], ["foo", "bar", "baz"]);
+        self.assert.is_match(obj["hhh"], ["FOO", "BAR"]);
+    }
+
+    function get_hash()
+    {
+        var obj = create_new();
+        var arg_defs = create_arg_defs();
+
+        string raw_args[] = [
+            "-D", "foo=A",
+            "-Dbar=B",
+            "-D:baz=C",
+            "--iii", "FOO=A",
+            "--iii:BAR=B"
+        ];
+        obj.parse(raw_args, arg_defs);
+        self.assert.is_match(obj["D"], {"foo":"A", "bar":"B", "baz":"C"});
+        self.assert.equal(obj["iii"], {"FOO":"A", "BAR":"B"});
+    }
+
+    function argument_order()
+    {
+        self.status.verify("Parse flags and positionals in any order");
+        var obj = create_new();
+        var arg_defs = create_arg_defs();
+
+        string raw_args[] = [
+            "-A",
+            "foo"
+        ];
+        obj.parse(raw_args, arg_defs);
+        self.assert.equal(int(obj["A"]), true);
+        self.assert.equal(int(obj["fff"]), false);
+        self.assert.equal(obj[0], "foo");
+
+        raw_args = [
+            "foo",
+            "-A",
+            "--fff",
+            "bar"
+        ];
+        obj = create_new();
+        obj.parse(raw_args, arg_defs);
+        self.assert.equal(int(obj["A"]), true);
+        self.assert.equal(int(obj["fff"]), true);
+        self.assert.equal(obj[0], "foo");
+        self.assert.equal(obj[1], "bar");
+
+        raw_args = [
+            "foo",
+            "bar",
+            "-A",
+            "--fff"
+        ];
+        obj = create_new();
+        obj.parse(raw_args, arg_defs);
+        self.assert.equal(int(obj["A"]), true);
+        self.assert.equal(int(obj["fff"]), true);
+        self.assert.equal(obj[0], "foo");
+        self.assert.equal(obj[1], "bar");
+    }
+
+    function combination_args()
+    {
+        var obj = create_new();
+        var arg_defs = create_arg_defs({
+            "A" : "A",
+            "B" : "B",
+            "C" : "C",
+            "D" : "D"
+        });
+
+        obj.parse(["-A", "-BC"], arg_defs);
+        self.assert.equal(int(obj["A"]), true);
+        self.assert.equal(int(obj["B"]), true);
+        self.assert.equal(int(obj["C"]), true);
+        self.assert.equal(int(obj["D"]), false);
+
+        obj = create_new();
+        obj.parse(["-ABCD"], arg_defs);
+        self.assert.equal(int(obj["A"]), true);
+        self.assert.equal(int(obj["B"]), true);
+        self.assert.equal(int(obj["C"]), true);
+        self.assert.equal(int(obj["D"]), true);
+
+        obj = create_new();
+        obj.parse(["-AD"], arg_defs);
+        self.assert.equal(int(obj["A"]), true);
+        self.assert.equal(int(obj["B"]), false);
+        self.assert.equal(int(obj["C"]), false);
+        self.assert.equal(int(obj["D"]), true);
+
+        obj = create_new();
+        obj.parse(["-BCD"], arg_defs);
+        self.assert.equal(int(obj["A"]), false);
+        self.assert.equal(int(obj["B"]), true);
+        self.assert.equal(int(obj["C"]), true);
+        self.assert.equal(int(obj["D"]), true);
+    }
+
+    function arg_does_not_exist()
+    {
+        var obj = create_new();
+        var arg_defs = create_arg_defs({
+            "A" : "A"
+        });
+
+        obj.parse(["-A"], arg_defs);
+        self.assert.throws(function() {
+            int a = obj["does-not-exist"];
+        });
+    }
+
+    function unknown_args()
+    {
+        var obj = create_new();
+        var arg_defs = create_arg_defs({
+            "A" : "A",
+            "B" : "B",
+            "C" : "C",
+            "D" : "D"
+        });
+
+        self.assert.throws(function() {
+            obj.parse(["-A", "-BC", "-X"], arg_defs);
+        });
+    }
+
+    function aliased_positionals()
+    {
+        var arg_defs = create_arg_defs({
+            "A=s" : "A",
+            "B=s0" : "B"
+        });
+
+        // Test that an aliased positional, passed as a positional, can be accessed
+        // by name or idx
+        var obj = create_new();
+        obj.parse(["foo", "-Abar"], arg_defs);
+        self.assert.str_equal(obj["A"], "bar");
+        self.assert.str_equal(obj["B"], "foo");
+        self.assert.str_equal(obj[0], "foo");
+
+        // Next, test that an aliased positional, passed by name, can only be
+        // accessed by name
+        obj = create_new();
+        obj.parse(["-Bfoo", "-Abar"], arg_defs);
+        self.assert.str_equal(obj["A"], "bar");
+        self.assert.str_equal(obj["B"], "foo");
+        self.assert.str_equal(obj[0], "");
     }
 }
 
