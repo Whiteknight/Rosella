@@ -194,6 +194,7 @@ class Rosella.CommandLine.ModeCondition.NumPositionals : Rosella.CommandLine.Mod
 
     function get_description(var sb)
     {
+        // TODO: This!
         //push(sb, " ...");
     }
 }

@@ -5,15 +5,21 @@ function main[main](var args)
     var p = new Rosella.CommandLine.Program(args.shift());
     p
         .define_arguments({
-            "help|h" : "Show the help message"
+            "help|h" : "Show the help message",
+            "lang=s0" : "The language to use",
+            "library=s1" : "The library to read",
+            "folder=s2" : "Folder to generate tests in"
         })
         .set_description("Create tests for all classes and namespaces in <library>. Output all tests\n" +
                          "to <folder>. Tests will be in language <lang>. <lang> is probably one of\n" +
                          "'winxed' or 'nqp' or others if you have suitable templates installed.");
-    p.default_mode()
+    p.default_mode().set_function(function(var a) { say(a.program.get_help_text()); });
+    p.add_mode("test_all")
         .set_function(test_all_main)
-        .require_positionals(false, "lang", "library", "folder");
-    p.add_mode("help").require_flag("help").set_function(function(var args) { say(p.get_help_message()); });
+        .require_positionals(3, 3);
+    p.add_mode("help")
+        .require_flag("help")
+        .set_function(function(var args) { say(p.get_help_text()); });
     p.run(args);
 }
 
@@ -21,8 +27,8 @@ function main[main](var args)
 function test_all_main(var args)
 {
     string libpath = args[1];
-    string lang = args[0];
-    string folder = args[2];
+    string lang    = args[0];
+    string folder  = args[2];
     var module = Rosella.Reflect.Module.load(libpath);
     var engine = new Rosella.Template.Engine();
 

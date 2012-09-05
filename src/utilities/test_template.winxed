@@ -5,16 +5,30 @@ function main[main](var args)
 {
     Rosella.Query.install_to_parrot_types();
     var program = new Rosella.CommandLine.Program(args.shift());
-    program.add_mode("help").set_flag("--help").set_function(show_help);
-    program.add_mode("version").set_flag("--version").set_function(show_version);
-    program.add_mode("harness").set_flag("harness").set_function(harness_main)
-        .require_positional("language", 1)
-        .require_args({ "dirs" : "*" });
-    program.add_mode("test").set_flag("test").set_function(test_main)
-        .require_positional("language", 1)
-        .require_positional("libname", 2)
-        .require_positional("classname", 3);
-    program.on_error(show_help);
+    program
+        .define_arguments({
+            "help" : "Show the help message",
+            "version" : "Display version information",
+            "harness" : "Generate a test harness",
+            "test" : "Generate test classes",
+            "language=s0" : "Language to use",
+            "libname=s1" : ".pbc library to read",
+            "classname=s3" : "Class to generate tests for"
+        });
+
+    program.add_mode("help").require_flag("help").set_function(show_help);
+    program.add_mode("version").require_flag("version").set_function(show_version);
+
+    program.add_mode("harness")
+        .require_flag("harness")
+        .require_positionals(1)
+        .set_function(harness_main);
+
+    program.add_mode("test")
+        .require_flag("test")
+        .require_positionals(3)
+        .set_function(test_main);
+
     program.run(args);
 }
 
@@ -36,7 +50,7 @@ function harness_main(var args)
 {
     string mode = args["mode"];
     string language = args["language"];
-    var dirs = args["dirs"];
+    var dirs = args.get_positionals(3);
     string template = get_template_text("test_harness", language);
     var context = harness_template_context(template, dirs);
     var engine = new Rosella.Template.Engine();

@@ -116,6 +116,16 @@ class Rosella.CommandLine.ProgramMode
         push(self.conditions, condition);
         return self;
     }
+
+    // Require that a scalar value be provided with any value
+    function require_positionals(int min, int max = min)
+    {
+        if (self.conditions == null)
+            self.conditions = [];
+        var condition = new Rosella.CommandLine.ModeCondition.NumPositionals(min, max);
+        push(self.conditions, condition);
+        return self;
+    }
 }
 
 // Default program mode, similar to a normal mode but with no preconditions
@@ -155,6 +165,11 @@ class Rosella.CommandLine.ProgramMode.Default : Rosella.CommandLine.ProgramMode
     }
 
     function require_condition(var f)
+    {
+        Rosella.Error.error("May not add prerequisite conditions to the default program mode");
+    }
+
+    function require_positionals(int a, int b = a)
     {
         Rosella.Error.error("May not add prerequisite conditions to the default program mode");
     }

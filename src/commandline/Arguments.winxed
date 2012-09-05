@@ -169,6 +169,16 @@ class Rosella.CommandLine.Arguments
         return false;
     }
 
+    function get_positionals(int start = -1)
+    {
+        if (start == -1)
+            return self.pos_cache;
+        string pos_from[] = [];
+        for (int i = start; i < elements(self.pos_cache); i++)
+            push(pos_from, string(self.pos_cache[i]));
+        return pos_from;
+    }
+
     /* VTABLEs
     */
 
