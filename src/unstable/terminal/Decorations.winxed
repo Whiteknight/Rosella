@@ -1,0 +1,20 @@
+namespace Rosella.Terminal.Decorations
+{
+    function cycle_while(var term, string s, var cond, float frame_time = 0.1)
+    {
+        term.print(" ");
+        while(cond() == true) {
+            for (int i = 0; i < length(s); i++) {
+                term.print("\b" + substr(s, i, 1));
+                term.flush();
+                sleep(frame_time);
+            }
+        }
+        term.print("\b ");
+    }
+
+    function rotate_waiter_while(var term, var cond)
+    {
+        cycle_while(term, "\\|/-", cond);
+    }
+}

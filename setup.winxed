@@ -437,6 +437,12 @@ function setup_experimental_libraries(var rosella)
         "feed/Entry",
         "feed/Writer"
     );
+
+    setup_unstable_lib(rosella, "terminal", ["Core"],
+        "terminal/Includes",
+        "terminal/Terminal",
+        "terminal/Decorations"
+    );
 }
 
 function setup_utilities(var rosella)

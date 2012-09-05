@@ -1,0 +1,91 @@
+namespace Rosella.Terminal
+{
+    function wrap_handle(var handle)
+    {
+        // TODO: We probably need a more robust way to test for terminal-ability
+        if (handle == null || handle.is_tty())
+            return new Rosella.Terminal(handle);
+        return new Rosella.Terminal.NonTty(handle);
+    }
+}
+
+class Rosella.Terminal
+{
+    // TODO: Can we find a way to get the terminal height/width?
+
+    var handle;
+
+    function Terminal(var handle = getstdout())
+    {
+        self.handle = handle;
+    }
+
+    function set_color(int attr, int fg, int bg)
+    {
+        self.handle.print(sprintf("\033[%d;%d;%dm", [attr, fg, bg]));
+    }
+
+    function reset_color()
+    {
+        self.handle.print("\033[m");
+    }
+
+    function print(string s, var args [slurpy])
+    {
+        if (elements(args) > 0)
+            s = sprintf(s, args);
+        self.handle.print(s);
+    }
+
+    function position(int row, int col)
+    {
+        self.handle.print(sprintf("\033[%d;%dH", [row, col]));
+    }
+
+    function clear()
+    {
+        self.handle.print("\033[2J");
+    }
+
+    function reset()
+    {
+        self.handle.print("\033c");
+    }
+
+    function flush()
+    {
+        self.handle.flush();
+    }
+}
+
+class Rosella.Terminal.NonTty : Rosella.Terminal
+{
+    function NonTty(var handle)
+    {
+        self.handle = handle;
+    }
+
+    function set_color(int attr, int fg, int bg) { }
+
+    function reset_color() { }
+
+    function print(string s, var args [slurpy])
+    {
+        if (elements(args) > 0)
+            s = sprintf(s, args);
+        self.handle.print(s);
+    }
+
+    function position(int row, int col)
+    {
+        Rosella.Error.error("Cannot set position on non-tty terminal");
+    }
+
+    function clear()
+    {
+        Rosella.Error.error("Cannot clear a non-tty terminal");
+    }
+
+    function reset() { }
+}
+

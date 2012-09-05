@@ -1,0 +1,28 @@
+const int CON_ATTR_NORMAL    = 0;
+const int CON_ATTR_BOLD      = 1;
+const int CON_ATTR_DIM       = 2;
+const int CON_ATTR_UNDERLINE = 3;
+const int CON_ATTR_BLINK     = 5;
+const int CON_ATTR_REVERSE   = 7;
+const int CON_ATTR_HIDDEN    = 8;
+
+const int CON_FG_BLACK   = 30;
+const int CON_FG_RED     = 31;
+const int CON_FG_GREEN   = 32;
+const int CON_FG_YELLOW  = 33;
+const int CON_FG_BLUE    = 34;
+const int CON_FG_MAGENTA = 35;
+const int CON_FG_CYAN    = 36;
+const int CON_FG_WHITE   = 37;
+
+const int CON_BG_BLACK   = 40;
+const int CON_BG_RED     = 41;
+const int CON_BG_GREEN   = 42;
+const int CON_BG_YELLOW  = 43;
+const int CON_BG_BLUE    = 44;
+const int CON_BG_MAGENTA = 45;
+const int CON_BG_CYAN    = 46;
+const int CON_BG_WHITE   = 47;
+
+// For more info, see:
+// http://ascii-table.com/ansi-escape-sequences-vt-100.php
