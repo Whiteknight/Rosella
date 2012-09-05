@@ -22,6 +22,9 @@ namespace Rosella.CommandLine.ArgumentDef
 */
 class Rosella.CommandLine.ArgumentDef
 {
+    // TODO: Give a way to slurp up all positionals after position X with a
+    // single alias name.
+
     var raw_defs;       // The raw argument definitions from the user
     var prepared_defs;  // The prepared/processed argument definitions
     var aliases;        // Map of aliased argument names
