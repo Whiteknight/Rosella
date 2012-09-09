@@ -6,6 +6,10 @@
 */
 class Rosella.Net.MimeBase64
 {
+    // TODO: MIME standard says lines need to be broken after 76 characters. Implement
+    // this for encode and decode. See https://github.com/parrot/parrot/issues/826
+    // for more details.
+
     const string PRINTABLE_CHARS = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789+/";
     var eight_to_six;
     var six_to_eight;
