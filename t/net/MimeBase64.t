@@ -33,6 +33,17 @@ class Test_Rosella_Net_MimeBase64
         string e = Rosella.Net.default_mime_encoder().encode(s);
         self.assert.str_equal(e, "wqI=");
     }
+
+    function long_lines()
+    {
+        self.status.verify("Test that encoded output breaks lines after 76 chars");
+        var obj = create_new();
+
+        string arg_0 = "this is a test of a much longer line that should be broken after about 76 bytes or so";
+        string result = obj.encode(arg_0);
+        string expected = "dGhpcyBpcyBhIHRlc3Qgb2YgYSBtdWNoIGxvbmdlciBsaW5lIHRoYXQgc2hvdWxkIGJlIGJyb2tl\x{A}biBhZnRlciBhYm91dCA3NiBieXRlcyBvciBzbw==";
+        self.assert.str_equal(result, expected);
+    }
 }
 
 function initialize_test[anon](var context)
